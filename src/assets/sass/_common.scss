@@ -1,0 +1,13 @@
+body {
+  background: white;
+}
+
+.required {
+  position: relative;
+
+  &::after {
+    content: "*";
+    display: inline-block;
+    color: red;
+  }
+}
