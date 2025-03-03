@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router"
-import { directive } from "vue-tippy"
 </script>
 
 <template>

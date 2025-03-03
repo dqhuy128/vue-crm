@@ -10,30 +10,71 @@ const ticket: any = [
     icon: iconTicket1,
     title: "Tổng số ticket",
     ticketList: [
-      "Tổng số yêu cầu chưa xử lý",
-      "Chờ xử lý",
-      "Đang xử lý",
-      "Đã xử lý trong ngày",
-      "Đã từ chối trong ngày"
+      {
+        title: "Tổng số yêu cầu chưa xử lý",
+        status: "normal",
+        count: "1"
+      },
+      {
+        title: "Chờ xử lý",
+        status: "pending",
+        count: "12"
+      },
+      {
+        title: "Đang xử lý",
+        status: "waiting",
+        count: "4"
+      },
+      {
+        title: "Đã xử lý trong ngày",
+        status: "done",
+        count: "66"
+      },
+      {
+        title: "Đã từ chối trong ngày",
+        status: "reject",
+        count: "8"
+      }
     ]
   },
   {
     icon: iconTicket2,
     title: "Nghỉ phép",
     ticketList: [
-      "Tổng số ngày nghỉ",
-      "Số ngày nghỉ còn lại",
-      "Số ngày nghỉ đã sử dụng"
+      {
+        title: "Tổng số ngày nghỉ",
+        status: "normal"
+      },
+      {
+        title: "Số ngày nghỉ còn lại",
+        status: "normal"
+      },
+      {
+        title: "Số ngày nghỉ đã sử dụng",
+        status: "normal"
+      }
     ]
   },
   {
     icon: iconTicket3,
     title: "Chấm công",
     ticketList: [
-      "Số lỗi chấm công trong tháng",
-      "Đã giải trình",
-      "Chưa giải trình",
-      "Chờ phê duyệt"
+      {
+        title: "Số lỗi chấm công trong tháng",
+        status: "reject"
+      },
+      {
+        title: "Đã giải trình",
+        status: "normal"
+      },
+      {
+        title: "Chưa giải trình",
+        status: "reject"
+      },
+      {
+        title: "Chờ phê duyệt",
+        status: "reject"
+      }
     ]
   }
 ]

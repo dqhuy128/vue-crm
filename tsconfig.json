@@ -3,5 +3,10 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "compilerOptions": {
+    "target": "es5", // or whatever your target is
+    "lib": ["dom", "es2015"], // Include "dom" to enable browser-specific globals
+    "strict": true
+  }
 }

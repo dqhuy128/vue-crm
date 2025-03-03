@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
+import { calcBgBefore } from "../lib/index"
 
 const password = ref("")
 const isPasswordVisible = ref(false)
@@ -7,24 +8,6 @@ const isPasswordVisible = ref(false)
 // Function to toggle the password visibility
 const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
-}
-
-// Function to calc rectangle white
-const calcBgBefore = () => {
-  const init = () => {
-    const formIndex: any = document.getElementById("formLoginIndex")
-    const formStart: any = document.getElementById("formLoginStart")
-    const offsetLeft: number = formIndex.offsetLeft
-    const formStartW: number = formStart.offsetWidth
-    const offsetSpace: number = offsetLeft + formStartW
-    const rectangleLogin: any = document.getElementById("rectangleLogin")
-    rectangleLogin.style.width = offsetSpace + "px"
-  }
-
-  if (screen.width >= 768) {
-    init()
-    window.addEventListener("resize", () => init())
-  }
 }
 
 onMounted(() => {
