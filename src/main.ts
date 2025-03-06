@@ -6,10 +6,12 @@ import "./assets/sass/style.scss"
 import VueTippy from "vue-tippy"
 import "tippy.js/dist/tippy.css"
 import "tippy.js/themes/light.css"
+import Antd from "ant-design-vue"
+import "ant-design-vue/dist/reset.css"
 
 const app = createApp(App)
-
 app.use(router)
+app.use(Antd)
 app.use(
   VueTippy,
   // optional

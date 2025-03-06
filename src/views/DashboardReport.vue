@@ -153,13 +153,13 @@ const route = useRoute()
 const date1 = ref(null)
 const date2 = ref(null)
 
-const dateConfig = reactive({
+const dateConfig: any = reactive({
   locale: Vietnamese,
   dateFormat: "d / m / Y",
   disableMobile: true
 })
 
-const dateRange = reactive({
+const dateRange: any = reactive({
   mode: "range",
   locale: Vietnamese,
   dateFormat: "d / m / Y",
