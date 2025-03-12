@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router"
-import Login from "../views/Login.vue"
+import LoginView from "../views/Login/IndexView.vue"
+import GetMailView from "../views/Login/GetMailView.vue"
+import GetOtpView from "../views/Login/GetOtpView.vue"
+import SetPasswordView from "../views/Login/SetPasswordView.vue"
 import DashboardPersonal from "../views/DashboardPersonal.vue"
 import DashboardReport from "../views/DashboardReport.vue"
 import SystemAdminUser from "../views/SystemAdminUser.vue"
@@ -10,7 +13,22 @@ const router = createRouter({
     {
       path: "/",
       name: "login",
-      component: Login
+      component: LoginView
+    },
+    {
+      path: "/getpass-mail",
+      name: "getmail",
+      component: GetMailView
+    },
+    {
+      path: "/getpass-otp",
+      name: "getotp",
+      component: GetOtpView
+    },
+    {
+      path: "/setpass",
+      name: "setpass",
+      component: SetPasswordView
     },
     {
       path: "/dashboard/personal",

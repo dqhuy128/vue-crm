@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
-import { calcBgBefore } from "../lib/index"
+import { calcBgBefore } from "../../lib/index"
 
 const password = ref("")
 const isPasswordVisible = ref(false)
@@ -124,7 +124,7 @@ onMounted(() => {
                 <div class="block">
                   <button
                     type="submit"
-                    class="block w-full bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2.5 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+                    class="block w-full bg-main !text-white text-[16px] font-bold leading-normal !uppercase text-center p-2.5 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
                   >
                     đăng nhập
                   </button>
