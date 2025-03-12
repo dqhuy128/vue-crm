@@ -2,12 +2,12 @@
 
 <template>
   <div class="search-box-cpn bg-white rounded-[24px] overflow-hidden p-2.5">
-    <form action="" class="flex flex-wrap items-stretch gap-6">
+    <form action="" class="flex flex-wrap items-stretch md:gap-6 gap-3">
       <slot />
 
       <button
         type="submit"
-        class="inline-flex items-center gap-2 bg-[#013878] rounded-[24px] p-[8px_16px] text-white font-inter text=[16px] font-bold leading-normal hover:shadow-hoverinset transition cursor-pointer"
+        class="inline-flex items-center justify-center gap-2 max-md:w-full bg-[#013878] rounded-[24px] p-[8px_16px] text-white font-inter text=[16px] font-bold leading-normal hover:shadow-hoverinset transition cursor-pointer"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

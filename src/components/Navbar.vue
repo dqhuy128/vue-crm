@@ -1,5 +1,29 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router"
+import { ref } from "vue"
+import Modal from "@/components/Modals.vue"
+
+const modalState = ref<Record<string, boolean>>({
+  modal1: false
+})
+
+const showModal = (modalName: any) => {
+  modalState.value[modalName] = true
+}
+
+const closeModal = (modalName: any) => {
+  modalState.value[modalName] = false
+}
+
+const password1 = ref("")
+const password2 = ref("")
+const password3 = ref("")
+const isPasswordVisible = ref(false)
+
+// Function to toggle the password visibility
+const togglePasswordVisibility = () => {
+  isPasswordVisible.value = !isPasswordVisible.value
+}
 </script>
 
 <template>
@@ -94,12 +118,13 @@ import { RouterLink } from "vue-router"
               </div>
             </template>
             <template #content>
-              <router-link
-                to=""
-                class="block text-[#464661] font-inter text-[16px] font-normal leading-normal p-2.5 hover:text-main transition border-b border-solid border-[#E9F0F4]"
+              <button
+                type="button"
+                class="block w-full !text-start text-[#464661] font-inter text-[16px] font-normal leading-normal p-2.5 hover:text-main transition border-b border-solid border-[#E9F0F4]"
+                @click="showModal('modal1')"
               >
                 Thông tin cá nhân
-              </router-link>
+              </button>
               <router-link
                 to=""
                 class="block text-[#464661] font-inter text-[16px] font-normal leading-normal p-2.5 hover:text-main transition"
@@ -111,6 +136,175 @@ import { RouterLink } from "vue-router"
         </div>
       </div>
     </div>
+
+    <Modal
+      :isVisible="modalState.modal1"
+      :closeModal="() => closeModal('modal1')"
+    >
+      <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-10">
+        <div class="text-center mb-4">
+          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+            Thông tin cá nhân
+          </h3>
+        </div>
+
+        <div
+          class="relative max-w-[112px] max-h-[112px] w-full h-full mx-auto mb-4"
+        >
+          <div
+            class="w-full h-full max-w-full bg-[#E9F0F4] rounded-[24px] overflow-hidden"
+          >
+            <img
+              src="@/assets/images/si_user-fill.svg"
+              class="w-full h-full object-cover"
+              alt=""
+            />
+          </div>
+
+          <div class="absolute right-0 bottom-0 z-10">
+            <img src="@/assets/images/ic-camera.svg" alt="" />
+          </div>
+        </div>
+
+        <div class="mb-4 text-center">
+          <h3 class="m-0 text-[#464661] text-[16px] font-bold leading-normal">
+            Nguyễn Đức Hiếu
+          </h3>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="grow inline-flex items-center justify-center gap-2">
+            <img src="@/assets/images/lucide_mail.svg" alt="" />
+            <span class="text-[#464661] text-[14px] font-bold leading-normal">
+              hieund@abc.com
+            </span>
+          </div>
+
+          <div class="grow inline-flex items-center justify-center gap-2">
+            <img src="@/assets/images/mynaui_mobile.svg" alt="" />
+            <span class="text-[#464661] text-[14px] font-bold leading-normal">
+              090 333 4444
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <form
+        action=""
+        class="block w-full max-w-[480px] mx-auto md:p-[36px] md:pb-[45px] p-4"
+      >
+        <div class="text-center mb-3">
+          <h3 class="m-0 text-[#464661] text-[20px] font-bold leading-normal">
+            Đổi mật khẩu
+          </h3>
+        </div>
+
+        <div class="block mb-3">
+          <span
+            class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
+          >
+            Mật khẩu Cũ
+          </span>
+          <div class="relative">
+            <input
+              :type="isPasswordVisible ? 'text' : 'password'"
+              v-model="password1"
+              name=""
+              id="inputPassword"
+              placeholder="Nhập mật khẩu"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+            />
+
+            <button
+              @click="togglePasswordVisibility"
+              type="button"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
+            >
+              <template v-if="isPasswordVisible">
+                <img src="@/assets/images/clarity_eye-show-solid.svg" alt="" />
+              </template>
+
+              <template v-else>
+                <img src="@/assets/images/clarity_eye-hide-solid.svg" alt="" />
+              </template>
+            </button>
+          </div>
+        </div>
+
+        <div class="block mb-3">
+          <span
+            class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
+          >
+            Mật khẩu mới
+          </span>
+          <div class="relative">
+            <input
+              :type="isPasswordVisible ? 'text' : 'password'"
+              v-model="password2"
+              name=""
+              id="inputPassword"
+              placeholder="Nhập mật khẩu"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+            />
+
+            <button
+              @click="togglePasswordVisibility"
+              type="button"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
+            >
+              <template v-if="isPasswordVisible">
+                <img src="@/assets/images/clarity_eye-show-solid.svg" alt="" />
+              </template>
+
+              <template v-else>
+                <img src="@/assets/images/clarity_eye-hide-solid.svg" alt="" />
+              </template>
+            </button>
+          </div>
+        </div>
+
+        <div class="block mb-3">
+          <span
+            class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
+          >
+            Nhập lại mật khẩu mới
+          </span>
+          <div class="relative">
+            <input
+              :type="isPasswordVisible ? 'text' : 'password'"
+              v-model="password3"
+              name=""
+              id="inputPassword"
+              placeholder="Nhập mật khẩu"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+            />
+
+            <button
+              @click="togglePasswordVisibility"
+              type="button"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
+            >
+              <template v-if="isPasswordVisible">
+                <img src="@/assets/images/clarity_eye-show-solid.svg" alt="" />
+              </template>
+
+              <template v-else>
+                <img src="@/assets/images/clarity_eye-hide-solid.svg" alt="" />
+              </template>
+            </button>
+          </div>
+        </div>
+
+        <div class="block text-center mt-10">
+          <button
+            type="submit"
+            class="inline-block min-w-[175px] bg-main !text-white text-[16px] font-bold leading-normal !uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Lưu
+          </button>
+        </div>
+      </form>
+    </Modal>
   </div>
 </template>
 

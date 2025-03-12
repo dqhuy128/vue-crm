@@ -7,6 +7,13 @@
   "compilerOptions": {
     "target": "es5", // or whatever your target is
     "lib": ["dom", "es2015"], // Include "dom" to enable browser-specific globals
-    "strict": true
+    "strict": true,
+    "types": [
+      "vite/client",
+      "vue/ref-macros"
+    ],
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }

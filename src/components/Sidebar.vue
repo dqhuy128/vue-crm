@@ -1,8 +1,27 @@
 <template>
   <div
     id="Sidebar"
-    class="sidebar flex flex-col h-full bg-main rounded-[24px] py-6 px-2.5 w-full"
+    class="sidebar flex flex-col h-full bg-main xl:rounded-[24px] max-xl:pt-14 py-6 px-2.5 w-full"
   >
+    <button
+      id="mbBtnCloseSidebar"
+      type="button"
+      class="xl:hidden absolute top-3 right-3 inline-block bg-white rounded-[8px] p-1 cursor-pointer"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M4 18C3.71667 18 3.47934 17.904 3.288 17.712C3.09667 17.52 3.00067 17.2827 3 17C2.99934 16.7173 3.09534 16.48 3.288 16.288C3.48067 16.096 3.718 16 4 16H20C20.2833 16 20.521 16.096 20.713 16.288C20.905 16.48 21.0007 16.7173 21 17C20.9993 17.2827 20.9033 17.5203 20.712 17.713C20.5207 17.9057 20.2833 18.0013 20 18H4ZM4 13C3.71667 13 3.47934 12.904 3.288 12.712C3.09667 12.52 3.00067 12.2827 3 12C2.99934 11.7173 3.09534 11.48 3.288 11.288C3.48067 11.096 3.718 11 4 11H20C20.2833 11 20.521 11.096 20.713 11.288C20.905 11.48 21.0007 11.7173 21 12C20.9993 12.2827 20.9033 12.5203 20.712 12.713C20.5207 12.9057 20.2833 13.0013 20 13H4ZM4 8C3.71667 8 3.47934 7.904 3.288 7.712C3.09667 7.52 3.00067 7.28267 3 7C2.99934 6.71733 3.09534 6.48 3.288 6.288C3.48067 6.096 3.718 6 4 6H20C20.2833 6 20.521 6.096 20.713 6.288C20.905 6.48 21.0007 6.71733 21 7C20.9993 7.28267 20.9033 7.52033 20.712 7.713C20.5207 7.90567 20.2833 8.00133 20 8H4Z"
+          fill="#464661"
+        />
+      </svg>
+    </button>
+
     <div class="max-w-full w-full h-auto px-2.5 mb-10">
       <router-link to="">
         <img
@@ -85,7 +104,7 @@ interface dataSidebarItem {
   icon: any
   title: string
   nav?: boolean
-  submenu: dataSubmenu[]
+  submenu?: dataSubmenu[]
 }
 
 interface dataSubmenu {
@@ -93,7 +112,7 @@ interface dataSubmenu {
   title: string
 }
 
-const refDataSidebar: dataSidebarItem[] = ref([
+const refDataSidebar = ref<dataSidebarItem[]>([
   {
     icon: MageDashboard,
     title: "Dashboard",
@@ -156,48 +175,63 @@ const refDataSidebar: dataSidebarItem[] = ref([
 ])
 
 // Mảng lưu trạng thái dropdown của từng item
-const dropdownState = ref({})
+interface DropdownState {
+  [key: number]: boolean // Mảng các giá trị boolean tương ứng với các dropdown item
+}
 
-const toggleDropdown = (idx) => {
+const dropdownState = ref<DropdownState>({})
+
+const toggleDropdown = (idx: any) => {
   // Nếu dropdown đang mở, đóng lại, nếu chưa mở, mở dropdown đó
   dropdownState.value[idx] = !dropdownState.value[idx]
 }
 
-const isDropdownOpen = (idx) => {
+const isDropdownOpen = (idx: any) => {
   // Kiểm tra dropdown có đang mở không
   return dropdownState.value[idx]
 }
 
 // Các hàm để xử lý transition
-const beforeEnter = (el) => {
-  el.style.transition = "all 0.3s"
-  el.style.height = "0"
-}
+// const beforeEnter = (el : any) => {
+//   el.style.transition = "all 0.3s"
+//   el.style.height = "0"
+// }
 
-const enter = (el, done) => {
-  el.offsetHeight // force reflow
-  el.style.transition = "all 0.3s"
-  el.style.height = `${el.scrollHeight}px`
-  done()
-}
+// const enter = (el : any, done : any) => {
+//   el.offsetHeight // force reflow
+//   el.style.transition = "all 0.3s"
+//   el.style.height = `${el.scrollHeight}px`
+//   done()
+// }
 
-const leave = (el, done) => {
-  el.style.transition = "all 0.3s"
-  el.style.height = "0"
-  done()
-}
+// const leave = (el :any, done :any) => {
+//   el.style.transition = "all 0.3s"
+//   el.style.height = "0"
+//   done()
+// }
 </script>
 
 <style lang="scss" scoped>
 .sidebar {
   position: fixed;
-  top: 30px;
-  left: 24px;
-  bottom: 30px;
+  top: 0;
+  left: 0;
   z-index: 99;
-  height: calc(100% - 60px);
   max-width: 240px;
   transition: all 0.2s;
+
+  @media (min-width: 1280px) {
+    top: 30px;
+    left: 24px;
+    bottom: 30px;
+    height: calc(100% - 60px);
+  }
+}
+
+.is-translate {
+  @media (max-width: 1279px) {
+    transform: translateX(-150%);
+  }
 }
 
 .rotate-in {

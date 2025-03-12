@@ -91,10 +91,19 @@ onMounted(() => {
                       type="button"
                       class="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
                     >
-                      <img
-                        src="@/assets/images/clarity_eye-hide-solid.svg"
-                        alt=""
-                      />
+                      <template v-if="isPasswordVisible">
+                        <img
+                          src="@/assets/images/clarity_eye-show-solid.svg"
+                          alt=""
+                        />
+                      </template>
+
+                      <template v-else>
+                        <img
+                          src="@/assets/images/clarity_eye-hide-solid.svg"
+                          alt=""
+                        />
+                      </template>
                     </button>
                   </div>
                 </div>
@@ -120,10 +129,19 @@ onMounted(() => {
                       type="button"
                       class="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
                     >
-                      <img
-                        src="@/assets/images/clarity_eye-hide-solid.svg"
-                        alt=""
-                      />
+                      <template v-if="isPasswordVisible">
+                        <img
+                          src="@/assets/images/clarity_eye-show-solid.svg"
+                          alt=""
+                        />
+                      </template>
+
+                      <template v-else>
+                        <img
+                          src="@/assets/images/clarity_eye-hide-solid.svg"
+                          alt=""
+                        />
+                      </template>
                     </button>
                   </div>
                 </div>

@@ -1,9 +1,9 @@
 import { createApp } from "vue"
-import "./style.css"
 import App from "./App.vue"
 import router from "./router"
-import "./assets/sass/style.scss"
 import VueTippy from "vue-tippy"
+import "./style.css"
+import "./assets/sass/style.scss"
 import "tippy.js/dist/tippy.css"
 import "tippy.js/themes/light.css"
 

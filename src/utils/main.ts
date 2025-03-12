@@ -37,6 +37,7 @@ export const calculateMainLayout = () => {
 
 export const toggleSidebar = () => {
   const btn = document.getElementById("btnToggleSidebar")
+  const mbBtn = document.getElementById("mbBtnCloseSidebar")
   const sidebar: any = document.getElementById("Sidebar")
   const root: any = document.getElementById("MainLayout")
   const sidebarWidth = sidebar.clientWidth
@@ -53,6 +54,21 @@ export const toggleSidebar = () => {
         root.style.marginLeft = "0"
         sidebar.style.transform = "translateX(-150%)"
         sidebar.classList.add("is-translate")
+      }
+    })
+  } else {
+    sidebar.classList.add("is-translate")
+
+    mbBtn?.addEventListener("click", () => {
+      root.style.marginLeft = "0"
+      sidebar.style.transform = "translateX(-150%)"
+      sidebar.classList.add("is-translate")
+    })
+
+    btn?.addEventListener("click", () => {
+      if (sidebar.classList.contains("is-translate")) {
+        sidebar.style.transform = "translateX(0)"
+        sidebar.classList.remove("is-translate")
       }
     })
   }
