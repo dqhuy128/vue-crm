@@ -5,7 +5,11 @@ import { RouterLink } from "vue-router"
 <template>
   <div id="NavBar">
     <div class="flex flex-wrap items-center">
-      <router-link to="" class="inline-block bg-white rounded-[8px] p-2">
+      <button
+        id="btnToggleSidebar"
+        type="button"
+        class="inline-block bg-white rounded-[8px] p-2 cursor-pointer"
+      >
         <svg
           width="24"
           height="24"
@@ -18,7 +22,7 @@ import { RouterLink } from "vue-router"
             fill="#464661"
           />
         </svg>
-      </router-link>
+      </button>
 
       <div class="ms-auto inline-flex items-center gap-6">
         <router-link

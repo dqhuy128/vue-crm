@@ -6,6 +6,11 @@ import SetPasswordView from "../views/Login/SetPasswordView.vue"
 import DashboardPersonal from "../views/DashboardPersonal.vue"
 import DashboardReport from "../views/DashboardReport.vue"
 import SystemAdminUser from "../views/SystemAdminUser.vue"
+import MageDashboard from "@/assets/images/mage_dashboard.svg"
+import FluentData from "@/assets/images/fluent_data-pie-24-regular.svg"
+import FluentNote from "@/assets/images/fluent_note-24-regular.svg"
+import Iconoir from "@/assets/images/iconoir_timer-off.svg"
+import Proicons from "@/assets/images/proicons_timer.svg"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,7 +38,12 @@ const router = createRouter({
     {
       path: "/dashboard/personal",
       name: "dashboard-personal",
-      component: DashboardPersonal
+      component: DashboardPersonal,
+      meta: {
+        icon: MageDashboard,
+        title: "Dashboard",
+        nav: false
+      }
     },
     {
       path: "/dashboard/report",

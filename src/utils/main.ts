@@ -21,3 +21,39 @@ export const splitPath = (currentPath: any) => {
 
   return parentPath
 }
+
+export const calculateMainLayout = () => {
+  const root: any = document.getElementById("MainLayout")
+  const sidebar: any = document.getElementById("Sidebar")
+  const pad = 24
+
+  if (sidebar && screen.width >= 1280) {
+    const sidebarWidth = sidebar.clientWidth
+    const rootTotal = sidebarWidth + pad
+
+    root.style.marginLeft = rootTotal + "px"
+  }
+}
+
+export const toggleSidebar = () => {
+  const btn = document.getElementById("btnToggleSidebar")
+  const sidebar: any = document.getElementById("Sidebar")
+  const root: any = document.getElementById("MainLayout")
+  const sidebarWidth = sidebar.clientWidth
+  const pad = 24
+  const rootTotal = sidebarWidth + pad
+
+  if (sidebar && screen.width >= 1280) {
+    btn?.addEventListener("click", () => {
+      if (sidebar.classList.contains("is-translate")) {
+        root.style.marginLeft = rootTotal + "px"
+        sidebar.style.transform = "translateX(0)"
+        sidebar.classList.remove("is-translate")
+      } else {
+        root.style.marginLeft = "0"
+        sidebar.style.transform = "translateX(-150%)"
+        sidebar.classList.add("is-translate")
+      }
+    })
+  }
+}
