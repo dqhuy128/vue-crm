@@ -13,6 +13,7 @@ export const uppercasedFirstWord = (path: any) => {
 }
 
 export const splitPath = (currentPath: any) => {
+  console.log(currentPath,'currentPath');
   // Extract parent path (the first segment of the path)
   const parentPath = currentPath.split("/")[1]
     ? `/${currentPath.split("/")[1]}`

@@ -26,6 +26,11 @@ const router = createRouter({
       path: "/systemadmin-user",
       name: "systemadmin-user",
       component: SystemAdminUser
+    },
+    {
+      path: "/permit",
+      name: "permit",
+      component: () => import("../views/PermitView.vue")
     }
   ]
 })
