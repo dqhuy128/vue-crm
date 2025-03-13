@@ -1,115 +1,88 @@
 <template>
-  <div v-show="isVisible" class="modal-overlay" @click.self="closeModal">
-    <div
-      class="modal-content relative max-md:mx-1.5"
-      :class="{ 'modal-enter': isVisible, 'modal-leave': !isVisible }"
-    >
-      <button
-        @click="closeModal"
-        class="absolute right-6 top-6 z-10 cursor-pointer"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-        >
-          <path
-            d="M12 13.4L7.10005 18.3C6.91672 18.4834 6.68338 18.575 6.40005 18.575C6.11672 18.575 5.88338 18.4834 5.70005 18.3C5.51672 18.1167 5.42505 17.8834 5.42505 17.6C5.42505 17.3167 5.51672 17.0834 5.70005 16.9L10.6 12L5.70005 7.10005C5.51672 6.91672 5.42505 6.68338 5.42505 6.40005C5.42505 6.11672 5.51672 5.88338 5.70005 5.70005C5.88338 5.51672 6.11672 5.42505 6.40005 5.42505C6.68338 5.42505 6.91672 5.51672 7.10005 5.70005L12 10.6L16.9 5.70005C17.0834 5.51672 17.3167 5.42505 17.6 5.42505C17.8834 5.42505 18.1167 5.51672 18.3 5.70005C18.4834 5.88338 18.575 6.11672 18.575 6.40005C18.575 6.68338 18.4834 6.91672 18.3 7.10005L13.4 12L18.3 16.9C18.4834 17.0834 18.575 17.3167 18.575 17.6C18.575 17.8834 18.4834 18.1167 18.3 18.3C18.1167 18.4834 17.8834 18.575 17.6 18.575C17.3167 18.575 17.0834 18.4834 16.9 18.3L12 13.4Z"
-            fill="#464661"
-          />
-        </svg>
-      </button>
-      <slot></slot>
+  <transition name="modal-animation">
+    <div v-show="modalActive" class="modal">
+      <transition name="modal-animation-inner">
+        <div v-show="modalActive" class="modal-inner" :class="maxWidth">
+          <!-- Modal Content -->
+          <slot />
+          <button @click="close" type="button" class="absolute right-4 top-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M11.9998 13.4L7.0998 18.3C6.91647 18.4833 6.68314 18.575 6.3998 18.575C6.11647 18.575 5.88314 18.4833 5.6998 18.3C5.51647 18.1167 5.4248 17.8833 5.4248 17.6C5.4248 17.3167 5.51647 17.0833 5.6998 16.9L10.5998 12L5.6998 7.1C5.51647 6.91667 5.4248 6.68334 5.4248 6.4C5.4248 6.11667 5.51647 5.88334 5.6998 5.7C5.88314 5.51667 6.11647 5.425 6.3998 5.425C6.68314 5.425 6.91647 5.51667 7.0998 5.7L11.9998 10.6L16.8998 5.7C17.0831 5.51667 17.3165 5.425 17.5998 5.425C17.8831 5.425 18.1165 5.51667 18.2998 5.7C18.4831 5.88334 18.5748 6.11667 18.5748 6.4C18.5748 6.68334 18.4831 6.91667 18.2998 7.1L13.3998 12L18.2998 16.9C18.4831 17.0833 18.5748 17.3167 18.5748 17.6C18.5748 17.8833 18.4831 18.1167 18.2998 18.3C18.1165 18.4833 17.8831 18.575 17.5998 18.575C17.3165 18.575 17.0831 18.4833 16.8998 18.3L11.9998 13.4Z"
+                fill="#464661"
+              />
+            </svg>
+          </button>
+        </div>
+      </transition>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
-import { ref, watch } from "vue"
-
 export default {
-  props: {
-    isVisible: {
-      type: Boolean,
-      required: true
-    },
-    closeModal: {
-      type: Function,
-      required: true
+  props: ["modalActive", "maxWidth"],
+  setup(props, { emit }) {
+    const close = () => {
+      emit("close")
     }
-  },
-  setup(props) {
-    const isVisible = ref(props.isVisible)
-    watch(
-      () => props.isVisible,
-      (newVal) => {
-        isVisible.value = newVal
-      }
-    )
 
-    return {
-      isVisible
-    }
+    return { close }
   }
 }
 </script>
 
-<style scoped>
-.modal-overlay {
+<style lang="scss" scoped>
+.modal-animation-enter-active,
+.modal-animation-leave-active {
+  transition: opacity 0.3s cubic-bezier(0.52, 0.02, 0.19, 1.02);
+}
+
+.modal-animation-enter-from,
+.modal-animation-leave-to {
+  opacity: 0;
+}
+
+.modal-animation-inner-enter-active {
+  transition: all 0.3s cubic-bezier(0.52, 0.02, 0.19, 1.02) 0.15s;
+}
+
+.modal-animation-inner-leave-active {
+  transition: all 0.3s cubic-bezier(0.52, 0.02, 0.19, 1.02);
+}
+
+.modal-animation-inner-enter-from {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.modal-animation-inner-leave-to {
+  transform: scale(0.8);
+}
+
+.modal {
+  height: 100%;
+  width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 10000;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: opacity 0.3s ease;
-  opacity: 0;
-  visibility: hidden;
-}
-
-.modal-content {
-  border-radius: 24px;
-  background: #fff;
-  width: 100%;
-  max-width: 670px;
-  padding: 6px;
-  transform: scale(0.9);
-
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
-
-  opacity: 0;
-  max-height: 95vh;
+  background-color: rgba(0, 0, 0, 0.5);
   overflow-y: auto;
-  box-sizing: border-box;
-  transition-delay: 1s !important;
-}
 
-.modal-enter {
-  opacity: 1;
-  transform: scale(1);
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
-}
-
-.modal-leave {
-  opacity: 0;
-  transform: scale(0.9);
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
-}
-
-.modal-overlay {
-  visibility: visible;
-  opacity: 1;
+  &-inner {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    margin: 1.75rem auto;
+    min-height: calc(100% - 1.75rem * 2);
+  }
 }
 </style>

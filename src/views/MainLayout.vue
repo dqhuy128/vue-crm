@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted } from "vue"
+import { ref, onMounted } from "vue"
 import Navbar from "../components/Navbar.vue"
-import Breadcrums from "../components/Breadcrums.vue"
+import Breadcrums from "../components/BreadcrumsNew.vue"
 import Sidebar from "../components/Sidebar.vue"
 import { calculateMainLayout, toggleSidebar } from "../utils/main.ts"
 
@@ -9,6 +9,17 @@ onMounted(() => {
   calculateMainLayout()
   toggleSidebar()
 })
+
+const breadcrumbsList = ref([
+  {
+    name: "Home",
+    path: "/"
+  },
+  {
+    name: "Dashboard",
+    path: "/dashboard"
+  }
+])
 </script>
 
 <template>
@@ -18,8 +29,8 @@ onMounted(() => {
 
       <div id="MainLayout" class="main-layout grow">
         <Navbar />
-        <Breadcrums>
-          <slot name="breadcrumb"></slot>
+        <Breadcrums :breadcrumbList="breadcrumbsList" path="/">
+          <PageTitle> Dashboard </PageTitle>
         </Breadcrums>
         <slot />
       </div>

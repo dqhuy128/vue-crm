@@ -12,6 +12,7 @@
       "vite/client",
       "vue/ref-macros"
     ],
+    "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     }
