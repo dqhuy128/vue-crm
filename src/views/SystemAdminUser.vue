@@ -85,14 +85,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap items-center mb-3 mt-5">
+    <div class="flex flex-wrap items-center mt-5 mb-3">
       <div
         class="text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách người dùng
       </div>
 
-      <div class="ms-auto inline-flex flex-wrap items-center gap-4">
+      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
         <button
           type="button"
           id="tableImport"
@@ -153,12 +153,12 @@
               >
                 <img
                   src="@/assets/images/si_user-fill.svg"
-                  class="w-full h-full object-cover"
+                  class="object-cover w-full h-full"
                   alt=""
                 />
               </div>
 
-              <div class="absolute right-0 bottom-0 z-10">
+              <div class="absolute bottom-0 right-0 z-10">
                 <img src="@/assets/images/ic-camera.svg" alt="" />
               </div>
             </div>
@@ -166,7 +166,7 @@
 
           <form action="" class="w-full mx-auto p-[24px_48px]">
             <div class="grid grid-cols-12 gap-6">
-              <div class="xl:col-span-4 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-4 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -183,7 +183,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-4 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-4 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -200,7 +200,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-4 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-4 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -217,7 +217,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-4 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-4 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -234,7 +234,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-4 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-4 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -251,7 +251,7 @@
                       name="dd/mm/yy"
                     />
                     <div
-                      class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                      class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
                     >
                       <img
                         src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -262,17 +262,23 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-4 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-4 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
                   >
                     Nhóm người dùng
                   </span>
+
+                  <MultipleSelect
+                    :options="optionsGroupUser"
+                    holder="Chọn nhóm người dùng"
+                    v-model="valueGroupUser.value1"
+                  ></MultipleSelect>
                 </div>
               </div>
 
-              <div class="xl:col-span-3 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-3 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -290,7 +296,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-3 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-3 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -300,7 +306,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-3 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-3 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -318,7 +324,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-3 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-3 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -336,7 +342,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-3 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-3 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -346,7 +352,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-3 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-3 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -356,7 +362,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-3 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-3 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -366,7 +372,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-3 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-3 md:col-span-6">
                 <div class="block">
                   <span
                     class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -376,7 +382,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -394,7 +400,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -412,7 +418,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-4 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-4 md:col-span-6">
                 <div class="block">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -422,7 +428,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-4 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-4 md:col-span-6">
                 <div class="block">
                   <span
                     class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -432,7 +438,7 @@
                 </div>
               </div>
 
-              <div class="xl:col-span-4 md:col-span-6 col-span-12">
+              <div class="col-span-12 xl:col-span-4 md:col-span-6">
                 <div class="block">
                   <span
                     class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -451,7 +457,7 @@
             </div>
 
             <div
-              class="flex items-stretch justify-center gap-6 text-center mt-10"
+              class="flex items-stretch justify-center gap-6 mt-10 text-center"
             >
               <button
                 type="submit"
@@ -477,6 +483,7 @@
 import { ref } from "vue"
 import MainLayout from "./MainLayout.vue"
 import Modal from "@/components/Modals.vue"
+import MultipleSelect from "@/components/MultiSelect.vue"
 import flatPickr from "vue-flatpickr-component"
 import { Vietnamese } from "flatpickr/dist/l10n/vn.js"
 import "flatpickr/dist/flatpickr.css"
@@ -484,19 +491,33 @@ import "flatpickr/dist/flatpickr.css"
 const dateState = ref<Record<string, any>>({
   date1: null
 })
+
 const configFlatpickr = ref({
   wrap: true, // set wrap to true only when using 'input-group'
   dateFormat: "d/m/Y",
   locale: Vietnamese // locale for this instance only
 })
 
-const modalActive = ref<Record<string, boolean>>({
+interface recordModal {
+  [key: string]: boolean
+}
+
+const modalActive = ref<recordModal>({
   modalNewUser: false
 })
 
 const toggleModal = (modalStateName: any) => {
   modalActive.value[modalStateName] = !modalActive.value[modalStateName]
 }
+
+interface recordSelection {
+  [key: string]: any
+}
+
+const valueGroupUser = ref<recordSelection>({
+  value1: null
+})
+const optionsGroupUser = ref(["list", "of", "options"])
 </script>
 
 <style lang="scss" scoped>
