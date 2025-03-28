@@ -5,12 +5,14 @@ import GetOtpView from "../views/Login/GetOtpView.vue"
 import SetPasswordView from "../views/Login/SetPasswordView.vue"
 import DashboardPersonal from "../views/DashboardPersonal.vue"
 import DashboardReport from "../views/DashboardReport.vue"
-import SystemAdminUser from "../views/SystemAdminUser.vue"
+import SystemUser from "../views/SystemAdmin/User.vue"
+import SystemPermission from "../views/SystemAdmin/Permission.vue"
+import SystemCateManagement from "../views/SystemAdmin/CateManagement.vue"
 import MageDashboard from "@/assets/images/mage_dashboard.svg"
-import FluentData from "@/assets/images/fluent_data-pie-24-regular.svg"
-import FluentNote from "@/assets/images/fluent_note-24-regular.svg"
-import Iconoir from "@/assets/images/iconoir_timer-off.svg"
-import Proicons from "@/assets/images/proicons_timer.svg"
+// import FluentData from "@/assets/images/fluent_data-pie-24-regular.svg"
+// import FluentNote from "@/assets/images/fluent_note-24-regular.svg"
+// import Iconoir from "@/assets/images/iconoir_timer-off.svg"
+// import Proicons from "@/assets/images/proicons_timer.svg"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -53,7 +55,17 @@ const router = createRouter({
     {
       path: "/systemadmin-user",
       name: "systemadmin-user",
-      component: SystemAdminUser
+      component: SystemUser
+    },
+    {
+      path: "/systemadmin-permission",
+      name: "systemadmin-permission",
+      component: SystemPermission
+    },
+    {
+      path: "/systemadmin-management",
+      name: "systemadmin-management",
+      component: SystemCateManagement
     },
     {
       path: "/permit",

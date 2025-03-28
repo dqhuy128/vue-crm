@@ -1,20 +1,24 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
   "compilerOptions": {
-    "target": "es5", // or whatever your target is
-    "lib": ["dom", "es2015"], // Include "dom" to enable browser-specific globals
+    "target": "esnext",
+    "module": "esnext",
     "strict": true,
-    "types": [
-      "vite/client",
-      "vue/ref-macros"
-    ],
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["vite/client", "vue"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     }
-  }
+  },
+  "include": [
+    "src/**/*",
+    "src/**/*.vue",
+    "shims-vue.d.ts"
+  ],
+  "exclude": ["node_modules"]
 }

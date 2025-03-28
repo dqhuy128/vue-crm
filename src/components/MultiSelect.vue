@@ -15,8 +15,8 @@ import Multiselect from "vue-multiselect"
 import "vue-multiselect/dist/vue-multiselect.min.css"
 
 const props = defineProps<{
-  modelValue: []
-  options: []
+  modelValue: any
+  options: any
   holder: string
 }>()
 
@@ -57,5 +57,36 @@ const internalValue = computed({
 
 .multiselect__select {
   height: 100%;
+
+  &::before {
+    top: 60%;
+  }
+}
+
+.multiselect__single {
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.multiselect__content-wrapper {
+  border-radius: 8px;
+  background: #fafafa;
+  border: none !important;
+}
+
+.multiselect__option--selected {
+  background: #d5e3e8;
+  color: #464661;
+}
+
+.multiselect__option {
+  padding: 8px;
+  min-height: 25px;
+  font-size: 14px;
+
+  &--highlight {
+    background: #d5e3e8;
+    color: #464661;
+  }
 }
 </style>

@@ -52,9 +52,9 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap items-center mt-5 mb-3">
+    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
       <div
-        class="text-[#464661] font-inter text-[20px] font-bold leading-normal"
+        class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách nghỉ phép
       </div>
@@ -172,7 +172,6 @@
 <script lang="ts" setup>
 import MainLayout from "./MainLayout.vue"
 import BreadcrumsNew from "../components/BreadcrumsNew.vue"
-import { cloneDeep } from "lodash-es"
 import { reactive, ref } from "vue"
 import type { UnwrapRef } from "vue"
 interface Breadcrumb {
@@ -223,7 +222,6 @@ const columns = [
     title: "Thao tác",
     dataIndex: "actions",
     width: 130
-
   }
 ]
 interface DataItem {
@@ -267,6 +265,19 @@ const save = (key: string) => {
 }
 const cancel = (key: string) => {
   delete editableData[key]
+}
+
+function cloneDeep(arg0: {
+  key: string
+  stt: string
+  startDate: string
+  endDate: string
+  reason: string
+  session: string
+  status: string
+  actions: string[]
+}): any {
+  throw new Error("Function not implemented.")
 }
 </script>
 

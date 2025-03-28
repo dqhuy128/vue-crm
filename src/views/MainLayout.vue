@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue"
 import Navbar from "../components/Navbar.vue"
 import Breadcrums from "../components/BreadcrumsNew.vue"
 import Sidebar from "../components/Sidebar.vue"
-import { calculateMainLayout, toggleSidebar } from "../utils/main.ts"
+import { calculateMainLayout, toggleSidebar } from "@/utils/main"
 
 onMounted(() => {
   calculateMainLayout()
@@ -24,7 +24,7 @@ const breadcrumbsList = ref([
 
 <template>
   <div class="py-7 px-6 bg-[#E9F0F4] min-h-[100vh] flex flex-col items-center">
-    <div class="flex flex-wrap gap-6 w-full h-full">
+    <div class="flex flex-wrap w-full h-full gap-6">
       <Sidebar />
 
       <div id="MainLayout" class="main-layout grow">
