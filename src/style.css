@@ -1,0 +1,16 @@
+@import "tailwindcss";
+/* @import "../tailwind.config.js"; */
+
+/* custom breakpoint */
+@theme {
+  --breakpoint-xxl: 1440px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-lg: 992px;
+  --breakpoint-md: 768px;
+}
+
+@theme {
+  --color-main: #013878;
+  --font-inter: "Inter";
+  --shadow-hoverinset: inset 0 200px 0 #0000002d;
+}
