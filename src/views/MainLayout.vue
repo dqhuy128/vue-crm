@@ -38,8 +38,4 @@ const breadcrumbsList = ref([
   </div>
 </template>
 
-<style lang="scss" scoped>
-.main-layout {
-  transition: all 0.2s;
-}
-</style>
+<style lang="scss" scoped></style>

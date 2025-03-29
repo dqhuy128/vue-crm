@@ -141,7 +141,7 @@ const togglePasswordVisibility = () => {
 
     <Modal
       @close="toggleModal('modalUserInfo')"
-      :modalActive="true"
+      :modalActive="modalActive.modalUserInfo"
       maxWidth="max-w-[702px]"
     >
       <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">

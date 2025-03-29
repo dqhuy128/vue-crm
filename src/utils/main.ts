@@ -44,32 +44,51 @@ export const toggleSidebar = () => {
   const pad = 24
   const rootTotal = sidebarWidth + pad
 
+  // if (sidebar.classList.contains('isTranslate')) {
+  //   layout.style.marginLeft = sidebar.offsetWidth + 24 + 'px'
+  //   layout.style.transition = 'margin .2s'
+  //   sidebar.style.transform = 'translateX(0%)'
+  //   sidebar.style.transition = 'transform .2s'
+  //   sidebar.classList.remove('isTranslate')
+  // } else {
+  //   layout.style.marginLeft = 0
+  //   layout.style.transition = 'margin .2s'
+  //   sidebar.style.transform = 'translateX(-150%)'
+  //   sidebar.style.transition = 'transform .2s'
+  //   sidebar.classList.add('isTranslate')
+  // }
+
   if (sidebar && screen.width >= 1280) {
     btn?.addEventListener("click", () => {
       if (sidebar.classList.contains("is-translate")) {
         root.style.marginLeft = rootTotal + "px"
-        sidebar.style.transform = "translateX(0)"
+        root.style.transition = "margin .3s"
+        sidebar.style.transform = "translateX(0%)"
+        sidebar.style.transition = "transform .3s"
         sidebar.classList.remove("is-translate")
       } else {
         root.style.marginLeft = "0"
+        root.style.transition = "margin .3s"
         sidebar.style.transform = "translateX(-150%)"
+        sidebar.style.transition = "transform .3s"
         sidebar.classList.add("is-translate")
       }
     })
-  } else {
-    sidebar.classList.add("is-translate")
-
-    mbBtn?.addEventListener("click", () => {
-      root.style.marginLeft = "0"
-      sidebar.style.transform = "translateX(-150%)"
-      sidebar.classList.add("is-translate")
-    })
-
-    btn?.addEventListener("click", () => {
-      if (sidebar.classList.contains("is-translate")) {
-        sidebar.style.transform = "translateX(0)"
-        sidebar.classList.remove("is-translate")
-      }
-    })
   }
+  // else {
+  //   sidebar.classList.add("is-translate")
+
+  //   mbBtn?.addEventListener("click", () => {
+  //     root.style.marginLeft = "0"
+  //     sidebar.style.transform = "translateX(-150%)"
+  //     sidebar.classList.add("is-translate")
+  //   })
+
+  //   btn?.addEventListener("click", () => {
+  //     if (sidebar.classList.contains("is-translate")) {
+  //       sidebar.style.transform = "translateX(0)"
+  //       sidebar.classList.remove("is-translate")
+  //     }
+  //   })
+  // }
 }
