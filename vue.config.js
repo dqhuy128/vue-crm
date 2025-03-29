@@ -6,5 +6,6 @@ module.exports = {
         additionalData: `@import "@/assets/sass/style.scss"`
       }
     }
-  }
+  },
+  publicPath: process.env.NODE_ENV === "production" ? "/vue-crm/" : "/"
 }
