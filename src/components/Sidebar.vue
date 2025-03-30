@@ -27,7 +27,7 @@
         <img
           src="@/assets/images/logo-sidebar.png"
           alt=""
-          class="max-w-full w-auto h-auto object-scale-down"
+          class="object-scale-down w-auto h-auto max-w-full"
         />
       </router-link>
     </div>
@@ -218,7 +218,6 @@ const isDropdownOpen = (idx: any) => {
   left: 0;
   z-index: 99;
   max-width: 240px;
-  transition: all 0.2s;
 
   @media (min-width: 1280px) {
     top: 30px;

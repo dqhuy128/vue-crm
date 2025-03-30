@@ -50,7 +50,7 @@ const togglePasswordVisibility = () => {
         </svg>
       </button>
 
-      <div class="inline-flex items-center gap-6 ms-auto">
+      <div class="inline-flex items-center gap-3 md:gap-6 ms-auto">
         <router-link
           to=""
           class="relative inline-block bg-white rounded-[8px] p-2"

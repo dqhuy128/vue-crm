@@ -74,21 +74,54 @@ export const toggleSidebar = () => {
         sidebar.classList.add("is-translate")
       }
     })
+  } else {
+    sidebar.classList.add("is-translate")
+
+    mbBtn?.addEventListener("click", () => {
+      sidebar.style.transform = "translateX(-150%)"
+      sidebar.style.transition = "transform .3s"
+      sidebar.classList.add("is-translate")
+    })
+
+    btn?.addEventListener("click", () => {
+      if (sidebar.classList.contains("is-translate")) {
+        sidebar.style.transform = "translateX(0%)"
+        sidebar.style.transition = "transform .3s"
+        sidebar.classList.remove("is-translate")
+      }
+    })
   }
-  // else {
-  //   sidebar.classList.add("is-translate")
+}
 
-  //   mbBtn?.addEventListener("click", () => {
-  //     root.style.marginLeft = "0"
-  //     sidebar.style.transform = "translateX(-150%)"
-  //     sidebar.classList.add("is-translate")
-  //   })
+export const tableMagic = () => {
+  const table = document.getElementById("tableMagic")
 
-  //   btn?.addEventListener("click", () => {
-  //     if (sidebar.classList.contains("is-translate")) {
-  //       sidebar.style.transform = "translateX(0)"
-  //       sidebar.classList.remove("is-translate")
-  //     }
-  //   })
-  // }
+  if (table) {
+    console.log("table active")
+    const headerCells = document.querySelectorAll(".header .cell")
+    const bodyRows = document.querySelectorAll(".table-item")
+    const allRows = [document.querySelector(".header"), ...bodyRows]
+
+    // Tính toán độ rộng tối đa của từng cột
+    const columnWidths = Array.from(headerCells).map((cell) => cell.scrollWidth)
+
+    allRows.forEach((row: any) => {
+      const cells = row.querySelectorAll(".cell")
+      cells.forEach((cell: any, index: any) => {
+        const contentWidth = cell.scrollWidth
+        if (contentWidth > columnWidths[index]) {
+          columnWidths[index] = contentWidth
+        }
+      })
+    })
+
+    // Áp dụng độ rộng cho tất cả các cột
+    allRows.forEach((row: any) => {
+      const cells = row.querySelectorAll(".cell")
+      cells.forEach((cell: any, index: any) => {
+        cell.style.flex = `0 0 ${columnWidths[index]}px`
+        cell.style.minWidth = `${columnWidths[index]}px`
+      })
+    })
+  }
 }

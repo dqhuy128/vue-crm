@@ -134,6 +134,8 @@
       </div>
     </div>
 
+    <Table></Table>
+
     <Modal
       @close="toggleModal('modalNewUser')"
       :modalActive="modalActive.modalNewUser"
@@ -555,6 +557,7 @@ import MultipleSelect from "@/components/MultiSelect.vue"
 import flatPickr from "vue-flatpickr-component"
 import { Vietnamese } from "flatpickr/dist/l10n/vn.js"
 import "flatpickr/dist/flatpickr.css"
+import Table from "@/components/Table.vue"
 
 const dateState = ref<Record<string, any>>({
   date1: null,
