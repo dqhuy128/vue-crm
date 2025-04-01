@@ -12,31 +12,6 @@
                 <img src="@/assets/images/tb-sort.svg" alt="" />
               </button>
             </div>
-
-            <div class="tb-dropdown" v-if="column.hasSelected">
-              <button type="button" class="tb-dropdown-button">
-                <!-- <img src="images/asset/tb-nav.svg" alt="" /> -->
-              </button>
-
-              <div
-                class="tb-dropdown-menu border border-solid border-[#ECECEC] w-full"
-                style="display: none"
-              >
-                <div
-                  class="item"
-                  onclick="(e) => e.stopPropagation()"
-                  v-for="i in 9"
-                >
-                  <input type="checkbox" name="" :id="'showID5' + i" />
-                  <label
-                    :for="'showID5' + i"
-                    class="text-[#363636] text-[12px] font-normal"
-                  >
-                    Option {{ i }}
-                  </label>
-                </div>
-              </div>
-            </div>
           </div>
           <div class="cell edit">Edit</div>
         </div>
@@ -49,20 +24,9 @@
               v-for="(item, index) in tbbody"
               :key="index"
             >
-              <!-- bg-blue , bg-green , bg-red , bg-purple -->
-              <div
-                class="cell"
-                :class="{ 'bg-blue': id === 1 }"
-                v-for="(data, id) in item.data"
-                :key="id"
-              >
-                <template v-if="!data.hasLink">
-                  {{ data.title }}
-                </template>
-
-                <template v-else="">
-                  <a href=""> {{ data.title }} </a>
-                </template>
+              <!-- bg-blue , bg-green , bg-red , bg-purple , :class="{ 'bg-blue': id === 1 }"-->
+              <div class="cell" v-for="(data, id) in item.data" :key="id">
+                {{ data.title }}
               </div>
 
               <div class="cell edit edit-body">
@@ -187,154 +151,17 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive } from "vue"
+import { onMounted } from "vue"
 import { tableMagic } from "../utils/main"
+
+defineProps<{
+  tbhead: any
+  tbbody: any
+}>()
 
 onMounted(() => {
   tableMagic()
 })
-
-const tbhead = reactive([
-  {
-    title: "STT",
-    hasSelected: false,
-    hasSort: false
-  },
-  {
-    title: "Phân khu",
-    hasSelected: true,
-    hasSort: false
-  },
-  {
-    title: "Mã căn",
-    hasSelected: false,
-    hasSort: false
-  },
-  {
-    title: "Loại hình",
-    hasSelected: true,
-    hasSort: false
-  },
-  {
-    title: "TCBG",
-    hasSelected: true,
-    hasSort: false
-  },
-  {
-    title: "Hướng",
-    hasSelected: true,
-    hasSort: false
-  },
-  {
-    title: "KT đất",
-    hasSelected: true,
-    hasSort: true
-  },
-  {
-    title: "DT đất",
-    hasSelected: false,
-    hasSort: true
-  },
-  {
-    title: "DTXD",
-    hasSelected: false,
-    hasSort: true
-  },
-  {
-    title: "Giá full",
-    hasSelected: false,
-    hasSort: false
-  },
-  {
-    title: "TTS",
-    hasSelected: false,
-    hasSort: false
-  },
-  {
-    title: "Thủ tục ký",
-    hasSelected: true,
-    hasSort: false
-  },
-  {
-    title: "Quỹ DT",
-    hasSelected: true,
-    hasSort: false
-  },
-  {
-    title: "Giờ bank FI",
-    hasSelected: true,
-    hasSort: false
-  },
-  {
-    title: "DL",
-    hasSelected: true,
-    hasSort: false
-  },
-  {
-    title: "Đơn giá",
-    hasSelected: true,
-    hasSort: false
-  },
-  {
-    title: "Link PTG",
-    hasSelected: false,
-    hasSort: false
-  },
-  {
-    title: "Hình ảnh đánh dấu",
-    hasSelected: false,
-    hasSort: false
-  },
-  {
-    title: "CSBH",
-    hasSelected: false,
-    hasSort: false
-  },
-  {
-    title: "Quà tặng",
-    hasSelected: false,
-    hasSort: false
-  },
-  {
-    title: "Tình trạng cọc",
-    hasSelected: false,
-    hasSort: false
-  },
-  {
-    title: "Ưu tiên",
-    hasSelected: true,
-    hasSort: false
-  }
-])
-
-const tbbody = reactive([
-  {
-    data: [
-      { title: "01", hasLink: false },
-      { title: "Ánh Dương", hasLink: false },
-      { title: "AD2-39", hasLink: false },
-      { title: "Liên kết", hasLink: false },
-      { title: "Thổ", hasLink: false },
-      { title: "ĐB", hasLink: false },
-      { title: "5x20", hasLink: false },
-      { title: "100", hasLink: false },
-      { title: "380", hasLink: false },
-      { title: "16.234.556.000", hasLink: false },
-      { title: "10.567", hasLink: false },
-      { title: "VBCN", hasLink: false },
-      { title: "Phú Thọ Land", hasLink: false },
-      { title: "VPB", hasLink: false },
-      { title: "THP", hasLink: false },
-      { title: "100", hasLink: false },
-      { title: "Link", hasLink: true },
-      { title: "Link", hasLink: true },
-      { title: "17/01/2025", hasLink: false },
-      { title: "KCKTG", hasLink: false },
-      { title: "Đã ký cọc", hasLink: false },
-      { title: "Ưu tiên cao", hasLink: false }
-    ]
-  }
-])
 </script>
 
 <style lang="scss">

@@ -135,7 +135,7 @@
       </div>
     </div>
 
-    <Table></Table>
+    <Table :tbhead="tbhead" :tbbody="tbbody"></Table>
 
     <Modal
       @close="toggleModal('modalNewUser')"
@@ -620,7 +620,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
+import { reactive, ref } from "vue"
 import MainLayout from "../MainLayout.vue"
 import Modal from "@/components/Modals.vue"
 import MultipleSelect from "@/components/MultiSelect.vue"
@@ -668,6 +668,56 @@ const valueGroupUser = ref<recordSelection>({
   value6: null
 })
 const optionsGroupUser = ref(["Option 1", "Option 2", "Option3", "Option 4"])
+
+const tbhead = reactive([
+  {
+    title: "STT",
+    hasSort: false
+  },
+  {
+    title: "Mã NV",
+    hasSort: true
+  },
+  {
+    title: "Họ và tên",
+    hasSort: true
+  },
+  {
+    title: "Số điện thoại",
+    hasSort: false
+  },
+  {
+    title: "Email",
+    hasSort: false
+  },
+  {
+    title: "Chức vụ",
+    hasSort: false
+  },
+  {
+    title: "Bộ phận",
+    hasSort: false
+  },
+  {
+    title: "Địa điểm",
+    hasSort: false
+  }
+])
+
+const tbbody = reactive([
+  {
+    data: [
+      { title: "01" },
+      { title: "00123" },
+      { title: "Nguyễn Đức Hiếu" },
+      { title: "0906668888" },
+      { title: "hieund@skygroup.com" },
+      { title: "Nhân viên" },
+      { title: "Phòng Marketing" },
+      { title: "Hà Nội " }
+    ]
+  }
+])
 </script>
 
 <style lang="scss" scoped>

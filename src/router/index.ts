@@ -15,7 +15,7 @@ import MageDashboard from "@/assets/images/mage_dashboard.svg"
 // import Proicons from "@/assets/images/proicons_timer.svg"
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     {
       path: "/",
