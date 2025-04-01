@@ -110,6 +110,7 @@
           type="button"
           id="tableExport"
           class="max-md:flex-auto inline-flex items-end justify-center max-md:items-center max-md:gap-1 gap-2 rounded-[24px] border border-solid border-[#EDEDF6] p-[7px_24px] max-md:p-[7px_12px] bg-white cursor-pointer transition hover:shadow-hoverinset"
+          @click="toggleModal('modalExport')"
         >
           <img src="@/assets/images/bx_export.svg" alt="" />
           <span
@@ -546,6 +547,75 @@
         </form>
       </div>
     </Modal>
+
+    <Modal
+      @close="toggleModal('modalExport')"
+      :modalActive="modalActive.modalExport"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          EXport người dùng
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center max-w-[280px] mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
+        >
+          Bạn có chắc muốn export danh sách người dùng?
+        </div>
+
+        <div class="flex flex-wrap items-stretch gap-6">
+          <a
+            href=""
+            class="inline-flex items-center justify-center flex-auto border border-solid border-[#EDEDF6] rounded-lg bg-white p-1.5 text-[#464661] text-[16px] font-semibold uppercase max-w-[175px] hover:shadow-hoverinset transition"
+            >KHÔNG</a
+          >
+          <a
+            href=""
+            class="inline-flex items-center justify-center flex-auto border border-solid border-[#013878] rounded-lg bg-[#013878] p-1.5 text-white text-[16px] font-semibold uppercase max-w-[175px] hover:shadow-hoverinset transition"
+            >CÓ</a
+          >
+        </div>
+      </div>
+    </Modal>
+
+    <Modal
+      @close="toggleModal('modalError')"
+      :modalActive="modalActive.modalError"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo lỗi
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
+        >
+          Export danh sách người dùng gặp lỗi!
+        </div>
+      </div>
+    </Modal>
   </MainLayout>
 </template>
 
@@ -576,7 +646,9 @@ interface recordModal {
 }
 
 const modalActive = ref<recordModal>({
-  modalNewUser: false
+  modalNewUser: false,
+  modalExport: false,
+  modalError: false
 })
 
 const toggleModal = (modalStateName: any) => {

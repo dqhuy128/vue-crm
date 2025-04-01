@@ -97,7 +97,6 @@ export const tableMagic = () => {
   const table = document.getElementById("tableMagic")
 
   if (table) {
-    console.log("table active")
     const headerCells = document.querySelectorAll(".header .cell")
     const bodyRows = document.querySelectorAll(".table-item")
     const allRows = [document.querySelector(".header"), ...bodyRows]

@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col w-full h-full">
-    <div id="tableMagic" class="table-magic max-md:mb-4">
+  <div class="flex flex-col h-full">
+    <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
       <div class="relative table-container">
         <!-- Example column -->
         <div id="tableRowHeader" class="table-row header">
@@ -68,9 +68,11 @@
               <div class="cell edit edit-body">
                 <button type="button" class="cell-btn-edit">
                   <!-- <img src="images/asset/svg-edit.svg" alt="" /> -->
+                  zxczxc
                 </button>
                 <button type="button" class="cell-btn-delete">
                   <!-- <img src="images/asset/svg-delete.svg" alt="" /> -->
+                  123123
                 </button>
               </div>
             </div>
@@ -105,21 +107,17 @@
     <div
       class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
     >
-      <div
-        class="relative flex items-center gap-1 p-[8px_12px] bg-white !rounded-[8px] md:!min-w-[186px] text-[#363636] text-[12px] font-normal"
-      >
+      <div class="relative">
         <select
           name=""
-          id=""
-          class="appearance-none text-[#363636] text-[12px] font-normal"
+          id="selectPerPage"
+          class="appearance-none cursor-pointer p-[8px_12px] bg-white rounded-[24px] md:min-w-[264px] text-[#464661] text-[14px] font-normal border border-solid border-[#EDEDF6]"
         >
-          <option value="">20</option>
-          <option value="">40</option>
-          <option value="">30</option>
-          <option value="">10</option>
+          <option value="">20 bản ghi / trang</option>
+          <option value="">40 bản ghi / trang</option>
+          <option value="">30 bản ghi / trang</option>
+          <option value="">10 bản ghi / trang</option>
         </select>
-
-        <span>bản ghi / trang</span>
 
         <div
           class="max-md:hidden pointer-events-none absolute right-3 top-[50%] -translate-y-[50%]"
@@ -139,10 +137,8 @@
         </div>
       </div>
 
-      <div
-        class="md:ms-auto flex flex-wrap items-center gap-[8px] md:gap-[30px]"
-      >
-        <div class="text-[#363636] text-[12px] font-normal">
+      <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+        <div class="text-[#464661] text-[14px] font-normal">
           1 - 10 trong 10 kết quả
         </div>
 
@@ -167,7 +163,7 @@
             name=""
             value="1"
             id=""
-            class="rounded-[8px] bg-white w-[30px] h-[30px] inline-flex flex-col items-center justify-center text-center"
+            class="rounded-[8px] bg-white w-[32px] h-[32px] inline-flex flex-col items-center justify-center text-center text-[#464661] text-[16px] font-bold border border-solid border-[#909090]"
           />
 
           <a href="">
@@ -342,5 +338,5 @@ const tbbody = reactive([
 </script>
 
 <style lang="scss">
-@import "../styles/table.scss";
+@import "../styles/table.module.scss";
 </style>

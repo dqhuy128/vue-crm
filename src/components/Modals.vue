@@ -8,7 +8,7 @@
             <button
               @click="close"
               type="button"
-              class="absolute max-md:right-4 right-8 top-4"
+              class="absolute cursor-pointer max-md:right-4 right-8 top-4"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

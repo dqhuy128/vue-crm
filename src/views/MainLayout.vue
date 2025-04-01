@@ -23,11 +23,11 @@ const breadcrumbsList = ref([
 </script>
 
 <template>
-  <div class="py-7 px-6 bg-[#E9F0F4] min-h-[100vh] flex flex-col items-center">
-    <div class="flex flex-wrap w-full h-full gap-6">
-      <Sidebar />
+  <div class="bg-[#E9F0F4] min-h-[100vh] flex flex-col">
+    <Sidebar />
 
-      <div id="MainLayout" class="main-layout grow">
+    <div id="MainLayout" class="block px-6 main-layout py-7">
+      <div class="flex flex-col h-[calc(100vh-75px)]">
         <Navbar />
         <Breadcrums :breadcrumbList="breadcrumbsList" path="/">
           <PageTitle> Dashboard </PageTitle>
