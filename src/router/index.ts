@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router"
+import { useAuth } from "../composables/useAuth"
 import LoginView from "../views/Login/IndexView.vue"
 import GetMailView from "../views/Login/GetMailView.vue"
 import GetOtpView from "../views/Login/GetOtpView.vue"
@@ -73,6 +74,15 @@ const router = createRouter({
       component: () => import("../views/PermitView.vue")
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const { isAuthenticated } = useAuth()
+  if (to.path === "/dashboard" && !isAuthenticated.value) {
+    next("/login")
+  } else {
+    next()
+  }
 })
 
 export default router

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { RouterLink } from "vue-router"
+import { RouterLink, useRouter } from "vue-router"
 import { ref } from "vue"
+import { useAuth } from "../composables/useAuth"
 import Modal from "@/components/Modals.vue"
 
 interface recordModal {
@@ -25,6 +26,14 @@ const isPasswordVisible = ref(false)
 // Function to toggle the password visibility
 const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
+}
+
+const { user, logout, checkAuth } = useAuth()
+const router = useRouter()
+
+checkAuth()
+if (!user.value) {
+  router.push("/")
 }
 </script>
 
@@ -127,12 +136,12 @@ const togglePasswordVisibility = () => {
               >
                 Thông tin cá nhân
               </button>
-              <router-link
-                to=""
+              <button
+                @click="logout"
                 class="block text-[#464661] font-inter text-[16px] font-normal leading-normal p-2.5 hover:text-main transition"
               >
                 Đăng xuất
-              </router-link>
+              </button>
             </template>
           </tippy>
         </div>

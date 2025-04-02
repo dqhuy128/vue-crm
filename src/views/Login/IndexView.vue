@@ -1,18 +1,32 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
 import { calcBgBefore } from "../../lib/index"
-
-const password = ref("")
-const isPasswordVisible = ref(false)
-
-// Function to toggle the password visibility
-const togglePasswordVisibility = () => {
-  isPasswordVisible.value = !isPasswordVisible.value
-}
+import { useAuth } from "@/composables/useAuth"
+import { useRouter } from "vue-router"
 
 onMounted(() => {
   calcBgBefore()
 })
+
+const isPasswordVisible = ref(false)
+// Function to toggle the password visibility
+const togglePasswordVisibility = () => {
+  isPasswordVisible.value = !isPasswordVisible.value
+}
+const { login } = useAuth()
+const router = useRouter()
+const username = ref("")
+const password = ref("")
+const error = ref("")
+
+const handleLogin = async () => {
+  try {
+    await login({ username: username.value, password: password.value })
+    router.push("/dashboard/personal") // Chuyển hướng đến dashboard nếu thành công
+  } catch (err: any) {
+    error.value = err.message // Hiển thị lỗi nếu thất bại
+  }
+}
 </script>
 
 <template>
@@ -36,7 +50,7 @@ onMounted(() => {
               >
                 <img
                   src="@/assets/images/logo-login.png"
-                  class="max-w-full h-auto object-scale-down"
+                  class="object-scale-down h-auto max-w-full"
                   alt=""
                 />
               </div>
@@ -48,10 +62,10 @@ onMounted(() => {
                 crm skygroup
               </div>
 
-              <div class="w-full mx-auto mt-auto hidden md:block">
+              <div class="hidden w-full mx-auto mt-auto md:block">
                 <img
                   src="@/assets/images/login-frame.svg"
-                  class="max-w-full h-auto object-scale-down"
+                  class="object-scale-down h-auto max-w-full"
                   alt=""
                 />
               </div>
@@ -68,7 +82,11 @@ onMounted(() => {
                 đăng nhập
               </div>
 
-              <form action="" class="block w-full">
+              <form
+                action=""
+                class="block w-full"
+                @submit.prevent="handleLogin"
+              >
                 <div class="block mb-4">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -76,6 +94,7 @@ onMounted(() => {
                     Tên đăng nhập
                   </span>
                   <input
+                    v-model="username"
                     type="text"
                     name=""
                     id=""
@@ -102,7 +121,7 @@ onMounted(() => {
 
                     <button
                       @click="togglePasswordVisibility"
-                      type="button"
+                      type="submit"
                       class="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
                     >
                       <template v-if="isPasswordVisible">
@@ -121,6 +140,8 @@ onMounted(() => {
                     </button>
                   </div>
                 </div>
+
+                <div v-if="error" style="color: red">{{ error }}</div>
 
                 <div class="block text-end xl:mb-[70px] mb-[30px]">
                   <router-link
