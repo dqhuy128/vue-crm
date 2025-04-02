@@ -1,4 +1,5 @@
 // src/composables/useAuth.js
+import router from "@/router"
 import { ref } from "vue"
 
 const user: any = ref(null)
@@ -31,6 +32,7 @@ export function useAuth() {
     user.value = null
     isAuthenticated.value = false
     localStorage.removeItem("token")
+    router.push("/")
   }
 
   // Kiểm tra trạng thái đăng nhập khi tải lại trang
