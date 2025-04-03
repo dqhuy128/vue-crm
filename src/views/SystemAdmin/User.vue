@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="bg-white rounded-[24px] p-2.5">
       <form action="" class="flex flex-wrap items-stretch gap-4">
-        <div class="select-block grow max-md:flex-[100%]">
+        <div class="select-block grow max-lg:flex-[100%]">
           <select
             name=""
             id=""
@@ -14,7 +14,7 @@
           </select>
         </div>
 
-        <div class="select-block grow max-md:flex-[100%]">
+        <div class="select-block grow max-lg:flex-[100%]">
           <select
             name=""
             id=""
@@ -26,7 +26,7 @@
           </select>
         </div>
 
-        <div class="select-block grow max-md:flex-[100%]">
+        <div class="select-block grow max-lg:flex-[100%]">
           <select
             name=""
             id=""
@@ -38,7 +38,7 @@
           </select>
         </div>
 
-        <div class="select-block grow max-md:flex-[100%]">
+        <div class="select-block grow max-lg:flex-[100%]">
           <select
             name=""
             id=""
@@ -135,7 +135,7 @@
       </div>
     </div>
 
-    <Table :tbhead="tbhead" :tbbody="tbbody"></Table>
+    <Table :tbhead="tbhead" :tbbody="tbbody" justify="justify-between"></Table>
 
     <Modal
       @close="toggleModal('modalNewUser')"

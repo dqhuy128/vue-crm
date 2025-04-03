@@ -41,15 +41,21 @@
         flex-wrap: nowrap;
         gap: 15px;
         background: #fff;
-        padding: 18px 21px;
+        padding: 0 0 0 21px;
         margin-bottom: 4px;
 
         .cell {
+          justify-content: flex-start;
           color: #464661;
           font-size: 16px;
           font-style: normal;
           font-weight: 700;
           line-height: normal;
+          padding: 9px 0;
+
+          @media (max-width: 767px) {
+            font-size: 10px;
+          }
         }
       }
 
@@ -74,7 +80,11 @@
           font-size: 14px;
           font-style: normal;
           font-weight: 400;
-          line-height: normal;
+          line-height: 1;
+
+          @media (max-width: 767px) {
+            font-size: 10px;
+          }
         }
       }
     }
@@ -90,15 +100,11 @@
       line-height: normal;
       border-radius: 8px;
       background: #fff;
-      padding: 10px 21px;
+      padding: 0 0 0 21px;
       cursor: pointer;
 
       &:hover {
         background: #e3f7ff;
-
-        .cell.edit-body {
-          background: #e3f7ff;
-        }
       }
     }
   }
@@ -113,9 +119,32 @@
     align-items: center;
     gap: 8px;
     white-space: nowrap;
+    padding: 2px 0;
 
     &:not(.edit) {
       position: relative;
+    }
+
+    &.pinned {
+      position: sticky;
+      right: 0;
+      z-index: 11;
+      background: #fff;
+      padding-left: 10px !important;
+      box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.05);
+
+      & > * {
+        padding: 0;
+      }
+
+      .edit-body {
+        box-shadow: none;
+
+        [class*="cell-btn-"] {
+          width: 15px;
+          height: 15px;
+        }
+      }
     }
 
     &.edit {
@@ -124,14 +153,13 @@
       right: 0;
       z-index: 11;
       background: #fff;
-
       padding: 5px;
     }
 
     &.edit-body {
       // background: rgba(255, 255, 255, 0.6);
       background: white;
-      box-shadow: -10px 0 15px rgba(255, 255, 255, 0.5);
+      box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.05);
     }
 
     img {

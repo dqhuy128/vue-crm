@@ -3,7 +3,7 @@
     <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
       <div class="relative table-container">
         <!-- Example column -->
-        <div id="tableRowHeader" class="table-row header">
+        <div id="tableRowHeader" class="table-row header" :class="justify">
           <div class="cell" v-for="(column, index) in tbhead" :key="index">
             {{ column.title }}
 
@@ -13,7 +13,10 @@
               </button>
             </div>
           </div>
-          <div class="cell edit">Edit</div>
+          <div class="cell pinned">
+            <div class="cell status">Trạng thái</div>
+            <div class="cell edit">Edit</div>
+          </div>
         </div>
 
         <!-- Example row -->
@@ -23,21 +26,38 @@
               class="table-item"
               v-for="(item, index) in tbbody"
               :key="index"
+              :class="justify"
             >
               <!-- bg-blue , bg-green , bg-red , bg-purple , :class="{ 'bg-blue': id === 1 }"-->
               <div class="cell" v-for="(data, id) in item.data" :key="id">
                 {{ data.title }}
               </div>
 
-              <div class="cell edit edit-body">
-                <button type="button" class="cell-btn-edit">
-                  <!-- <img src="images/asset/svg-edit.svg" alt="" /> -->
-                  zxczxc
-                </button>
-                <button type="button" class="cell-btn-delete">
-                  <!-- <img src="images/asset/svg-delete.svg" alt="" /> -->
-                  123123
-                </button>
+              <div class="cell pinned pinned-body">
+                <div class="cell status status-green status-body">
+                  Đang hoạt động
+                </div>
+
+                <div class="cell edit edit-body">
+                  <button
+                    type="button"
+                    class="cursor-pointer cell-btn-view shrink-0"
+                  >
+                    <img src="@/assets/images/action-edit-1.svg" alt="" />
+                  </button>
+                  <button
+                    type="button"
+                    class="cursor-pointer cell-btn-edit shrink-0"
+                  >
+                    <img src="@/assets/images/action-edit-2.svg" alt="" />
+                  </button>
+                  <button
+                    type="button"
+                    class="cursor-pointer cell-btn-delete shrink-0"
+                  >
+                    <img src="@/assets/images/action-edit-3.svg" alt="" />
+                  </button>
+                </div>
               </div>
             </div>
           </template>
@@ -157,6 +177,7 @@ import { tableMagic } from "../utils/main"
 defineProps<{
   tbhead: any
   tbbody: any
+  justify?: any
 }>()
 
 onMounted(() => {
@@ -166,4 +187,46 @@ onMounted(() => {
 
 <style lang="scss">
 @import "../styles/table.module.scss";
+</style>
+
+<style lang="scss" scoped>
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #464661;
+  font-size: 10px !important;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  padding: 6px 10px !important;
+  border-radius: 24px;
+
+  @media (max-width: 767px) {
+    padding: 6px !important;
+    padding-left: 0 !important;
+  }
+
+  &-body {
+    @media (max-width: 767px) {
+      padding: 6px !important;
+      font-size: 7px !important;
+    }
+  }
+}
+
+.status-green {
+  border: 1px solid #12f13e;
+  background: #c4ffd0;
+}
+
+.status-red {
+  border: 1px solid #ff0000;
+  background: #ff00003d;
+}
+
+.status-gray {
+  border: 1px solid #9c9c9c;
+  background: #9c9c9c73;
+}
 </style>

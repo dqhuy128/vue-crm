@@ -27,7 +27,7 @@ const breadcrumbsList = ref([
     <Sidebar />
 
     <div id="MainLayout" class="block px-6 main-layout py-7">
-      <div class="flex flex-col h-[calc(100vh-75px)]">
+      <div class="flex flex-col lg:h-[calc(100vh-75px)]">
         <Navbar />
         <Breadcrums :breadcrumbList="breadcrumbsList" path="/">
           <PageTitle> Dashboard </PageTitle>

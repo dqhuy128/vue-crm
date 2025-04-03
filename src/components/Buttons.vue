@@ -14,7 +14,7 @@ defineProps<{
 <template>
   <div
     id="buttonList"
-    class="inline-flex flex-wrap items-center gap-1 bg-white rounded-[8px]"
+    class="inline-flex flex-wrap items-center gap-1 rounded-[8px]"
   >
     <router-link
       :to="`${splitPath(currentPath)}/personal`"

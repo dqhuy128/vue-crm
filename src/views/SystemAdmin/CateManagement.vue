@@ -12,7 +12,7 @@
           />
         </div>
 
-        <div class="select-block grow max-md:flex-[100%]">
+        <div class="select-block grow max-lg:flex-[100%]">
           <select
             name=""
             id=""
