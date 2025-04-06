@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import Dashboard from "./Dashboard.vue"
-import Ticket from "../components/Ticket.vue"
+import Buttons from "@/components/Buttons.vue"
+import MainLayout from "@/views/MainLayout.vue"
+import Ticket from "@/components/Ticket.vue"
 import iconTicket1 from "@/assets/images/ticket-icon-1.png"
 import iconTicket2 from "@/assets/images/ticket-icon-2.png"
 import iconTicket3 from "@/assets/images/ticket-icon-3.png"
@@ -81,7 +82,9 @@ const ticket: any = [
 </script>
 
 <template>
-  <Dashboard>
+  <MainLayout>
+    <Buttons :title="`active`" />
+
     <div class="mt-3"></div>
     <div class="grid grid-cols-12 gap-6">
       <div
@@ -92,5 +95,5 @@ const ticket: any = [
         <Ticket :ticketProps="[item.icon, item.title, item.ticketList]" />
       </div>
     </div>
-  </Dashboard>
+  </MainLayout>
 </template>

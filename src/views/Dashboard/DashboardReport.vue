@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import Dashboard from "./Dashboard.vue"
-import Ticket from "../components/Ticket.vue"
+import Buttons from "@/components/Buttons.vue"
+import MainLayout from "@/views/MainLayout.vue"
+import Ticket from "@/components/Ticket.vue"
 import iconTicket1 from "@/assets/images/ticket-icon-1.png"
 import iconTicket2 from "@/assets/images/ticket-icon-2.png"
 import iconTicket3 from "@/assets/images/ticket-icon-3.png"
 import iconTicket4 from "@/assets/images/ticket-icon-4.png"
 import { useRoute } from "vue-router"
-import SeachBox from "../components/SeachBox.vue"
+import SeachBox from "@/components/SeachBox.vue"
 import { ref, reactive } from "vue"
 import flatPickr from "vue-flatpickr-component"
 import "flatpickr/dist/flatpickr.css"
@@ -168,12 +169,14 @@ const dateRange: any = reactive({
 </script>
 
 <template>
-  <Dashboard>
+  <MainLayout>
+    <Buttons :title="`active`" />
+
     <div class="mt-3"></div>
 
     <div class="mb-3">
       <div class="grid grid-cols-12 gap-6">
-        <div class="lg:col-span-6 col-span-12">
+        <div class="col-span-12 lg:col-span-6">
           <SeachBox>
             <div
               class="relative flex items-center grow border border-solid border-[#EDEDF6] rounded-[24px] p-[10px_12px]"
@@ -193,7 +196,7 @@ const dateRange: any = reactive({
           </SeachBox>
         </div>
 
-        <div class="lg:col-span-6 col-span-12">
+        <div class="col-span-12 lg:col-span-6">
           <SeachBox>
             <div
               class="relative flex items-center grow border border-solid border-[#EDEDF6] rounded-[24px] p-[10px_12px]"
@@ -231,7 +234,7 @@ const dateRange: any = reactive({
         />
       </div>
     </div>
-  </Dashboard>
+  </MainLayout>
 </template>
 
 <style lang="scss">

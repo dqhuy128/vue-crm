@@ -1,32 +1,36 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
-import { calcBgBefore } from "../../lib/index"
-import { useAuth } from "@/composables/useAuth"
-import { useRouter } from "vue-router"
-
-onMounted(() => {
-  calcBgBefore()
-})
+import { ref, onMounted } from 'vue'
+import { calcBgBefore } from '@/lib/index'
+import { useAuthStore } from '@/stores/authStore'
+import { useRouter } from 'vue-router'
 
 const isPasswordVisible = ref(false)
 // Function to toggle the password visibility
 const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
 }
-const { login } = useAuth()
+
+const authStore = useAuthStore()
 const router = useRouter()
-const username = ref("")
-const password = ref("")
-const error = ref("")
+const username = ref('')
+const password = ref('')
+const error = ref('')
 
 const handleLogin = async () => {
   try {
-    await login({ username: username.value, password: password.value })
-    router.push("/dashboard/personal") // Chuyển hướng đến dashboard nếu thành công
-  } catch (err: any) {
-    error.value = err.message // Hiển thị lỗi nếu thất bại
+    await authStore.login({
+      username: username.value,
+      password: password.value
+    })
+    router.push('/dashboard/personal') // Chuyển hướng sau khi đăng nhập thành công
+  } catch (err) {
+    error.value = 'Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập.'
   }
 }
+
+onMounted(() => {
+  calcBgBefore()
+})
 </script>
 
 <template>
@@ -82,11 +86,7 @@ const handleLogin = async () => {
                 đăng nhập
               </div>
 
-              <form
-                action=""
-                class="block w-full"
-                @submit.prevent="handleLogin"
-              >
+              <form class="block w-full" @submit.prevent="handleLogin">
                 <div class="block mb-4">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -121,7 +121,7 @@ const handleLogin = async () => {
 
                     <button
                       @click="togglePasswordVisibility"
-                      type="submit"
+                      type="button"
                       class="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
                     >
                       <template v-if="isPasswordVisible">
@@ -141,7 +141,9 @@ const handleLogin = async () => {
                   </div>
                 </div>
 
-                <div v-if="error" style="color: red">{{ error }}</div>
+                <p v-if="error" class="my-2 text-sm text-red-600">
+                  {{ error }}
+                </p>
 
                 <div class="block text-end xl:mb-[70px] mb-[30px]">
                   <router-link

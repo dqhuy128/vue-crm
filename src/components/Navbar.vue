@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, useRouter } from "vue-router"
 import { ref } from "vue"
-import { useAuth } from "../composables/useAuth"
 import Modal from "@/components/Modals.vue"
 
 interface recordModal {
@@ -28,13 +27,7 @@ const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
 }
 
-const { user, logout, checkAuth } = useAuth()
 const router = useRouter()
-
-checkAuth()
-if (!user.value) {
-  router.push("/")
-}
 </script>
 
 <template>
@@ -137,7 +130,6 @@ if (!user.value) {
                 Thông tin cá nhân
               </button>
               <button
-                @click="logout"
                 class="block text-[#464661] font-inter text-[16px] font-normal leading-normal p-2.5 hover:text-main transition"
               >
                 Đăng xuất
