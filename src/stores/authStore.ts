@@ -12,7 +12,9 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(credentials: any) {
       try {
-        const response = await api.post('/user/login', credentials)
+        const response = await api.post('/user/login', credentials, {
+          headers: this.token ? { Authorization: `Bearer ${this.token}` } : {}
+        })
 
         const { access_token, user } = response.data
 
