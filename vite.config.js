@@ -14,9 +14,10 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://api.skygroupvn.com.vn',
+        target: 'https://api.skygroupvn.com.vn/api',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api')
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: false
       }
     }
   }

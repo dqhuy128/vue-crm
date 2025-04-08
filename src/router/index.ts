@@ -11,44 +11,49 @@ import SystemView from '@/views/SystemAdmin/SystemAdmin.vue'
 import SystemUser from '@/views/SystemAdmin/User.vue'
 import SystemPermission from '@/views/SystemAdmin/Permission.vue'
 import SystemCateManagement from '@/views/SystemAdmin/CateManagement.vue'
-import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/',
+      redirect: '/login'
+    },
+    {
+      path: '/login',
       name: 'Login',
-      component: LoginView
+      component: LoginView,
+      meta: { auth: false }
     },
     {
       path: '/register',
       name: 'Register',
-      component: RegisterView
+      component: RegisterView,
+      meta: { auth: false }
     },
     {
       path: '/getpass-mail',
       name: 'GetMail',
       component: GetMailView,
-      meta: { requiresAuth: true }
+      meta: { auth: false }
     },
     {
       path: '/getpass-otp',
       name: 'GetOtp',
       component: GetOtpView,
-      meta: { requiresAuth: true }
+      meta: { auth: false }
     },
     {
       path: '/setpass',
       name: 'SetPassword',
       component: SetPasswordView,
-      meta: { requiresAuth: true }
+      meta: { auth: true }
     },
     {
       path: '/dashboard',
       name: 'Dashboard',
       component: Dashboard,
-      meta: { requiresAuth: true },
+      meta: { auth: true },
       children: [
         {
           path: 'personal',
@@ -66,7 +71,7 @@ const router = createRouter({
       path: '/system',
       name: 'System',
       component: SystemView,
-      meta: { requiresAuth: true },
+      meta: { auth: true },
       children: [
         {
           path: 'user',
@@ -90,16 +95,18 @@ const router = createRouter({
       name: 'Permit',
       component: () => import('../views/PermitView.vue')
     }
+    // {
+    //   path: '/admin',
+    //   name: 'Admin',
+    //   component: () => import('../views/Admin.vue'),
+    //   meta: {
+    //     auth: {
+    //       roles: ['admin'], // Chỉ cho phép người dùng có role 'admin'
+    //       forbiddenRedirect: '/unauthorized'
+    //     }
+    //   }
+    // },
   ]
-})
-
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore()
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/')
-  } else {
-    next()
-  }
 })
 
 export default router

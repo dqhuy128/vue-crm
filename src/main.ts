@@ -2,18 +2,29 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import VueTippy from 'vue-tippy'
-import { createPinia } from 'pinia'
+// import { createPinia } from 'pinia'
 import '@/style.css'
 import '@/assets/sass/style.scss'
 import 'tippy.js/dist/tippy.css'
 import 'tippy.js/themes/light.css'
+import { createAuth } from 'vue-auth3'
+import driverAuthBasic from 'vue-auth3/drivers/auth/basic'
+import driverAuthBearer from 'vue-auth3/drivers/auth/bearer'
+import driverHttpAxios from 'vue-auth3/drivers/http/axios'
 
 const app = createApp(App)
-const pinia = createPinia()
+// const pinia = createPinia()
 
-app.use(router)
-app.use(pinia)
-// app.provide("axios", apiBaseUri)
+const auth = createAuth({
+  plugins: {
+    router
+  },
+  drivers: {
+    auth: driverAuthBasic,
+    http: driverHttpAxios
+  }
+})
+
 app.use(
   VueTippy,
   // optional
@@ -31,4 +42,6 @@ app.use(
     } // => Global default options * see all props
   }
 )
-app.mount('#app')
+
+// app.use(pinia)
+app.use(router).use(auth).mount('#app')

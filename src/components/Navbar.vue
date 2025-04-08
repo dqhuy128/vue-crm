@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { RouterLink, useRouter } from "vue-router"
-import { ref } from "vue"
-import Modal from "@/components/Modals.vue"
+import { RouterLink, useRouter } from 'vue-router'
+import { ref } from 'vue'
+import Modal from '@/components/Modals.vue'
 
 interface recordModal {
   [key: string]: boolean
@@ -17,17 +17,15 @@ const toggleModal = (modalStateName: any) => {
   modalActive.value[modalStateName] = !modalActive.value[modalStateName]
 }
 
-const password1 = ref("")
-const password2 = ref("")
-const password3 = ref("")
+const password1 = ref('')
+const password2 = ref('')
+const password3 = ref('')
 const isPasswordVisible = ref(false)
 
 // Function to toggle the password visibility
 const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
 }
-
-const router = useRouter()
 </script>
 
 <template>
@@ -212,7 +210,6 @@ const router = useRouter()
                 :type="isPasswordVisible ? 'text' : 'password'"
                 v-model="password1"
                 name=""
-                id="inputPassword"
                 placeholder="Nhập mật khẩu"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
@@ -250,7 +247,6 @@ const router = useRouter()
                 :type="isPasswordVisible ? 'text' : 'password'"
                 v-model="password2"
                 name=""
-                id="inputPassword"
                 placeholder="Nhập mật khẩu"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
@@ -288,7 +284,6 @@ const router = useRouter()
                 :type="isPasswordVisible ? 'text' : 'password'"
                 v-model="password3"
                 name=""
-                id="inputPassword"
                 placeholder="Nhập mật khẩu"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />

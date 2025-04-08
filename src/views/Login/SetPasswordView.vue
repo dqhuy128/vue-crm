@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
-import { calcBgBefore } from "../../lib/index"
+import { ref, onMounted } from 'vue'
+import { calcBgBefore } from '../../lib/index'
 
-const password1 = ref("")
-const password2 = ref("")
+const password1 = ref('')
+const password2 = ref('')
 const isPasswordVisible = ref(false)
 
 // Function to toggle the password visibility
@@ -37,7 +37,7 @@ onMounted(() => {
               >
                 <img
                   src="@/assets/images/logo-login.png"
-                  class="max-w-full h-auto object-scale-down"
+                  class="object-scale-down h-auto max-w-full"
                   alt=""
                 />
               </div>
@@ -49,10 +49,10 @@ onMounted(() => {
                 crm skygroup
               </div>
 
-              <div class="w-full mx-auto mt-auto hidden md:block">
+              <div class="hidden w-full mx-auto mt-auto md:block">
                 <img
                   src="@/assets/images/login-frame.svg"
-                  class="max-w-full h-auto object-scale-down"
+                  class="object-scale-down h-auto max-w-full"
                   alt=""
                 />
               </div>
@@ -81,7 +81,6 @@ onMounted(() => {
                       :type="isPasswordVisible ? 'text' : 'password'"
                       v-model="password1"
                       name=""
-                      id="inputPassword"
                       placeholder="Nhập mật khẩu"
                       class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                     />
@@ -119,7 +118,6 @@ onMounted(() => {
                       :type="isPasswordVisible ? 'text' : 'password'"
                       v-model="password2"
                       name=""
-                      id="inputPassword"
                       placeholder="Nhập mật khẩu"
                       class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                     />

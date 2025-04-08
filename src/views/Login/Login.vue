@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { calcBgBefore } from '@/lib/index'
-import { useAuthStore } from '@/stores/authStore'
+import { useAuth } from 'vue-auth3'
 import { useRouter } from 'vue-router'
 
 const isPasswordVisible = ref(false)
@@ -10,21 +10,44 @@ const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
 }
 
-const authStore = useAuthStore()
 const router = useRouter()
-const username = ref('')
-const password = ref('')
-const error = ref('')
+const auth = useAuth()
+
+const form = reactive({
+  username: '',
+  password: ''
+})
+
+const error = ref<string | null>(null)
 
 const handleLogin = async () => {
+  error.value = null
+
   try {
-    await authStore.login({
-      username: username.value,
-      password: password.value
+    await auth.login({
+      url: 'https://api.skygroupvn.com.vn/api/user/login',
+      method: 'POST',
+      body: {
+        username: form.username,
+        password: form.password
+      },
+      redirect: { name: 'Personal' },
+      staySignedIn: true,
+      fetchUser: true
     })
-    router.push('/dashboard/personal') // Chuyển hướng sau khi đăng nhập thành công
-  } catch (err) {
-    error.value = 'Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập.'
+
+    console.log(auth.login)
+
+    // Đăng nhập thành công, chuyển hướng đến trang chủ
+    // router.push({ name: 'Personal' })
+  } catch (err: any) {
+    console.error('Chi tiết lỗi:', err)
+    if (err.response && err.response.data) {
+      error.value = err.response.data.message || 'Đăng nhập thất bại'
+    } else {
+      error.value =
+        'Đăng nhập thất bại. Vui lòng kiểm tra kết nối mạng và thử lại.'
+    }
   }
 }
 
@@ -86,7 +109,7 @@ onMounted(() => {
                 đăng nhập
               </div>
 
-              <form class="block w-full" @submit.prevent="handleLogin">
+              <form class="block w-full" @submit.prevent="handleLogin()">
                 <div class="block mb-4">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -94,10 +117,10 @@ onMounted(() => {
                     Tên đăng nhập
                   </span>
                   <input
-                    v-model="username"
+                    v-model="form.username"
                     type="text"
-                    name=""
-                    id=""
+                    name="username"
+                    id="username"
                     placeholder="Nhập tên đăng nhập"
                     class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                   />
@@ -112,9 +135,9 @@ onMounted(() => {
                   <div class="relative">
                     <input
                       :type="isPasswordVisible ? 'text' : 'password'"
-                      v-model="password"
-                      name=""
-                      id="inputPassword"
+                      v-model="form.password"
+                      name="password"
+                      id="password"
                       placeholder="Nhập mật khẩu"
                       class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                     />

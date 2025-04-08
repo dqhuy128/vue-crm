@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
-import { calcBgBefore } from "../../lib/index"
+import { ref, onMounted } from 'vue'
+import { calcBgBefore } from '../../lib/index'
 
-const password = ref("")
+const password = ref('')
 const isPasswordVisible = ref(false)
 
 // Function to toggle the password visibility
@@ -36,7 +36,7 @@ onMounted(() => {
               >
                 <img
                   src="@/assets/images/logo-login.png"
-                  class="max-w-full h-auto object-scale-down"
+                  class="object-scale-down h-auto max-w-full"
                   alt=""
                 />
               </div>
@@ -48,10 +48,10 @@ onMounted(() => {
                 crm skygroup
               </div>
 
-              <div class="w-full mx-auto mt-auto hidden md:block">
+              <div class="hidden w-full mx-auto mt-auto md:block">
                 <img
                   src="@/assets/images/login-frame.svg"
-                  class="max-w-full h-auto object-scale-down"
+                  class="object-scale-down h-auto max-w-full"
                   alt=""
                 />
               </div>
@@ -78,7 +78,6 @@ onMounted(() => {
                   <div class="relative">
                     <input
                       name=""
-                      id="inputPassword"
                       placeholder="Nhập email"
                       class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                     />

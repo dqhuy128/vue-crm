@@ -97,7 +97,6 @@ onMounted(() => {
                       :type="isPasswordVisible ? 'text' : 'password'"
                       v-model="password"
                       name=""
-                      id="inputPassword"
                       placeholder="Nhập mật khẩu"
                       class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                     />
