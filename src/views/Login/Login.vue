@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue'
 import { calcBgBefore } from '@/lib/index'
+import { onMounted, reactive, ref } from 'vue'
 import { useAuth } from 'vue-auth3'
 import { useRouter } from 'vue-router'
 
@@ -19,24 +19,43 @@ const form = reactive({
 })
 
 const error = ref<string | null>(null)
+type PostLoginResType = {
+  status: string
+  message: string
+  errors: string[]
+  data: any
+}
 
 const handleLogin = async () => {
   error.value = null
+  console.log({
+    username: form.username,
+    password: form.password
+  })
 
   try {
-    await auth.login({
+    const formData = new FormData()
+    formData.append('username', form.username)
+    formData.append('password', form.password)
+    const res = await auth.login({
+      method: 'post',
       url: 'https://api.skygroupvn.com.vn/api/user/login',
-      method: 'POST',
-      body: {
-        username: form.username,
-        password: form.password
-      },
-      redirect: { name: 'Personal' },
+      data: formData,
+      headers: { 'Content-Type': 'multipart/form-data' },
+      // redirect: { name: 'Personal' },
       staySignedIn: true,
       fetchUser: true
     })
-
-    console.log(auth.login)
+    if (res.data.status !== 1) {
+      //  dang nhap ko thanh cong
+      error.value = 'Đăng nhập thất bại'
+      if (res.data.errors && res.data.errors.login) {
+        error.value = res.data.errors.login
+      }
+    } else {
+      // dang nhap thanh cong
+      router.push({ name: 'Personal' })
+    }
 
     // Đăng nhập thành công, chuyển hướng đến trang chủ
     // router.push({ name: 'Personal' })
@@ -109,7 +128,7 @@ onMounted(() => {
                 đăng nhập
               </div>
 
-              <form class="block w-full" @submit.prevent="handleLogin()">
+              <form class="block w-full" @submit.prevent="handleLogin">
                 <div class="block mb-4">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
