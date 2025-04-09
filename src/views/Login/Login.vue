@@ -19,12 +19,6 @@ const form = reactive({
 })
 
 const error = ref<string | null>(null)
-type PostLoginResType = {
-  status: string
-  message: string
-  errors: string[]
-  data: any
-}
 
 const handleLogin = async () => {
   error.value = null
@@ -42,7 +36,6 @@ const handleLogin = async () => {
       url: 'https://api.skygroupvn.com.vn/api/user/login',
       data: formData,
       headers: { 'Content-Type': 'multipart/form-data' },
-      // redirect: { name: 'Personal' },
       staySignedIn: true,
       fetchUser: true
     })
@@ -56,9 +49,6 @@ const handleLogin = async () => {
       // dang nhap thanh cong
       router.push({ name: 'Personal' })
     }
-
-    // Đăng nhập thành công, chuyển hướng đến trang chủ
-    // router.push({ name: 'Personal' })
   } catch (err: any) {
     console.error('Chi tiết lỗi:', err)
     if (err.response && err.response.data) {
@@ -189,10 +179,11 @@ onMounted(() => {
 
                 <div class="block text-end xl:mb-[70px] mb-[30px]">
                   <router-link
-                    to=""
+                    :to="{ name: 'ResetPass' }"
                     class="inline-block text-[#909090] font-inter text-[16px] font-bold leading-normal hover:text-main transition"
-                    >Lấy lại mật khẩu</router-link
                   >
+                    Lấy lại mật khẩu
+                  </router-link>
                 </div>
 
                 <div class="block">

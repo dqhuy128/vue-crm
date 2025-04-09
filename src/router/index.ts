@@ -1,9 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '@/views/Login/Login.vue'
-import RegisterView from '@/views/Login/Register.vue'
-import GetMailView from '@/views/Login/GetMailView.vue'
-import GetOtpView from '@/views/Login/GetOtpView.vue'
-import SetPasswordView from '@/views/Login/SetPasswordView.vue'
+import RegisterView from '@/views/Register/Register.vue'
+import ResetPassView from '@/views/ResetPassword/ResetView.vue'
 import Dashboard from '@/views/Dashboard/Dashboard.vue'
 import DashboardPersonal from '@/views/Dashboard/DashboardPersonal.vue'
 import DashboardReport from '@/views/Dashboard/DashboardReport.vue'
@@ -32,22 +30,10 @@ const router = createRouter({
       meta: { auth: false }
     },
     {
-      path: '/getpass-mail',
-      name: 'GetMail',
-      component: GetMailView,
+      path: '/reset-password',
+      name: 'ResetPass',
+      component: ResetPassView,
       meta: { auth: false }
-    },
-    {
-      path: '/getpass-otp',
-      name: 'GetOtp',
-      component: GetOtpView,
-      meta: { auth: false }
-    },
-    {
-      path: '/setpass',
-      name: 'SetPassword',
-      component: SetPasswordView,
-      meta: { auth: true }
     },
     {
       path: '/dashboard',

@@ -2,13 +2,12 @@
 import { ref, onMounted } from 'vue'
 import { calcBgBefore } from '../../lib/index'
 
-const password = ref('')
-const isPasswordVisible = ref(false)
-
-// Function to toggle the password visibility
-const togglePasswordVisibility = () => {
-  isPasswordVisible.value = !isPasswordVisible.value
+const email = ref<string | null>('')
+const handleEmailChange = () => {
+  console.log(email.value)
 }
+
+const emit = defineEmits(['handleStep'])
 
 onMounted(() => {
   calcBgBefore()
@@ -68,7 +67,11 @@ onMounted(() => {
                 Lấy lại mật khẩu
               </div>
 
-              <form action="" class="block w-full">
+              <form
+                action=""
+                class="block w-full"
+                @submit.prevent="handleEmailChange()"
+              >
                 <div class="block mb-10">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -77,7 +80,9 @@ onMounted(() => {
                   </span>
                   <div class="relative">
                     <input
-                      name=""
+                      v-model="email"
+                      id="formEmail"
+                      name="formEmail"
                       placeholder="Nhập email"
                       class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                     />
@@ -96,8 +101,13 @@ onMounted(() => {
 
                 <div class="block">
                   <button
+                    @click="() => emit('handleStep')"
                     type="submit"
-                    class="block w-full bg-main !text-white text-[16px] font-bold leading-normal !uppercase text-center p-2.5 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+                    class="block w-full bg-main !text-white text-[16px] font-bold leading-normal !uppercase text-center p-2.5 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition"
+                    :class="{
+                      'pointer-events-auto opacity-100': email,
+                      'pointer-events-none opacity-50': !email
+                    }"
                   >
                     tiếp tục
                   </button>

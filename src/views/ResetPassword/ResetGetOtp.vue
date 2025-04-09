@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, onMounted } from 'vue'
+import { calcBgBefore } from '../../lib/index'
 
 // Array to hold OTP values
-const otpValues = ref(["", "", "", "", "", ""])
+const otpValues = ref(['', '', '', '', '', ''])
 
 // Move focus to next input after typing
 const moveFocus = (index: any) => {
@@ -19,13 +20,13 @@ const moveFocus = (index: any) => {
 
 // Handle paste event and fill OTP inputs
 const handlePaste = (event: any) => {
-  const pastedValue = event.clipboardData.getData("Text")
-  otpValues.value = pastedValue.split("").slice(0, 6)
+  const pastedValue = event.clipboardData.getData('Text')
+  otpValues.value = pastedValue.split('').slice(0, 6)
 }
 
 // Handle backspace (deleting character) to move focus to previous input
 const handleKeyDown = (event: any, index: any) => {
-  if (event.key === "Backspace" && otpValues.value[index] === "") {
+  if (event.key === 'Backspace' && otpValues.value[index] === '') {
     if (index > 0) {
       const prevInput = document.getElementById(`otp${index}`)
       if (prevInput) {
@@ -34,6 +35,10 @@ const handleKeyDown = (event: any, index: any) => {
     }
   }
 }
+
+onMounted(() => {
+  calcBgBefore()
+})
 </script>
 
 <template>
@@ -57,7 +62,7 @@ const handleKeyDown = (event: any, index: any) => {
               >
                 <img
                   src="@/assets/images/logo-login.png"
-                  class="max-w-full h-auto object-scale-down"
+                  class="object-scale-down h-auto max-w-full"
                   alt=""
                 />
               </div>
@@ -69,10 +74,10 @@ const handleKeyDown = (event: any, index: any) => {
                 crm skygroup
               </div>
 
-              <div class="w-full mx-auto mt-auto hidden md:block">
+              <div class="hidden w-full mx-auto mt-auto md:block">
                 <img
                   src="@/assets/images/login-frame.svg"
-                  class="max-w-full h-auto object-scale-down"
+                  class="object-scale-down h-auto max-w-full"
                   alt=""
                 />
               </div>
@@ -102,7 +107,7 @@ const handleKeyDown = (event: any, index: any) => {
                   Nhập mã kích hoạt
                 </div>
 
-                <div class="otp-inputs mb-12">
+                <div class="mb-12 otp-inputs">
                   <input
                     v-for="(otp, index) in otpValues"
                     :key="index"
@@ -120,13 +125,13 @@ const handleKeyDown = (event: any, index: any) => {
                 <div class="block">
                   <button
                     type="submit"
-                    class="block w-full bg-main !text-white text-[16px] font-bold leading-normal !uppercase text-center p-2.5 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+                    class="block w-full bg-main !text-white text-[16px] font-bold leading-normal !uppercase text-center p-2.5 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition"
                   >
                     xác nhận
                   </button>
                 </div>
 
-                <div class="text-center mt-6">
+                <div class="mt-6 text-center">
                   <button
                     type="button"
                     class="inline-flex items-center gap-2 text-[#909090] text-[16px] font-normal"
