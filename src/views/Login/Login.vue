@@ -3,6 +3,7 @@ import { calcBgBefore } from '@/lib/index'
 import { onMounted, reactive, ref } from 'vue'
 import { useAuth } from 'vue-auth3'
 import { useRouter } from 'vue-router'
+import { apiUri } from '@/constants/apiUri'
 
 const isPasswordVisible = ref(false)
 // Function to toggle the password visibility
@@ -14,31 +15,29 @@ const router = useRouter()
 const auth = useAuth()
 
 const form = reactive({
-  username: '',
-  password: ''
+  username: 'hieund',
+  password: '123456'
 })
 
 const error = ref<string | null>(null)
 
 const handleLogin = async () => {
   error.value = null
-  console.log({
-    username: form.username,
-    password: form.password
-  })
 
   try {
     const formData = new FormData()
     formData.append('username', form.username)
     formData.append('password', form.password)
+
     const res = await auth.login({
       method: 'post',
-      url: 'https://api.skygroupvn.com.vn/api/user/login',
+      url: `${apiUri}/user/login`,
       data: formData,
       headers: { 'Content-Type': 'multipart/form-data' },
       staySignedIn: true,
       fetchUser: true
     })
+
     if (res.data.status !== 1) {
       //  dang nhap ko thanh cong
       error.value = 'Đăng nhập thất bại'
@@ -46,17 +45,17 @@ const handleLogin = async () => {
         error.value = res.data.errors.login
       }
     } else {
+      // get access token
+      const { access_token } = res.data.data
+
+      // Set the access_token as the default token in Vue Auth 3
+      auth.token(null, access_token)
+
       // dang nhap thanh cong
       router.push({ name: 'Personal' })
     }
   } catch (err: any) {
     console.error('Chi tiết lỗi:', err)
-    if (err.response && err.response.data) {
-      error.value = err.response.data.message || 'Đăng nhập thất bại'
-    } else {
-      error.value =
-        'Đăng nhập thất bại. Vui lòng kiểm tra kết nối mạng và thử lại.'
-    }
   }
 }
 

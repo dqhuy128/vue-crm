@@ -1,7 +1,55 @@
 <script setup lang="ts">
-import { RouterLink, useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { RouterLink } from 'vue-router'
+import { onMounted, ref } from 'vue'
 import Modal from '@/components/Modals.vue'
+import { useAuth } from 'vue-auth3'
+import { apiUri } from '@/constants/apiUri'
+
+const auth = useAuth()
+const token = ref<string | null>(null)
+const user = ref<any>(null)
+const isAuthenticated = ref(false)
+
+const fetchUser = async () => {
+  isAuthenticated.value = auth.check()
+
+  if (isAuthenticated.value) {
+    token.value = auth.token() // Gets the default token
+
+    // Fetch user data from the API
+    try {
+      const response = await auth.fetch({
+        method: 'get',
+        url: `${apiUri}/user/info`,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers':
+            'Origin, Content-Type, X-Auth-Token, Authorization',
+          'Access-Control-Allow-Credentials': 'true',
+          Authorization: `Bearer ${token.value}`
+        }
+      })
+      console.log('🚀 ~ onMounted ~ response:', response)
+      user.value = response.data
+    } catch (error) {
+      console.error('Failed to fetch user data:', error)
+    }
+  }
+}
+
+// Logout handler
+const handleLogout = async () => {
+  try {
+    // Perform logout without an API call
+    await auth.logout({
+      makeRequest: false, // Disable API request
+      redirect: '/' // Redirect to login page
+    })
+  } catch (error) {
+    console.error('Logout failed:', error)
+  }
+}
 
 interface recordModal {
   [key: string]: boolean
@@ -26,6 +74,10 @@ const isPasswordVisible = ref(false)
 const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
 }
+
+onMounted(() => {
+  fetchUser()
+})
 </script>
 
 <template>
@@ -122,13 +174,15 @@ const togglePasswordVisibility = () => {
             <template #content>
               <button
                 type="button"
-                class="block w-full !text-start text-[#464661] font-inter text-[16px] font-normal leading-normal p-2.5 hover:text-main transition border-b border-solid border-[#E9F0F4]"
+                class="block w-full !text-start text-[#464661] font-inter text-[16px] font-normal leading-normal p-2.5 hover:text-main transition border-b border-solid border-[#E9F0F4] cursor-pointer"
                 @click="toggleModal('modalUserInfo')"
               >
                 Thông tin cá nhân
               </button>
               <button
-                class="block text-[#464661] font-inter text-[16px] font-normal leading-normal p-2.5 hover:text-main transition"
+                type="button"
+                class="block text-[#464661] font-inter text-[16px] font-normal leading-normal p-2.5 hover:text-main transition cursor-pointer"
+                @click="handleLogout"
               >
                 Đăng xuất
               </button>

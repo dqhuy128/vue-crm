@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useRoute } from "vue-router"
+import { useRoute } from 'vue-router'
 
 type ticketProps = [icon: any, title: string, ticketList: Array<any>]
 // Define props for the component
@@ -38,7 +38,7 @@ const route = useRoute().path
       :class="[route == '/dashboard/report' ? 'justify-center' : '']"
     >
       <div
-        class="last-border-t flex flex-wrap items-center gap-3 border-b border-solid border-[#EDEDF6] pb-3.5 mb-4"
+        class="last-border-t flex flex-wrap items-center gap-3 border-b border-solid border-[#EDEDF6] pb-3.5 not-last:mb-3.5"
         v-for="(item, id) in ticketList"
         :key="id"
       >

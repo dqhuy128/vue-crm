@@ -20,9 +20,11 @@ const auth = createAuth({
     router
   },
   drivers: {
-    auth: driverAuthBasic,
+    auth: driverAuthBearer,
     http: driverHttpAxios
-  }
+  },
+  fetchData: { enabled: true },
+  stores: ['storage', 'cookie']
 })
 
 app.use(

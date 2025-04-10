@@ -7,5 +7,13 @@ module.exports = {
       }
     }
   }
+  // devServer: {
+  //   proxy: {
+  //     '/api': {
+  //       target: 'https://api.skygroupvn.com.vn/api',
+  //       changeOrigin: true
+  //     }
+  //   }
+  // }
   // publicPath: process.env.NODE_ENV === "production" ? "/vue-crm/" : "/"
 }
