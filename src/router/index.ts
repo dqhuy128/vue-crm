@@ -1,14 +1,14 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import LoginView from '@/views/Login/Login.vue'
-import RegisterView from '@/views/Register/Register.vue'
-import ResetPassView from '@/views/ResetPassword/ResetView.vue'
 import Dashboard from '@/views/Dashboard/Dashboard.vue'
 import DashboardPersonal from '@/views/Dashboard/DashboardPersonal.vue'
 import DashboardReport from '@/views/Dashboard/DashboardReport.vue'
+import LoginView from '@/views/Login/Login.vue'
+import RegisterView from '@/views/Register/Register.vue'
+import ResetPassView from '@/views/ResetPassword/ResetView.vue'
+import SystemCateManagement from '@/views/SystemAdmin/CateManagement.vue'
+import SystemPermission from '@/views/SystemAdmin/Permission.vue'
 import SystemView from '@/views/SystemAdmin/SystemAdmin.vue'
 import SystemUser from '@/views/SystemAdmin/User.vue'
-import SystemPermission from '@/views/SystemAdmin/Permission.vue'
-import SystemCateManagement from '@/views/SystemAdmin/CateManagement.vue'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -80,6 +80,11 @@ const router = createRouter({
       path: '/permit',
       name: 'Permit',
       component: () => import('../views/PermitView.vue')
+    },
+    {
+      path: '/document',
+      name: 'Document',
+      component: () => import('../views/Document/Document.vue')
     }
     // {
     //   path: '/admin',
