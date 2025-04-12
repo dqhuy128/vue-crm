@@ -5,12 +5,6 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), tailwindcss()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src')
-    }
-  },
   server: {
     proxy: {
       '/api': {
@@ -19,6 +13,12 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
         secure: false
       }
+    }
+  },
+  plugins: [vue(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
     }
   }
 })

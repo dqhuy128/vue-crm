@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import Modal from '@/components/Modals.vue'
 import { useAuth } from 'vue-auth3'
 import { apiUri } from '@/constants/apiUri'
@@ -21,17 +21,20 @@ const fetchUser = async () => {
       const response = await auth.fetch({
         method: 'get',
         url: `${apiUri}/user/info`,
+        credentials: 'include',
         headers: {
+          Authorization: `Bearer ${token.value}`,
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
           'Access-Control-Allow-Headers':
-            'Origin, Content-Type, X-Auth-Token, Authorization',
-          'Access-Control-Allow-Credentials': 'true',
-          Authorization: `Bearer ${token.value}`
+            'Origin, Content-Type, X-Auth-Token, Authorization'
+          // 'Access-Control-Allow-Credentials': 'true'
         }
       })
-      console.log('🚀 ~ onMounted ~ response:', response)
-      user.value = response.data
+
+      const { data } = response.data
+      user.value = data
+      console.log('🚀 ~ fetchUser ~ user.value:', user.value)
     } catch (error) {
       console.error('Failed to fetch user data:', error)
     }
@@ -75,7 +78,7 @@ const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
 }
 
-onMounted(() => {
+onBeforeMount(() => {
   fetchUser()
 })
 </script>
@@ -144,8 +147,11 @@ onMounted(() => {
                 class="inline-flex flex-wrap items-center gap-2 cursor-pointer"
               >
                 <div class="block">
-                  <h3 class="text-[#464661] font-inter text-[16px] font-bold">
-                    Nguyễn Đức Hiếu
+                  <h3
+                    class="text-[#464661] font-inter text-[16px] font-bold"
+                    v-if="auth.check() && user"
+                  >
+                    {{ user?.name }}
                   </h3>
                   <span
                     class="block text-[#909090] font-inter text-[14px] font-normal text-right"
@@ -159,7 +165,7 @@ onMounted(() => {
                     <router-link to="">
                       <img
                         class="object-cover w-full h-full"
-                        src="@/assets/images/sm-avatar.png"
+                        :src="user?.avatar"
                         alt=""
                       />
                     </router-link>
@@ -212,7 +218,7 @@ onMounted(() => {
               class="w-full h-full max-w-full bg-[#E9F0F4] rounded-[24px] overflow-hidden"
             >
               <img
-                src="@/assets/images/si_user-fill.svg"
+                :src="user?.avatar"
                 class="object-cover w-full h-full"
                 alt=""
               />
@@ -225,7 +231,7 @@ onMounted(() => {
 
           <div class="mb-4 text-center">
             <h3 class="m-0 text-[#464661] text-[16px] font-bold leading-normal">
-              Nguyễn Đức Hiếu
+              {{ user?.name }}
             </h3>
           </div>
 
@@ -233,14 +239,14 @@ onMounted(() => {
             <div class="inline-flex items-center justify-center gap-2 grow">
               <img src="@/assets/images/lucide_mail.svg" alt="" />
               <span class="text-[#464661] text-[14px] font-bold leading-normal">
-                hieund@abc.com
+                {{ user?.email }}
               </span>
             </div>
 
             <div class="inline-flex items-center justify-center gap-2 grow">
               <img src="@/assets/images/mynaui_mobile.svg" alt="" />
               <span class="text-[#464661] text-[14px] font-bold leading-normal">
-                090 333 4444
+                {{ user?.phone }}
               </span>
             </div>
           </div>
