@@ -2,7 +2,7 @@
   <transition name="modal-animation">
     <div v-show="modalActive" class="modal">
       <transition name="modal-animation-inner">
-        <div v-show="modalActive" class="modal-inner" :class="maxWidth">
+        <div v-show="modalActive" class="w-full modal-inner" :class="maxWidth">
           <div class="relative w-full mx-4 modal-content">
             <slot />
             <button
@@ -32,10 +32,10 @@
 
 <script>
 export default {
-  props: ["modalActive", "maxWidth"],
+  props: ['modalActive', 'maxWidth'],
   setup(props, { emit }) {
     const close = () => {
-      emit("close")
+      emit('close')
     }
 
     return { close }

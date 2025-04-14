@@ -15,7 +15,7 @@ const router = useRouter()
 const auth = useAuth()
 
 const form = reactive({
-  username: 'hieund',
+  username: '0904345514',
   password: '123456'
 })
 

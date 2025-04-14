@@ -4,6 +4,16 @@ import { onBeforeMount, ref } from 'vue'
 import Modal from '@/components/Modals.vue'
 import { useAuth } from 'vue-auth3'
 import { apiUri } from '@/constants/apiUri'
+import { Cropper, CircleStencil } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
+import {
+  change,
+  loadImage,
+  image,
+  initializeCropper,
+  destroyCropper,
+  postServer
+} from '@/lib/cropper'
 
 const auth = useAuth()
 const token = ref<string | null>(null)
@@ -23,12 +33,7 @@ const fetchUser = async () => {
         url: `${apiUri}/user/info`,
         credentials: 'include',
         headers: {
-          Authorization: `Bearer ${token.value}`,
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers':
-            'Origin, Content-Type, X-Auth-Token, Authorization'
-          // 'Access-Control-Allow-Credentials': 'true'
+          Authorization: `Bearer ${token.value}`
         }
       })
 
@@ -67,6 +72,13 @@ const modalActive = ref<recordModal>({
 const toggleModal = (modalStateName: any) => {
   modalActive.value[modalStateName] = !modalActive.value[modalStateName]
 }
+
+const handleCroppieClose = () => {
+  toggleModal('modalUserCroppie')
+  destroyCropper(this)
+}
+
+const handleSubmitAvatar = () => {}
 
 const password1 = ref('')
 const password2 = ref('')
@@ -227,6 +239,14 @@ onBeforeMount(() => {
             <div class="absolute bottom-0 right-0 z-10">
               <img src="@/assets/images/ic-camera.svg" alt="" />
             </div>
+
+            <input
+              class="absolute inset-0 z-10 w-full h-full opacity-0 cursor-pointer"
+              type="file"
+              ref="file"
+              @change="loadImage($event, modalActive)"
+              accept="image/*"
+            />
           </div>
 
           <div class="mb-4 text-center">
@@ -381,6 +401,54 @@ onBeforeMount(() => {
         </form>
       </div>
     </Modal>
+
+    <!-- @open="initializeCropper(this)" -->
+    <Modal
+      v-if="modalActive.modalUserCroppie"
+      @close="handleCroppieClose()"
+      :modalActive="modalActive.modalUserCroppie"
+      maxWidth="max-w-[702px]"
+    >
+      <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">
+        <div
+          class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-10 min-h-[155px]"
+        >
+          <div class="mb-4 text-center">
+            <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+              chọn ảnh đại diện
+            </h3>
+          </div>
+        </div>
+
+        <form
+          class="block w-full max-w-[100%] py-4"
+          @submit.prevent="
+            postServer(this, auth.check(), auth.token(), modalActive)
+          "
+        >
+          <div class="block">
+            <cropper
+              ref="cropper"
+              class="cropper"
+              :src="image.src"
+              :stencil-props="{
+                aspectRatio: 1 / 1
+              }"
+              @change="change"
+            />
+          </div>
+
+          <div class="block mt-10 text-center">
+            <button
+              type="submit"
+              class="inline-block min-w-[175px] bg-main !text-white text-[16px] font-bold leading-normal !uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+            >
+              Lưu
+            </button>
+          </div>
+        </form>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -397,5 +465,16 @@ onBeforeMount(() => {
     border-radius: 8px;
     background: #fff;
   }
+}
+
+.cropper {
+  height: 415px;
+  width: 100%;
+  background: transparent;
+}
+
+.vue-advanced-cropper__background,
+.vue-advanced-cropper__foreground {
+  background: #fafafa;
 }
 </style>
