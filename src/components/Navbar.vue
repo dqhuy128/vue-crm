@@ -39,7 +39,6 @@ const fetchUser = async () => {
 
       const { data } = response.data
       user.value = data
-      console.log('🚀 ~ fetchUser ~ user.value:', user.value)
     } catch (error) {
       console.error('Failed to fetch user data:', error)
     }
@@ -89,6 +88,15 @@ const isPasswordVisible = ref(false)
 const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
 }
+
+const updateUrlAva = ref<string>('')
+
+const handlePostServer = async (target: any) => {
+  await postServer(target, auth.check(), auth.token(), updateUrlAva)
+  modalActive.value['modalUserCroppie'] = false
+}
+
+console.log('🚀 ~ updateUrlAva:', updateUrlAva.value)
 
 onBeforeMount(() => {
   fetchUser()
@@ -177,7 +185,7 @@ onBeforeMount(() => {
                     <router-link to="">
                       <img
                         class="object-cover w-full h-full"
-                        :src="user?.avatar"
+                        :src="updateUrlAva || user?.avatar"
                         alt=""
                       />
                     </router-link>
@@ -230,7 +238,7 @@ onBeforeMount(() => {
               class="w-full h-full max-w-full bg-[#E9F0F4] rounded-[24px] overflow-hidden"
             >
               <img
-                :src="user?.avatar"
+                :src="updateUrlAva || user?.avatar"
                 class="object-cover w-full h-full"
                 alt=""
               />
@@ -422,9 +430,7 @@ onBeforeMount(() => {
 
         <form
           class="block w-full max-w-[100%] py-4"
-          @submit.prevent="
-            postServer(this, auth.check(), auth.token(), modalActive)
-          "
+          @submit.prevent="handlePostServer(this)"
         >
           <div class="block">
             <cropper

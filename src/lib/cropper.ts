@@ -1,4 +1,4 @@
-import { reactive, ref, useTemplateRef } from 'vue'
+import { reactive, Ref, ref, useTemplateRef } from 'vue'
 import { apiUri } from '@/constants/apiUri'
 import { useAuth } from 'vue-auth3'
 import { apiClient } from '@/plugins/axios'
@@ -77,7 +77,7 @@ export const postServer = (
   self: any,
   authCheck: any,
   authToken: any,
-  modal: any
+  blobUrlRef: Ref<string>
 ) => {
   const { canvas } = self.$refs.cropper.getResult()
 
@@ -93,11 +93,12 @@ export const postServer = (
         }
       })
 
-      const refetchUser = await apiClient.get('/user/info')
+      const { message } = response.data
+      blobUrlRef.value = message
+      console.log('🚀 ~ canvas.toBlob ~ message:', message)
+      console.log('🚀 ~ canvas.toBlob ~ blobUrlRef.value:', blobUrlRef.value)
 
       // Perhaps you should add the setting appropriate file format here
     }, 'image/jpeg')
-
-    modal.modalUserCroppie = false
   }
 }
