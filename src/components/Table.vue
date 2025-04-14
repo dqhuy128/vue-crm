@@ -14,7 +14,7 @@
             </div>
           </div>
           <div class="cell pinned">
-            <div class="cell status">Trạng thái</div>
+            <div class="cell" v-if="status">Trạng thái</div>
             <div class="cell edit">Edit</div>
           </div>
         </div>
@@ -34,29 +34,12 @@
               </div>
 
               <div class="cell pinned pinned-body">
-                <div class="cell status status-green status-body">
+                <div class="cell status status-green status-body" v-if="status">
                   Đang hoạt động
                 </div>
 
                 <div class="cell edit edit-body">
-                  <button
-                    type="button"
-                    class="cursor-pointer cell-btn-view shrink-0"
-                  >
-                    <img src="@/assets/images/action-edit-1.svg" alt="" />
-                  </button>
-                  <button
-                    type="button"
-                    class="cursor-pointer cell-btn-edit shrink-0"
-                  >
-                    <img src="@/assets/images/action-edit-2.svg" alt="" />
-                  </button>
-                  <button
-                    type="button"
-                    class="cursor-pointer cell-btn-delete shrink-0"
-                  >
-                    <img src="@/assets/images/action-edit-3.svg" alt="" />
-                  </button>
+                  <slot></slot>
                 </div>
               </div>
             </div>
@@ -145,12 +128,12 @@
           <input
             type="text"
             name=""
-            value="1"
+            :value="props.params.currentPage"
             id=""
             class="rounded-[8px] bg-white w-[32px] h-[32px] inline-flex flex-col items-center justify-center text-center text-[#464661] text-[16px] font-bold border border-solid border-[#909090]"
           />
 
-          <a href="">
+          <button href="" @click="goToNextPage">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -163,7 +146,7 @@
                 fill="#363636"
               />
             </svg>
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -171,15 +154,28 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from "vue"
+import { onMounted, ref } from "vue"
 import { tableMagic } from "../utils/main"
 
-defineProps<{
+const props = defineProps<{
   tbhead: any
   tbbody: any
   justify?: any
+  status?: boolean
+  handlePageChange?: (page: number) => void
+  params : {
+    currentPage: number
+    totalPages: number
+    perPage : number
+  }
 }>()
-
+// function go to next page
+const current = ref(props.params.currentPage);
+const goToNextPage = () => {
+  const newPage = Number(props.params.currentPage) + 1
+  console.log("🚀 ~ goToNextPage ~ newPage:", newPage)
+  props.handlePageChange(newPage)
+}
 onMounted(() => {
   tableMagic()
 })

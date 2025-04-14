@@ -135,7 +135,22 @@
       </div>
     </div>
 
-    <Table :tbhead="tbhead" :tbbody="tbbody" justify="justify-between"></Table>
+    <Table
+      :tbhead="tbhead"
+      :tbbody="tbbody"
+      justify="justify-between"
+      :status="true"
+    >
+      <button type="button" class="cursor-pointer cell-btn-view shrink-0">
+        <img src="@/assets/images/action-edit-1.svg" alt="" />
+      </button>
+      <button type="button" class="cursor-pointer cell-btn-edit shrink-0">
+        <img src="@/assets/images/action-edit-2.svg" alt="" />
+      </button>
+      <button type="button" class="cursor-pointer cell-btn-delete shrink-0">
+        <img src="@/assets/images/action-edit-3.svg" alt="" />
+      </button>
+    </Table>
 
     <Modal
       @close="toggleModal('modalNewUser')"
@@ -620,14 +635,14 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from "vue"
-import MainLayout from "../MainLayout.vue"
-import Modal from "@/components/Modals.vue"
-import MultipleSelect from "@/components/MultiSelect.vue"
-import flatPickr from "vue-flatpickr-component"
-import { Vietnamese } from "flatpickr/dist/l10n/vn.js"
-import "flatpickr/dist/flatpickr.css"
-import Table from "@/components/Table.vue"
+import { reactive, ref } from 'vue'
+import MainLayout from '../MainLayout.vue'
+import Modal from '@/components/Modals.vue'
+import MultipleSelect from '@/components/MultiSelect.vue'
+import flatPickr from 'vue-flatpickr-component'
+import { Vietnamese } from 'flatpickr/dist/l10n/vn.js'
+import 'flatpickr/dist/flatpickr.css'
+import Table from '@/components/Table.vue'
 
 const dateState = ref<Record<string, any>>({
   date1: null,
@@ -637,7 +652,7 @@ const dateState = ref<Record<string, any>>({
 
 const configFlatpickr = ref({
   wrap: true, // set wrap to true only when using 'input-group'
-  dateFormat: "d/m/Y",
+  dateFormat: 'd/m/Y',
   locale: Vietnamese // locale for this instance only
 })
 
@@ -667,39 +682,39 @@ const valueGroupUser = ref<recordSelection>({
   value5: null,
   value6: null
 })
-const optionsGroupUser = ref(["Option 1", "Option 2", "Option3", "Option 4"])
+const optionsGroupUser = ref(['Option 1', 'Option 2', 'Option3', 'Option 4'])
 
 const tbhead = reactive([
   {
-    title: "STT",
+    title: 'STT',
     hasSort: false
   },
   {
-    title: "Mã NV",
+    title: 'Mã NV',
     hasSort: true
   },
   {
-    title: "Họ và tên",
+    title: 'Họ và tên',
     hasSort: true
   },
   {
-    title: "Số điện thoại",
+    title: 'Số điện thoại',
     hasSort: false
   },
   {
-    title: "Email",
+    title: 'Email',
     hasSort: false
   },
   {
-    title: "Chức vụ",
+    title: 'Chức vụ',
     hasSort: false
   },
   {
-    title: "Bộ phận",
+    title: 'Bộ phận',
     hasSort: false
   },
   {
-    title: "Địa điểm",
+    title: 'Địa điểm',
     hasSort: false
   }
 ])
@@ -707,14 +722,14 @@ const tbhead = reactive([
 const tbbody = reactive([
   {
     data: [
-      { title: "01" },
-      { title: "00123" },
-      { title: "Nguyễn Đức Hiếu" },
-      { title: "0906668888" },
-      { title: "hieund@skygroup.com" },
-      { title: "Nhân viên" },
-      { title: "Phòng Marketing" },
-      { title: "Hà Nội " }
+      { title: '01' },
+      { title: '00123' },
+      { title: 'Nguyễn Đức Hiếu' },
+      { title: '0906668888' },
+      { title: 'hieund@skygroup.com' },
+      { title: 'Nhân viên' },
+      { title: 'Phòng Marketing' },
+      { title: 'Hà Nội ' }
     ]
   }
 ])
