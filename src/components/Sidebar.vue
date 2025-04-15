@@ -23,7 +23,7 @@
     </button>
 
     <div class="max-w-full w-full h-auto px-2.5 mb-10">
-      <router-link to="">
+      <router-link :to="{ name: 'Personal' }">
         <img
           src="@/assets/images/logo-sidebar.png"
           alt=""
@@ -39,7 +39,7 @@
         :key="id"
       >
         <div class="sidebar-menu-parent">
-          <router-link to="" class="parent-link">
+          <router-link :to="{ name: `${item.route}` }" class="parent-link">
             <img :src="item.icon" alt="" />
             {{ item.title }}
           </router-link>
@@ -73,7 +73,7 @@
         > -->
         <ul class="sidebar-menu-sub" v-show="isDropdownOpen(id)">
           <li v-for="(sub, idx) in item.submenu" :key="idx">
-            <router-link to="" class="sub-link">
+            <router-link :to="{ name: `${sub.route}` }" class="sub-link">
               <img :src="sub.icon" alt="" />
               {{ sub.title }}
             </router-link>
@@ -86,89 +86,103 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
-import MageDashboard from "@/assets/images/mage_dashboard.svg"
-import FluentData from "@/assets/images/fluent_data-pie-24-regular.svg"
-import FluentNote from "@/assets/images/fluent_note-24-regular.svg"
-import Iconoir from "@/assets/images/iconoir_timer-off.svg"
-import Proicons from "@/assets/images/proicons_timer.svg"
-import LucideUserCog from "@/assets/images/lucide_user-cog.svg"
-import LucideUserPen from "@/assets/images/lucide_user-pen.svg"
-import IconamoonCategory from "@/assets/images/iconamoon_category-light.svg"
-import TableUserScan from "@/assets/images/tabler_user-scan.svg"
-import TickCircle from "@/assets/images/mdi_tick-circle-outline.svg"
-import FluentHistory from "@/assets/images/fluent_history-24-filled.svg"
-import EditNote from "@/assets/images/material-symbols_edit-note-outline-rounded.svg"
+import { ref } from 'vue'
+import MageDashboard from '@/assets/images/mage_dashboard.svg'
+import FluentData from '@/assets/images/fluent_data-pie-24-regular.svg'
+import FluentNote from '@/assets/images/fluent_note-24-regular.svg'
+import Iconoir from '@/assets/images/iconoir_timer-off.svg'
+import Proicons from '@/assets/images/proicons_timer.svg'
+import LucideUserCog from '@/assets/images/lucide_user-cog.svg'
+import LucideUserPen from '@/assets/images/lucide_user-pen.svg'
+import IconamoonCategory from '@/assets/images/iconamoon_category-light.svg'
+import TableUserScan from '@/assets/images/tabler_user-scan.svg'
+import TickCircle from '@/assets/images/mdi_tick-circle-outline.svg'
+import FluentHistory from '@/assets/images/fluent_history-24-filled.svg'
+import EditNote from '@/assets/images/material-symbols_edit-note-outline-rounded.svg'
 
 interface dataSidebarItem {
   icon: any
   title: string
   nav?: boolean
   submenu?: dataSubmenu[]
+  route?: string
 }
 
 interface dataSubmenu {
   icon: any
   title: string
+  route?: string
 }
 
 const refDataSidebar = ref<dataSidebarItem[]>([
   {
     icon: MageDashboard,
-    title: "Dashboard",
+    title: 'Dashboard',
+    route: 'Personal',
     nav: false
   },
   {
     icon: FluentData,
-    title: "Quản trị hệ thống",
+    title: 'Quản trị hệ thống',
+    route: 'SystemAdmin',
     nav: true,
     submenu: [
       {
         icon: LucideUserCog,
-        title: "Quản lý người dùng"
+        title: 'Quản lý người dùng',
+        route: 'SystemUser'
       },
       {
         icon: LucideUserPen,
-        title: "Quản lý phân quyền"
+        title: 'Quản lý phân quyền',
+        route: 'SystemPermission'
       },
       {
         icon: IconamoonCategory,
-        title: "Quản lý danh mục"
+        title: 'Quản lý danh mục',
+        route: 'SystemCategory'
       }
     ]
   },
   {
     icon: FluentNote,
-    title: "Tài liệu",
+    title: 'Tài liệu',
+    route: 'Document',
     nav: false
   },
   {
     icon: Iconoir,
-    title: "Nghỉ phép",
+    title: 'Nghỉ phép',
     nav: true,
+    route: 'Info',
     submenu: [
       {
         icon: TableUserScan,
-        title: "Thông tin nghỉ phép"
+        title: 'Thông tin nghỉ phép',
+        route: 'Info'
       },
       {
         icon: TickCircle,
-        title: "Phê duyệt nghỉ phép"
+        title: 'Phê duyệt nghỉ phép',
+        route: 'Access'
       }
     ]
   },
   {
     icon: Proicons,
-    title: "Chấm công",
+    title: 'Chấm công',
     nav: true,
+    route: 'History',
     submenu: [
       {
         icon: FluentHistory,
-        title: "Lịch sử chấm công"
+        title: 'Lịch sử chấm công',
+        route: 'History'
       },
       {
         icon: EditNote,
-        title: "Giải trình chấm công"
+        title: 'Giải trình chấm công',
+        route: 'Explain'
       }
     ]
   }
@@ -190,25 +204,6 @@ const isDropdownOpen = (idx: any) => {
   // Kiểm tra dropdown có đang mở không
   return dropdownState.value[idx]
 }
-
-// Các hàm để xử lý transition
-// const beforeEnter = (el : any) => {
-//   el.style.transition = "all 0.3s"
-//   el.style.height = "0"
-// }
-
-// const enter = (el : any, done : any) => {
-//   el.offsetHeight // force reflow
-//   el.style.transition = "all 0.3s"
-//   el.style.height = `${el.scrollHeight}px`
-//   done()
-// }
-
-// const leave = (el :any, done :any) => {
-//   el.style.transition = "all 0.3s"
-//   el.style.height = "0"
-//   done()
-// }
 </script>
 
 <style lang="scss" scoped>
@@ -264,7 +259,7 @@ const isDropdownOpen = (idx: any) => {
 
   &-parent {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 8px;
     padding: 7px 10px;
 
@@ -290,6 +285,11 @@ const isDropdownOpen = (idx: any) => {
     .sidebar-nav-dropdown {
       cursor: pointer;
       margin-left: auto;
+      width: 16px;
+      text-align: right;
+      display: flex;
+      align-items: center;
+      justify-content: end;
     }
   }
 

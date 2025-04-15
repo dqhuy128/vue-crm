@@ -4,10 +4,18 @@ import DashboardReport from '@/views/Dashboard/DashboardReport.vue'
 import LoginView from '@/views/Login/Login.vue'
 import RegisterView from '@/views/Register/Register.vue'
 import ResetPassView from '@/views/ResetPassword/ResetView.vue'
-import SystemCateManagement from '@/views/SystemAdmin/CateManagement.vue'
+import SystemCategory from '@/views/SystemAdmin/Category.vue'
 import SystemPermission from '@/views/SystemAdmin/Permission.vue'
-import SystemView from '@/views/SystemAdmin/SystemAdmin.vue'
+import SystemIndexView from '@/views/SystemAdmin/IndexView.vue'
+import SystemAdmin from '@/views/SystemAdmin/Admin.vue'
 import SystemUser from '@/views/SystemAdmin/User.vue'
+import Document from '@/views/Document/Document.vue'
+import LeaveIndex from '@/views/Leave/IndexView.vue'
+import LeaveInfo from '@/views/Leave/Info.vue'
+import LeaveAccess from '@/views/Leave/Access.vue'
+import TimekeepingIndex from '@/views/Timekeeping/IndexView.vue'
+import TimekeepingHistory from '@/views/Timekeeping/History.vue'
+import TimekeepingExplain from '@/views/Timekeeping/Explain.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -56,9 +64,14 @@ const router = createRouter({
     {
       path: '/system',
       name: 'System',
-      component: SystemView,
+      component: SystemIndexView,
       meta: { auth: true },
       children: [
+        {
+          path: 'admin',
+          name: 'SystemAdmin',
+          component: SystemAdmin
+        },
         {
           path: 'user',
           name: 'SystemUser',
@@ -70,22 +83,59 @@ const router = createRouter({
           component: SystemPermission
         },
         {
-          path: 'management',
-          name: 'SystemManagement',
-          component: SystemCateManagement
+          path: 'category',
+          name: 'SystemCategory',
+          component: SystemCategory
         }
       ]
+    },
+    {
+      path: '/leave',
+      name: 'Leave',
+      component: LeaveIndex,
+      meta: { auth: true },
+      children: [
+        {
+          path: 'info',
+          name: 'Info',
+          component: LeaveInfo
+        },
+        {
+          path: 'access',
+          name: 'Access',
+          component: LeaveAccess
+        }
+      ]
+    },
+    {
+      path: '/time-keeping',
+      name: 'TimeKeeping',
+      component: TimekeepingIndex,
+      meta: { auth: true },
+      children: [
+        {
+          path: 'history',
+          name: 'History',
+          component: TimekeepingHistory
+        },
+        {
+          path: 'explain',
+          name: 'Explain',
+          component: TimekeepingExplain
+        }
+      ]
+    },
+    {
+      path: '/document',
+      name: 'Document',
+      component: Document
     },
     {
       path: '/permit',
       name: 'Permit',
       component: () => import('../views/PermitView.vue')
-    },
-    {
-      path: '/document',
-      name: 'Document',
-      component: () => import('../views/Document/Document.vue')
     }
+
     // {
     //   path: '/admin',
     //   name: 'Admin',

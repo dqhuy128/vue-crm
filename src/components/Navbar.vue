@@ -125,11 +125,15 @@ const handleChangePass = async () => {
       const { message } = response.data
       const { status } = response.data
 
-      changePass.error = old_pass ? old_pass : new_pass ? new_pass : message
+      changePass.error = old_pass ? old_pass : new_pass ? new_pass : null
 
-      // if (status === 1) {
+      if (status === 1) {
+        changePass.error = message
 
-      // }
+        setTimeout(() => {
+          changePass.error = ''
+        }, 5000)
+      }
     }
   } catch (error) {
     console.error('Failed to change password:', error)
@@ -144,11 +148,6 @@ const onSubmit = async (values: any, { resetForm }: any) => {
 
 const isRequired = (text: string) => {
   return (value: any) => (value && value.trim() ? true : text)
-}
-
-if (modalActive.value['modalUserInfo'] == false) {
-  console.log('object')
-  changePass.error = ''
 }
 
 onBeforeMount(() => {

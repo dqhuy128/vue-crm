@@ -135,7 +135,7 @@
       </div>
     </div>
 
-    <Table
+    <!-- <Table
       :tbhead="tbhead"
       :tbbody="tbbody"
       justify="justify-between"
@@ -150,7 +150,7 @@
       <button type="button" class="cursor-pointer cell-btn-delete shrink-0">
         <img src="@/assets/images/action-edit-3.svg" alt="" />
       </button>
-    </Table>
+    </Table> -->
 
     <Modal
       @close="toggleModal('modalNewUser')"
