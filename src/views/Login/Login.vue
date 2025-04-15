@@ -15,8 +15,8 @@ const router = useRouter()
 const auth = useAuth()
 
 const form = reactive({
-  username: 'hieund',
-  password: '123456'
+  username: '0904345514',
+  password: '123456@'
 })
 
 const error = ref<string | null>(null)
