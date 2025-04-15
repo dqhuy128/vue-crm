@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, reactive, ref } from 'vue'
 import Modal from '@/components/Modals.vue'
 import { useAuth } from 'vue-auth3'
 import { apiUri } from '@/constants/apiUri'
@@ -14,11 +14,42 @@ import {
   destroyCropper,
   postServer
 } from '@/lib/cropper'
+import { apiClient } from '@/plugins/axios'
+import { Form, Field, ErrorMessage, useForm } from 'vee-validate'
+
+interface recordModal {
+  [key: string]: boolean
+}
 
 const auth = useAuth()
 const token = ref<string | null>(null)
 const user = ref<any>(null)
 const isAuthenticated = ref(false)
+const updateUrlAva = ref<string>('')
+const isPasswordVisible = ref(false)
+const { resetForm } = useForm()
+
+const modalActive = ref<recordModal>({
+  modalUserInfo: false,
+  modalUserAvatar: false,
+  modalUserCroppie: false
+})
+
+const changePass = reactive({
+  old_pass: '',
+  new_pass: '',
+  new_repass: '',
+  error: ''
+})
+
+const toggleModal = (modalStateName: any) => {
+  modalActive.value[modalStateName] = !modalActive.value[modalStateName]
+}
+
+// Function to toggle the password visibility
+const togglePasswordVisibility = () => {
+  isPasswordVisible.value = !isPasswordVisible.value
+}
 
 const fetchUser = async () => {
   isAuthenticated.value = auth.check()
@@ -58,45 +89,67 @@ const handleLogout = async () => {
   }
 }
 
-interface recordModal {
-  [key: string]: boolean
-}
-
-const modalActive = ref<recordModal>({
-  modalUserInfo: false,
-  modalUserAvatar: false,
-  modalUserCroppie: false
-})
-
-const toggleModal = (modalStateName: any) => {
-  modalActive.value[modalStateName] = !modalActive.value[modalStateName]
-}
-
 const handleCroppieClose = () => {
   toggleModal('modalUserCroppie')
   destroyCropper(this)
 }
-
-const handleSubmitAvatar = () => {}
-
-const password1 = ref('')
-const password2 = ref('')
-const password3 = ref('')
-const isPasswordVisible = ref(false)
-
-// Function to toggle the password visibility
-const togglePasswordVisibility = () => {
-  isPasswordVisible.value = !isPasswordVisible.value
-}
-
-const updateUrlAva = ref<string>('')
 
 const handlePostServer = async (target: any) => {
   await postServer(target, auth.check(), auth.token(), updateUrlAva)
   modalActive.value['modalUserCroppie'] = false
 }
 
-console.log('🚀 ~ updateUrlAva:', updateUrlAva.value)
+const handleChangePass = async () => {
+  changePass.error = ''
+
+  try {
+    if (auth.check()) {
+      const formChangePass = new FormData()
+      formChangePass.append('old_pass', changePass.old_pass)
+      formChangePass.append('new_pass', changePass.new_pass)
+      formChangePass.append('new_repass', changePass.new_repass)
+
+      const response = await apiClient.post(
+        `${apiUri}/user/changepass`,
+        formChangePass,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${auth.token()}`
+          }
+        }
+      )
+
+      const { old_pass } = response.data.errors
+      const { new_pass } = response.data.errors
+      const { message } = response.data
+      const { status } = response.data
+
+      changePass.error = old_pass ? old_pass : new_pass ? new_pass : message
+
+      // if (status === 1) {
+
+      // }
+    }
+  } catch (error) {
+    console.error('Failed to change password:', error)
+  }
+}
+
+const onSubmit = async (values: any, { resetForm }: any) => {
+  console.log(values)
+  await handleChangePass()
+  resetForm()
+}
+
+const isRequired = (text: string) => {
+  return (value: any) => (value && value.trim() ? true : text)
+}
+
+if (modalActive.value['modalUserInfo'] == false) {
+  console.log('object')
+  changePass.error = ''
+}
 
 onBeforeMount(() => {
   fetchUser()
@@ -192,7 +245,7 @@ onBeforeMount(() => {
                   </div>
 
                   <div
-                    class="absolute bottom-0 right-0 w-[12px] h-[12px] rounded-[50%] bg-[#12F13E] border border-solid border-white"
+                    class="absolute bottom-[-2px] right-[-4px] w-[12px] h-[12px] rounded-[50%] bg-[#12F13E] border border-solid border-white"
                   ></div>
                 </div>
               </div>
@@ -244,7 +297,7 @@ onBeforeMount(() => {
               />
             </div>
 
-            <div class="absolute bottom-0 right-0 z-10">
+            <div class="absolute bottom-[-10px] right-[-10px] z-10">
               <img src="@/assets/images/ic-camera.svg" alt="" />
             </div>
 
@@ -280,7 +333,10 @@ onBeforeMount(() => {
           </div>
         </div>
 
-        <form action="" class="block w-full max-w-[552px] mx-auto xl:p-9 p-4">
+        <Form
+          class="block w-full max-w-[552px] mx-auto xl:p-9 p-4"
+          @submit="onSubmit"
+        >
           <div class="mb-3 text-center">
             <h3 class="m-0 text-[#464661] text-[20px] font-bold leading-normal">
               Đổi mật khẩu
@@ -294,10 +350,11 @@ onBeforeMount(() => {
               Mật khẩu Cũ
             </span>
             <div class="relative">
-              <input
+              <Field
+                :rules="isRequired('Vui lòng nhập mật khẩu cũ !')"
                 :type="isPasswordVisible ? 'text' : 'password'"
-                v-model="password1"
-                name=""
+                v-model="changePass.old_pass"
+                name="old_pass"
                 placeholder="Nhập mật khẩu"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
@@ -322,6 +379,11 @@ onBeforeMount(() => {
                 </template>
               </button>
             </div>
+
+            <ErrorMessage
+              name="old_pass"
+              class="block mt-1 text-sm text-red-500"
+            />
           </div>
 
           <div class="block mb-3">
@@ -331,10 +393,11 @@ onBeforeMount(() => {
               Mật khẩu mới
             </span>
             <div class="relative">
-              <input
+              <Field
+                :rules="isRequired('Vui lòng nhập mật khẩu mới !')"
                 :type="isPasswordVisible ? 'text' : 'password'"
-                v-model="password2"
-                name=""
+                v-model="changePass.new_pass"
+                name="new_pass"
                 placeholder="Nhập mật khẩu"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
@@ -359,6 +422,11 @@ onBeforeMount(() => {
                 </template>
               </button>
             </div>
+
+            <ErrorMessage
+              name="new_pass"
+              class="block mt-1 text-sm text-red-500"
+            />
           </div>
 
           <div class="block mb-3">
@@ -368,10 +436,11 @@ onBeforeMount(() => {
               Nhập lại mật khẩu mới
             </span>
             <div class="relative">
-              <input
+              <Field
+                :rules="isRequired('Vui lòng nhập lại mật khẩu mới !')"
                 :type="isPasswordVisible ? 'text' : 'password'"
-                v-model="password3"
-                name=""
+                v-model="changePass.new_repass"
+                name="new_repass"
                 placeholder="Nhập mật khẩu"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
@@ -396,7 +465,16 @@ onBeforeMount(() => {
                 </template>
               </button>
             </div>
+
+            <ErrorMessage
+              name="new_repass"
+              class="block mt-1 text-sm text-red-500"
+            />
           </div>
+
+          <p class="text-sm text-red-500">
+            {{ changePass.error }}
+          </p>
 
           <div class="block mt-10 text-center">
             <button
@@ -406,7 +484,7 @@ onBeforeMount(() => {
               Lưu
             </button>
           </div>
-        </form>
+        </Form>
       </div>
     </Modal>
 
