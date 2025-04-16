@@ -1,81 +1,72 @@
 <template>
   <MainLayout>
     <div class="bg-white rounded-[24px] p-2.5">
-      <form action="" class="flex flex-wrap items-stretch gap-4">
-        <div class="grow max-md:flex-[100%]">
-          <input
-            type="text"
-            name=""
-            id=""
-            placeholder="Nhập tên danh mục"
-            class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal"
-          />
-        </div>
+      <form action="" class="flex flex-wrap gap-4">
+        <div class="flex flex-wrap gap-4 grow">
+          <div class="flex-[0_0_calc(50%-8px)] max-md:flex-[100%]">
+            <input
+              type="text"
+              name=""
+              id=""
+              placeholder="Nhập tên danh mục"
+              class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
+            />
+          </div>
 
-        <div class="select-block grow max-lg:flex-[100%]">
-          <select
-            name=""
-            id=""
-            class="border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal"
-          >
-            <option value="">Chọn loại danh mục</option>
-            <option value="">Chọn loại danh mục</option>
-            <option value="">Chọn loại danh mục</option>
-          </select>
-
-          <SelectRoot v-model="fruit">
-            <SelectTrigger
-              class="inline-flex min-w-[160px] items-center justify-between rounded px-[15px] text-[13px] leading-none h-[35px] gap-[5px] bg-white text-grass11 shadow-[0_2px_10px] shadow-black/10 hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-green9 outline-none"
-              aria-label="Customise options"
-            >
-              <SelectValue placeholder="Select a fruit..." />
-              <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-            </SelectTrigger>
-
-            <SelectPortal>
-              <SelectContent
-                class="min-w-[160px] bg-white rounded shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
-                :side-offset="5"
+          <div class="flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
+            <SelectRoot v-model="fruit">
+              <SelectTrigger
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] focus:outline-none"
+                aria-label="Customise options"
               >
-                <SelectScrollUpButton
-                  class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
-                >
-                  <Icon icon="radix-icons:chevron-up" />
-                </SelectScrollUpButton>
+                <SelectValue
+                  class="grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                  placeholder="Chọn loại danh mục"
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              </SelectTrigger>
 
-                <SelectViewport class="p-[5px]">
-                  <SelectLabel
-                    class="px-[25px] text-xs leading-[25px] text-mauve11"
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectScrollUpButton
+                    class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
                   >
-                    Fruits
-                  </SelectLabel>
-                  <SelectGroup>
-                    <SelectItem
-                      v-for="(option, index) in options"
-                      :key="index"
-                      class="text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] pr-[35px] pl-[25px] relative select-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-green9 data-[highlighted]:text-green1"
-                      :value="option"
-                    >
-                      <SelectItemIndicator
+                    <Icon icon="radix-icons:chevron-up" />
+                  </SelectScrollUpButton>
+
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        v-for="(option, index) in options"
+                        :key="index"
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        :value="option"
+                      >
+                        <!-- <SelectItemIndicator
                         class="absolute left-0 w-[25px] inline-flex items-center justify-center"
                       >
                         <Icon icon="radix-icons:check" />
-                      </SelectItemIndicator>
-                      <SelectItemText>
-                        {{ option }}
-                      </SelectItemText>
-                    </SelectItem>
-                  </SelectGroup>
-                </SelectViewport>
+                      </SelectItemIndicator> -->
+                        <SelectItemText>
+                          {{ option }}
+                        </SelectItemText>
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectViewport>
 
-                <SelectScrollDownButton
-                  class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
-                >
-                  <Icon icon="radix-icons:chevron-down" />
-                </SelectScrollDownButton>
-              </SelectContent>
-            </SelectPortal>
-          </SelectRoot>
+                  <SelectScrollDownButton
+                    class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                  >
+                    <Icon icon="radix-icons:chevron-down" />
+                  </SelectScrollDownButton>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
         </div>
 
         <button
@@ -226,10 +217,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
-import MainLayout from "../MainLayout.vue"
-import Modal from "@/components/Modals.vue"
-import MultipleSelect from "@/components/MultiSelect.vue"
+import { ref } from 'vue'
+import MainLayout from '../MainLayout.vue'
+import Modal from '@/components/Modals.vue'
+import MultipleSelect from '@/components/MultiSelect.vue'
 import {
   SelectContent,
   SelectGroup,
@@ -245,11 +236,22 @@ import {
   SelectTrigger,
   SelectValue,
   SelectViewport
-} from "radix-vue"
-const fruit = ref()
+} from 'radix-vue'
+import { Icon } from '@iconify/vue'
 
-const options = ["Apple", "Banana", "Blueberry", "Grapes", "Pineapple"]
-const vegetables = ["Aubergine", "Broccoli", "Carrot", "Courgette", "Leek"]
+const fruit = ref('')
+const options = [
+  'Apple',
+  'Banana',
+  'Blueberry',
+  'Grapes',
+  'Pineapple',
+  'Aubergine',
+  'Broccoli',
+  'Carrot',
+  'Courgette',
+  'Leek'
+]
 
 interface recordModal {
   [key: string]: boolean
@@ -277,10 +279,10 @@ const valueGroupUser = ref<recordSelection>({
   value6: null
 })
 const optionsGroupUser: any = ref([
-  "Danh mục loại A",
-  "Danh mục loại B",
-  "Danh mục loại C",
-  "Danh mục loại D"
+  'Danh mục loại A',
+  'Danh mục loại B',
+  'Danh mục loại C',
+  'Danh mục loại D'
 ])
 </script>
 
@@ -305,4 +307,9 @@ const optionsGroupUser: any = ref([
 }
 </style>
 
-<style lang="scss"></style>
+<style lang="scss">
+.SelectContent {
+  width: var(--radix-select-trigger-width);
+  max-height: var(--radix-select-content-available-height);
+}
+</style>

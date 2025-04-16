@@ -70,8 +70,18 @@ const fetchUser = async () => {
 
       const { data } = response.data
       user.value = data
-    } catch (error) {
-      console.error('Failed to fetch user data:', error)
+    } catch (error: any) {
+      console.error('NavBar.vue ~ Failed to fetch user data:', error)
+
+      if (error.response?.status === 401) {
+        // Logout user
+        await auth.logout({
+          makeRequest: false,
+          redirect: '/login'
+        })
+
+        // console.clear()
+      }
     }
   }
 }
@@ -82,7 +92,7 @@ const handleLogout = async () => {
     // Perform logout without an API call
     await auth.logout({
       makeRequest: false, // Disable API request
-      redirect: '/' // Redirect to login page
+      redirect: '/login' // Redirect to login page
     })
   } catch (error) {
     console.error('Logout failed:', error)

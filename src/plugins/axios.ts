@@ -1,4 +1,9 @@
 import axios from 'axios'
+import { useAuth } from 'vue-auth3'
+import { useRouter } from 'vue-router'
+
+const auth = useAuth()
+const router = useRouter()
 
 export const apiClient = axios.create({
   baseURL: 'https://api.skygroupvn.com.vn/api',
@@ -14,13 +19,20 @@ export const apiClient = axios.create({
   }
 })
 
-// // Interceptor để xử lý lỗi
+// Thêm axios interceptor cho response
 // apiClient.interceptors.response.use(
 //   (response) => response,
 //   (error) => {
+//     console.log('🚀 ~ error:', error)
+
 //     if (error.response && error.response.status === 401) {
-//       // Xử lý khi token hết hạn
-//       // Bạn có thể dispatch một event hoặc thực hiện refresh token ở đây
+//       // Đăng xuất người dùng
+//       auth.logout({
+//         makeRequest: true, // Disable API request
+//         redirect: '/login' // Redirect to login page
+//       })
+//       // Chuyển hướng tới trang login
+//       router.push('/login')
 //     }
 //     return Promise.reject(error)
 //   }
