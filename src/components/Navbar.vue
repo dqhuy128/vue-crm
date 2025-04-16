@@ -71,7 +71,7 @@ const fetchUser = async () => {
       const { data } = response.data
       user.value = data
     } catch (error: any) {
-      console.error('Failed to fetch user data:', error)
+      console.error('NavBar.vue ~ Failed to fetch user data:', error)
 
       if (error.response?.status === 401) {
         // Logout user
@@ -79,6 +79,8 @@ const fetchUser = async () => {
           makeRequest: false,
           redirect: '/login'
         })
+
+        // console.clear()
       }
     }
   }

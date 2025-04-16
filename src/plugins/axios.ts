@@ -20,20 +20,20 @@ export const apiClient = axios.create({
 })
 
 // Thêm axios interceptor cho response
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.log('🚀 ~ error:', error)
+// apiClient.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     console.log('🚀 ~ error:', error)
 
-    if (error.response && error.response.status === 401) {
-      // Đăng xuất người dùng
-      auth.logout({
-        makeRequest: true, // Disable API request
-        redirect: '/login' // Redirect to login page
-      })
-      // Chuyển hướng tới trang login
-      router.push('/login')
-    }
-    return Promise.reject(error)
-  }
-)
+//     if (error.response && error.response.status === 401) {
+//       // Đăng xuất người dùng
+//       auth.logout({
+//         makeRequest: true, // Disable API request
+//         redirect: '/login' // Redirect to login page
+//       })
+//       // Chuyển hướng tới trang login
+//       router.push('/login')
+//     }
+//     return Promise.reject(error)
+//   }
+// )
