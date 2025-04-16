@@ -16,7 +16,8 @@
             :show-labels="false"
             placeholder="Pick a value"
             aria-label="pick a value"
-            track-by="name" label="name"
+            track-by="name"
+            label="name"
           ></multiselect>
         </div>
         <pre class="language-json"><code>{{ FormSubmit.docCate }}</code></pre>
@@ -100,6 +101,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useDocument } from '@/composables/document'
 import { apiUri } from '@/constants/apiUri'
 import axios from 'axios'
 import { onMounted, reactive, ref } from 'vue'
@@ -167,30 +169,46 @@ const fetchCategoryDocument = async () => {
     })
   })
 }
-
+const {
+  data: dataDocument,
+  isLoading: isLoadingDocument,
+  doFetch
+} = useDocument(`${apiUri}/document/list`, auth.token() as string)
 const submit = async () => {
   if (FormSubmit.value.name === null) {
     alert('Vui lòng nhập tên tài liệu')
     return
   }
-  const form = new FormData()
-  form.append('name', FormSubmit.value.name || '')
-  FormSubmit.value.docCate && form.append('type_id', FormSubmit.value.docCate.id || '')
+  const formData = new FormData()
+  formData.append('name', FormSubmit.value.name || '')
+  FormSubmit.value.docCate &&
+    formData.append('type_id', FormSubmit.value.docCate.id || '')
+  formData.append('description', 'Các nội quy làm việc tại Sky Group')
   if (fileUploadPreview.value.length > 0) {
     fileUploadPreview.value.forEach((item) => {
-      form.append('files[]', item.file)
+      formData.append('files[]', item.file)
     })
   }
 
-  const response = await axios.post(`${apiUri}/document/create`, form, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${auth.token()}`
-    }
-  })
-
-  const { message } = response.data
-  console.log(message, 'form message')
+  const response = await axios
+    .post(`${apiUri}/document/create`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    .then(function (res) {
+      // successful response flow
+      FormSubmit.value.docCate = {
+        id: null,
+        name: null
+      }
+      fileUploadPreview.value = []
+      doFetch()
+    })
+    .catch(function (error) {
+      alert('Tạo tài liệu thất bại')
+    })
 }
 
 onMounted(() => {

@@ -102,50 +102,52 @@
 
           <!-- Example row -->
           <div id="tableRowBody" class="table-row body">
-            <template v-if="dataDocument">
+            <template v-if="dataDocument.doc">
               <div
                 class="justify-between table-item"
-                v-for="(item, index) in dataDocument.items[0]"
+                v-for="(document, index) in dataDocument.doc.items"
                 :key="index"
               >
-                <div class="cell">
-                  {{ index + 1}}
-                </div>
-                <div class="cell">
-                  {{ item.type_id }}
-                </div>
-                <div class="cell">
-                  {{ item.name }}
-                </div>
-                <div class="cell">
-                  {{ item.description || 'Chưa có mô tả'}}
-                </div>
-                <div class="cell">
-                  {{ item.created_at }}
-                </div>
-
-                <div class="cell pinned pinned-body">
-                  <div class="cell edit edit-body">
-                    <button
-                      type="button"
-                      class="cursor-pointer cell-btn-view shrink-0"
-                    >
-                      <img src="@/assets/images/action-edit-1.svg" alt="" />
-                    </button>
-                    <button
-                      type="button"
-                      class="cursor-pointer cell-btn-edit shrink-0"
-                    >
-                      <img src="@/assets/images/action-edit-2.svg" alt="" />
-                    </button>
-                    <button
-                      type="button"
-                      class="cursor-pointer cell-btn-delete shrink-0"
-                    >
-                      <img src="@/assets/images/action-edit-3.svg" alt="" />
-                    </button>
+                <template v-for="(item, index) in document">
+                  <div class="cell">
+                    {{ index + 1 }}
                   </div>
-                </div>
+                  <div class="cell">
+                    {{ item.type_id }}
+                  </div>
+                  <div class="cell">
+                    {{ item.name }}
+                  </div>
+                  <div class="cell">
+                    {{ item.description || 'Chưa có mô tả' }}
+                  </div>
+                  <div class="cell">
+                    {{ item.created_at }}
+                  </div>
+
+                  <div class="cell pinned pinned-body">
+                    <div class="cell edit edit-body">
+                      <button
+                        type="button"
+                        class="cursor-pointer cell-btn-view shrink-0"
+                      >
+                        <img src="@/assets/images/action-edit-1.svg" alt="" />
+                      </button>
+                      <button
+                        type="button"
+                        class="cursor-pointer cell-btn-edit shrink-0"
+                      >
+                        <img src="@/assets/images/action-edit-2.svg" alt="" />
+                      </button>
+                      <button
+                        type="button"
+                        class="cursor-pointer cell-btn-delete shrink-0"
+                      >
+                        <img src="@/assets/images/action-edit-3.svg" alt="" />
+                      </button>
+                    </div>
+                  </div>
+                </template>
               </div>
             </template>
           </div>
@@ -413,10 +415,13 @@ const handlePageChange = (pageNum: number) => {
 }
 
 const {
-  data: dataDocument,
+  data,
   isLoading: isLoadingDocument,
   doFetch
 } = useDocument(`${apiUri}/document/list`, isUser.token as string)
+const dataDocument = reactive({
+  doc: data
+})
 
 onMounted(() => {
   auth.load().then(() => {
@@ -433,6 +438,7 @@ onMounted(() => {
       isUser.token = null
     }
   })
+  console.log(dataDocument, 'dataDocument');
 })
 
 // watch(paginate, (newValue, oldValue) => {

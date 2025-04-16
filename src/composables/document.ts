@@ -5,9 +5,10 @@ interface DocumentType {
   items: any[],
   pagination: any[]
 }
+const data = ref<DocumentType | null>(null)
 export function useDocument(url: string, token: string) {
   const auth = useAuth()
-  const data = ref<DocumentType | null>(null)
+ 
   const error = ref(null)
   const loadingPromise = ref()
   const isLoading = ref(false)
