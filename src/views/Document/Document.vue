@@ -105,19 +105,24 @@
             <template v-if="dataDocument">
               <div
                 class="justify-between table-item"
-                v-for="(item, index) in dataDocument.items"
+                v-for="(item, index) in dataDocument.items[0]"
                 :key="index"
               >
-                <template v-for="(value, name) in item[0]">
-                  <template v-if="name.toString() === 'type_id'">
-                    <div class="cell">Type : {{ value }}</div>
-                  </template>
-                  <template v-else>
-                    <div class="cell">
-                      {{ value }}
-                    </div>
-                  </template>
-                </template>
+                <div class="cell">
+                  {{ index + 1}}
+                </div>
+                <div class="cell">
+                  {{ item.type_id }}
+                </div>
+                <div class="cell">
+                  {{ item.name }}
+                </div>
+                <div class="cell">
+                  {{ item.description || 'Chưa có mô tả'}}
+                </div>
+                <div class="cell">
+                  {{ item.created_at }}
+                </div>
 
                 <div class="cell pinned pinned-body">
                   <div class="cell edit edit-body">

@@ -10,16 +10,16 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue"
-import Multiselect from "vue-multiselect"
-import "vue-multiselect/dist/vue-multiselect.min.css"
+import { computed } from "vue";
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
 const props = defineProps<{
   modelValue: any
   options: any
   holder: string
 }>()
-
+console.log(props.options, "options")
 const emit = defineEmits(["update:modelValue"])
 
 const internalValue = computed({

@@ -1,5 +1,5 @@
 <template>
-  <form action="">
+  <form action="" @submit.prevent="submit">
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 md:col-span-6">
         <div class="block">
@@ -8,13 +8,18 @@
           >
             Loại tài liệu *
           </span>
-
-          <!-- <MultipleSelect
-            :options="optionsGroupUser"
-            holder="Danh mục loại ticket"
-            v-model="valueGroupUser.value1"
-          /> -->
+          <multiselect
+            v-model="FormSubmit.docCate"
+            :options="categoryDocument.data"
+            :searchable="false"
+            :close-on-select="false"
+            :show-labels="false"
+            placeholder="Pick a value"
+            aria-label="pick a value"
+            track-by="name" label="name"
+          ></multiselect>
         </div>
+        <pre class="language-json"><code>{{ FormSubmit.docCate }}</code></pre>
       </div>
 
       <div class="col-span-12 md:col-span-6">
@@ -31,6 +36,7 @@
             id=""
             placeholder="Trợ lý"
             class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+            v-model="FormSubmit.name"
           />
         </div>
       </div>
@@ -94,7 +100,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { apiUri } from '@/constants/apiUri'
+import axios from 'axios'
+import { onMounted, reactive, ref } from 'vue'
+import { useAuth } from 'vue-auth3'
+import Multiselect from 'vue-multiselect'
+import 'vue-multiselect/dist/vue-multiselect.min.css'
 import FileUpload from '../FileUpload.vue'
 type previewFiles = {
   name: string
@@ -102,7 +113,13 @@ type previewFiles = {
   file: File
 }
 const fileUploadPreview = ref<previewFiles[]>([])
-
+const FormSubmit = ref({
+  name: null,
+  docCate: {
+    id: null,
+    name: null
+  }
+})
 const reader = new FileReader()
 
 function setUrlFromFiles(files: FileList | File) {
@@ -129,6 +146,56 @@ function onFileChange(files: FileList | File) {
   console.log(files)
   setUrlFromFiles(files)
 }
+const auth = useAuth()
+const categoryDocument = reactive<{ data: any[] }>({ data: [] })
+
+const fetchCategoryDocument = async () => {
+  const response = await axios.get(`${apiUri}/categories/list?type=document`, {
+    headers: {
+      Authorization: `Bearer ${auth.token()}`
+    }
+  })
+  const { data } = response.data
+  // console.log(data.items, 'category document')
+  // categoryDocument.value = data.items
+  data.items.map((item: any) => {
+    item.map((subItem: any) => {
+      categoryDocument.data.push({
+        id: subItem.id,
+        name: subItem.name
+      })
+    })
+  })
+}
+
+const submit = async () => {
+  if (FormSubmit.value.name === null) {
+    alert('Vui lòng nhập tên tài liệu')
+    return
+  }
+  const form = new FormData()
+  form.append('name', FormSubmit.value.name || '')
+  FormSubmit.value.docCate && form.append('type_id', FormSubmit.value.docCate.id || '')
+  if (fileUploadPreview.value.length > 0) {
+    fileUploadPreview.value.forEach((item) => {
+      form.append('files[]', item.file)
+    })
+  }
+
+  const response = await axios.post(`${apiUri}/document/create`, form, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${auth.token()}`
+    }
+  })
+
+  const { message } = response.data
+  console.log(message, 'form message')
+}
+
+onMounted(() => {
+  fetchCategoryDocument()
+})
 </script>
 
 <style lang="scss" scoped>
