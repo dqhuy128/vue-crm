@@ -70,8 +70,16 @@ const fetchUser = async () => {
 
       const { data } = response.data
       user.value = data
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch user data:', error)
+
+      if (error.response?.status === 401) {
+        // Logout user
+        await auth.logout({
+          makeRequest: false,
+          redirect: '/login'
+        })
+      }
     }
   }
 }
