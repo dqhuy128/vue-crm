@@ -82,7 +82,7 @@ const handleLogout = async () => {
     // Perform logout without an API call
     await auth.logout({
       makeRequest: false, // Disable API request
-      redirect: '/' // Redirect to login page
+      redirect: '/login' // Redirect to login page
     })
   } catch (error) {
     console.error('Logout failed:', error)

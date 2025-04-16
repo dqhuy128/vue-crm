@@ -56,6 +56,12 @@ const handleLogin = async () => {
     }
   } catch (err: any) {
     console.error('Chi tiết lỗi:', err)
+    if (err.response?.status === 401) {
+      await auth.logout({
+        makeRequest: false, // Disable API request
+        redirect: '/login' // Redirect to login page
+      })
+    }
   }
 }
 
