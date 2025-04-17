@@ -420,12 +420,14 @@ const fetchDataDocument = () => {
   if (debounceTime.value.timeOut !== null) {
     clearTimeout(debounceTime.value.timeOut)
   }
+
   debounceTime.value.timeOut = setTimeout(() => {
     const res = {
       ...params,
       page: paginate.page,
       per_page: paginate.per_page
     }
+
     doFetch(
       `${apiUri}/document/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
       auth.token() as string
