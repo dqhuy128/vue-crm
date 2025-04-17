@@ -8,19 +8,20 @@
           >
             Loại tài liệu *
           </span>
-          <multiselect
+          <select
             v-model="FormSubmit.docCate"
-            :options="categoryDocument.data"
-            :searchable="false"
-            :close-on-select="false"
-            :show-labels="false"
-            placeholder="Pick a value"
-            aria-label="pick a value"
-            track-by="name"
-            label="name"
-          ></multiselect>
+            class="border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal w-full"
+          >
+            <template
+              v-for="(item, index) in categoryDocument.data"
+              :key="index"
+            >
+              <option :value="item.id">
+                {{ item.name }}
+              </option>
+            </template>
+          </select>
         </div>
-        <pre class="language-json"><code>{{ FormSubmit.docCate }}</code></pre>
       </div>
 
       <div class="col-span-12 md:col-span-6">
@@ -79,6 +80,7 @@
           <textarea
             name=""
             id=""
+            v-model="FormSubmit.description"
             placeholder="Nhập mô tả"
             class="w-full border min-h-[120px] border-solid border-[#161616] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
           ></textarea>
@@ -106,8 +108,8 @@ import { apiUri } from '@/constants/apiUri'
 import axios from 'axios'
 import { onMounted, reactive, ref } from 'vue'
 import { useAuth } from 'vue-auth3'
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
+// import 'vue-multiselect/dist/vue-multiselect.min.css'
+import { tableMagic } from '@/utils/main'
 import FileUpload from '../FileUpload.vue'
 type previewFiles = {
   name: string
@@ -117,13 +119,14 @@ type previewFiles = {
 const fileUploadPreview = ref<previewFiles[]>([])
 const FormSubmit = ref({
   name: null,
-  docCate: {
-    id: null,
-    name: null
-  }
+  description: '',
+  docCate: null
 })
 const reader = new FileReader()
-
+const emit = defineEmits(['reRangeTable'])
+function reFetchStyleTable() {
+  emit('reRangeTable')
+}
 function setUrlFromFiles(files: FileList | File) {
   if (files instanceof File) {
     fileUploadPreview.value.push({
@@ -149,31 +152,13 @@ function onFileChange(files: FileList | File) {
   setUrlFromFiles(files)
 }
 const auth = useAuth()
-const categoryDocument = reactive<{ data: any[] }>({ data: [] })
 
-const fetchCategoryDocument = async () => {
-  const response = await axios.get(`${apiUri}/categories/list?type=document`, {
-    headers: {
-      Authorization: `Bearer ${auth.token()}`
-    }
-  })
-  const { data } = response.data
-  // console.log(data.items, 'category document')
-  // categoryDocument.value = data.items
-  data.items.map((item: any) => {
-    item.map((subItem: any) => {
-      categoryDocument.data.push({
-        id: subItem.id,
-        name: subItem.name
-      })
-    })
-  })
-}
-const {
-  data: dataDocument,
-  isLoading: isLoadingDocument,
-  doFetch
-} = useDocument(`${apiUri}/document/list`, auth.token() as string)
+const { doFetch, fetchCategoryDocument, categories } = useDocument()
+
+const categoryDocument = reactive({
+  data: categories.value || undefined
+})
+
 const submit = async () => {
   if (FormSubmit.value.name === null) {
     alert('Vui lòng nhập tên tài liệu')
@@ -181,15 +166,16 @@ const submit = async () => {
   }
   const formData = new FormData()
   formData.append('name', FormSubmit.value.name || '')
-  FormSubmit.value.docCate &&
-    formData.append('type_id', FormSubmit.value.docCate.id || '')
-  formData.append('description', 'Các nội quy làm việc tại Sky Group')
+
+  formData.append('type_id', FormSubmit.value.docCate || '')
+  formData.append('description', FormSubmit.value.description)
   if (fileUploadPreview.value.length > 0) {
     fileUploadPreview.value.forEach((item) => {
-      formData.append('files[]', item.file)
+      formData.append('files', item.file)
     })
   }
-
+  console.log(FormSubmit.value, 'formData')
+  // return ;
   const response = await axios
     .post(`${apiUri}/document/create`, formData, {
       headers: {
@@ -199,12 +185,11 @@ const submit = async () => {
     })
     .then(function (res) {
       // successful response flow
-      FormSubmit.value.docCate = {
-        id: null,
-        name: null
-      }
+      FormSubmit.value.docCate = null
       fileUploadPreview.value = []
-      doFetch()
+      doFetch(`${apiUri}/document/list?page=1&per_page=10`, auth.token() as string).then(() => {
+        tableMagic()
+      })
     })
     .catch(function (error) {
       alert('Tạo tài liệu thất bại')
@@ -212,7 +197,11 @@ const submit = async () => {
 }
 
 onMounted(() => {
-  fetchCategoryDocument()
+  auth.load().then(() => {
+    if (auth.check() && categories.value.length === 0) {
+      fetchCategoryDocument()
+    }
+  })
 })
 </script>
 

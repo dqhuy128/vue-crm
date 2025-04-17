@@ -1,19 +1,27 @@
+import { apiUri } from '@/constants/apiUri'
+import axios from 'axios'
 import { ref } from 'vue'
 import { useAuth } from 'vue-auth3'
 
 interface DocumentType {
-  items: any[],
-  pagination: any[]
+  items: any[]
+  pagination: {
+    total: string
+    per_page: string
+    current_page: string
+    last_page: string
+  }
 }
 const data = ref<DocumentType | null>(null)
-export function useDocument(url: string, token: string) {
+const categories = ref<Record<string, string>[]>([])
+export function useDocument() {
   const auth = useAuth()
- 
+
   const error = ref(null)
   const loadingPromise = ref()
   const isLoading = ref(false)
 
-  const doFetch = async () => {
+  const doFetch = async (url: string, token: string) => {
     isLoading.value = true
     const response = await auth
       .fetch({
@@ -46,6 +54,32 @@ export function useDocument(url: string, token: string) {
     //   .catch((err) => (error.value = err))
     //   .finally(() => (isLoading.value = false))
   }
-
-  return { data, error, loadingPromise, isLoading, doFetch }
+  const fetchCategoryDocument = async () => {
+    const response = await axios.get(
+      `${apiUri}/categories/list?type=document`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`
+        }
+      }
+    )
+    const { data } = response.data
+    data.items.map((item: any) => {
+      item.map((subItem: any) => {
+        categories.value.push({
+          id: subItem.id,
+          name: subItem.name
+        })
+      })
+    })
+  }
+  return {
+    data,
+    error,
+    loadingPromise,
+    isLoading,
+    doFetch,
+    fetchCategoryDocument,
+    categories
+  }
 }

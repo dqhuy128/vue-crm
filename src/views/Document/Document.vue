@@ -1,27 +1,89 @@
 <template>
   <MainLayout>
     <div class="bg-white rounded-[24px] p-2.5">
-      <form action="" class="flex flex-wrap items-stretch gap-4">
-        <div class="grow max-lg:flex-[100%]">
-          <input
-            name=""
-            placeholder="Nhập tên tài liệu"
-            class="border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal w-full"
-          />
-        </div>
+      <form
+        @submit.prevent="handleSearchDocument"
+        class="flex flex-wrap items-stretch gap-4"
+      >
+        <div class="flex flex-wrap gap-4 grow">
+          <div class="flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
+            <input
+              name=""
+              v-model="params.name"
+              placeholder="Nhập tên tài liệu"
+              class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
+            />
+          </div>
 
-        <div class="select-block grow max-lg:flex-[100%]">
-          <select
-            name=""
-            id=""
-            class="border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal"
+          <div class="select-block flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
+            <SelectRoot v-model="params.type_id">
+              <SelectTrigger
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] focus:outline-none"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                  placeholder="Chọn loại danh mục"
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              </SelectTrigger>
+
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectScrollUpButton
+                    class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                  >
+                    <Icon icon="radix-icons:chevron-up" />
+                  </SelectScrollUpButton>
+
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        v-for="(item, index) in categoryDocument.data"
+                        :key="index"
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        :value="item.id"
+                      >
+                        <!-- <SelectItemIndicator
+                        class="absolute left-0 w-[25px] inline-flex items-center justify-center"
+                      >
+                        <Icon icon="radix-icons:check" />
+                      </SelectItemIndicator> -->
+                        <SelectItemText>
+                          {{ item.name }}
+                        </SelectItemText>
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectViewport>
+
+                  <SelectScrollDownButton
+                    class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                  >
+                    <Icon icon="radix-icons:chevron-down" />
+                  </SelectScrollDownButton>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+
+            <!-- <select
+            v-model="params.type_id"
+            class="border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal w-full"
           >
-            <option value="">Chọn trạng thái</option>
-            <option value="">Chọn trạng thái</option>
-            <option value="">Chọn trạng thái</option>
-          </select>
+            <template
+              v-for="(item, index) in categoryDocument.data"
+              :key="index"
+            >
+              <option :value="item.id">
+                {{ item.name }}
+              </option>
+            </template>
+          </select> -->
+          </div>
         </div>
-
         <button
           type="submit"
           class="inline-flex items-center justify-center max-md:flex-[100%] gap-2 bg-[#013878] rounded-[24px] p-[8px_16px] transition hover:shadow-hoverinset cursor-pointer"
@@ -108,7 +170,7 @@
                 v-for="(document, index) in dataDocument.doc.items"
                 :key="index"
               >
-                <template v-for="(item, index) in document">
+                <template v-for="(item, _) in document">
                   <div class="cell">
                     {{ index + 1 }}
                   </div>
@@ -151,29 +213,6 @@
               </div>
             </template>
           </div>
-
-          <!-- <div
-                      id="isLoadingTable"
-                      class="absolute w-full inset-0 !h-full z-100 bg-[#ffffffbf]"
-                    >
-                      <div class="animate-loading-table">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="size-6"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                          />
-                        </svg>
-                      </div>
-                      <div class="block">Đang tải dữ liệu</div>
-                    </div> -->
         </div>
       </div>
 
@@ -185,11 +224,14 @@
             name=""
             id="selectPerPage"
             class="appearance-none cursor-pointer p-[8px_12px] bg-white rounded-[24px] md:min-w-[264px] text-[#464661] text-[14px] font-normal border border-solid border-[#EDEDF6]"
+            v-model="paginate.per_page"
           >
-            <option value="">20 bản ghi / trang</option>
-            <option value="">40 bản ghi / trang</option>
-            <option value="">30 bản ghi / trang</option>
-            <option value="">10 bản ghi / trang</option>
+            <option value="20">20 bản ghi / trang</option>
+            <option value="40">40 bản ghi / trang</option>
+            <option value="30">30 bản ghi / trang</option>
+            <option value="10" :selected="paginate.per_page === 10">
+              10 bản ghi / trang
+            </option>
           </select>
 
           <div
@@ -210,13 +252,26 @@
           </div>
         </div>
 
-        <!-- <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
-            1 - 10 trong 10 kết quả
+            <template
+              v-if="
+                dataDocument.doc?.pagination?.total &&
+                Number(dataDocument.doc?.pagination.total) > paginate.per_page
+              "
+            >
+              1 - {{ paginate.per_page }} trong
+            </template>
+            <template v-else>
+              {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
+            </template>
           </div>
 
           <div class="flex flex-wrap items-center tb-navigation md:gap-2">
-            <a href="" class="disabled">
+            <button
+              :class="{ disabled: paginate.page === 1 }"
+              @click="handlePageChange(paginate.page - 1)"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -229,17 +284,18 @@
                   fill="#363636"
                 />
               </svg>
-            </a>
+            </button>
 
             <input
               type="text"
               name=""
-              :value="props.params.currentPage"
+              :value="paginate.page"
               id=""
               class="rounded-[8px] bg-white w-[32px] h-[32px] inline-flex flex-col items-center justify-center text-center text-[#464661] text-[16px] font-bold border border-solid border-[#909090]"
+              readonly
             />
 
-            <button href="" @click="goToNextPage">
+            <button href="" @click="handlePageChange(paginate.page + 1)">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -254,27 +310,9 @@
               </svg>
             </button>
           </div>
-        </div> -->
+        </div>
       </div>
     </div>
-    <!-- <Table
-      :tbhead="tbhead"
-      :tbbody="tbbody"
-      justify="justify-between"
-      :status="false"
-      :params="params"
-      :handlePageChange="handlePageChange"
-    >
-      <button type="button" class="cursor-pointer cell-btn-view shrink-0">
-        <img src="@/assets/images/action-edit-1.svg" alt="" />
-      </button>
-      <button type="button" class="cursor-pointer cell-btn-edit shrink-0">
-        <img src="@/assets/images/action-edit-2.svg" alt="" />
-      </button>
-      <button type="button" class="cursor-pointer cell-btn-delete shrink-0">
-        <img src="@/assets/images/action-edit-3.svg" alt="" />
-      </button>
-    </Table> -->
 
     <Modal
       @close="toggleModal('modalAddDocument')"
@@ -307,31 +345,40 @@ import CreateDocument from '@/components/Document/CreateDocument.vue'
 import Modal from '@/components/Modals.vue'
 import { useDocument } from '@/composables/document'
 import { apiUri } from '@/constants/apiUri'
-import 'flatpickr/dist/flatpickr.css'
-import { Vietnamese } from 'flatpickr/dist/l10n/vn.js'
-import { onMounted, reactive, ref } from 'vue'
+import { tableMagic } from '@/utils/main'
+import {
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectItemText,
+  SelectPortal,
+  SelectRoot,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport
+} from 'radix-vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
-import { useRouter } from 'vue-router'
 import MainLayout from '../MainLayout.vue'
-const { currentRoute, push } = useRouter()
-const auth = useAuth()
-const isUser = reactive<{
-  isAuthen: boolean
-  token?: string | null
-}>({
-  isAuthen: false,
-  token: null
-})
-const dateState = ref<Record<string, any>>({
-  date1: null,
-  date2: null,
-  date3: null
-})
 
-const configFlatpickr = ref({
-  wrap: true, // set wrap to true only when using 'input-group'
-  dateFormat: 'd/m/Y',
-  locale: Vietnamese // locale for this instance only
+const auth = useAuth()
+
+const params = reactive({
+  type_id: '',
+  name: ''
+})
+const paginate = reactive({
+  page: 1,
+  per_page: 10
+})
+const debounceTime = ref<{
+  timeOut: number | null
+  counter: number
+}>({
+  timeOut: null,
+  counter: 0
 })
 
 interface recordModal {
@@ -345,20 +392,6 @@ const modalActive = ref<recordModal>({
 const toggleModal = (modalStateName: any) => {
   modalActive.value[modalStateName] = !modalActive.value[modalStateName]
 }
-
-interface recordSelection {
-  [key: string]: any
-}
-
-const valueGroupUser = ref<recordSelection>({
-  value1: null,
-  value2: null,
-  value3: null,
-  value4: null,
-  value5: null,
-  value6: null
-})
-const optionsGroupUser = ref(['Option 1', 'Option 2', 'Option3', 'Option 4'])
 
 const tbhead = reactive([
   {
@@ -383,84 +416,71 @@ const tbhead = reactive([
   }
 ])
 
-const tbbody = reactive([
-  {
-    data: [
-      { title: '01' },
-      { title: 'Quy định chung' },
-      { title: 'Quy định họp' },
-      { title: 'Áp dụng cho QLC' },
-      { title: '21/08/2024' }
-    ]
+const fetchDataDocument = () => {
+  if (debounceTime.value.timeOut !== null) {
+    clearTimeout(debounceTime.value.timeOut)
   }
-])
-
-// dragable and upload file
-
-const documents = ref([])
-// const currentPage = reactive<Number>(1)
-// const perPage = ref<Number>(10)
-const params = reactive({
-  currentPage: 1,
-  perPage: 10,
-  type_id: '',
-  name: ''
-})
-const totalPage = ref(0)
+  debounceTime.value.timeOut = setTimeout(() => {
+    const res = {
+      ...params,
+      page: paginate.page,
+      per_page: paginate.per_page
+    }
+    doFetch(
+      `${apiUri}/document/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
+      auth.token() as string
+    ).then(() => {
+      // console.log('🚀 ~ fetchDataDocument ~ res:', res)
+      tableMagic()
+    })
+  }, 300)
+}
 
 const handlePageChange = (pageNum: number) => {
-  console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
-  params.currentPage = pageNum
-  updateQueryState('page', pageNum.toString())
+  // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
+  paginate.page = pageNum
+  // fetchDataDocument();
+}
+
+const handleSearchDocument = async () => {
+  paginate.page = 1
+  paginate.per_page = 10
+  fetchDataDocument()
 }
 
 const {
   data,
-  isLoading: isLoadingDocument,
-  doFetch
-} = useDocument(`${apiUri}/document/list`, isUser.token as string)
+  // isLoading: isLoadingDocument,
+  doFetch,
+  // fetchCategoryDocument,
+  categories
+} = useDocument()
 const dataDocument = reactive({
   doc: data
 })
-
-onMounted(() => {
-  auth.load().then(() => {
-    if (auth.check()) {
-      // fetch some data
-      const token = auth.token()
-      isUser.isAuthen = true
-      // fetchDocuments(token , paginate)
-      isUser.token = token
-      // fetchDocuments(isUser.token, params)
-      doFetch()
-    } else {
-      isUser.isAuthen = false
-      isUser.token = null
-    }
-  })
-  console.log(dataDocument, 'dataDocument');
+const categoryDocument = reactive({
+  data: categories.value || undefined
 })
 
-// watch(paginate, (newValue, oldValue) => {
-//   console.log(newValue ,'paginate Newvalue');
-//   console.log(oldValue ,'paginate oldValue');
-//   // if (newValue.currentPage === oldValue.currentPage) return
-//   fetchDocuments(isUser.token, paginate)
-// })
+onMounted(() => {
+  if (auth.check()) {
+    fetchDataDocument()
+  }
+  console.log(dataDocument, 'dataDocument')
+})
 
-const updateQueryState = (parameter: string, value: string) => {
-  push({
-    query: {
-      ...currentRoute.value.query,
-      [parameter]: value
-    }
-  })
-}
-
-// onBeforeRouteUpdate(async (to, from) => {
-//   // detech if params change
-//   fetchDocuments(isUser.token || null, params)
-// })
+watch(
+  paginate,
+  async () => {
+    fetchDataDocument()
+  },
+  {
+    // must pass deep option to watch for changes on object properties
+    deep: true,
+    // can also pass immediate to handle that first request AND when queries change
+    immediate: true
+  }
+)
 </script>
 
 <style lang="scss" scoped>
