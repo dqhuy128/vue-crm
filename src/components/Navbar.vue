@@ -489,6 +489,10 @@ onBeforeMount(() => {
             <button
               type="submit"
               class="inline-block min-w-[175px] bg-main !text-white text-[16px] font-bold leading-normal !uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+              :class="{
+                'pointer-events-auto opacity-100': changePass.old_pass,
+                'pointer-events-none opacity-50': !changePass.old_pass
+              }"
             >
               Lưu
             </button>

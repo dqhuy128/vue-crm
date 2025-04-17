@@ -14,7 +14,7 @@
           </div>
 
           <div class="flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
-            <SelectRoot v-model="fruit">
+            <SelectRoot v-model="refCategoriesModel">
               <SelectTrigger
                 class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] focus:outline-none"
                 aria-label="Customise options"
@@ -41,18 +41,13 @@
                   <SelectViewport>
                     <SelectGroup>
                       <SelectItem
-                        v-for="(option, index) in options"
+                        v-for="(categories, index) in refCategories"
                         :key="index"
                         class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                        :value="option"
+                        :value="categories"
                       >
-                        <!-- <SelectItemIndicator
-                        class="absolute left-0 w-[25px] inline-flex items-center justify-center"
-                      >
-                        <Icon icon="radix-icons:check" />
-                      </SelectItemIndicator> -->
                         <SelectItemText>
-                          {{ option }}
+                          {{ capitalizeFirstLetter(categories) }}
                         </SelectItemText>
                       </SelectItem>
                     </SelectGroup>
@@ -238,20 +233,38 @@ import {
   SelectViewport
 } from 'radix-vue'
 import { Icon } from '@iconify/vue'
+import { apiUri } from '@/constants/apiUri'
+import { apiClient } from '@/plugins/axios'
+import { useAuth } from 'vue-auth3'
+import { capitalizeFirstLetter } from '@/utils/main'
 
-const fruit = ref('')
-const options = [
-  'Apple',
-  'Banana',
-  'Blueberry',
-  'Grapes',
-  'Pineapple',
-  'Aubergine',
-  'Broccoli',
-  'Carrot',
-  'Courgette',
-  'Leek'
-]
+const auth = useAuth()
+const refCategories = ref<any | null>(null)
+const refCategoriesModel = ref('')
+console.log('🚀 ~ refCategoriesModel:', refCategoriesModel.value)
+
+if (auth.check()) {
+  const token = auth.token()
+
+  fetch(`${apiUri}/categories/type`, {
+    method: 'GET'
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error('Failed to fetch categories')
+      }
+      return res.json()
+    })
+    .then((result) => {
+      const { data } = result
+      const values = Object.keys(data).map((key) => data[key])
+      refCategories.value = values
+      console.log('🚀 ~ .then ~ refCategories.value:', refCategories.value)
+    })
+    .catch((error) => {
+      console.error('Error:', error)
+    })
+}
 
 interface recordModal {
   [key: string]: boolean
@@ -286,7 +299,12 @@ const optionsGroupUser: any = ref([
 ])
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.SelectContent {
+  width: var(--radix-select-trigger-width);
+  max-height: var(--radix-select-content-available-height);
+}
+
 .select-block {
   position: relative;
 
@@ -304,12 +322,5 @@ const optionsGroupUser: any = ref([
     appearance: none;
     width: 100%;
   }
-}
-</style>
-
-<style lang="scss">
-.SelectContent {
-  width: var(--radix-select-trigger-width);
-  max-height: var(--radix-select-content-available-height);
 }
 </style>
