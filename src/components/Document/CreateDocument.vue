@@ -111,6 +111,10 @@ import { useAuth } from 'vue-auth3'
 // import 'vue-multiselect/dist/vue-multiselect.min.css'
 import { tableMagic } from '@/utils/main'
 import FileUpload from '../FileUpload.vue'
+const props = defineProps<{
+  closeModal : () => void;
+}>()
+
 type previewFiles = {
   name: string
   path: string
@@ -123,10 +127,6 @@ const FormSubmit = ref({
   docCate: null
 })
 const reader = new FileReader()
-const emit = defineEmits(['reRangeTable'])
-function reFetchStyleTable() {
-  emit('reRangeTable')
-}
 function setUrlFromFiles(files: FileList | File) {
   if (files instanceof File) {
     fileUploadPreview.value.push({
@@ -187,6 +187,7 @@ const submit = async () => {
       // successful response flow
       FormSubmit.value.docCate = null
       fileUploadPreview.value = []
+      props.closeModal()
       doFetch(`${apiUri}/document/list?page=1&per_page=10`, auth.token() as string).then(() => {
         tableMagic()
       })

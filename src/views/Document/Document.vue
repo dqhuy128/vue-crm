@@ -57,6 +57,12 @@
                           {{ item.name }}
                         </SelectItemText>
                       </SelectItem>
+                      <SelectItem
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        value="0"
+                      >
+                        <SelectItemText> Tất cả loại tài liệu </SelectItemText>
+                      </SelectItem>
                     </SelectGroup>
                   </SelectViewport>
 
@@ -175,7 +181,11 @@
                     {{ index + 1 }}
                   </div>
                   <div class="cell">
-                    {{ item.type_id }}
+                    {{
+                      categoryDocument.data.filter(
+                        (cate) => cate.id === item.type_id
+                      )[0].name
+                    }}
                   </div>
                   <div class="cell">
                     {{ item.name }}
@@ -204,6 +214,7 @@
                       <button
                         type="button"
                         class="cursor-pointer cell-btn-delete shrink-0"
+                        @click="handleDeleteDocument(item.id)"
                       >
                         <img src="@/assets/images/action-edit-3.svg" alt="" />
                       </button>
@@ -326,7 +337,7 @@
           </h3>
         </div>
 
-        <CreateDocument>
+        <CreateDocument :closeModal="() => toggleModal('modalAddDocument')">
           <button
             @click="toggleModal('modalAddDocument')"
             type="button"
@@ -453,7 +464,8 @@ const {
   // isLoading: isLoadingDocument,
   doFetch,
   // fetchCategoryDocument,
-  categories
+  categories,
+  deleteDocument
 } = useDocument()
 const dataDocument = reactive({
   doc: data
@@ -461,7 +473,15 @@ const dataDocument = reactive({
 const categoryDocument = reactive({
   data: categories.value || undefined
 })
-
+const handleDeleteDocument = async (id: any) => {
+  if (window.confirm('Bạn có chắc chắn muốn xóa tài liệu này không?')) {
+    deleteDocument(id).then(() => {
+      fetchDataDocument()
+    })
+  } else {
+    return
+  }
+}
 onMounted(() => {
   if (auth.check()) {
     fetchDataDocument()
