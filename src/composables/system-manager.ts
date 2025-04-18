@@ -20,7 +20,6 @@ export function useSystemManager() {
       const { data } = response
       const values = Object.keys(data)
       dataCategories.value = data
-      console.log('🚀 ~ dataCategories:', dataCategories.value)
     }
   }
 

@@ -99,14 +99,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
+    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách danh mục hệ thống
       </div>
 
-      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
+      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
         <button
           type="button"
           id="tableAdding"
@@ -122,6 +122,8 @@
         </button>
       </div>
     </div>
+
+    <TableSystemCategory />
 
     <Modal
       @close="toggleModal('modalAddCateManager')"
@@ -189,7 +191,7 @@
           </div>
 
           <div
-            class="flex flex-wrap gap-4 justify-center items-stretch mt-9 text-center xl:gap-6"
+            class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
           >
             <button
               @click="toggleModal('modalAddCateManager')"
@@ -235,6 +237,7 @@ import {
 import { Icon } from '@iconify/vue'
 import { useSystemManager } from '@/composables/system-manager'
 import { capitalizeFirstLetter } from '@/utils/main'
+import TableSystemCategory from '@/components/SystemCategory/Table.vue'
 
 interface recordModal {
   [key: string]: boolean
@@ -282,6 +285,10 @@ watch(cSelectModel, (newValue, oldValue) => {
 
 const vDataCategories = reactive<any>({
   data: dataCategories
+})
+
+const selectData = computed(() => {
+  return vDataCategories.data?.data || []
 })
 </script>
 
