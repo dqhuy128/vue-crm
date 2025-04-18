@@ -14,7 +14,7 @@
           </div>
 
           <div class="flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
-            <SelectRoot v-model="keyCategories">
+            <SelectRoot v-model="cSelectModel">
               <SelectTrigger
                 class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] focus:outline-none"
                 aria-label="Customise options"
@@ -41,13 +41,13 @@
                   <SelectViewport>
                     <SelectGroup>
                       <SelectItem
-                        v-for="(keycate, index) in keyCategories"
-                        :key="index"
+                        v-for="(item, key) in selectData"
+                        :key="key"
                         class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                        :value="keycate"
+                        :value="String(key)"
                       >
-                        <SelectItemText v-for="(refcate, idx) in refCategories">
-                          {{ capitalizeFirstLetter(refcate) }}
+                        <SelectItemText>
+                          {{ capitalizeFirstLetter(item) }}
                         </SelectItemText>
                       </SelectItem>
                     </SelectGroup>
@@ -212,7 +212,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
 import MultipleSelect from '@/components/MultiSelect.vue'
@@ -234,6 +234,7 @@ import {
 } from 'radix-vue'
 import { Icon } from '@iconify/vue'
 import { useSystemManager } from '@/composables/system-manager'
+import { capitalizeFirstLetter } from '@/utils/main'
 
 interface recordModal {
   [key: string]: boolean
@@ -269,12 +270,18 @@ const optionsGroupUser: any = ref([
 
 const { fetchingSelected, dataCategories } = useSystemManager()
 
-const vDataCategories = reactive({
-  data: dataCategories.value || undefined
+onMounted(async () => {
+  await fetchingSelected()
 })
 
-onMounted(() => {
-  fetchingSelected()
+const cSelectModel = ref<any>(null)
+
+watch(cSelectModel, (newValue, oldValue) => {
+  console.log(`cSelectModel thay đổi từ ${oldValue} thành ${newValue}`)
+})
+
+const vDataCategories = reactive<any>({
+  data: dataCategories
 })
 </script>
 
