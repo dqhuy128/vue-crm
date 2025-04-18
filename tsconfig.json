@@ -6,9 +6,14 @@
     "jsx": "preserve",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "jsxImportSource": "vue",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "skipLibCheck": true,
     "types": ["vite/client", "vue"],
     "baseUrl": ".",
     "paths": {
@@ -18,7 +23,13 @@
   "include": [
     "src/**/*",
     "src/**/*.vue",
-    "shims-vue.d.ts"
+    "src/**/*.d.ts",
+    "src/vue-shims.d.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "types": [
+    "vite/client",
+    "vue/ref-macros",
+    "@volar/vue-language-core/types"
+  ]
 }

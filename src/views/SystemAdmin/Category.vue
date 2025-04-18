@@ -23,7 +23,7 @@
                   class="grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
                   placeholder="Chọn loại danh mục"
                 />
-                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+                <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
               </SelectTrigger>
 
               <SelectPortal>
@@ -99,14 +99,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
+    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách danh mục hệ thống
       </div>
 
-      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
+      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
         <button
           type="button"
           id="tableAdding"
@@ -189,7 +189,7 @@
           </div>
 
           <div
-            class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
+            class="flex flex-wrap gap-4 justify-center items-stretch mt-9 text-center xl:gap-6"
           >
             <button
               @click="toggleModal('modalAddCateManager')"
@@ -212,7 +212,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
 import MultipleSelect from '@/components/MultiSelect.vue'
@@ -266,6 +266,16 @@ const optionsGroupUser: any = ref([
   'Danh mục loại C',
   'Danh mục loại D'
 ])
+
+const { fetchingSelected, dataCategories } = useSystemManager()
+
+const vDataCategories = reactive({
+  data: dataCategories.value || undefined
+})
+
+onMounted(() => {
+  fetchingSelected()
+})
 </script>
 
 <style lang="scss">
