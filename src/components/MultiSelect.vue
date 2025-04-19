@@ -10,17 +10,17 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
-import Multiselect from "vue-multiselect";
-import "vue-multiselect/dist/vue-multiselect.min.css";
+import { computed } from 'vue'
+import Multiselect from 'vue-multiselect'
+import 'vue-multiselect/dist/vue-multiselect.min.css'
 
 const props = defineProps<{
   modelValue: any
   options: any
   holder: string
 }>()
-console.log(props.options, "options")
-const emit = defineEmits(["update:modelValue"])
+
+const emit = defineEmits(['update:modelValue'])
 
 const internalValue = computed({
   get() {
@@ -28,7 +28,7 @@ const internalValue = computed({
   },
   set(val) {
     // Khi giá trị thay đổi, emit event để báo cho component cha
-    emit("update:modelValue", val)
+    emit('update:modelValue', val)
   }
 })
 </script>
@@ -40,7 +40,7 @@ const internalValue = computed({
   font-style: italic;
   font-weight: 400;
   line-height: normal;
-  font-family: "Inter";
+  font-family: 'Inter';
   margin-bottom: 0;
   padding-top: 0;
   opacity: 0.45;
