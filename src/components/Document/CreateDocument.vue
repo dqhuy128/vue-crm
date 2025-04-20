@@ -187,13 +187,18 @@ const submit = async () => {
       // successful response flow
       FormSubmit.value.docCate = null
       fileUploadPreview.value = []
-      doFetch(`${apiUri}/document/list?page=1&per_page=10`, auth.token() as string).then(() => {
+      doFetch(
+        `${apiUri}/document/list?page=1&per_page=10`,
+        auth.token() as string
+      ).then(() => {
         tableMagic()
       })
     })
     .catch(function (error) {
       alert('Tạo tài liệu thất bại')
     })
+
+  console.log('🚀 ~ submit ~ response:', response)
 }
 
 onMounted(() => {

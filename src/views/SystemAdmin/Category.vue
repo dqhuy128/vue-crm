@@ -160,7 +160,18 @@
                   </div>
 
                   <div class="cell">
-                    {{ 'Chưa có loại danh mục' }}
+                    <template v-if="it.type === 'document'">
+                      Danh mục loại tài liệu
+                    </template>
+                    <template v-if="it.type === 'ticket'">
+                      Danh mục loại ticket
+                    </template>
+                    <template v-if="it.type === 'position'">
+                      Danh mục loại chức vụ
+                    </template>
+                    <template v-if="it.type === 'staff'">
+                      Danh mục loại bộ phận
+                    </template>
                   </div>
 
                   <div class="cell">
@@ -277,6 +288,7 @@
               "
             >
               1 - {{ paginate.per_page }} trong
+              {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
             </template>
             <template v-else>
               {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
@@ -311,7 +323,12 @@
               readonly
             />
 
-            <button @click="handlePageChange(paginate.page + 1)">
+            <button
+              :class="{
+                disabled: Number(paginate.page) >= dataTotalPages
+              }"
+              @click="handlePageChange(paginate.page + 1)"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -342,77 +359,15 @@
           </h3>
         </div>
 
-        <form action="">
-          <div class="grid grid-cols-12 gap-6">
-            <div class="col-span-12 md:col-span-6">
-              <div class="block">
-                <span
-                  class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-                >
-                  Loại danh mục
-                </span>
-
-                <MultipleSelect
-                  :options="optionsGroupUser"
-                  holder="Danh mục loại ticket"
-                  v-model="valueGroupUser.value1"
-                />
-              </div>
-            </div>
-
-            <div class="col-span-12 md:col-span-6">
-              <div class="block">
-                <span
-                  class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-                >
-                  Tên danh mục
-                </span>
-
-                <input
-                  type="text"
-                  name=""
-                  id=""
-                  placeholder="Trợ lý"
-                  class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-                />
-              </div>
-            </div>
-
-            <div class="col-span-12">
-              <div class="block">
-                <span
-                  class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-                >
-                  Mô tả
-                </span>
-                <textarea
-                  name=""
-                  id=""
-                  placeholder="Nhập mô tả"
-                  class="w-full border min-h-[120px] border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
-                ></textarea>
-              </div>
-            </div>
-          </div>
-
-          <div
-            class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
+        <ModalAddCategory :datatype="selectData">
+          <button
+            @click="toggleModal('modalAddCateManager')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
           >
-            <button
-              @click="toggleModal('modalAddCateManager')"
-              type="button"
-              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-            >
-              Lưu
-            </button>
-          </div>
-        </form>
+            Hủy
+          </button>
+        </ModalAddCategory>
       </div>
     </Modal>
   </MainLayout>
@@ -422,7 +377,6 @@
 import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
-import MultipleSelect from '@/components/MultiSelect.vue'
 import {
   SelectContent,
   SelectGroup,
@@ -441,11 +395,11 @@ import {
 } from 'radix-vue'
 import { Icon } from '@iconify/vue'
 import { capitalizeFirstLetter } from '@/utils/main'
-import TableSystemCategory from '@/components/SystemCategory/Table.vue'
 import { tableMagic } from '@/utils/main'
 import { apiUri } from '@/constants/apiUri'
 import { useAuth } from 'vue-auth3'
 import { useSystemManager } from '@/composables/system-manager'
+import ModalAddCategory from '@/components/Modal/ModalAddCategory.vue'
 
 interface recordModal {
   [key: string]: boolean
@@ -460,25 +414,6 @@ const toggleModal = (modalStateName: any) => {
   modalActive.value[modalStateName] = !modalActive.value[modalStateName]
 }
 
-interface recordSelection {
-  [key: string]: any
-}
-
-const valueGroupUser = ref<recordSelection>({
-  value1: null,
-  value2: null,
-  value3: null,
-  value4: null,
-  value5: null,
-  value6: null
-})
-const optionsGroupUser: any = ref([
-  'Danh mục loại A',
-  'Danh mục loại B',
-  'Danh mục loại C',
-  'Danh mục loại D'
-])
-
 const { fetchingSelected, dataCategories } = useSystemManager()
 
 const vDataCategories = reactive<any>({
@@ -488,8 +423,6 @@ const vDataCategories = reactive<any>({
 const selectData = computed(() => {
   return vDataCategories.data?.data || []
 })
-
-const selectDataEmpty = ref('')
 
 const tbhead = reactive([
   {
@@ -573,6 +506,12 @@ const {
 const dataDocument = reactive({
   doc: data
 })
+
+const dataTotalPages = computed(() =>
+  Math.ceil(
+    Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page)
+  )
+)
 
 const categoryDocument = reactive({
   data: categories.value || undefined

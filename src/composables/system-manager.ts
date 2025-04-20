@@ -52,7 +52,7 @@ export function useSystemManager() {
       })
       .then((res) => res.data)
       .then((json) => {
-        console.log('🚀 ~ useSystemManager ~ data:', json)
+        // console.log('🚀 ~ useSystemManager ~ data:', json)
         data.value = json.data
         return json.data
       })
