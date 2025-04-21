@@ -208,6 +208,7 @@
                       <button
                         type="button"
                         class="cursor-pointer cell-btn-edit shrink-0"
+                        @click="handleEditDocument(item.id)"
                       >
                         <img src="@/assets/images/action-edit-2.svg" alt="" />
                       </button>
@@ -354,15 +355,44 @@
         </CreateDocument>
       </div>
     </Modal>
+
+    <Modal
+      @close="toggleModal('modalEditDocument')"
+      :modalActive="modalActive.modalEditDocument"
+      maxWidth="max-w-[670px]"
+    >
+      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+            Update tài liệu
+          </h3>
+        </div>
+
+        <EditDocument
+          :closeModal="() => toggleModal('modalEditDocument')"
+          :data="detailDocument"
+        >
+          <button
+            @click="toggleModal('modalEditDocument')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Hủy
+          </button>
+        </EditDocument>
+      </div>
+    </Modal>
   </MainLayout>
 </template>
 
 <script lang="ts" setup>
 import CreateDocument from '@/components/Document/CreateDocument.vue'
+import EditDocument from '@/components/Document/EditDocument.vue'
 import Modal from '@/components/Modals.vue'
 import { useDocument } from '@/composables/document'
 import { apiUri } from '@/constants/apiUri'
 import { tableMagic } from '@/utils/main'
+import axios from 'axios'
 import {
   SelectContent,
   SelectGroup,
@@ -403,7 +433,8 @@ interface recordModal {
 }
 
 const modalActive = ref<recordModal>({
-  modalAddDocument: false
+  modalAddDocument: false,
+  modalEditDocument: false
 })
 
 const toggleModal = (modalStateName: any) => {
@@ -472,6 +503,7 @@ const {
   // isLoading: isLoadingDocument,
   doFetch,
   // fetchCategoryDocument,
+  fetchDetailDocument,
   categories,
   deleteDocument
 } = useDocument()
@@ -497,6 +529,30 @@ const handleDeleteDocument = async (id: any) => {
   } else {
     return
   }
+}
+
+const detailDocument = ref({
+  id: '',
+  name: '',
+  type_id: '',
+  description: '',
+  files: []
+})
+const handleEditDocument = async (id: any) => {
+  await axios
+    .get(`${apiUri}/document/detail`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      },
+      params: {
+        id: id
+      }
+    })
+    .then((res) => {
+      console.log(res.data.data, 'detail document')
+      detailDocument.value = res.data.data
+      toggleModal('modalEditDocument')
+    })
 }
 onMounted(() => {
   if (auth.check()) {

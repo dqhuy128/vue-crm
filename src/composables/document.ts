@@ -74,18 +74,28 @@ export function useDocument() {
     })
   }
   const deleteDocument = async (id: string) => {
-    ///document/delete 
-    const formData = new FormData();
+    ///document/delete
+    const formData = new FormData()
     formData.append('id', id)
-    const response = await axios.post(
-      `${apiUri}/document/delete`,
-      formData,
-      {
+    const response = await axios.post(`${apiUri}/document/delete`, formData, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+  }
+  const fetchDetailDocument = async (id: string) => {
+    const response = await axios
+      .get(`${apiUri}/document/detail`, {
         headers: {
           Authorization: `Bearer ${auth.token()}`
+        },
+        params: {
+          id: id
         }
-      }
-    )
+      })
+      .then((res) => res.data)
+      .catch((err) => (error.value = err))
+      .finally(() => (isLoading.value = false))
   }
   return {
     data,
@@ -95,6 +105,7 @@ export function useDocument() {
     doFetch,
     fetchCategoryDocument,
     categories,
-    deleteDocument
+    deleteDocument,
+    fetchDetailDocument
   }
 }
