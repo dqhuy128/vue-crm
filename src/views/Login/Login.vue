@@ -15,7 +15,7 @@ const router = useRouter()
 const auth = useAuth()
 
 const form = reactive({
-  username: '0328910709',
+  username: '0987654321',
   password: '123456'
 })
 
@@ -37,6 +37,8 @@ const handleLogin = async () => {
       staySignedIn: true,
       fetchUser: true
     })
+
+    console.log(res)
 
     if (res.data.status !== 1) {
       //  dang nhap ko thanh cong
