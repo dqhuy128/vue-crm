@@ -203,8 +203,8 @@ function onDragover(event: DragEvent) {
 <style scoped>
 .file-upload__container {
   position: relative;
-  width: max-content;
-  height: max-content;
+  /* width: max-content;
+  height: max-content; */
 }
 .file-upload__label {
   position: absolute;

@@ -45,7 +45,7 @@
       <div class="col-span-12">
         <FileUpload
           @change="onFileChange"
-          :multiple="true"
+          :multiple="false"
           :accept="[
             'application/vnd.ms-excel',
             'text/csv',
@@ -53,7 +53,26 @@
           ]"
         >
           <div>
-            <div class="file-upload">Drop files o day</div>
+            <div class="file-upload">
+              <svg
+                width="42"
+                height="42"
+                viewBox="0 0 42 42"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10.2183 17.7371C6.36563 18.6532 3.5 22.1174 3.5 26.25C3.5 31.0826 7.41738 35 12.25 35C13.0786 35 13.881 34.8845 14.6414 34.6693M31.5481 17.7371C35.4008 18.6532 38.2655 22.1174 38.2655 26.25C38.2655 31.0826 34.3481 35 29.5155 35C28.6869 35 27.8845 34.8845 27.125 34.6693M31.5 17.5C31.5 11.7014 26.7986 7 21 7C15.2014 7 10.5 11.7014 10.5 17.5M14.9319 24.3959L21 18.3085L27.2405 24.5M21 33.25V21.4042"
+                  stroke="#013878"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span class="file-upload-txt">Kéo thả tệp vào đây</span>
+              <i>hoặc</i>
+              <span class="file-upload-link">Chọn tệp tại đây</span>
+            </div>
 
             <template v-if="fileUploadPreview">
               <ul>
@@ -112,7 +131,7 @@ import { useAuth } from 'vue-auth3'
 import { tableMagic } from '@/utils/main'
 import FileUpload from '../FileUpload.vue'
 const props = defineProps<{
-  closeModal : () => void;
+  closeModal: () => void
 }>()
 
 type previewFiles = {
@@ -188,7 +207,10 @@ const submit = async () => {
       FormSubmit.value.docCate = null
       fileUploadPreview.value = []
       props.closeModal()
-      doFetch(`${apiUri}/document/list?page=1&per_page=10`, auth.token() as string).then(() => {
+      doFetch(
+        `${apiUri}/document/list?page=1&per_page=10`,
+        auth.token() as string
+      ).then(() => {
         tableMagic()
       })
     })
@@ -209,25 +231,29 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: lightblue;
-}
 .file-upload {
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  min-width: 100%;
+  min-height: 240px;
+  border: 1px dashed #464661;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: gray;
+  background-color: #fbfbfb;
   border-radius: 8px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  color: white;
+  color: #464661;
+  gap: 12px;
+}
+.file-upload-txt {
+  font-weight: 600;
+}
+.file-upload-link {
+  color : #1B4DEA ;
+  text-decoration: underline;
 }
 </style>
