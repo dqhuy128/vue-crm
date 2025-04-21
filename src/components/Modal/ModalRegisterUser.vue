@@ -34,7 +34,7 @@
       <!-- sform register -->
       <form
         class="w-full mx-auto lg:p-[24px_48px] p-[24px_16px]"
-        @submit.prevent="handleSubmit(onSubmit)"
+        @submit.prevent="handleSubmit()"
       >
         <div class="grid grid-cols-12 gap-6">
           <div class="col-span-12 xl:col-span-4 md:col-span-6">
@@ -45,6 +45,7 @@
                 Mã nhân viên
               </span>
               <input
+                v-model="paramsUser.code"
                 type="text"
                 name=""
                 id=""
@@ -62,6 +63,7 @@
                 Họ và tên
               </span>
               <input
+                v-model="paramsUser.name"
                 type="text"
                 name=""
                 id=""
@@ -79,6 +81,7 @@
                 Số điện thoại
               </span>
               <input
+                v-model="paramsUser.phone"
                 type="text"
                 name=""
                 id=""
@@ -96,6 +99,7 @@
                 Email
               </span>
               <input
+                v-model="paramsUser.email"
                 type="text"
                 name=""
                 id=""
@@ -115,7 +119,7 @@
 
               <div class="relative">
                 <flat-pickr
-                  v-model="dateState.date1"
+                  v-model="paramsUser.dob"
                   :config="configFlatpickr"
                   class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                   placeholder="Chọn ngày"
@@ -141,11 +145,54 @@
                 Nhóm người dùng
               </span>
 
-              <MultipleSelect
-                :options="optionsGroupUser"
-                holder="Chọn nhóm người dùng"
-                v-model="valueGroupUser.value1"
-              />
+              <SelectRoot v-model="valueGrPermiss">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn loại danh mục"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <SelectItem
+                          v-for="(item, key) in listGrPermiss"
+                          :key="key"
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(key)"
+                        >
+                          <SelectItemText>
+                            <!-- {{ capitalizeFirstLetter(item) }} -->
+                            {{ item.name }}
+                          </SelectItemText>
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
           </div>
 
@@ -158,6 +205,7 @@
               </span>
 
               <input
+                v-model="paramsUser.identification"
                 type="text"
                 name=""
                 id=""
@@ -177,7 +225,7 @@
 
               <div class="relative">
                 <flat-pickr
-                  v-model="dateState.date2"
+                  v-model="paramsUser.date_of_issue"
                   :config="configFlatpickr"
                   class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                   placeholder="Chọn ngày"
@@ -204,6 +252,7 @@
               </span>
 
               <input
+                v-model="paramsUser.place_of_issue"
                 type="text"
                 name=""
                 id=""
@@ -222,6 +271,7 @@
               </span>
 
               <input
+                v-model="paramsUser.original_place"
                 type="text"
                 name=""
                 id=""
@@ -304,6 +354,7 @@
               </span>
 
               <input
+                v-model="paramsUser.permanent_address"
                 type="text"
                 name=""
                 id=""
@@ -322,6 +373,7 @@
               </span>
 
               <input
+                v-model="paramsUser.residence_address"
                 type="text"
                 name=""
                 id=""
@@ -331,7 +383,7 @@
             </div>
           </div>
 
-          <div class="col-span-12 xl:col-span-4 md:col-span-6">
+          <div class="col-span-12 md:col-span-6">
             <div class="block">
               <span
                 class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -347,7 +399,7 @@
             </div>
           </div>
 
-          <div class="col-span-12 xl:col-span-4 md:col-span-6">
+          <div class="col-span-12 md:col-span-6">
             <div class="block">
               <span
                 class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -357,7 +409,7 @@
 
               <div class="relative">
                 <flat-pickr
-                  v-model="dateState.date3"
+                  v-model="paramsUser.working_day"
                   :config="configFlatpickr"
                   class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                   placeholder="Chọn ngày"
@@ -375,7 +427,7 @@
             </div>
           </div>
 
-          <div class="col-span-12 xl:col-span-4 md:col-span-6">
+          <div class="col-span-12 md:col-span-6">
             <div class="block">
               <span
                 class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -383,12 +435,23 @@
                 Số ngày nghỉ còn lại
               </span>
               <input
+                v-model="paramsUser.total_days_off"
                 type="text"
                 name=""
                 id=""
                 placeholder="Nhập số ngày nghỉ còn lại"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
+            </div>
+          </div>
+
+          <div class="col-span-12 md:col-span-6">
+            <div class="block">
+              <span
+                class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
+              >
+                Trạng thái
+              </span>
             </div>
           </div>
         </div>
@@ -418,10 +481,31 @@
 <script lang="ts" setup>
 import Modal from '@/components/Modals.vue'
 import MultipleSelect from '@/components/MultiSelect.vue'
-import { ref } from 'vue'
+import { onBeforeMount, onMounted, reactive, ref } from 'vue'
 import flatPickr from 'vue-flatpickr-component'
 import { Vietnamese } from 'flatpickr/dist/l10n/vn.js'
 import 'flatpickr/dist/flatpickr.css'
+import { apiClient } from '@/plugins/axios'
+import { useAuth } from 'vue-auth3'
+import {
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectItemIndicator,
+  SelectItemText,
+  SelectLabel,
+  SelectPortal,
+  SelectRoot,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport
+} from 'radix-vue'
+import { Icon } from '@iconify/vue'
+
+const auth = useAuth()
 
 const props = defineProps(['modal'])
 const emit = defineEmits(['toggle-modal'])
@@ -451,6 +535,94 @@ const valueGroupUser = ref<recordSelection>({
   value6: null
 })
 const optionsGroupUser = ref(['Option 1', 'Option 2', 'Option3', 'Option 4'])
+
+const paramsUser = reactive<any>({
+  code: '',
+  phone: '',
+  name: '',
+  email: '',
+  dob: '',
+  per_group_name: '',
+  identification: '',
+  date_of_issue: '',
+  place_of_issue: '',
+  original_place: '',
+  part_id: '',
+  position_id: '',
+  region_id: '',
+  parent_id: '',
+  permanent_address: '',
+  residence_address: '',
+  work_contract: '',
+  working_day: '',
+  total_days_off: '',
+  status: ''
+})
+
+const valueGrPermiss = ref<string>('')
+const listGrPermiss = ref<any | null>(null)
+
+const fetchListPermission = async () => {
+  try {
+    const response = await apiClient.get('/permission/listPermission', {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    // refGroupPermission.value = response.data.data
+
+    const { data } = response.data
+
+    console.log('fetchListPermission data:', data)
+
+    const resultObj: any = []
+    const listPermission = Object.entries(data).map(([key, value]) => {
+      console.log(key, value)
+      resultObj.push(value)
+
+      return resultObj
+    })
+    listGrPermiss.value = resultObj
+  } catch (error) {
+    console.error('Error fetching permission list:', error)
+  }
+}
+
+onMounted(() => {
+  fetchListPermission()
+})
+
+const handleSubmit = async () => {
+  const formDataUser = new FormData()
+  formDataUser.append('code', paramsUser.code)
+  formDataUser.append('phone', paramsUser.phone)
+  formDataUser.append('name', paramsUser.name)
+  formDataUser.append('email', paramsUser.email)
+  formDataUser.append('dob', paramsUser.dob)
+  formDataUser.append('per_group_name', paramsUser.per_group_name)
+  formDataUser.append('identification', paramsUser.identification)
+  formDataUser.append('date_of_issue', paramsUser.date_of_issue)
+  formDataUser.append('place_of_issue', paramsUser.place_of_issue)
+  formDataUser.append('original_place', paramsUser.original_place)
+  formDataUser.append('part_id', paramsUser.part_id)
+  formDataUser.append('position_id', paramsUser.position_id)
+  formDataUser.append('region_id', paramsUser.region_id)
+  formDataUser.append('parent_id', paramsUser.parent_id)
+  formDataUser.append('permanent_address', paramsUser.permanent_address)
+  formDataUser.append('residence_address', paramsUser.residence_address)
+  formDataUser.append('work_contract', paramsUser.work_contract)
+  formDataUser.append('working_day', paramsUser.working_day)
+  formDataUser.append('total_days_off', paramsUser.total_days_off)
+  formDataUser.append('status', paramsUser.status)
+
+  await apiClient.post('/users/create', formDataUser, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${auth.token()}`
+    }
+  })
+}
 </script>
 
 <style lang="scss" scoped></style>

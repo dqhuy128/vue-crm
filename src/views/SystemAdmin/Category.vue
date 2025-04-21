@@ -355,7 +355,7 @@
       <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
         <div class="mb-12 text-center max-xl:mb-6">
           <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-            chi tiết danh mục
+            thêm mới danh mục
           </h3>
         </div>
 
@@ -400,6 +400,7 @@ import { apiUri } from '@/constants/apiUri'
 import { useAuth } from 'vue-auth3'
 import { useSystemManager } from '@/composables/system-manager'
 import ModalAddCategory from '@/components/Modal/ModalAddCategory.vue'
+import { apiClient } from '@/plugins/axios'
 
 interface recordModal {
   [key: string]: boolean
