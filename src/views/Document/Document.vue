@@ -272,6 +272,7 @@
               "
             >
               1 - {{ paginate.per_page }} trong
+              {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
             </template>
             <template v-else>
               {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
@@ -306,7 +307,12 @@
               readonly
             />
 
-            <button href="" @click="handlePageChange(paginate.page + 1)">
+            <button
+              :class="{
+                disabled: Number(paginate.page) >= dataTotalPages
+              }"
+              @click="handlePageChange(paginate.page + 1)"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -370,7 +376,7 @@ import {
   SelectValue,
   SelectViewport
 } from 'radix-vue'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
 import MainLayout from '../MainLayout.vue'
 
@@ -431,12 +437,14 @@ const fetchDataDocument = () => {
   if (debounceTime.value.timeOut !== null) {
     clearTimeout(debounceTime.value.timeOut)
   }
+
   debounceTime.value.timeOut = setTimeout(() => {
     const res = {
       ...params,
       page: paginate.page,
       per_page: paginate.per_page
     }
+
     doFetch(
       `${apiUri}/document/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
       auth.token() as string
@@ -467,9 +475,17 @@ const {
   categories,
   deleteDocument
 } = useDocument()
+
 const dataDocument = reactive({
   doc: data
 })
+
+const dataTotalPages = computed(() =>
+  Math.ceil(
+    Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page)
+  )
+)
+
 const categoryDocument = reactive({
   data: categories.value || undefined
 })

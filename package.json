@@ -35,6 +35,10 @@
     "@types/lodash-es": "^4.17.12",
     "@types/web": "^0.0.208",
     "@vitejs/plugin-vue": "^5.2.1",
+    "@volar/vue-language-core": "^1.6.5",
+    "@volar/vue-language-server": "^1.6.5",
+    "@vue/language-server": "^2.2.8",
+    "@vue/runtime-dom": "^3.5.13",
     "@vue/tsconfig": "^0.7.0",
     "gh-pages": "^6.3.0",
     "sass": "1.79",
@@ -42,6 +46,6 @@
     "typescript": "~5.7.2",
     "vite": "^6.2.0",
     "vite-plugin-vue-devtools": "^7.7.5",
-    "vue-tsc": "^2.2.4"
+    "vue-tsc": "^2.2.8"
   }
 }

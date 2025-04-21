@@ -195,6 +195,8 @@ const submit = async () => {
     .catch(function (error) {
       alert('Tạo tài liệu thất bại')
     })
+
+  console.log('🚀 ~ submit ~ response:', response)
 }
 
 onMounted(() => {

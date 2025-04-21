@@ -211,7 +211,7 @@ const isDropdownOpen = (idx: any) => {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
+  z-index: 98;
   max-width: 240px;
 
   @media (min-width: 1280px) {

@@ -1,10 +1,11 @@
 <template>
   <MainLayout>
     <div class="bg-white rounded-[24px] p-2.5">
-      <form action="" class="flex flex-wrap gap-4">
+      <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchDocument">
         <div class="flex flex-wrap gap-4 grow">
           <div class="flex-[0_0_calc(50%-8px)] max-md:flex-[100%]">
             <input
+              v-model="params.name"
               type="text"
               name=""
               id=""
@@ -14,7 +15,7 @@
           </div>
 
           <div class="flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
-            <SelectRoot v-model="fruit">
+            <SelectRoot v-model="params.type">
               <SelectTrigger
                 class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] focus:outline-none"
                 aria-label="Customise options"
@@ -23,7 +24,7 @@
                   class="grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
                   placeholder="Chọn loại danh mục"
                 />
-                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+                <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
               </SelectTrigger>
 
               <SelectPortal>
@@ -41,18 +42,13 @@
                   <SelectViewport>
                     <SelectGroup>
                       <SelectItem
-                        v-for="(option, index) in options"
-                        :key="index"
+                        v-for="(item, key) in selectData"
+                        :key="key"
                         class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                        :value="option"
+                        :value="String(key)"
                       >
-                        <!-- <SelectItemIndicator
-                        class="absolute left-0 w-[25px] inline-flex items-center justify-center"
-                      >
-                        <Icon icon="radix-icons:check" />
-                      </SelectItemIndicator> -->
                         <SelectItemText>
-                          {{ option }}
+                          {{ capitalizeFirstLetter(item) }}
                         </SelectItemText>
                       </SelectItem>
                     </SelectGroup>
@@ -128,6 +124,229 @@
       </div>
     </div>
 
+    <div class="flex flex-col h-full">
+      <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
+        <div class="relative table-container">
+          <!-- Example column -->
+          <div id="tableRowHeader" class="justify-between table-row header">
+            <div class="cell" v-for="(column, index) in tbhead" :key="index">
+              {{ column.title }}
+
+              <div class="tb-sort" v-if="column.hasSort">
+                <button type="button">
+                  <img src="@/assets/images/tb-sort.svg" alt="" />
+                </button>
+              </div>
+            </div>
+            <div class="cell">Trạng thái</div>
+            <div class="cell pinned">
+              <div class="cell edit">Edit</div>
+            </div>
+          </div>
+
+          <!-- Example row -->
+          <div id="tableRowBody" class="table-row body">
+            <template v-if="dataDocument.doc">
+              <div
+                class="justify-between table-item"
+                v-for="(item, index) in dataDocument.doc.items"
+                :key="index"
+              >
+                <template v-for="(it, _) in item">
+                  <!-- bg-blue , bg-green , bg-red , bg-purple , :class="{ 'bg-blue': id === 1 }"-->
+                  <div class="cell">
+                    <template v-if="index < 9"> 0{{ index + 1 }} </template>
+                    <template v-else>{{ index + 1 }}</template>
+                  </div>
+
+                  <div class="cell">
+                    <template v-if="it.type === 'document'">
+                      Danh mục loại tài liệu
+                    </template>
+                    <template v-if="it.type === 'ticket'">
+                      Danh mục loại ticket
+                    </template>
+                    <template v-if="it.type === 'position'">
+                      Danh mục loại chức vụ
+                    </template>
+                    <template v-if="it.type === 'staff'">
+                      Danh mục loại bộ phận
+                    </template>
+                  </div>
+
+                  <div class="cell">
+                    {{ it.name }}
+                  </div>
+
+                  <div class="cell">
+                    {{ it.description || 'Chưa có mô tả' }}
+                  </div>
+
+                  <template v-if="Number(it.status) === 1">
+                    <div class="cell status status-green status-body">
+                      Đang hoạt động
+                    </div>
+                  </template>
+
+                  <template v-if="Number(it.status) === 0">
+                    <div class="cell status status-red status-body">
+                      Dừng hoạt động
+                    </div>
+                  </template>
+
+                  <div class="cell pinned pinned-body">
+                    <div class="cell edit edit-body">
+                      <button
+                        type="button"
+                        class="cursor-pointer cell-btn-view shrink-0"
+                      >
+                        <img src="@/assets/images/action-edit-1.svg" alt="" />
+                      </button>
+                      <button
+                        type="button"
+                        class="cursor-pointer cell-btn-edit shrink-0"
+                      >
+                        <img src="@/assets/images/action-edit-2.svg" alt="" />
+                      </button>
+                      <button
+                        type="button"
+                        class="cursor-pointer cell-btn-delete shrink-0"
+                      >
+                        <img src="@/assets/images/action-edit-3.svg" alt="" />
+                      </button>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+
+          <!-- <div
+                      id="isLoadingTable"
+                      class="absolute w-full inset-0 !h-full z-100 bg-[#ffffffbf]"
+                    >
+                      <div class="animate-loading-table">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="size-6"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                          />
+                        </svg>
+                      </div>
+                      <div class="block">Đang tải dữ liệu</div>
+                    </div> -->
+        </div>
+      </div>
+
+      <div
+        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
+      >
+        <div class="relative">
+          <select
+            name=""
+            id="selectPerPage"
+            class="appearance-none cursor-pointer p-[8px_12px] bg-white rounded-[24px] md:min-w-[264px] text-[#464661] text-[14px] font-normal border border-solid border-[#EDEDF6]"
+          >
+            <option value="">20 bản ghi / trang</option>
+            <option value="">40 bản ghi / trang</option>
+            <option value="">30 bản ghi / trang</option>
+            <option value="">10 bản ghi / trang</option>
+          </select>
+
+          <div
+            class="max-md:hidden pointer-events-none absolute right-3 top-[50%] -translate-y-[50%]"
+          >
+            <svg
+              width="8"
+              height="6"
+              viewBox="0 0 8 6"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0.964013 1.1641C1.04759 1.08049 1.14682 1.01417 1.25603 0.968927C1.36524 0.92368 1.4823 0.900391 1.60051 0.900391C1.71873 0.900391 1.83578 0.92368 1.945 0.968927C2.05421 1.01417 2.15344 1.08049 2.23701 1.1641L4.00001 2.9271L5.76401 1.1641C5.9339 1.00121 6.16083 0.911356 6.39617 0.913785C6.63152 0.916214 6.85654 1.01073 7.02303 1.17709C7.18952 1.34345 7.28422 1.5684 7.28683 1.80374C7.28944 2.03908 7.19976 2.26609 7.03701 2.4361L4.63701 4.8361C4.55344 4.9197 4.45421 4.98602 4.345 5.03127C4.23578 5.07652 4.11873 5.09981 4.00051 5.09981C3.8823 5.09981 3.76524 5.07652 3.65603 5.03127C3.54682 4.98602 3.44759 4.9197 3.36401 4.8361L0.964013 2.4361C0.795473 2.26735 0.700806 2.0386 0.700806 1.8001C0.700806 1.5616 0.795473 1.33285 0.964013 1.1641Z"
+                fill="#363636"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+          <div class="text-[#464661] text-[14px] font-normal">
+            <template
+              v-if="
+                dataDocument.doc?.pagination?.total &&
+                Number(dataDocument.doc?.pagination.total) > paginate.per_page
+              "
+            >
+              1 - {{ paginate.per_page }} trong
+              {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
+            </template>
+            <template v-else>
+              {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
+            </template>
+          </div>
+
+          <div class="flex flex-wrap items-center tb-navigation md:gap-2">
+            <button
+              :class="{ disabled: paginate.page === 1 }"
+              @click="handlePageChange(paginate.page - 1)"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M14.69 17.29C14.7827 17.1975 14.8562 17.0876 14.9064 16.9666C14.9566 16.8456 14.9824 16.7159 14.9824 16.585C14.9824 16.454 14.9566 16.3243 14.9064 16.2034C14.8562 16.0824 14.7827 15.9725 14.69 15.88L10.81 12L14.69 8.11998C14.877 7.933 14.982 7.67941 14.982 7.41498C14.982 7.15055 14.877 6.89695 14.69 6.70998C14.503 6.523 14.2494 6.41796 13.985 6.41796C13.7206 6.41796 13.467 6.523 13.28 6.70998L8.68998 11.3C8.59727 11.3925 8.52373 11.5024 8.47355 11.6234C8.42336 11.7443 8.39753 11.874 8.39753 12.005C8.39753 12.1359 8.42336 12.2656 8.47355 12.3866C8.52373 12.5076 8.59727 12.6175 8.68998 12.71L13.28 17.3C13.66 17.68 14.3 17.68 14.69 17.29Z"
+                  fill="#363636"
+                />
+              </svg>
+            </button>
+
+            <input
+              type="text"
+              name=""
+              :value="paginate.page"
+              id=""
+              class="rounded-[8px] bg-white w-[32px] h-[32px] inline-flex flex-col items-center justify-center text-center text-[#464661] text-[16px] font-bold border border-solid border-[#909090]"
+              readonly
+            />
+
+            <button
+              :class="{
+                disabled: Number(paginate.page) >= dataTotalPages
+              }"
+              @click="handlePageChange(paginate.page + 1)"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M9.31002 6.71002C9.21732 6.80254 9.14377 6.91242 9.09359 7.0334C9.04341 7.15437 9.01758 7.28405 9.01758 7.41502C9.01758 7.54599 9.04341 7.67567 9.09359 7.79665C9.14377 7.91762 9.21732 8.02751 9.31002 8.12002L13.19 12L9.31002 15.88C9.12304 16.067 9.018 16.3206 9.018 16.585C9.018 16.8494 9.12304 17.103 9.31002 17.29C9.497 17.477 9.7506 17.582 10.015 17.582C10.2794 17.582 10.533 17.477 10.72 17.29L15.31 12.7C15.4027 12.6075 15.4763 12.4976 15.5265 12.3766C15.5766 12.2557 15.6025 12.126 15.6025 11.995C15.6025 11.8641 15.5766 11.7344 15.5265 11.6134C15.4763 11.4924 15.4027 11.3825 15.31 11.29L10.72 6.70002C10.34 6.32002 9.70002 6.32002 9.31002 6.71002Z"
+                  fill="#363636"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <Modal
       @close="toggleModal('modalAddCateManager')"
       :modalActive="modalActive.modalAddCateManager"
@@ -140,87 +359,24 @@
           </h3>
         </div>
 
-        <form action="">
-          <div class="grid grid-cols-12 gap-6">
-            <div class="col-span-12 md:col-span-6">
-              <div class="block">
-                <span
-                  class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-                >
-                  Loại danh mục
-                </span>
-
-                <MultipleSelect
-                  :options="optionsGroupUser"
-                  holder="Danh mục loại ticket"
-                  v-model="valueGroupUser.value1"
-                />
-              </div>
-            </div>
-
-            <div class="col-span-12 md:col-span-6">
-              <div class="block">
-                <span
-                  class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-                >
-                  Tên danh mục
-                </span>
-
-                <input
-                  type="text"
-                  name=""
-                  id=""
-                  placeholder="Trợ lý"
-                  class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-                />
-              </div>
-            </div>
-
-            <div class="col-span-12">
-              <div class="block">
-                <span
-                  class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-                >
-                  Mô tả
-                </span>
-                <textarea
-                  name=""
-                  id=""
-                  placeholder="Nhập mô tả"
-                  class="w-full border min-h-[120px] border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
-                ></textarea>
-              </div>
-            </div>
-          </div>
-
-          <div
-            class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
+        <ModalAddCategory :datatype="selectData">
+          <button
+            @click="toggleModal('modalAddCateManager')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
           >
-            <button
-              @click="toggleModal('modalAddCateManager')"
-              type="button"
-              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-            >
-              Lưu
-            </button>
-          </div>
-        </form>
+            Hủy
+          </button>
+        </ModalAddCategory>
       </div>
     </Modal>
   </MainLayout>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
-import MultipleSelect from '@/components/MultiSelect.vue'
 import {
   SelectContent,
   SelectGroup,
@@ -238,20 +394,12 @@ import {
   SelectViewport
 } from 'radix-vue'
 import { Icon } from '@iconify/vue'
-
-const fruit = ref('')
-const options = [
-  'Apple',
-  'Banana',
-  'Blueberry',
-  'Grapes',
-  'Pineapple',
-  'Aubergine',
-  'Broccoli',
-  'Carrot',
-  'Courgette',
-  'Leek'
-]
+import { capitalizeFirstLetter } from '@/utils/main'
+import { tableMagic } from '@/utils/main'
+import { apiUri } from '@/constants/apiUri'
+import { useAuth } from 'vue-auth3'
+import { useSystemManager } from '@/composables/system-manager'
+import ModalAddCategory from '@/components/Modal/ModalAddCategory.vue'
 
 interface recordModal {
   [key: string]: boolean
@@ -266,27 +414,180 @@ const toggleModal = (modalStateName: any) => {
   modalActive.value[modalStateName] = !modalActive.value[modalStateName]
 }
 
-interface recordSelection {
-  [key: string]: any
+const { fetchingSelected, dataCategories } = useSystemManager()
+
+const vDataCategories = reactive<any>({
+  data: dataCategories
+})
+
+const selectData = computed(() => {
+  return vDataCategories.data?.data || []
+})
+
+const tbhead = reactive([
+  {
+    title: 'STT',
+    hasSort: false
+  },
+  {
+    title: 'Loại danh mục',
+    hasSort: false
+  },
+  {
+    title: 'Tên danh mục',
+    hasSort: false
+  },
+  {
+    title: 'Mô tả',
+    hasSort: false
+  }
+])
+
+const auth = useAuth()
+
+const params = reactive({
+  type: '',
+  name: ''
+})
+const paginate = reactive({
+  page: 1,
+  per_page: 10
+})
+const debounceTime = ref<{
+  timeOut: number | null
+  counter: number
+}>({
+  timeOut: null,
+  counter: 0
+})
+
+const fetchDataDocument = () => {
+  if (debounceTime.value.timeOut !== null) {
+    clearTimeout(debounceTime.value.timeOut)
+  }
+
+  debounceTime.value.timeOut = setTimeout(() => {
+    const res = {
+      ...params,
+      page: paginate.page,
+      per_page: paginate.per_page
+    }
+
+    doFetch(
+      `${apiUri}/categories/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
+      auth.token() as string
+    ).then(() => {
+      // console.log('🚀 ~ fetchDataDocument ~ res:', res)
+      tableMagic()
+    })
+  }, 300)
 }
 
-const valueGroupUser = ref<recordSelection>({
-  value1: null,
-  value2: null,
-  value3: null,
-  value4: null,
-  value5: null,
-  value6: null
+const handlePageChange = (pageNum: number) => {
+  // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
+  paginate.page = pageNum
+  // fetchDataDocument();
+}
+
+const handleSearchDocument = async () => {
+  paginate.page = 1
+  paginate.per_page = 10
+  fetchDataDocument()
+}
+
+const {
+  data,
+  // isLoading: isLoadingDocument,
+  doFetch,
+  // fetchCategoryDocument,
+  categories
+} = useSystemManager()
+
+const dataDocument = reactive({
+  doc: data
 })
-const optionsGroupUser: any = ref([
-  'Danh mục loại A',
-  'Danh mục loại B',
-  'Danh mục loại C',
-  'Danh mục loại D'
-])
+
+const dataTotalPages = computed(() =>
+  Math.ceil(
+    Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page)
+  )
+)
+
+const categoryDocument = reactive({
+  data: categories.value || undefined
+})
+
+onMounted(() => {
+  if (auth.check()) {
+    fetchingSelected()
+    fetchDataDocument()
+  }
+
+  // console.log('🚀 ~ dataDocument:', dataDocument)
+})
+
+watch(
+  paginate,
+  async () => {
+    fetchDataDocument()
+  },
+  {
+    // must pass deep option to watch for changes on object properties
+    deep: true,
+    // can also pass immediate to handle that first request AND when queries change
+    immediate: true
+  }
+)
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+@import '../../styles/table.module.scss';
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #464661;
+  font-size: 10px !important;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  padding: 6px 10px !important;
+  border-radius: 24px;
+
+  @media (max-width: 767px) {
+    padding: 6px !important;
+    padding-left: 0 !important;
+  }
+
+  &-body {
+    @media (max-width: 767px) {
+      padding: 6px !important;
+      font-size: 7px !important;
+    }
+  }
+}
+
+.status-green {
+  border: 1px solid #12f13e;
+  background: #c4ffd0;
+}
+
+.status-red {
+  border: 1px solid #ff0000;
+  background: #ff00003d;
+}
+
+.status-gray {
+  border: 1px solid #9c9c9c;
+  background: #9c9c9c73;
+}
+
+.SelectContent {
+  width: var(--radix-select-trigger-width);
+  max-height: var(--radix-select-content-available-height);
+}
+
 .select-block {
   position: relative;
 
@@ -304,12 +605,5 @@ const optionsGroupUser: any = ref([
     appearance: none;
     width: 100%;
   }
-}
-</style>
-
-<style lang="scss">
-.SelectContent {
-  width: var(--radix-select-trigger-width);
-  max-height: var(--radix-select-content-available-height);
 }
 </style>
