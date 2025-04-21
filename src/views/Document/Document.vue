@@ -202,6 +202,7 @@
                       <button
                         type="button"
                         class="cursor-pointer cell-btn-view shrink-0"
+                         @click="hdandleViewDocument(item.id)"
                       >
                         <img src="@/assets/images/action-edit-1.svg" alt="" />
                       </button>
@@ -382,12 +383,40 @@
         </EditDocument>
       </div>
     </Modal>
+
+    <Modal
+      @close="toggleModal('modalViewDocument')"
+      :modalActive="modalActive.modalViewDocument"
+      maxWidth="max-w-[670px]"
+    >
+      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+            Chi tiết tài liệu
+          </h3>
+        </div>
+
+        <ViewDocument
+          :closeModal="() => toggleModal('modalViewDocument')"
+          :data="detailDocument"
+        >
+          <button
+            @click="toggleModal('modalViewDocument')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Hủy
+          </button>
+        </ViewDocument>
+      </div>
+    </Modal>
   </MainLayout>
 </template>
 
 <script lang="ts" setup>
 import CreateDocument from '@/components/Document/CreateDocument.vue'
 import EditDocument from '@/components/Document/EditDocument.vue'
+import ViewDocument from '@/components/Document/ViewDocument.vue'
 import Modal from '@/components/Modals.vue'
 import { useDocument } from '@/composables/document'
 import { apiUri } from '@/constants/apiUri'
@@ -406,7 +435,7 @@ import {
   SelectValue,
   SelectViewport
 } from 'radix-vue'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
 import MainLayout from '../MainLayout.vue'
 
@@ -434,7 +463,8 @@ interface recordModal {
 
 const modalActive = ref<recordModal>({
   modalAddDocument: false,
-  modalEditDocument: false
+  modalEditDocument: false,
+  modalViewDocument: false
 })
 
 const toggleModal = (modalStateName: any) => {
@@ -503,7 +533,7 @@ const {
   // isLoading: isLoadingDocument,
   doFetch,
   // fetchCategoryDocument,
-  fetchDetailDocument,
+  // fetchDetailDocument,
   categories,
   deleteDocument
 } = useDocument()
@@ -553,6 +583,26 @@ const handleEditDocument = async (id: any) => {
       detailDocument.value = res.data.data
       toggleModal('modalEditDocument')
     })
+}
+const hdandleViewDocument = async (id: any) => {
+  await axios
+    .get(`${apiUri}/document/detail`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      },
+      params: {
+        id: id
+      }
+    })
+    .then((res) => {
+      console.log(res.data.data, 'detail document')
+      detailDocument.value = res.data.data
+      
+    }).finally(() => {
+      toggleModal('modalViewDocument')
+      
+    })
+    await nextTick();
 }
 onMounted(() => {
   if (auth.check()) {

@@ -106,19 +106,19 @@
 import { useDocument } from '@/composables/document'
 import { apiUri } from '@/constants/apiUri'
 import axios from 'axios'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
 // import 'vue-multiselect/dist/vue-multiselect.min.css'
 import { tableMagic } from '@/utils/main'
 const props = defineProps<{
-  closeModal: () => void,
-  data : any
+  closeModal: () => void
+  data: any
 }>()
 // console.log(props.data, 'props edit document');
 type previewFiles = {
   name: string
   path: string
-//   file: File
+  //   file: File
 }
 // const fileUploadPreview = ref<previewFiles[]>([])
 const FormSubmit = ref({
@@ -170,11 +170,11 @@ const submit = async () => {
   formData.append('id', FormSubmit.value.id || '')
   formData.append('type_id', FormSubmit.value.docCate || '')
   formData.append('description', FormSubmit.value.description)
-//   if (fileUploadPreview.value.length > 0) {
-//     fileUploadPreview.value.forEach((item) => {
-//       formData.append('files', item.file)
-//     })
-//   }
+  //   if (fileUploadPreview.value.length > 0) {
+  //     fileUploadPreview.value.forEach((item) => {
+  //       formData.append('files', item.file)
+  //     })
+  //   }
   console.log(FormSubmit.value, 'formData')
   // return ;
   const response = await axios
@@ -187,7 +187,7 @@ const submit = async () => {
     .then(function (res) {
       // successful response flow
       FormSubmit.value.docCate = null
-    //   fileUploadPreview.value = []
+      //   fileUploadPreview.value = []
       props.closeModal()
       doFetch(
         `${apiUri}/document/list?page=1&per_page=10`,
@@ -204,18 +204,20 @@ const submit = async () => {
 }
 
 onMounted(() => {
-    if(props.data) {
-      FormSubmit.value.name = props.data.name
-      FormSubmit.value.description = props.data.description
-      FormSubmit.value.docCate = Number(props.data.type_id)
-    }
   auth.load().then(() => {
     if (auth.check() && categories.value.length === 0) {
       fetchCategoryDocument()
-     
     }
   })
 })
+watch(
+  () => props.data,
+  () => {
+    FormSubmit.value.name = props.data.name
+    FormSubmit.value.description = props.data.description
+    FormSubmit.value.docCate = Number(props.data.type_id)
+  }
+)
 </script>
 
 <style lang="scss" scoped>
