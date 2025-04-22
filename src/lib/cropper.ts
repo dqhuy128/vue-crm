@@ -60,14 +60,14 @@ export const loadImage = (event: any, modal: any) => {
 }
 
 export const initializeCropper = (self: any) => {
-  if (self.$refs.cropper) {
+  if (self && self.$refs && self.$refs.cropper) {
     // Reset cropper to initial state
     self.$refs.cropper.refresh()
   }
 }
 
 export const destroyCropper = (self: any) => {
-  if (self.$refs.cropper) {
+  if (self && self.$refs && self.$refs.cropper) {
     self.$refs.cropper.reset()
   }
   image.src = null
@@ -79,6 +79,11 @@ export const postServer = (
   authToken: any,
   blobUrlRef: Ref<string>
 ) => {
+  if (!self || !self.$refs || !self.$refs.cropper) {
+    console.error('Cropper reference is missing or invalid')
+    return
+  }
+
   const { canvas } = self.$refs.cropper.getResult()
 
   if (canvas && authCheck) {
