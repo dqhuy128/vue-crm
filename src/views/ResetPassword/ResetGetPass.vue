@@ -1,18 +1,59 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { calcBgBefore } from '../../lib/index'
+import { apiClient } from '@/plugins/axios'
+import router from '@/router'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const password1 = ref('')
 const password2 = ref('')
 const isPasswordVisible = ref(false)
+const email = ref<string>('')
 
 // Function to toggle the password visibility
 const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
 }
 
+// Function to handle password reset submission
+const handleResetPassword = async () => {
+  if (password1.value !== password2.value) {
+    alert('Mật khẩu không khớp')
+    return
+  }
+
+  if (!password1.value || password1.value.length < 6) {
+    alert('Mật khẩu phải có ít nhất 6 ký tự')
+    return
+  }
+
+  try {
+    const formData = new FormData()
+    formData.append('email', email.value)
+    formData.append('password', password1.value)
+    formData.append('repass', password2.value)
+
+    const response = await apiClient.post('/user/newpass', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    console.log('🚀 ~ handleResetPassword ~ response:', response)
+    alert('Đặt lại mật khẩu thành công')
+    router.push({ name: 'Login' })
+  } catch (error) {
+    console.log(error)
+    alert('Đặt lại mật khẩu thất bại')
+  }
+}
+
 onMounted(() => {
   calcBgBefore()
+  if (route.query.email) {
+    email.value = route.query.email as string
+    console.log('Email retrieved from query params:', email.value)
+  }
 })
 </script>
 
@@ -69,7 +110,7 @@ onMounted(() => {
                 đặt lại mật khẩu
               </div>
 
-              <form action="" class="block w-full">
+              <form @submit.prevent="handleResetPassword" class="block w-full">
                 <div class="block mb-3">
                   <span
                     class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -144,20 +185,12 @@ onMounted(() => {
                   </div>
                 </div>
 
-                <div class="block text-end xl:mb-[70px] mb-[30px]">
-                  <router-link
-                    to=""
-                    class="inline-block text-[#909090] font-inter text-[16px] font-bold leading-normal hover:text-main transition"
-                    >Lấy lại mật khẩu</router-link
-                  >
-                </div>
-
                 <div class="block">
                   <button
                     type="submit"
                     class="block w-full bg-main !text-white text-[16px] font-bold leading-normal !uppercase text-center p-2.5 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
                   >
-                    đăng nhập
+                    Xác nhận
                   </button>
                 </div>
               </form>

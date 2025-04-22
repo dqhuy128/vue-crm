@@ -4,6 +4,8 @@ import DashboardReport from '@/views/Dashboard/DashboardReport.vue'
 import LoginView from '@/views/Login/Login.vue'
 import RegisterView from '@/views/Register/Register.vue'
 import ResetPassView from '@/views/ResetPassword/ResetView.vue'
+import ResetGetOtp from '@/views/ResetPassword/ResetGetOtp.vue'
+import ResetGetPass from '@/views/ResetPassword/ResetGetPass.vue'
 import SystemCategory from '@/views/SystemAdmin/Category.vue'
 import SystemPermission from '@/views/SystemAdmin/Permission.vue'
 import SystemIndexView from '@/views/SystemAdmin/IndexView.vue'
@@ -41,6 +43,18 @@ const router = createRouter({
       path: '/reset-password',
       name: 'ResetPass',
       component: ResetPassView,
+      meta: { auth: false }
+    },
+    {
+      path: '/get-otp',
+      name: 'ResetGetOtp',
+      component: ResetGetOtp,
+      meta: { auth: false }
+    },
+    {
+      path: '/get-pass',
+      name: 'ResetGetPass',
+      component: ResetGetPass,
       meta: { auth: false }
     },
     {
