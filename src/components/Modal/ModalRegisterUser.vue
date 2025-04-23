@@ -175,11 +175,11 @@
                           v-for="(item, key) in listGrPermiss"
                           :key="key"
                           class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                          :value="String(key)"
+                          :value="String(item.name)"
                         >
                           <SelectItemText>
                             <!-- {{ capitalizeFirstLetter(item) }} -->
-                            {{ item.name }}
+                            {{ item.name }} - {{ item.description }}
                           </SelectItemText>
                         </SelectItem>
                       </SelectGroup>
@@ -470,14 +470,56 @@
                 Quản lý trực tiếp
               </span>
 
-              <input
-                v-model="paramsUser.parent_id"
-                type="text"
-                name=""
-                id=""
-                placeholder="Nhập quản lý trực tiếp"
-                class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-              />
+              <SelectRoot v-model="leaderType.id">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn loại danh mục"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <template v-for="(items, key) in leaderData">
+                          <SelectItem
+                            v-for="(item, _) in items"
+                            :key="item.id"
+                            class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item.id)"
+                          >
+                            <SelectItemText>
+                              <!-- {{ capitalizeFirstLetter(item) }} -->
+                              {{ item.name }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
           </div>
 
@@ -695,23 +737,15 @@ const listGrPermiss = ref<any | null>(null)
 
 const fetchListPermission = async () => {
   try {
-    const response = await apiClient.get('/permission/listPermission', {
+    const response = await apiClient.get('/permission/list', {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
     })
 
-    // refGroupPermission.value = response.data.data
-
     const { data } = response.data
-
-    const resultObj: any = []
-    const listPermission = Object.entries(data).map(([key, value]) => {
-      resultObj.push(value)
-
-      return resultObj
-    })
-    listGrPermiss.value = resultObj
+    listGrPermiss.value = data
+    console.log('🚀 ~ fetchListPermission ~ response:', listGrPermiss.value)
   } catch (error) {
     console.error('Error fetching permission list:', error)
   }
@@ -722,6 +756,22 @@ const staffType = reactive({
   id: ''
 })
 const staffData = ref<any | null>(null)
+const positionType = reactive({
+  value: '',
+  id: ''
+})
+const positionData = ref<any | null>(null)
+const regionType = reactive({
+  value: '',
+  id: ''
+})
+const regionData = ref<any | null>(null)
+const leaderType = reactive({
+  value: '',
+  id: ''
+})
+const leaderData = ref<any | null>(null)
+
 const fetchListStaff = async () => {
   try {
     const response = await apiClient.get('/categories/list?type=staff', {
@@ -732,17 +782,12 @@ const fetchListStaff = async () => {
 
     const { items } = response.data.data
     staffData.value = items
-    console.log('🚀 ~ fetchListStaff ~ response:', staffData.value)
+    // console.log('🚀 ~ fetchListStaff ~ response:', staffData.value)
   } catch (error) {
     console.error('Error fetching staff list:', error)
   }
 }
 
-const positionType = reactive({
-  value: '',
-  id: ''
-})
-const positionData = ref<any | null>(null)
 const fetchListPosition = async () => {
   try {
     const response = await apiClient.get('/categories/list?type=position', {
@@ -753,17 +798,12 @@ const fetchListPosition = async () => {
 
     const { items } = response.data.data
     positionData.value = items
-    console.log('🚀 ~ fetchListPosition ~ response:', positionData.value)
+    // console.log('🚀 ~ fetchListPosition ~ response:', positionData.value)
   } catch (error) {
     console.error('Error fetching position list:', error)
   }
 }
 
-const regionType = reactive({
-  value: '',
-  id: ''
-})
-const regionData = ref<any | null>(null)
 const fetchListRegion = async () => {
   try {
     const response = await apiClient.get('/location/region', {
@@ -774,7 +814,23 @@ const fetchListRegion = async () => {
 
     const { items } = response.data.data
     regionData.value = items
-    console.log('🚀 ~ fetchListPosition ~ response:', regionData.value)
+    // console.log('🚀 ~ fetchListPosition ~ response:', regionData.value)
+  } catch (error) {
+    console.error('Error fetching position list:', error)
+  }
+}
+
+const fetchListLeader = async () => {
+  try {
+    const response = await apiClient.get('/user/list', {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    const { items } = response.data.data
+    leaderData.value = items
+    // console.log('🚀 ~ fetchListLeader ~ items:', leaderData.value)
   } catch (error) {
     console.error('Error fetching position list:', error)
   }
@@ -785,6 +841,7 @@ onMounted(() => {
   fetchListStaff()
   fetchListPosition()
   fetchListRegion()
+  fetchListLeader()
 })
 
 const handleSubmit = async () => {
@@ -799,10 +856,10 @@ const handleSubmit = async () => {
   formDataUser.append('date_of_issue', paramsUser.date_of_issue)
   formDataUser.append('place_of_issue', paramsUser.place_of_issue)
   formDataUser.append('original_place', paramsUser.original_place)
-  formDataUser.append('part_id', paramsUser.part_id)
-  formDataUser.append('position_id', paramsUser.position_id)
-  formDataUser.append('region_id', paramsUser.region_id)
-  formDataUser.append('parent_id', paramsUser.parent_id)
+  formDataUser.append('part_id', staffType.id)
+  formDataUser.append('position_id', positionType.id)
+  formDataUser.append('region_id', regionType.id)
+  formDataUser.append('parent_id', leaderType.id)
   formDataUser.append('permanent_address', paramsUser.permanent_address)
   formDataUser.append('residence_address', paramsUser.residence_address)
   formDataUser.append('work_contract', paramsUser.work_contract)
