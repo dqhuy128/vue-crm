@@ -1,5 +1,5 @@
 <template>
-  <form action="">
+  <form @submit.prevent="handleCreateCategory">
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 md:col-span-6">
         <div class="block">
@@ -132,7 +132,8 @@ import { Icon } from '@iconify/vue'
 import { apiClient } from '@/plugins/axios'
 import { apiUri } from '@/constants/apiUri'
 import { useAuth } from 'vue-auth3'
-import { capitalizeFirstLetter } from '@/utils/main'
+import { capitalizeFirstLetter, tableMagic } from '@/utils/main'
+import { useSystemManager } from '@/composables/system-manager'
 
 const auth = useAuth()
 const token = auth.token()
@@ -147,6 +148,83 @@ const paramsCreate = reactive({
   name: '',
   description: ''
 })
+
+const params = reactive({
+  type: '',
+  name: ''
+})
+const paginate = reactive({
+  page: 1,
+  per_page: 10
+})
+const debounceTime = ref<{
+  timeOut: number | null
+  counter: number
+}>({
+  timeOut: null,
+  counter: 0
+})
+
+const fetchDataDocument = () => {
+  if (debounceTime.value.timeOut !== null) {
+    clearTimeout(debounceTime.value.timeOut)
+  }
+
+  debounceTime.value.timeOut = setTimeout(() => {
+    const res = {
+      ...params,
+      page: paginate.page,
+      per_page: paginate.per_page
+    }
+
+    doFetch(
+      `${apiUri}/categories/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
+      auth.token() as string
+    ).then(() => {
+      // console.log('🚀 ~ fetchDataDocument ~ res:', res)
+      tableMagic()
+    })
+  }, 300)
+}
+
+const handleCreateCategory = async () => {
+  if (session) {
+    const formData = new FormData()
+    formData.append('name', paramsCreate.name)
+    formData.append('type', paramsCreate.type)
+    formData.append('description', paramsCreate.description)
+
+    const res = await apiClient
+      .post(`${apiUri}/categories/create`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then((res) => {
+        if (res.data.errors.input) {
+          const { message } = res.data
+          const { input } = res.data.errors
+          alert(message + '. ' + input)
+          return
+        }
+        paramsCreate.name = ''
+        paramsCreate.description = ''
+        fetchDataDocument()
+      })
+      .catch((err) => {
+        console.log('handleCreateCategory ~ err', err)
+      })
+  }
+}
+
+const {
+  data,
+  // isLoading: isLoadingDocument,
+  doFetch,
+  // fetchCategoryDocument,
+  categories
+} = useSystemManager()
 </script>
 
 <style lang="scss" scoped></style>

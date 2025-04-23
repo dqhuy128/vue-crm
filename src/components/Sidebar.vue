@@ -124,7 +124,7 @@ const refDataSidebar = ref<dataSidebarItem[]>([
   {
     icon: FluentData,
     title: 'Quản trị hệ thống',
-    route: 'SystemAdmin',
+    route: 'SystemUser',
     nav: true,
     submenu: [
       {

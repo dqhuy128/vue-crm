@@ -1,13 +1,39 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { calcBgBefore } from '../../lib/index'
+import { apiClient } from '@/plugins/axios'
+import router from '@/router'
 
-const email = ref<string | null>('')
-const handleEmailChange = () => {
-  console.log(email.value)
+const email = ref<string>('')
+const handleEmailChange = async () => {
+  const formData = new FormData()
+  formData.append('email', email.value)
+
+  try {
+    const response = await apiClient.post('/user/forgotpass', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    const { errors } = response.data
+
+    if (errors) {
+      alert(errors)
+      return
+    }
+
+    router.push({
+      name: 'ResetGetOtp',
+      query: { email: email.value }
+    })
+    console.log('🚀 ~ handleEmailChange ~ response:', response)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-const emit = defineEmits(['handleStep'])
+// const emit = defineEmits(['handleStep'])
 
 onMounted(() => {
   calcBgBefore()
@@ -101,7 +127,6 @@ onMounted(() => {
 
                 <div class="block">
                   <button
-                    @click="() => emit('handleStep')"
                     type="submit"
                     class="block w-full bg-main !text-white text-[16px] font-bold leading-normal !uppercase text-center p-2.5 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition"
                     :class="{

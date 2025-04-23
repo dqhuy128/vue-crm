@@ -1,9 +1,67 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { calcBgBefore } from '../../lib/index'
+import { apiClient } from '@/plugins/axios'
+import router from '@/router'
+import { useRoute } from 'vue-router'
 
+// Get email from route query params
+const route = useRoute()
 // Array to hold OTP values
 const otpValues = ref(['', '', '', '', '', ''])
+const otpPost = ref<any | null>(null)
+const email = ref<string>('')
+
+// Set the email from query params on component mount
+onMounted(() => {
+  calcBgBefore()
+  if (route.query.email) {
+    email.value = route.query.email as string
+    console.log('Email retrieved from query params:', email.value)
+  }
+})
+
+watch(
+  otpValues,
+  (newValues) => {
+    const allFilled = newValues.every((value) => value !== '')
+
+    if (allFilled) {
+      otpPost.value = newValues.join('')
+    } else {
+      otpPost.value = null
+    }
+  },
+  { deep: true }
+)
+
+const handlePostOtp = async () => {
+  try {
+    const formData = new FormData()
+    formData.append('otp', otpPost.value)
+    formData.append('email', email.value)
+
+    const response = await apiClient.post('/user/otp', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    console.log('🚀 ~ handlePostOtp ~ response:', response)
+    const { errors } = response.data
+
+    if (errors) {
+      alert(errors)
+      return
+    }
+
+    router.push({
+      name: 'ResetGetPass',
+      query: { email: email.value }
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 // Move focus to next input after typing
 const moveFocus = (index: any) => {
@@ -100,7 +158,7 @@ onMounted(() => {
                 Bạn sẽ nhận được mã kích hoạt từ email của bạn
               </div>
 
-              <form action="" class="block w-full">
+              <form @submit.prevent="handlePostOtp" class="block w-full">
                 <div
                   class="text-center text-[#464661] text-[16px] font-bold mb-3"
                 >
@@ -133,7 +191,7 @@ onMounted(() => {
 
                 <div class="mt-6 text-center">
                   <button
-                    type="button"
+                    type="submit"
                     class="inline-flex items-center gap-2 text-[#909090] text-[16px] font-normal"
                   >
                     Gửi lại mã
