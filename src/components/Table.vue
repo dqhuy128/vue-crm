@@ -72,7 +72,7 @@
     </div>
 
     <div
-      class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
+      class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
     >
       <div class="relative">
         <select
@@ -104,7 +104,7 @@
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+      <div class="flex flex-wrap gap-2 items-center md:ms-auto">
         <div class="text-[#464661] text-[14px] font-normal">
           1 - 10 trong 10 kết quả
         </div>
@@ -154,8 +154,8 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue"
-import { tableMagic } from "../utils/main"
+import { onMounted, ref } from 'vue'
+import { tableMagic } from '../utils/main'
 
 const props = defineProps<{
   tbhead: any
@@ -163,17 +163,17 @@ const props = defineProps<{
   justify?: any
   status?: boolean
   handlePageChange?: (page: number) => void
-  params : {
+  params: {
     currentPage: number
     totalPages: number
-    perPage : number
+    perPage: number
   }
 }>()
 // function go to next page
-const current = ref(props.params.currentPage);
+const current = ref(props.params.currentPage)
 const goToNextPage = () => {
   const newPage = Number(props.params.currentPage) + 1
-  console.log("🚀 ~ goToNextPage ~ newPage:", newPage)
+  console.log('🚀 ~ goToNextPage ~ newPage:', newPage)
   props.handlePageChange(newPage)
 }
 onMounted(() => {
@@ -182,7 +182,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
-@import "../styles/table.module.scss";
+@import '../styles/table.module.scss';
 </style>
 
 <style lang="scss" scoped>
@@ -191,7 +191,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   color: #464661;
-  font-size: 10px !important;
+
   font-style: normal;
   font-weight: 400;
   line-height: 1;
@@ -201,6 +201,7 @@ onMounted(() => {
   @media (max-width: 767px) {
     padding: 6px !important;
     padding-left: 0 !important;
+    font-size: 10px !important;
   }
 
   &-body {

@@ -6,7 +6,7 @@
   >
     <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">
       <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-8">
-        <div class="text-center mb-7">
+        <div class="mb-7 text-center">
           <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
             thêm mới người dùng
           </h3>
@@ -25,7 +25,7 @@
             />
           </div>
 
-          <div class="absolute bottom-0 right-0 z-10">
+          <div class="absolute right-0 bottom-0 z-10">
             <img src="@/assets/images/ic-camera.svg" alt="" />
           </div>
         </div>
@@ -126,7 +126,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -232,7 +232,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -289,11 +289,56 @@
                 Bộ phận
               </span>
 
-              <MultipleSelect
-                :options="optionsGroupUser"
-                holder="Chọn bộ phận"
-                v-model="valueGroupUser.value2"
-              />
+              <SelectRoot v-model="staffType.id">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn loại danh mục"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <template v-for="(items, key) in staffData">
+                          <SelectItem
+                            v-for="(item, _) in items"
+                            :key="item.id"
+                            class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item.id)"
+                          >
+                            <SelectItemText>
+                              <!-- {{ capitalizeFirstLetter(item) }} -->
+                              {{ item.name }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
           </div>
 
@@ -305,11 +350,56 @@
                 Chức vụ
               </span>
 
-              <MultipleSelect
-                :options="optionsGroupUser"
-                holder="Chọn chức vụ"
-                v-model="valueGroupUser.value3"
-              />
+              <SelectRoot v-model="positionType.id">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn loại danh mục"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <template v-for="(items, key) in positionData">
+                          <SelectItem
+                            v-for="(item, _) in items"
+                            :key="item.id"
+                            class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item.id)"
+                          >
+                            <SelectItemText>
+                              <!-- {{ capitalizeFirstLetter(item) }} -->
+                              {{ item.name }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
           </div>
 
@@ -321,11 +411,54 @@
                 Địa điểm làm việc
               </span>
 
-              <MultipleSelect
-                :options="optionsGroupUser"
-                holder="Chọn địa điểm"
-                v-model="valueGroupUser.value4"
-              />
+              <SelectRoot v-model="regionType.id">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn loại danh mục"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <SelectItem
+                          v-for="(item, _) in regionData"
+                          :key="item.id"
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.id)"
+                        >
+                          <SelectItemText>
+                            <!-- {{ capitalizeFirstLetter(item) }} -->
+                            {{ item.name }}
+                          </SelectItemText>
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
           </div>
 
@@ -337,10 +470,13 @@
                 Quản lý trực tiếp
               </span>
 
-              <MultipleSelect
-                :options="optionsGroupUser"
-                holder="Chọn quản lý"
-                v-model="valueGroupUser.value5"
+              <input
+                v-model="paramsUser.parent_id"
+                type="text"
+                name=""
+                id=""
+                placeholder="Nhập quản lý trực tiếp"
+                class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
             </div>
           </div>
@@ -416,7 +552,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -457,7 +593,7 @@
         </div>
 
         <div
-          class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center xl:gap-6"
+          class="flex flex-wrap gap-4 justify-center items-stretch mt-10 text-center xl:gap-6"
         >
           <button
             @click="() => emit('toggle-modal')"
@@ -510,13 +646,8 @@ const auth = useAuth()
 const props = defineProps(['modal'])
 const emit = defineEmits(['toggle-modal'])
 
-const dateState = ref<Record<string, any>>({
-  date1: null,
-  date2: null,
-  date3: null
-})
-
 const configFlatpickr = ref({
+  enableTime: true,
   wrap: true, // set wrap to true only when using 'input-group'
   dateFormat: 'd/m/Y',
   locale: Vietnamese // locale for this instance only
@@ -574,11 +705,8 @@ const fetchListPermission = async () => {
 
     const { data } = response.data
 
-    console.log('fetchListPermission data:', data)
-
     const resultObj: any = []
     const listPermission = Object.entries(data).map(([key, value]) => {
-      console.log(key, value)
       resultObj.push(value)
 
       return resultObj
@@ -589,8 +717,74 @@ const fetchListPermission = async () => {
   }
 }
 
+const staffType = reactive({
+  value: '',
+  id: ''
+})
+const staffData = ref<any | null>(null)
+const fetchListStaff = async () => {
+  try {
+    const response = await apiClient.get('/categories/list?type=staff', {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    const { items } = response.data.data
+    staffData.value = items
+    console.log('🚀 ~ fetchListStaff ~ response:', staffData.value)
+  } catch (error) {
+    console.error('Error fetching staff list:', error)
+  }
+}
+
+const positionType = reactive({
+  value: '',
+  id: ''
+})
+const positionData = ref<any | null>(null)
+const fetchListPosition = async () => {
+  try {
+    const response = await apiClient.get('/categories/list?type=position', {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    const { items } = response.data.data
+    positionData.value = items
+    console.log('🚀 ~ fetchListPosition ~ response:', positionData.value)
+  } catch (error) {
+    console.error('Error fetching position list:', error)
+  }
+}
+
+const regionType = reactive({
+  value: '',
+  id: ''
+})
+const regionData = ref<any | null>(null)
+const fetchListRegion = async () => {
+  try {
+    const response = await apiClient.get('/location/region', {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    const { items } = response.data.data
+    regionData.value = items
+    console.log('🚀 ~ fetchListPosition ~ response:', regionData.value)
+  } catch (error) {
+    console.error('Error fetching position list:', error)
+  }
+}
+
 onMounted(() => {
   fetchListPermission()
+  fetchListStaff()
+  fetchListPosition()
+  fetchListRegion()
 })
 
 const handleSubmit = async () => {

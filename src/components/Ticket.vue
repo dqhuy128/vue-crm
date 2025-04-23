@@ -14,7 +14,7 @@ const route = useRoute().path
     <div
       class="flex flex-wrap items-center py-2.5 px-6 border-b border-solid border-[#909090]"
     >
-      <div class="inline-flex items-center gap-2">
+      <div class="inline-flex gap-2 items-center">
         <img :src="icon" alt="" />
         <h3
           class="text-[#464661] font-inter text-[16px] font-bold leading-normal"
@@ -34,11 +34,11 @@ const route = useRoute().path
     </div>
 
     <div
-      class="pt-3.5 px-6 pb-6 flex flex-col h-full"
+      class="flex flex-col px-6 pt-3.5 pb-6 h-full"
       :class="[route == '/dashboard/report' ? 'justify-center' : '']"
     >
       <div
-        class="last-border-t flex flex-wrap items-center gap-3 border-b border-solid border-[#EDEDF6] pb-3.5 not-last:mb-3.5"
+        class="last-border-t flex flex-wrap items-center gap-3 border-b border-solid border-[#EDEDF6] pb-3 not-last:mb-3.5"
         v-for="(item, id) in ticketList"
         :key="id"
       >
