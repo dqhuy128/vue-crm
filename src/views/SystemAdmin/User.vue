@@ -1,53 +1,178 @@
 <template>
   <MainLayout>
     <div class="bg-white rounded-[24px] p-2.5">
-      <form action="" class="flex flex-wrap gap-4 items-stretch">
-        <div class="select-block grow max-lg:flex-[100%]">
-          <select
-            name=""
-            id=""
-            class="border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal"
-          >
-            <option value="">Tên, số điện thoại</option>
-            <option value="">Tên, số điện thoại</option>
-            <option value="">Tên, số điện thoại</option>
-          </select>
-        </div>
+      <form
+        class="flex flex-wrap items-stretch gap-4"
+        @submit.prevent="handleSearchUser"
+      >
+        <div class="flex flex-wrap gap-4 grow">
+          <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
+            <SelectRoot v-model="params.phone">
+              <SelectTrigger
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                  placeholder="Tên, số điện thoại"
+                />
+                <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+              </SelectTrigger>
 
-        <div class="select-block grow max-lg:flex-[100%]">
-          <select
-            name=""
-            id=""
-            class="border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal"
-          >
-            <option value="">Chọn nhóm người dùng</option>
-            <option value="">Chọn nhóm người dùng</option>
-            <option value="">Chọn nhóm người dùng</option>
-          </select>
-        </div>
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectViewport>
+                    <SelectGroup>
+                      <template
+                        v-for="(items, index) in dataDocument?.doc?.items"
+                      >
+                        <SelectItem
+                          v-for="(item, _) in items"
+                          :key="index"
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.phone)"
+                        >
+                          <SelectItemText>
+                            {{ item.phone }}
+                          </SelectItemText>
+                        </SelectItem>
+                      </template>
+                    </SelectGroup>
+                  </SelectViewport>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
 
-        <div class="select-block grow max-lg:flex-[100%]">
-          <select
-            name=""
-            id=""
-            class="border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal"
-          >
-            <option value="">Chọn bộ phận</option>
-            <option value="">Chọn bộ phận</option>
-            <option value="">Chọn bộ phận</option>
-          </select>
-        </div>
+          <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
+            <SelectRoot v-model="params.per_group_name">
+              <SelectTrigger
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                  placeholder="Chọn nhóm người dùng"
+                />
+                <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+              </SelectTrigger>
 
-        <div class="select-block grow max-lg:flex-[100%]">
-          <select
-            name=""
-            id=""
-            class="border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal"
-          >
-            <option value="">Chọn trạng thái</option>
-            <option value="">Chọn trạng thái</option>
-            <option value="">Chọn trạng thái</option>
-          </select>
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectViewport>
+                    <SelectGroup>
+                      <template
+                        v-for="(items, index) in dataDocument?.doc?.items"
+                      >
+                        <SelectItem
+                          v-for="(item, _) in items"
+                          :key="index"
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.per_group_name)"
+                        >
+                          <SelectItemText>
+                            {{ item.per_group_name }}
+                          </SelectItemText>
+                        </SelectItem>
+                      </template>
+                    </SelectGroup>
+                  </SelectViewport>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
+
+          <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
+            <SelectRoot v-model="params.part_id">
+              <SelectTrigger
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                  placeholder="Chọn bộ phận"
+                />
+                <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+              </SelectTrigger>
+
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectViewport>
+                    <SelectGroup>
+                      <template
+                        v-for="(items, index) in dataDocument?.doc?.items"
+                      >
+                        <SelectItem
+                          v-for="(item, _) in items"
+                          :key="index"
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.part_id)"
+                        >
+                          <SelectItemText>
+                            {{ item.part_id }}
+                          </SelectItemText>
+                        </SelectItem>
+                      </template>
+                    </SelectGroup>
+                  </SelectViewport>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
+
+          <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
+            <SelectRoot v-model="params.position_id">
+              <SelectTrigger
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                  placeholder="Chọn chức vụ"
+                />
+                <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+              </SelectTrigger>
+
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectViewport>
+                    <SelectGroup>
+                      <template
+                        v-for="(items, index) in dataDocument?.doc?.items"
+                      >
+                        <SelectItem
+                          v-for="(item, _) in items"
+                          :key="index"
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.position_id)"
+                        >
+                          <SelectItemText>
+                            {{ item.position_id }}
+                          </SelectItemText>
+                        </SelectItem>
+                      </template>
+                    </SelectGroup>
+                  </SelectViewport>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
         </div>
 
         <button
@@ -85,14 +210,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
+    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách người dùng
       </div>
 
-      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
+      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
         <button
           type="button"
           id="tableImport"
@@ -139,7 +264,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
-          <div id="tableRowHeader" class="table-row justify-between header">
+          <div id="tableRowHeader" class="justify-between table-row header">
             <div class="cell" v-for="(column, index) in tbhead" :key="index">
               {{ column.title }}
 
@@ -157,29 +282,64 @@
 
           <!-- Example row -->
           <div id="tableRowBody" class="table-row body">
-            <template v-for="n in 25">
+            <template
+              v-for="(items, index) in dataDocument?.doc?.items"
+              :key="index"
+            >
               <div
                 class="justify-between table-item"
-                v-for="(item, index) in tbbody"
+                v-for="(item, _) in items"
                 :key="index"
               >
                 <!-- bg-blue , bg-green , bg-red , bg-purple , :class="{ 'bg-blue': id === 1 }"-->
-                <div class="cell" v-for="(data, id) in item.data" :key="id">
-                  {{ data.title }}
+
+                <div class="cell">
+                  <template v-if="index < 9"> 0{{ index + 1 }} </template>
+                  <template v-else>{{ index + 1 }}</template>
+                </div>
+
+                <div class="cell">
+                  {{ item?.code || 'Chưa có mã NV' }}
+                </div>
+
+                <div class="cell">
+                  {{ item?.name || 'Chưa có tên' }}
+                </div>
+
+                <div class="cell">
+                  {{ item?.phone || 'Chưa có số điện thoại' }}
+                </div>
+
+                <div class="cell">
+                  {{ item?.email || 'Chưa có email' }}
+                </div>
+
+                <div class="cell">
+                  {{ item?.position_id || 'Chưa có chức vụ' }}
+                </div>
+
+                <div class="cell">
+                  {{ item?.part_id || 'Chưa có bộ phận' }}
+                </div>
+
+                <div class="cell">
+                  {{ item?.permanent_address || 'Chưa có địa điểm' }}
                 </div>
 
                 <div class="cell pinned pinned-body">
-                  <div class="cell status status-green status-body">
-                    Đang hoạt động
-                  </div>
+                  <template v-if="Number(item?.status) === 1">
+                    <div class="cell status status-green status-body">
+                      Đang hoạt động
+                    </div>
+                  </template>
+
+                  <template v-if="Number(item?.status) === 0">
+                    <div class="cell status status-red status-body">
+                      Dừng hoạt động
+                    </div>
+                  </template>
 
                   <div class="cell edit edit-body">
-                    <button
-                      type="button"
-                      class="cursor-pointer cell-btn-view shrink-0"
-                    >
-                      <img src="@/assets/images/action-edit-1.svg" alt="" />
-                    </button>
                     <button
                       type="button"
                       class="cursor-pointer cell-btn-edit shrink-0"
@@ -201,7 +361,7 @@
       </div>
 
       <div
-        class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -233,13 +393,28 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2 items-center md:ms-auto">
+        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
-            1 - 10 trong 10 kết quả
+            <template
+              v-if="
+                dataDocument.doc?.pagination?.total &&
+                Number(dataDocument.doc?.pagination.total) > paginate.per_page
+              "
+            >
+              1 - {{ paginate.per_page }} trong
+              {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
+            </template>
+            <template v-else>
+              {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
+            </template>
           </div>
 
           <div class="flex flex-wrap items-center tb-navigation md:gap-2">
-            <a href="" class="disabled">
+            <button
+              type="button"
+              :class="{ disabled: paginate.page === 1 }"
+              @click="handlePageChange(paginate.page - 1)"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -252,17 +427,24 @@
                   fill="#363636"
                 />
               </svg>
-            </a>
+            </button>
 
             <input
               type="text"
               name=""
-              value="1"
+              :value="paginate.page"
               id=""
               class="rounded-[8px] bg-white w-[32px] h-[32px] inline-flex flex-col items-center justify-center text-center text-[#464661] text-[16px] font-bold border border-solid border-[#909090]"
+              readonly
             />
 
-            <a href="">
+            <button
+              type="button"
+              :class="{
+                disabled: Number(paginate.page) >= dataTotalPages
+              }"
+              @click="handlePageChange(paginate.page + 1)"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -275,7 +457,7 @@
                   fill="#363636"
                 />
               </svg>
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -312,7 +494,7 @@
           Bạn có chắc muốn export danh sách người dùng?
         </div>
 
-        <div class="flex flex-wrap gap-6 items-stretch">
+        <div class="flex flex-wrap items-stretch gap-6">
           <a
             href=""
             class="inline-flex items-center justify-center flex-auto border border-solid border-[#EDEDF6] rounded-lg bg-white p-1.5 text-[#464661] text-[16px] font-semibold uppercase max-w-[175px] hover:shadow-hoverinset transition"
@@ -358,12 +540,31 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
 import ModalRegisterUser from '@/components/Modal/ModalRegisterUser.vue'
-import Table from '@/components/Table.vue'
 import { tableMagic } from '@/utils/main'
+import { useSystemUser } from '@/composables/system-user'
+import { apiUri } from '@/constants/apiUri'
+import { useAuth } from 'vue-auth3'
+import {
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectItemIndicator,
+  SelectItemText,
+  SelectLabel,
+  SelectPortal,
+  SelectRoot,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport
+} from 'radix-vue'
+import { Icon } from '@iconify/vue'
 
 interface recordModal {
   [key: string]: boolean
@@ -414,22 +615,83 @@ const tbhead = reactive([
   }
 ])
 
-const tbbody = reactive([
-  {
-    data: [
-      { title: '01' },
-      { title: '00123' },
-      { title: 'Nguyễn Đức Hiếu' },
-      { title: '0906668888' },
-      { title: 'hieund@skygroup.com' },
-      { title: 'Nhân viên' },
-      { title: 'Phòng Marketing' },
-      { title: 'Hà Nội ' }
-    ]
+const auth = useAuth()
+
+const params = reactive({
+  part_id: '',
+  position_id: '',
+  per_group_name: '',
+  phone: ''
+})
+const paginate = reactive({
+  page: 1,
+  per_page: 10
+})
+const debounceTime = ref<{
+  timeOut: number | null
+  counter: number
+}>({
+  timeOut: null,
+  counter: 0
+})
+
+const fetchDataDocument = () => {
+  if (debounceTime.value.timeOut !== null) {
+    clearTimeout(debounceTime.value.timeOut)
   }
-])
+
+  debounceTime.value.timeOut = setTimeout(() => {
+    const res = {
+      ...params,
+      page: paginate.page,
+      per_page: paginate.per_page
+    }
+
+    doFetch(
+      `${apiUri}/user/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
+      auth.token() as string
+    ).then(() => {
+      // console.log('🚀 ~ fetchDataDocument ~ res:', res)
+      tableMagic()
+    })
+  }, 300)
+}
+
+const handlePageChange = (pageNum: number) => {
+  // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
+  paginate.page = pageNum
+  // fetchDataDocument();
+}
+
+const handleSearchUser = async () => {
+  paginate.page = 1
+  paginate.per_page = 10
+  fetchDataDocument()
+}
+
+const {
+  data,
+  // isLoading: isLoadingDocument,
+  doFetch,
+  // fetchCategoryDocument,
+  categories
+} = useSystemUser()
+
+const dataDocument = reactive<any>({
+  doc: data
+})
+
+const dataTotalPages = computed(() =>
+  Math.ceil(
+    Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page)
+  )
+)
 
 onMounted(() => {
+  if (auth.check()) {
+    fetchDataDocument()
+  }
+
   tableMagic()
 })
 </script>

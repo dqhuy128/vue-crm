@@ -6,7 +6,7 @@
   >
     <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">
       <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-8">
-        <div class="mb-7 text-center">
+        <div class="text-center mb-7">
           <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
             thêm mới người dùng
           </h3>
@@ -25,7 +25,7 @@
             />
           </div>
 
-          <div class="absolute right-0 bottom-0 z-10">
+          <div class="absolute bottom-0 right-0 z-10">
             <img src="@/assets/images/ic-camera.svg" alt="" />
           </div>
         </div>
@@ -126,7 +126,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -147,11 +147,11 @@
 
               <SelectRoot v-model="valueGrPermiss">
                 <SelectTrigger
-                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none"
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                   aria-label="Customise options"
                 >
                   <SelectValue
-                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
                     placeholder="Chọn loại danh mục"
                   />
                   <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
@@ -232,7 +232,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -291,11 +291,11 @@
 
               <SelectRoot v-model="staffType.id">
                 <SelectTrigger
-                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none"
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                   aria-label="Customise options"
                 >
                   <SelectValue
-                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
                     placeholder="Chọn loại danh mục"
                   />
                   <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
@@ -352,11 +352,11 @@
 
               <SelectRoot v-model="positionType.id">
                 <SelectTrigger
-                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none"
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                   aria-label="Customise options"
                 >
                   <SelectValue
-                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
                     placeholder="Chọn loại danh mục"
                   />
                   <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
@@ -413,11 +413,11 @@
 
               <SelectRoot v-model="regionType.id">
                 <SelectTrigger
-                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none"
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                   aria-label="Customise options"
                 >
                   <SelectValue
-                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
                     placeholder="Chọn loại danh mục"
                   />
                   <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
@@ -472,11 +472,11 @@
 
               <SelectRoot v-model="leaderType.id">
                 <SelectTrigger
-                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none"
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                   aria-label="Customise options"
                 >
                   <SelectValue
-                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
                     placeholder="Chọn loại danh mục"
                   />
                   <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
@@ -569,10 +569,13 @@
                 Hợp đồng làm việc
               </span>
 
-              <MultipleSelect
-                :options="optionsGroupUser"
-                holder="Chọn hợp đồng làm việc"
-                v-model="valueGroupUser.value6"
+              <input
+                v-model="paramsUser.work_contract"
+                type="text"
+                name=""
+                id=""
+                placeholder="Nhập hợp đồng làm việc"
+                class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
             </div>
           </div>
@@ -594,7 +597,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -630,12 +633,57 @@
               >
                 Trạng thái
               </span>
+
+              <SelectRoot v-model="paramsUser.status">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn loại danh mục"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectViewport>
+                      <SelectGroup>
+                        <SelectItem
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(1)"
+                        >
+                          <SelectItemText>
+                            <!-- {{ capitalizeFirstLetter(item) }} -->
+                            Đang hoạt động
+                          </SelectItemText>
+                        </SelectItem>
+
+                        <SelectItem
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(2)"
+                        >
+                          <SelectItemText>
+                            <!-- {{ capitalizeFirstLetter(item) }} -->
+                            Dừng hoạt động
+                          </SelectItemText>
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectViewport>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
           </div>
         </div>
 
         <div
-          class="flex flex-wrap gap-4 justify-center items-stretch mt-10 text-center xl:gap-6"
+          class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center xl:gap-6"
         >
           <button
             @click="() => emit('toggle-modal')"
@@ -689,7 +737,7 @@ const props = defineProps(['modal'])
 const emit = defineEmits(['toggle-modal'])
 
 const configFlatpickr = ref({
-  enableTime: true,
+  // enableTime: true,
   wrap: true, // set wrap to true only when using 'input-group'
   dateFormat: 'd/m/Y',
   locale: Vietnamese // locale for this instance only
@@ -845,34 +893,39 @@ onMounted(() => {
 })
 
 const handleSubmit = async () => {
-  const formDataUser = new FormData()
-  formDataUser.append('code', paramsUser.code)
-  formDataUser.append('phone', paramsUser.phone)
-  formDataUser.append('name', paramsUser.name)
-  formDataUser.append('email', paramsUser.email)
-  formDataUser.append('dob', paramsUser.dob)
-  formDataUser.append('per_group_name', paramsUser.per_group_name)
-  formDataUser.append('identification', paramsUser.identification)
-  formDataUser.append('date_of_issue', paramsUser.date_of_issue)
-  formDataUser.append('place_of_issue', paramsUser.place_of_issue)
-  formDataUser.append('original_place', paramsUser.original_place)
-  formDataUser.append('part_id', staffType.id)
-  formDataUser.append('position_id', positionType.id)
-  formDataUser.append('region_id', regionType.id)
-  formDataUser.append('parent_id', leaderType.id)
-  formDataUser.append('permanent_address', paramsUser.permanent_address)
-  formDataUser.append('residence_address', paramsUser.residence_address)
-  formDataUser.append('work_contract', paramsUser.work_contract)
-  formDataUser.append('working_day', paramsUser.working_day)
-  formDataUser.append('total_days_off', paramsUser.total_days_off)
-  formDataUser.append('status', paramsUser.status)
+  try {
+    const formDataUser = new FormData()
+    formDataUser.append('code', paramsUser.code)
+    formDataUser.append('phone', paramsUser.phone)
+    formDataUser.append('name', paramsUser.name)
+    formDataUser.append('email', paramsUser.email)
+    formDataUser.append('dob', paramsUser.dob)
+    formDataUser.append('per_group_name', paramsUser.per_group_name)
+    formDataUser.append('identification', paramsUser.identification)
+    formDataUser.append('date_of_issue', paramsUser.date_of_issue)
+    formDataUser.append('place_of_issue', paramsUser.place_of_issue)
+    formDataUser.append('original_place', paramsUser.original_place)
+    formDataUser.append('part_id', staffType.id)
+    formDataUser.append('position_id', positionType.id)
+    formDataUser.append('region_id', regionType.id)
+    formDataUser.append('parent_id', leaderType.id)
+    formDataUser.append('permanent_address', paramsUser.permanent_address)
+    formDataUser.append('residence_address', paramsUser.residence_address)
+    formDataUser.append('work_contract', paramsUser.work_contract)
+    formDataUser.append('working_day', paramsUser.working_day)
+    formDataUser.append('total_days_off', paramsUser.total_days_off)
+    formDataUser.append('status', paramsUser.status)
 
-  await apiClient.post('/users/create', formDataUser, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${auth.token()}`
-    }
-  })
+    const response = await apiClient.post('/user/create', formDataUser, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    console.log('🚀 ~ handleSubmit ~ response:', response)
+  } catch (error) {
+    console.error('Error fetching position list:', error)
+  }
 }
 </script>
 

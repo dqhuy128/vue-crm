@@ -38,17 +38,20 @@ const handleLogin = async () => {
       fetchUser: true
     })
 
-    console.log(res)
+    const { status } = res.data
+    console.log('Status type:', typeof status, 'Status value:', status)
 
-    if (res.data.status !== 1) {
+    if (status == 0) {
       //  dang nhap ko thanh cong
       error.value = 'Đăng nhập thất bại'
       if (res.data.errors && res.data.errors.login) {
         error.value = res.data.errors.login
       }
+      return
     } else {
       // get access token
       const { access_token } = res.data.data
+      console.log('Access token received:', !!access_token)
 
       // Set the access_token as the default token in Vue Auth 3
       auth.token(null, access_token)
