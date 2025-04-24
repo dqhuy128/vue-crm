@@ -3,7 +3,7 @@
     <div class="bg-white rounded-[24px] p-2.5">
       <form
         @submit.prevent="handleSearchDocument"
-        class="flex flex-wrap items-stretch gap-4"
+        class="flex flex-wrap gap-4 items-stretch"
       >
         <div class="flex flex-wrap gap-4 grow">
           <div class="flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
@@ -25,7 +25,7 @@
                   class="grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
                   placeholder="Chọn loại danh mục"
                 />
-                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+                <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
               </SelectTrigger>
 
               <SelectPortal>
@@ -125,14 +125,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
+    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách tài liệu
       </div>
 
-      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
+      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
         <button
           type="button"
           id="tableAdding"
@@ -153,7 +153,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
-          <div id="tableRowHeader" class="justify-between table-row header">
+          <div id="tableRowHeader" class="table-row justify-between header">
             <div class="cell" v-for="(column, index) in tbhead" :key="index">
               {{ column.title }}
 
@@ -230,21 +230,21 @@
       </div>
 
       <div
-        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
+            v-model="paginate.per_page"
             name=""
             id="selectPerPage"
-            class="appearance-none cursor-pointer p-[8px_12px] bg-white rounded-[24px] md:min-w-[264px] text-[#464661] text-[14px] font-normal border border-solid border-[#EDEDF6]"
-            v-model="paginate.per_page"
+            class="appearance-none cursor-pointer p-[8px_12px] bg-white rounded-[24px] md:min-w-[264px] text-[#464661] text-[14px] font-normal border border-solid border-[#EDEDF6] focus:outline-none"
           >
-            <option value="20">20 bản ghi / trang</option>
-            <option value="40">40 bản ghi / trang</option>
-            <option value="30">30 bản ghi / trang</option>
             <option value="10" :selected="paginate.per_page === 10">
               10 bản ghi / trang
             </option>
+            <option value="20">20 bản ghi / trang</option>
+            <option value="30">30 bản ghi / trang</option>
+            <option value="40">40 bản ghi / trang</option>
           </select>
 
           <div
@@ -265,7 +265,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+        <div class="flex flex-wrap gap-2 items-center md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
             <template
               v-if="

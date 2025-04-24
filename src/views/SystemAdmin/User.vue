@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="bg-white rounded-[24px] p-2.5">
       <form
-        class="flex flex-wrap items-stretch gap-4"
+        class="flex flex-wrap gap-4 items-stretch"
         @submit.prevent="handleSearchUser"
       >
         <div class="flex flex-wrap gap-4 grow">
@@ -210,14 +210,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
+    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách người dùng
       </div>
 
-      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
+      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
         <button
           type="button"
           id="tableImport"
@@ -264,7 +264,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
-          <div id="tableRowHeader" class="justify-between table-row header">
+          <div id="tableRowHeader" class="table-row justify-between header">
             <div class="cell" v-for="(column, index) in tbhead" :key="index">
               {{ column.title }}
 
@@ -361,18 +361,21 @@
       </div>
 
       <div
-        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
+            v-model="paginate.per_page"
             name=""
             id="selectPerPage"
-            class="appearance-none cursor-pointer p-[8px_12px] bg-white rounded-[24px] md:min-w-[264px] text-[#464661] text-[14px] font-normal border border-solid border-[#EDEDF6]"
+            class="appearance-none cursor-pointer p-[8px_12px] bg-white rounded-[24px] md:min-w-[264px] text-[#464661] text-[14px] font-normal border border-solid border-[#EDEDF6] focus:outline-none"
           >
-            <option value="">20 bản ghi / trang</option>
-            <option value="">40 bản ghi / trang</option>
-            <option value="">30 bản ghi / trang</option>
-            <option value="">10 bản ghi / trang</option>
+            <option value="10" :selected="paginate.per_page === 10">
+              10 bản ghi / trang
+            </option>
+            <option value="20">20 bản ghi / trang</option>
+            <option value="30">30 bản ghi / trang</option>
+            <option value="40">40 bản ghi / trang</option>
           </select>
 
           <div
@@ -393,7 +396,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+        <div class="flex flex-wrap gap-2 items-center md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
             <template
               v-if="
@@ -494,7 +497,7 @@
           Bạn có chắc muốn export danh sách người dùng?
         </div>
 
-        <div class="flex flex-wrap items-stretch gap-6">
+        <div class="flex flex-wrap gap-6 items-stretch">
           <a
             href=""
             class="inline-flex items-center justify-center flex-auto border border-solid border-[#EDEDF6] rounded-lg bg-white p-1.5 text-[#464661] text-[16px] font-semibold uppercase max-w-[175px] hover:shadow-hoverinset transition"
@@ -540,7 +543,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, watch, reactive, ref } from 'vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
 import ModalRegisterUser from '@/components/Modal/ModalRegisterUser.vue'
@@ -660,7 +663,7 @@ const fetchDataDocument = () => {
 const handlePageChange = (pageNum: number) => {
   // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
   paginate.page = pageNum
-  // fetchDataDocument();
+  fetchDataDocument()
 }
 
 const handleSearchUser = async () => {
@@ -680,6 +683,27 @@ const {
 const dataDocument = reactive<any>({
   doc: data
 })
+
+watch(
+  () => params.position_id,
+  (newVal) => {
+    console.log('🚀 ~ watch ~ value:', newVal)
+  },
+  { deep: true }
+)
+
+watch(
+  paginate,
+  async () => {
+    fetchDataDocument()
+  },
+  {
+    // must pass deep option to watch for changes on object properties
+    deep: true,
+    // can also pass immediate to handle that first request AND when queries change
+    immediate: true
+  }
+)
 
 const dataTotalPages = computed(() =>
   Math.ceil(

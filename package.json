@@ -12,6 +12,7 @@
   "dependencies": {
     "@iconify/vue": "^4.3.0",
     "@tailwindcss/vite": "^4.0.9",
+    "@vee-validate/yup": "^4.15.0",
     "axios": "^1.8.4",
     "cors": "^2.8.5",
     "eslint-plugin-prettier": "^5.2.3",
