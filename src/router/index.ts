@@ -1,25 +1,26 @@
 import Dashboard from '@/views/Dashboard/Dashboard.vue'
 import DashboardPersonal from '@/views/Dashboard/DashboardPersonal.vue'
 import DashboardReport from '@/views/Dashboard/DashboardReport.vue'
-import LoginView from '@/views/Login/Login.vue'
-import RegisterView from '@/views/Register/Register.vue'
-import ResetPassView from '@/views/ResetPassword/ResetView.vue'
-import ResetGetOtp from '@/views/ResetPassword/ResetGetOtp.vue'
-import ResetGetPass from '@/views/ResetPassword/ResetGetPass.vue'
-import SystemCategory from '@/views/SystemAdmin/Category.vue'
-import SystemPermission from '@/views/SystemAdmin/Permission.vue'
-import SystemIndexView from '@/views/SystemAdmin/IndexView.vue'
-import SystemAdmin from '@/views/SystemAdmin/Admin.vue'
-import SystemUser from '@/views/SystemAdmin/User.vue'
 import Document from '@/views/Document/Document.vue'
+import LeaveAccess from '@/views/Leave/Access.vue'
 import LeaveIndex from '@/views/Leave/IndexView.vue'
 import LeaveInfo from '@/views/Leave/Info.vue'
-import LeaveAccess from '@/views/Leave/Access.vue'
-import TimekeepingIndex from '@/views/Timekeeping/IndexView.vue'
-import TimekeepingHistory from '@/views/Timekeeping/History.vue'
+import LoginView from '@/views/Login/Login.vue'
+import RegisterView from '@/views/Register/Register.vue'
+import ResetGetOtp from '@/views/ResetPassword/ResetGetOtp.vue'
+import ResetGetPass from '@/views/ResetPassword/ResetGetPass.vue'
+import ResetPassView from '@/views/ResetPassword/ResetView.vue'
+import SystemAdmin from '@/views/SystemAdmin/Admin.vue'
+import SystemCategory from '@/views/SystemAdmin/Category.vue'
+import SystemIndexView from '@/views/SystemAdmin/IndexView.vue'
+import SystemPermission from '@/views/SystemAdmin/Permission.vue'
+import SystemUser from '@/views/SystemAdmin/User.vue'
 import TimekeepingExplain from '@/views/Timekeeping/Explain.vue'
+import TimekeepingHistory from '@/views/Timekeeping/History.vue'
+import TimekeepingIndex from '@/views/Timekeeping/IndexView.vue'
+import { useAuth } from 'vue-auth3'
 import { createRouter, createWebHistory } from 'vue-router'
-
+const auth = useAuth()
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -142,7 +143,8 @@ const router = createRouter({
     {
       path: '/document',
       name: 'Document',
-      component: Document
+      component: Document,
+      meta: { auth: true },
     },
     {
       path: '/permit',
@@ -163,5 +165,30 @@ const router = createRouter({
     // },
   ]
 })
+// router.beforeEach((to) => {
+//   // ✅ This will work because the router starts its navigation after
+//   // the router is installed and pinia will be installed too
+//   const permissionStore = usePermissionStore()
 
+//   console.log(auth, 'use Auth')
+//   // if(!auth.check()) {
+//   //   return { path: "/login" }
+//   // }
+//   // console.log(permissionStore.getPermission.value, 'router permission');
+
+//   if (to.meta.auth) {
+//     try {
+//       console.log(permissionStore.permision, 'permissionStore');
+//       console.log(to, 'to route');
+//     } catch (error) {
+//       if (error) {
+//         // ... handle the error and then cancel the navigation
+//         return false
+//       } else {
+//         // unexpected error, cancel the navigation and pass the error to the global handler
+//         throw error
+//       }
+//     }
+//   }
+// })
 export default router

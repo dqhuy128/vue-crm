@@ -1,22 +1,21 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
-import { onBeforeMount, reactive, ref } from 'vue'
 import Modal from '@/components/Modals.vue'
-import { useAuth } from 'vue-auth3'
 import { apiUri } from '@/constants/apiUri'
-import { Cropper, CircleStencil } from 'vue-advanced-cropper'
-import 'vue-advanced-cropper/dist/style.css'
 import {
   change,
-  loadImage,
-  image,
-  initializeCropper,
   destroyCropper,
+  image,
+  loadImage,
   postServer
 } from '@/lib/cropper'
 import { apiClient } from '@/plugins/axios'
-import { Form, Field, ErrorMessage, useForm } from 'vee-validate'
-
+import { usePermissionStore } from '@/store/permission'
+import { ErrorMessage, Field, Form, useForm } from 'vee-validate'
+import { onBeforeMount, reactive, ref } from 'vue'
+import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
+import { useAuth } from 'vue-auth3'
+import { RouterLink } from 'vue-router'
 interface recordModal {
   [key: string]: boolean
 }
@@ -29,7 +28,7 @@ const updateUrlAva = ref<string>('')
 const isPasswordVisible = ref(false)
 const { resetForm } = useForm()
 const cropperRef = ref(null)
-
+const permissionStore = usePermissionStore();
 const modalActive = ref<recordModal>({
   modalUserInfo: false,
   modalUserAvatar: false,
@@ -57,7 +56,6 @@ const fetchUser = async () => {
 
   if (isAuthenticated.value) {
     token.value = auth.token() // Gets the default token
-
     // Fetch user data from the API
     try {
       const response = await auth.fetch({
@@ -70,6 +68,7 @@ const fetchUser = async () => {
       })
 
       const { data } = response.data
+      permissionStore.fetchPermission(data.access_token , data.per_group_name)
       user.value = data
     } catch (error: any) {
       console.error('NavBar.vue ~ Failed to fetch user data:', error)
@@ -79,6 +78,8 @@ const fetchUser = async () => {
         await auth.logout({
           makeRequest: false,
           redirect: '/login'
+        }).then(() =>{
+          permissionStore.$reset();
         })
 
         // console.clear()

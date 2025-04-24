@@ -5,6 +5,7 @@ import router from './router'
 // import { createPinia } from 'pinia'
 import '@/assets/sass/style.scss'
 import '@/style.css'
+import { createPinia } from 'pinia'
 import 'tippy.js/dist/tippy.css'
 import 'tippy.js/themes/light.css'
 import { createAuth } from 'vue-auth3'
@@ -12,7 +13,7 @@ import driverAuthBearer from 'vue-auth3/drivers/auth/bearer'
 import driverHttpAxios from 'vue-auth3/drivers/http/axios'
 
 const app = createApp(App)
-// const pinia = createPinia()
+const pinia = createPinia()
 
 const auth = createAuth({
   plugins: {
@@ -44,5 +45,6 @@ app.use(
   }
 )
 
-// app.use(pinia)
+app.use(pinia)
+
 app.use(router).use(auth).mount('#app')

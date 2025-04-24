@@ -86,19 +86,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import MageDashboard from '@/assets/images/mage_dashboard.svg'
 import FluentData from '@/assets/images/fluent_data-pie-24-regular.svg'
+import FluentHistory from '@/assets/images/fluent_history-24-filled.svg'
 import FluentNote from '@/assets/images/fluent_note-24-regular.svg'
+import IconamoonCategory from '@/assets/images/iconamoon_category-light.svg'
 import Iconoir from '@/assets/images/iconoir_timer-off.svg'
-import Proicons from '@/assets/images/proicons_timer.svg'
 import LucideUserCog from '@/assets/images/lucide_user-cog.svg'
 import LucideUserPen from '@/assets/images/lucide_user-pen.svg'
-import IconamoonCategory from '@/assets/images/iconamoon_category-light.svg'
-import TableUserScan from '@/assets/images/tabler_user-scan.svg'
-import TickCircle from '@/assets/images/mdi_tick-circle-outline.svg'
-import FluentHistory from '@/assets/images/fluent_history-24-filled.svg'
+import MageDashboard from '@/assets/images/mage_dashboard.svg'
 import EditNote from '@/assets/images/material-symbols_edit-note-outline-rounded.svg'
+import TickCircle from '@/assets/images/mdi_tick-circle-outline.svg'
+import Proicons from '@/assets/images/proicons_timer.svg'
+import TableUserScan from '@/assets/images/tabler_user-scan.svg'
+import { usePermissionStore } from '@/store/permission'
+import { storeToRefs } from 'pinia'
+import { onMounted, ref } from 'vue'
 
 interface dataSidebarItem {
   icon: any
@@ -106,26 +108,23 @@ interface dataSidebarItem {
   nav?: boolean
   submenu?: dataSubmenu[]
   route?: string
+  permission?: string[]
 }
 
 interface dataSubmenu {
   icon: any
   title: string
   route?: string
+  permission?: string
 }
 
-const refDataSidebar = ref<dataSidebarItem[]>([
-  {
-    icon: MageDashboard,
-    title: 'Dashboard',
-    route: 'Personal',
-    nav: false
-  },
+const permissionNav = [
   {
     icon: FluentData,
     title: 'Quản trị hệ thống',
     route: 'SystemUser',
     nav: true,
+    permission: [''],
     submenu: [
       {
         icon: LucideUserCog,
@@ -186,6 +185,90 @@ const refDataSidebar = ref<dataSidebarItem[]>([
       }
     ]
   }
+]
+const refDataSidebar = ref<dataSidebarItem[]>([
+  {
+    icon: MageDashboard,
+    title: 'Dashboard',
+    route: 'Personal',
+    nav: false
+  },
+  {
+    icon: FluentData,
+    title: 'Quản trị hệ thống',
+    route: 'SystemUser',
+    nav: true,
+    // permission: ['Categories', 'Permission', 'User'],
+    submenu: [
+      {
+        icon: LucideUserCog,
+        title: 'Quản lý người dùng',
+        route: 'SystemUser',
+        // permission: 'User'
+      },
+      {
+        icon: LucideUserPen,
+        title: 'Quản lý phân quyền',
+        route: 'SystemPermission',
+        // permission: 'Permission'
+      },
+      {
+        icon: IconamoonCategory,
+        title: 'Quản lý danh mục',
+        route: 'SystemCategory',
+        // permission: 'Categories'
+      }
+    ]
+  },
+  {
+    icon: FluentNote,
+    title: 'Tài liệu',
+    route: 'Document',
+    nav: false,
+    // permission: ['Document']
+  },
+  {
+    icon: Iconoir,
+    title: 'Nghỉ phép',
+    nav: true,
+    route: 'Info',
+    // permission: ['Leave'],
+    submenu: [
+      {
+        icon: TableUserScan,
+        title: 'Thông tin nghỉ phép',
+        route: 'Info',
+        // permission: 'Leave'
+      },
+      {
+        icon: TickCircle,
+        title: 'Phê duyệt nghỉ phép',
+        route: 'Access',
+        // permission: 'Leave'
+      }
+    ]
+  },
+  {
+    icon: Proicons,
+    title: 'Chấm công',
+    nav: true,
+    route: 'History',
+    // permission: ['Work'],
+    submenu: [
+      {
+        icon: FluentHistory,
+        title: 'Lịch sử chấm công',
+        route: 'History',
+        // permission: 'Work'
+      },
+      {
+        icon: EditNote,
+        title: 'Giải trình chấm công',
+        route: 'Explain',
+        // permission: 'Work'
+      }
+    ]
+  }
 ])
 
 // Mảng lưu trạng thái dropdown của từng item
@@ -204,6 +287,17 @@ const isDropdownOpen = (idx: any) => {
   // Kiểm tra dropdown có đang mở không
   return dropdownState.value[idx]
 }
+
+const permissionData = usePermissionStore()
+const { permision } = storeToRefs(permissionData)
+console.log(permision.value?.permission, 'permission change state')
+
+onMounted(() => {
+  if(permision.value?.name === 'Admin') {
+    console.log('role Admin');
+  }
+})
+
 </script>
 
 <style lang="scss" scoped>

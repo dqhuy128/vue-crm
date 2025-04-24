@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { apiUri } from '@/constants/apiUri'
 import { calcBgBefore } from '@/lib/index'
+import { usePermissionStore } from '@/store/permission'
 import { onMounted, reactive, ref } from 'vue'
 import { useAuth } from 'vue-auth3'
 import { useRouter } from 'vue-router'
-import { apiUri } from '@/constants/apiUri'
-
+const permissionStore = usePermissionStore()
 const isPasswordVisible = ref(false)
 // Function to toggle the password visibility
 const togglePasswordVisibility = () => {
@@ -15,7 +16,7 @@ const router = useRouter()
 const auth = useAuth()
 
 const form = reactive({
-  username: '0941559666',
+  username: '0904345514',
   password: '123456'
 })
 
@@ -50,22 +51,26 @@ const handleLogin = async () => {
       return
     } else {
       // get access token
-      const { access_token } = res.data.data
+      const { access_token, per_group_name } = res.data.data
       console.log('Access token received:', !!access_token)
 
       // Set the access_token as the default token in Vue Auth 3
       auth.token(null, access_token)
-
+      permissionStore.fetchPermission(access_token, per_group_name)
       // dang nhap thanh cong
       router.push({ name: 'Personal' })
     }
   } catch (err: any) {
     console.error('Chi tiết lỗi:', err)
     if (err.response?.status === 401) {
-      await auth.logout({
-        makeRequest: false, // Disable API request
-        redirect: '/login' // Redirect to login page
-      })
+      await auth
+        .logout({
+          makeRequest: false, // Disable API request
+          redirect: '/login' // Redirect to login page
+        })
+        .then(() => {
+          permissionStore.$reset()
+        })
     }
   }
 }
