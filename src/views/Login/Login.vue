@@ -15,7 +15,7 @@ const router = useRouter()
 const auth = useAuth()
 
 const form = reactive({
-  username: '0941559666',
+  username: '0328910709',
   password: '123456'
 })
 
@@ -96,7 +96,7 @@ onMounted(() => {
               >
                 <img
                   src="@/assets/images/logo-login.png"
-                  class="object-scale-down h-auto max-w-full"
+                  class="object-scale-down max-w-full h-auto"
                   alt=""
                 />
               </div>
@@ -108,10 +108,10 @@ onMounted(() => {
                 crm skygroup
               </div>
 
-              <div class="hidden w-full mx-auto mt-auto md:block">
+              <div class="hidden mx-auto mt-auto w-full md:block">
                 <img
                   src="@/assets/images/login-frame.svg"
-                  class="object-scale-down h-auto max-w-full"
+                  class="object-scale-down max-w-full h-auto"
                   alt=""
                 />
               </div>

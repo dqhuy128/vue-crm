@@ -6,7 +6,7 @@
   >
     <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">
       <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-8">
-        <div class="text-center mb-7">
+        <div class="mb-7 text-center">
           <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
             thêm mới người dùng
           </h3>
@@ -25,7 +25,7 @@
             />
           </div>
 
-          <div class="absolute bottom-0 right-0 z-10">
+          <div class="absolute right-0 bottom-0 z-10">
             <img src="@/assets/images/ic-camera.svg" alt="" />
           </div>
         </div>
@@ -34,7 +34,7 @@
       <!-- sform register -->
       <form
         class="w-full mx-auto lg:p-[24px_48px] p-[24px_16px]"
-        @submit.prevent="handleSubmit()"
+        @submit.prevent="onSubmitRegister()"
       >
         <div class="grid grid-cols-12 gap-6">
           <div class="col-span-12 xl:col-span-4 md:col-span-6">
@@ -106,6 +106,7 @@
                 placeholder="Nhập email"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
+              <div>{{ errors.email }}</div>
             </div>
           </div>
 
@@ -126,7 +127,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -232,7 +233,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -597,7 +598,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -683,7 +684,7 @@
         </div>
 
         <div
-          class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center xl:gap-6"
+          class="flex flex-wrap gap-4 justify-center items-stretch mt-10 text-center xl:gap-6"
         >
           <button
             @click="() => emit('toggle-modal')"
@@ -706,13 +707,13 @@
 
 <script lang="ts" setup>
 import Modal from '@/components/Modals.vue'
-import MultipleSelect from '@/components/MultiSelect.vue'
 import { onBeforeMount, onMounted, reactive, ref } from 'vue'
 import flatPickr from 'vue-flatpickr-component'
 import { Vietnamese } from 'flatpickr/dist/l10n/vn.js'
 import 'flatpickr/dist/flatpickr.css'
 import { apiClient } from '@/plugins/axios'
 import { useAuth } from 'vue-auth3'
+
 import {
   SelectContent,
   SelectGroup,
@@ -730,6 +731,9 @@ import {
   SelectViewport
 } from 'radix-vue'
 import { Icon } from '@iconify/vue'
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/yup'
+import * as yup from 'yup'
 
 const auth = useAuth()
 
@@ -742,20 +746,6 @@ const configFlatpickr = ref({
   dateFormat: 'd/m/Y',
   locale: Vietnamese // locale for this instance only
 })
-
-interface recordSelection {
-  [key: string]: any
-}
-
-const valueGroupUser = ref<recordSelection>({
-  value1: null,
-  value2: null,
-  value3: null,
-  value4: null,
-  value5: null,
-  value6: null
-})
-const optionsGroupUser = ref(['Option 1', 'Option 2', 'Option3', 'Option 4'])
 
 const paramsUser = reactive<any>({
   code: '',
@@ -779,6 +769,40 @@ const paramsUser = reactive<any>({
   total_days_off: '',
   status: ''
 })
+
+// Định nghĩa schema validate với yup
+
+const schema = toTypedSchema(
+  yup.object({
+    name: yup.string().required('Họ tên là bắt buộc'),
+    email: yup
+      .string()
+      .email()
+      .required('Email là bắt buộc')
+      .matches(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        'Định dạng Email không hợp lệ'
+      ),
+    phone: yup
+      .string()
+      .required('Số điện thoại là bắt buộc')
+      .matches(/^[0-9]{10}$/, 'Số điện thoại không hợp lệ (yêu cầu 10 số)')
+  })
+)
+
+// Sử dụng useForm hook
+const { handleSubmit, errors, values, meta, defineField, resetForm } = useForm({
+  validationSchema: schema,
+  initialValues: {
+    name: '',
+    email: '',
+    phone: ''
+  }
+})
+
+paramsUser.name = defineField('name')
+paramsUser.email = defineField('email')
+paramsUser.phone = defineField('phone')
 
 const valueGrPermiss = ref<string>('')
 const listGrPermiss = ref<any | null>(null)
@@ -892,7 +916,7 @@ onMounted(() => {
   fetchListLeader()
 })
 
-const handleSubmit = async () => {
+const onSubmitRegister = handleSubmit(async () => {
   try {
     const formDataUser = new FormData()
     formDataUser.append('code', paramsUser.code)
@@ -926,7 +950,7 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('Error fetching position list:', error)
   }
-}
+})
 </script>
 
 <style lang="scss" scoped></style>
