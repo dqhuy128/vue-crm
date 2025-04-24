@@ -147,11 +147,11 @@
 
               <SelectRoot v-model="valueGrPermiss">
                 <SelectTrigger
-                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none"
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                   aria-label="Customise options"
                 >
                   <SelectValue
-                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
                     placeholder="Chọn loại danh mục"
                   />
                   <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
@@ -175,11 +175,11 @@
                           v-for="(item, key) in listGrPermiss"
                           :key="key"
                           class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                          :value="String(key)"
+                          :value="String(item.name)"
                         >
                           <SelectItemText>
                             <!-- {{ capitalizeFirstLetter(item) }} -->
-                            {{ item.name }}
+                            {{ item.name }} - {{ item.description }}
                           </SelectItemText>
                         </SelectItem>
                       </SelectGroup>
@@ -289,11 +289,56 @@
                 Bộ phận
               </span>
 
-              <MultipleSelect
-                :options="optionsGroupUser"
-                holder="Chọn bộ phận"
-                v-model="valueGroupUser.value2"
-              />
+              <SelectRoot v-model="staffType.id">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn loại danh mục"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <template v-for="(items, key) in staffData">
+                          <SelectItem
+                            v-for="(item, _) in items"
+                            :key="item.id"
+                            class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item.id)"
+                          >
+                            <SelectItemText>
+                              <!-- {{ capitalizeFirstLetter(item) }} -->
+                              {{ item.name }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
           </div>
 
@@ -305,11 +350,56 @@
                 Chức vụ
               </span>
 
-              <MultipleSelect
-                :options="optionsGroupUser"
-                holder="Chọn chức vụ"
-                v-model="valueGroupUser.value3"
-              />
+              <SelectRoot v-model="positionType.id">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn loại danh mục"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <template v-for="(items, key) in positionData">
+                          <SelectItem
+                            v-for="(item, _) in items"
+                            :key="item.id"
+                            class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item.id)"
+                          >
+                            <SelectItemText>
+                              <!-- {{ capitalizeFirstLetter(item) }} -->
+                              {{ item.name }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
           </div>
 
@@ -321,11 +411,54 @@
                 Địa điểm làm việc
               </span>
 
-              <MultipleSelect
-                :options="optionsGroupUser"
-                holder="Chọn địa điểm"
-                v-model="valueGroupUser.value4"
-              />
+              <SelectRoot v-model="regionType.id">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn loại danh mục"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <SelectItem
+                          v-for="(item, _) in regionData"
+                          :key="item.id"
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.id)"
+                        >
+                          <SelectItemText>
+                            <!-- {{ capitalizeFirstLetter(item) }} -->
+                            {{ item.name }}
+                          </SelectItemText>
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
           </div>
 
@@ -337,11 +470,56 @@
                 Quản lý trực tiếp
               </span>
 
-              <MultipleSelect
-                :options="optionsGroupUser"
-                holder="Chọn quản lý"
-                v-model="valueGroupUser.value5"
-              />
+              <SelectRoot v-model="leaderType.id">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn loại danh mục"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <template v-for="(items, key) in leaderData">
+                          <SelectItem
+                            v-for="(item, _) in items"
+                            :key="item.id"
+                            class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item.id)"
+                          >
+                            <SelectItemText>
+                              <!-- {{ capitalizeFirstLetter(item) }} -->
+                              {{ item.name }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
           </div>
 
@@ -391,10 +569,13 @@
                 Hợp đồng làm việc
               </span>
 
-              <MultipleSelect
-                :options="optionsGroupUser"
-                holder="Chọn hợp đồng làm việc"
-                v-model="valueGroupUser.value6"
+              <input
+                v-model="paramsUser.work_contract"
+                type="text"
+                name=""
+                id=""
+                placeholder="Nhập hợp đồng làm việc"
+                class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
             </div>
           </div>
@@ -452,6 +633,51 @@
               >
                 Trạng thái
               </span>
+
+              <SelectRoot v-model="paramsUser.status">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn loại danh mục"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectViewport>
+                      <SelectGroup>
+                        <SelectItem
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(1)"
+                        >
+                          <SelectItemText>
+                            <!-- {{ capitalizeFirstLetter(item) }} -->
+                            Đang hoạt động
+                          </SelectItemText>
+                        </SelectItem>
+
+                        <SelectItem
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(2)"
+                        >
+                          <SelectItemText>
+                            <!-- {{ capitalizeFirstLetter(item) }} -->
+                            Dừng hoạt động
+                          </SelectItemText>
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectViewport>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
           </div>
         </div>
@@ -510,13 +736,8 @@ const auth = useAuth()
 const props = defineProps(['modal'])
 const emit = defineEmits(['toggle-modal'])
 
-const dateState = ref<Record<string, any>>({
-  date1: null,
-  date2: null,
-  date3: null
-})
-
 const configFlatpickr = ref({
+  // enableTime: true,
   wrap: true, // set wrap to true only when using 'input-group'
   dateFormat: 'd/m/Y',
   locale: Vietnamese // locale for this instance only
@@ -564,64 +785,147 @@ const listGrPermiss = ref<any | null>(null)
 
 const fetchListPermission = async () => {
   try {
-    const response = await apiClient.get('/permission/listPermission', {
+    const response = await apiClient.get('/permission/list', {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
     })
 
-    // refGroupPermission.value = response.data.data
-
     const { data } = response.data
-
-    console.log('fetchListPermission data:', data)
-
-    const resultObj: any = []
-    const listPermission = Object.entries(data).map(([key, value]) => {
-      console.log(key, value)
-      resultObj.push(value)
-
-      return resultObj
-    })
-    listGrPermiss.value = resultObj
+    listGrPermiss.value = data
+    console.log('🚀 ~ fetchListPermission ~ response:', listGrPermiss.value)
   } catch (error) {
     console.error('Error fetching permission list:', error)
   }
 }
 
+const staffType = reactive({
+  value: '',
+  id: ''
+})
+const staffData = ref<any | null>(null)
+const positionType = reactive({
+  value: '',
+  id: ''
+})
+const positionData = ref<any | null>(null)
+const regionType = reactive({
+  value: '',
+  id: ''
+})
+const regionData = ref<any | null>(null)
+const leaderType = reactive({
+  value: '',
+  id: ''
+})
+const leaderData = ref<any | null>(null)
+
+const fetchListStaff = async () => {
+  try {
+    const response = await apiClient.get('/categories/list?type=staff', {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    const { items } = response.data.data
+    staffData.value = items
+    // console.log('🚀 ~ fetchListStaff ~ response:', staffData.value)
+  } catch (error) {
+    console.error('Error fetching staff list:', error)
+  }
+}
+
+const fetchListPosition = async () => {
+  try {
+    const response = await apiClient.get('/categories/list?type=position', {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    const { items } = response.data.data
+    positionData.value = items
+    // console.log('🚀 ~ fetchListPosition ~ response:', positionData.value)
+  } catch (error) {
+    console.error('Error fetching position list:', error)
+  }
+}
+
+const fetchListRegion = async () => {
+  try {
+    const response = await apiClient.get('/location/region', {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    const { items } = response.data.data
+    regionData.value = items
+    // console.log('🚀 ~ fetchListPosition ~ response:', regionData.value)
+  } catch (error) {
+    console.error('Error fetching position list:', error)
+  }
+}
+
+const fetchListLeader = async () => {
+  try {
+    const response = await apiClient.get('/user/list', {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    const { items } = response.data.data
+    leaderData.value = items
+    // console.log('🚀 ~ fetchListLeader ~ items:', leaderData.value)
+  } catch (error) {
+    console.error('Error fetching position list:', error)
+  }
+}
+
 onMounted(() => {
   fetchListPermission()
+  fetchListStaff()
+  fetchListPosition()
+  fetchListRegion()
+  fetchListLeader()
 })
 
 const handleSubmit = async () => {
-  const formDataUser = new FormData()
-  formDataUser.append('code', paramsUser.code)
-  formDataUser.append('phone', paramsUser.phone)
-  formDataUser.append('name', paramsUser.name)
-  formDataUser.append('email', paramsUser.email)
-  formDataUser.append('dob', paramsUser.dob)
-  formDataUser.append('per_group_name', paramsUser.per_group_name)
-  formDataUser.append('identification', paramsUser.identification)
-  formDataUser.append('date_of_issue', paramsUser.date_of_issue)
-  formDataUser.append('place_of_issue', paramsUser.place_of_issue)
-  formDataUser.append('original_place', paramsUser.original_place)
-  formDataUser.append('part_id', paramsUser.part_id)
-  formDataUser.append('position_id', paramsUser.position_id)
-  formDataUser.append('region_id', paramsUser.region_id)
-  formDataUser.append('parent_id', paramsUser.parent_id)
-  formDataUser.append('permanent_address', paramsUser.permanent_address)
-  formDataUser.append('residence_address', paramsUser.residence_address)
-  formDataUser.append('work_contract', paramsUser.work_contract)
-  formDataUser.append('working_day', paramsUser.working_day)
-  formDataUser.append('total_days_off', paramsUser.total_days_off)
-  formDataUser.append('status', paramsUser.status)
+  try {
+    const formDataUser = new FormData()
+    formDataUser.append('code', paramsUser.code)
+    formDataUser.append('phone', paramsUser.phone)
+    formDataUser.append('name', paramsUser.name)
+    formDataUser.append('email', paramsUser.email)
+    formDataUser.append('dob', paramsUser.dob)
+    formDataUser.append('per_group_name', paramsUser.per_group_name)
+    formDataUser.append('identification', paramsUser.identification)
+    formDataUser.append('date_of_issue', paramsUser.date_of_issue)
+    formDataUser.append('place_of_issue', paramsUser.place_of_issue)
+    formDataUser.append('original_place', paramsUser.original_place)
+    formDataUser.append('part_id', staffType.id)
+    formDataUser.append('position_id', positionType.id)
+    formDataUser.append('region_id', regionType.id)
+    formDataUser.append('parent_id', leaderType.id)
+    formDataUser.append('permanent_address', paramsUser.permanent_address)
+    formDataUser.append('residence_address', paramsUser.residence_address)
+    formDataUser.append('work_contract', paramsUser.work_contract)
+    formDataUser.append('working_day', paramsUser.working_day)
+    formDataUser.append('total_days_off', paramsUser.total_days_off)
+    formDataUser.append('status', paramsUser.status)
 
-  await apiClient.post('/users/create', formDataUser, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${auth.token()}`
-    }
-  })
+    const response = await apiClient.post('/user/create', formDataUser, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    console.log('🚀 ~ handleSubmit ~ response:', response)
+  } catch (error) {
+    console.error('Error fetching position list:', error)
+  }
 }
 </script>
 

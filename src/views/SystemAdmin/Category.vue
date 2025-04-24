@@ -549,7 +549,7 @@ watch(
   align-items: center;
   justify-content: center;
   color: #464661;
-  font-size: 10px !important;
+
   font-style: normal;
   font-weight: 400;
   line-height: 1;
@@ -557,6 +557,7 @@ watch(
   border-radius: 24px;
 
   @media (max-width: 767px) {
+    font-size: 10px !important;
     padding: 6px !important;
     padding-left: 0 !important;
   }
