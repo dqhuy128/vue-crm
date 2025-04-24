@@ -38,48 +38,52 @@
         v-for="(item, id) in refDataSidebar"
         :key="id"
       >
-        <div class="sidebar-menu-parent">
-          <router-link :to="{ name: `${item.route}` }" class="parent-link">
-            <img :src="item.icon" alt="" />
-            {{ item.title }}
-          </router-link>
-          <button
-            type="button"
-            class="sidebar-nav-dropdown"
-            @click="toggleDropdown(id)"
-            v-if="item.nav"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="8"
-              height="6"
-              viewBox="0 0 8 6"
-              fill="none"
-              :class="{ 'rotate-in': isDropdownOpen(id) }"
-              :style="{ transition: 'transform 0.2s' }"
+        <template
+          v-if="permision?.permission && checkPermission(item.permissionRole)"
+        >
+          <div class="sidebar-menu-parent">
+            <router-link :to="{ name: `${item.route}` }" class="parent-link">
+              <img :src="item.icon" alt="" />
+              {{ item.title }}
+            </router-link>
+            <button
+              type="button"
+              class="sidebar-nav-dropdown"
+              @click="toggleDropdown(id)"
+              v-if="item.nav"
             >
-              <path
-                d="M0.963891 1.16401C1.04747 1.0804 1.1467 1.01408 1.25591 0.968836C1.36512 0.923588 1.48218 0.900299 1.60039 0.900299C1.71861 0.900299 1.83566 0.923588 1.94487 0.968836C2.05409 1.01408 2.15332 1.0804 2.23689 1.16401L3.99989 2.92701L5.76389 1.16401C5.93378 1.00112 6.16071 0.911265 6.39605 0.913693C6.63139 0.916122 6.85642 1.01064 7.02291 1.177C7.1894 1.34336 7.28409 1.56831 7.28671 1.80365C7.28932 2.03899 7.19964 2.26599 7.03689 2.43601L4.63689 4.83601C4.55331 4.91961 4.45409 4.98593 4.34487 5.03118C4.23566 5.07643 4.11861 5.09971 4.00039 5.09971C3.88218 5.09971 3.76512 5.07643 3.65591 5.03118C3.5467 4.98593 3.44747 4.91961 3.36389 4.83601L0.963891 2.43601C0.79535 2.26726 0.700684 2.03851 0.700684 1.80001C0.700684 1.56151 0.79535 1.33276 0.963891 1.16401Z"
-                fill="white"
-              />
-            </svg>
-          </button>
-        </div>
-        <!-- <transition
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="8"
+                height="6"
+                viewBox="0 0 8 6"
+                fill="none"
+                :class="{ 'rotate-in': isDropdownOpen(id) }"
+                :style="{ transition: 'transform 0.2s' }"
+              >
+                <path
+                  d="M0.963891 1.16401C1.04747 1.0804 1.1467 1.01408 1.25591 0.968836C1.36512 0.923588 1.48218 0.900299 1.60039 0.900299C1.71861 0.900299 1.83566 0.923588 1.94487 0.968836C2.05409 1.01408 2.15332 1.0804 2.23689 1.16401L3.99989 2.92701L5.76389 1.16401C5.93378 1.00112 6.16071 0.911265 6.39605 0.913693C6.63139 0.916122 6.85642 1.01064 7.02291 1.177C7.1894 1.34336 7.28409 1.56831 7.28671 1.80365C7.28932 2.03899 7.19964 2.26599 7.03689 2.43601L4.63689 4.83601C4.55331 4.91961 4.45409 4.98593 4.34487 5.03118C4.23566 5.07643 4.11861 5.09971 4.00039 5.09971C3.88218 5.09971 3.76512 5.07643 3.65591 5.03118C3.5467 4.98593 3.44747 4.91961 3.36389 4.83601L0.963891 2.43601C0.79535 2.26726 0.700684 2.03851 0.700684 1.80001C0.700684 1.56151 0.79535 1.33276 0.963891 1.16401Z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+          </div>
+          <!-- <transition
           name="slide"
           @before-enter="beforeEnter"
           @enter="enter"
           @leave="leave"
         > -->
-        <ul class="sidebar-menu-sub" v-show="isDropdownOpen(id)">
-          <li v-for="(sub, idx) in item.submenu" :key="idx">
-            <router-link :to="{ name: `${sub.route}` }" class="sub-link">
-              <img :src="sub.icon" alt="" />
-              {{ sub.title }}
-            </router-link>
-          </li>
-        </ul>
-        <!-- </transition> -->
+          <ul class="sidebar-menu-sub" v-show="isDropdownOpen(id)">
+            <li v-for="(sub, idx) in item.submenu" :key="idx">
+              <router-link :to="{ name: `${sub.route}` }" class="sub-link">
+                <img :src="sub.icon" alt="" />
+                {{ sub.title }}
+              </router-link>
+            </li>
+          </ul>
+          <!-- </transition> -->
+        </template>
       </li>
     </ul>
   </div>
@@ -108,7 +112,7 @@ interface dataSidebarItem {
   nav?: boolean
   submenu?: dataSubmenu[]
   route?: string
-  permission?: string[]
+  permissionRole?: string[]
 }
 
 interface dataSubmenu {
@@ -118,79 +122,80 @@ interface dataSubmenu {
   permission?: string
 }
 
-const permissionNav = [
-  {
-    icon: FluentData,
-    title: 'Quản trị hệ thống',
-    route: 'SystemUser',
-    nav: true,
-    permission: [''],
-    submenu: [
-      {
-        icon: LucideUserCog,
-        title: 'Quản lý người dùng',
-        route: 'SystemUser'
-      },
-      {
-        icon: LucideUserPen,
-        title: 'Quản lý phân quyền',
-        route: 'SystemPermission'
-      },
-      {
-        icon: IconamoonCategory,
-        title: 'Quản lý danh mục',
-        route: 'SystemCategory'
-      }
-    ]
-  },
-  {
-    icon: FluentNote,
-    title: 'Tài liệu',
-    route: 'Document',
-    nav: false
-  },
-  {
-    icon: Iconoir,
-    title: 'Nghỉ phép',
-    nav: true,
-    route: 'Info',
-    submenu: [
-      {
-        icon: TableUserScan,
-        title: 'Thông tin nghỉ phép',
-        route: 'Info'
-      },
-      {
-        icon: TickCircle,
-        title: 'Phê duyệt nghỉ phép',
-        route: 'Access'
-      }
-    ]
-  },
-  {
-    icon: Proicons,
-    title: 'Chấm công',
-    nav: true,
-    route: 'History',
-    submenu: [
-      {
-        icon: FluentHistory,
-        title: 'Lịch sử chấm công',
-        route: 'History'
-      },
-      {
-        icon: EditNote,
-        title: 'Giải trình chấm công',
-        route: 'Explain'
-      }
-    ]
-  }
-]
+// const permissionNav = [
+//   {
+//     icon: FluentData,
+//     title: 'Quản trị hệ thống',
+//     route: 'SystemUser',
+//     nav: true,
+//     permission: [''],
+//     submenu: [
+//       {
+//         icon: LucideUserCog,
+//         title: 'Quản lý người dùng',
+//         route: 'SystemUser'
+//       },
+//       {
+//         icon: LucideUserPen,
+//         title: 'Quản lý phân quyền',
+//         route: 'SystemPermission'
+//       },
+//       {
+//         icon: IconamoonCategory,
+//         title: 'Quản lý danh mục',
+//         route: 'SystemCategory'
+//       }
+//     ]
+//   },
+//   {
+//     icon: FluentNote,
+//     title: 'Tài liệu',
+//     route: 'Document',
+//     nav: false
+//   },
+//   {
+//     icon: Iconoir,
+//     title: 'Nghỉ phép',
+//     nav: true,
+//     route: 'Info',
+//     submenu: [
+//       {
+//         icon: TableUserScan,
+//         title: 'Thông tin nghỉ phép',
+//         route: 'Info'
+//       },
+//       {
+//         icon: TickCircle,
+//         title: 'Phê duyệt nghỉ phép',
+//         route: 'Access'
+//       }
+//     ]
+//   },
+//   {
+//     icon: Proicons,
+//     title: 'Chấm công',
+//     nav: true,
+//     route: 'History',
+//     submenu: [
+//       {
+//         icon: FluentHistory,
+//         title: 'Lịch sử chấm công',
+//         route: 'History'
+//       },
+//       {
+//         icon: EditNote,
+//         title: 'Giải trình chấm công',
+//         route: 'Explain'
+//       }
+//     ]
+//   }
+// ]
 const refDataSidebar = ref<dataSidebarItem[]>([
   {
     icon: MageDashboard,
     title: 'Dashboard',
     route: 'Personal',
+    permissionRole: ['Admin', 'Sale'],
     nav: false
   },
   {
@@ -198,24 +203,24 @@ const refDataSidebar = ref<dataSidebarItem[]>([
     title: 'Quản trị hệ thống',
     route: 'SystemUser',
     nav: true,
-    // permission: ['Categories', 'Permission', 'User'],
+    permissionRole: ['Admin'],
     submenu: [
       {
         icon: LucideUserCog,
         title: 'Quản lý người dùng',
-        route: 'SystemUser',
+        route: 'SystemUser'
         // permission: 'User'
       },
       {
         icon: LucideUserPen,
         title: 'Quản lý phân quyền',
-        route: 'SystemPermission',
+        route: 'SystemPermission'
         // permission: 'Permission'
       },
       {
         icon: IconamoonCategory,
         title: 'Quản lý danh mục',
-        route: 'SystemCategory',
+        route: 'SystemCategory'
         // permission: 'Categories'
       }
     ]
@@ -225,25 +230,25 @@ const refDataSidebar = ref<dataSidebarItem[]>([
     title: 'Tài liệu',
     route: 'Document',
     nav: false,
-    // permission: ['Document']
+    permissionRole: ['Admin', 'Sale']
   },
   {
     icon: Iconoir,
     title: 'Nghỉ phép',
     nav: true,
     route: 'Info',
-    // permission: ['Leave'],
+    permissionRole: ['Admin'],
     submenu: [
       {
         icon: TableUserScan,
         title: 'Thông tin nghỉ phép',
-        route: 'Info',
+        route: 'Info'
         // permission: 'Leave'
       },
       {
         icon: TickCircle,
         title: 'Phê duyệt nghỉ phép',
-        route: 'Access',
+        route: 'Access'
         // permission: 'Leave'
       }
     ]
@@ -253,18 +258,18 @@ const refDataSidebar = ref<dataSidebarItem[]>([
     title: 'Chấm công',
     nav: true,
     route: 'History',
-    // permission: ['Work'],
+    permissionRole: ['Admin'],
     submenu: [
       {
         icon: FluentHistory,
         title: 'Lịch sử chấm công',
-        route: 'History',
+        route: 'History'
         // permission: 'Work'
       },
       {
         icon: EditNote,
         title: 'Giải trình chấm công',
-        route: 'Explain',
+        route: 'Explain'
         // permission: 'Work'
       }
     ]
@@ -290,14 +295,19 @@ const isDropdownOpen = (idx: any) => {
 
 const permissionData = usePermissionStore()
 const { permision } = storeToRefs(permissionData)
-console.log(permision.value?.permission, 'permission change state')
-
+console.log(permision.value?.name, 'permission change state')
+const checkPermission = (arrRole: any) => {
+  if(!permision) return false ; 
+  // 
+  console.log(arrRole, 'arrRole');
+  const res = arrRole.includes(permision.value?.name) ? true : false
+  return res;
+}
 onMounted(() => {
-  if(permision.value?.name === 'Admin') {
-    console.log('role Admin');
+  if (permision.value?.name === 'Admin') {
+    console.log('role Admin')
   }
 })
-
 </script>
 
 <style lang="scss" scoped>

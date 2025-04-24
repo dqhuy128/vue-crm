@@ -114,7 +114,7 @@ const props = defineProps<{
   closeModal: () => void
   data: any
 }>()
-// console.log(props.data, 'props edit document');
+console.log(props.data, 'props edit document');
 type previewFiles = {
   name: string
   path: string
@@ -216,6 +216,7 @@ watch(
     FormSubmit.value.name = props.data.name
     FormSubmit.value.description = props.data.description
     FormSubmit.value.docCate = Number(props.data.type_id)
+    FormSubmit.value.id = props.data.id
   }
 )
 </script>
