@@ -341,6 +341,7 @@
 
                   <div class="cell edit edit-body">
                     <button
+                      @click="handleGetDetailUser(item?.id)"
                       type="button"
                       class="cursor-pointer cell-btn-edit shrink-0"
                     >
@@ -688,6 +689,27 @@ const handleDeleteUser = async (id: any) => {
     console.log('🚀 ~ handleDeleteUser ~ response:', response)
   } catch (error) {
     console.log('🚀 ~ handleDeleteUser ~ error:', error)
+  }
+}
+
+const paramsDetailUser = ref<any | null>(null)
+const handleGetDetailUser = async (id: any) => {
+  try {
+    const response = await apiClient
+      .get(`/user/info/${id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`
+        }
+      })
+      .then((res) => {
+        paramsDetailUser.value = res.data.data
+        console.log(
+          '🚀 ~ .then ~ paramsDetailUser.value:',
+          paramsDetailUser.value
+        )
+      })
+  } catch (error) {
+    console.log('🚀 ~ getDetailUser ~ error:', error)
   }
 }
 
