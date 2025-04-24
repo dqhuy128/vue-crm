@@ -68,7 +68,7 @@ const fetchUser = async () => {
       })
 
       const { data } = response.data
-      permissionStore.fetchPermission(data.access_token , data.per_group_name)
+      permissionStore.fetchPermission(data.access_token)
       user.value = data
     } catch (error: any) {
       console.error('NavBar.vue ~ Failed to fetch user data:', error)

@@ -38,9 +38,7 @@
         v-for="(item, id) in refDataSidebar"
         :key="id"
       >
-        <template
-          v-if="permision?.permission && checkPermission(item.permissionRole)"
-        >
+        <template v-if="permision && checkPermission(item.permissionName)">
           <div class="sidebar-menu-parent">
             <router-link :to="{ name: `${item.route}` }" class="parent-link">
               <img :src="item.icon" alt="" />
@@ -104,7 +102,8 @@ import Proicons from '@/assets/images/proicons_timer.svg'
 import TableUserScan from '@/assets/images/tabler_user-scan.svg'
 import { usePermissionStore } from '@/store/permission'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
+import { useAuth } from 'vue-auth3'
 
 interface dataSidebarItem {
   icon: any
@@ -112,90 +111,58 @@ interface dataSidebarItem {
   nav?: boolean
   submenu?: dataSubmenu[]
   route?: string
-  permissionRole?: string[]
+  permissionName?: string
 }
 
 interface dataSubmenu {
   icon: any
   title: string
   route?: string
-  permission?: string
+  permissionName?: string
 }
+interface UserInfoProps {
+  data: {
+    id: string
+    username: string
+    email: string
+    name: string
+    status: string
+    code: string
+    phone: string
+    dob: string
+    parent_id: string
+    access_token: string
+    expires: string
+    created_at: string
+    updated_at: string
+    device_token: string | null
+    device_type: string | null
+    device_onesignal_id: string |null
+    enable_notification: string
+    identification: string
+    place_of_issue: string
+    date_of_issue: string
+    original_place: string
+    part_id: string
+    position_id: string
+    region_id: string
+    permanent_address: string
+    residence_address: string
+    work_contract: string
+    working_day: string
+    total_days_off: string
+    per_group_name: string
+    avatar: string
+  }
+}
+const auth = useAuth()
 
-// const permissionNav = [
-//   {
-//     icon: FluentData,
-//     title: 'Quản trị hệ thống',
-//     route: 'SystemUser',
-//     nav: true,
-//     permission: [''],
-//     submenu: [
-//       {
-//         icon: LucideUserCog,
-//         title: 'Quản lý người dùng',
-//         route: 'SystemUser'
-//       },
-//       {
-//         icon: LucideUserPen,
-//         title: 'Quản lý phân quyền',
-//         route: 'SystemPermission'
-//       },
-//       {
-//         icon: IconamoonCategory,
-//         title: 'Quản lý danh mục',
-//         route: 'SystemCategory'
-//       }
-//     ]
-//   },
-//   {
-//     icon: FluentNote,
-//     title: 'Tài liệu',
-//     route: 'Document',
-//     nav: false
-//   },
-//   {
-//     icon: Iconoir,
-//     title: 'Nghỉ phép',
-//     nav: true,
-//     route: 'Info',
-//     submenu: [
-//       {
-//         icon: TableUserScan,
-//         title: 'Thông tin nghỉ phép',
-//         route: 'Info'
-//       },
-//       {
-//         icon: TickCircle,
-//         title: 'Phê duyệt nghỉ phép',
-//         route: 'Access'
-//       }
-//     ]
-//   },
-//   {
-//     icon: Proicons,
-//     title: 'Chấm công',
-//     nav: true,
-//     route: 'History',
-//     submenu: [
-//       {
-//         icon: FluentHistory,
-//         title: 'Lịch sử chấm công',
-//         route: 'History'
-//       },
-//       {
-//         icon: EditNote,
-//         title: 'Giải trình chấm công',
-//         route: 'Explain'
-//       }
-//     ]
-//   }
-// ]
 const refDataSidebar = ref<dataSidebarItem[]>([
   {
     icon: MageDashboard,
     title: 'Dashboard',
     route: 'Personal',
-    permissionRole: ['Admin', 'Sale'],
+    permissionName: 'all',
     nav: false
   },
   {
@@ -203,25 +170,25 @@ const refDataSidebar = ref<dataSidebarItem[]>([
     title: 'Quản trị hệ thống',
     route: 'SystemUser',
     nav: true,
-    permissionRole: ['Admin'],
+    permissionName: 'all',
     submenu: [
       {
         icon: LucideUserCog,
         title: 'Quản lý người dùng',
-        route: 'SystemUser'
-        // permission: 'User'
+        route: 'SystemUser',
+        permissionName: 'User'
       },
       {
         icon: LucideUserPen,
         title: 'Quản lý phân quyền',
-        route: 'SystemPermission'
-        // permission: 'Permission'
+        route: 'SystemPermission',
+        permissionName: 'Permission'
       },
       {
         icon: IconamoonCategory,
         title: 'Quản lý danh mục',
-        route: 'SystemCategory'
-        // permission: 'Categories'
+        route: 'SystemCategory',
+        permissionName: 'Categories'
       }
     ]
   },
@@ -230,14 +197,14 @@ const refDataSidebar = ref<dataSidebarItem[]>([
     title: 'Tài liệu',
     route: 'Document',
     nav: false,
-    permissionRole: ['Admin', 'Sale']
+    permissionName: 'Document'
   },
   {
     icon: Iconoir,
     title: 'Nghỉ phép',
     nav: true,
     route: 'Info',
-    permissionRole: ['Admin'],
+    permissionName: 'Leave',
     submenu: [
       {
         icon: TableUserScan,
@@ -258,7 +225,7 @@ const refDataSidebar = ref<dataSidebarItem[]>([
     title: 'Chấm công',
     nav: true,
     route: 'History',
-    permissionRole: ['Admin'],
+    permissionName: 'Work',
     submenu: [
       {
         icon: FluentHistory,
@@ -294,20 +261,17 @@ const isDropdownOpen = (idx: any) => {
 }
 
 const permissionData = usePermissionStore()
-const { permision } = storeToRefs(permissionData)
-console.log(permision.value?.name, 'permission change state')
+const { permision, permissionList } = storeToRefs(permissionData)
+console.log(permision.value, 'permission change state')
 const checkPermission = (arrRole: any) => {
-  if(!permision) return false ; 
-  // 
-  console.log(arrRole, 'arrRole');
-  const res = arrRole.includes(permision.value?.name) ? true : false
-  return res;
-}
-onMounted(() => {
-  if (permision.value?.name === 'Admin') {
-    console.log('role Admin')
+  if (!permision || !permision.value) return false
+  if (arrRole === 'all') {
+    const userInfo: UserInfoProps | null = auth.user()
+    return userInfo?.data?.per_group_name === 'Admin' ? true : false
   }
-})
+  const res = permissionList.value.includes(arrRole) ? true : false
+  return res
+}
 </script>
 
 <style lang="scss" scoped>
