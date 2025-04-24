@@ -45,13 +45,15 @@
                 Mã nhân viên
               </span>
               <input
-                v-model="paramsUser.code"
+                v-model="code"
+                v-bind="codeAttrs"
                 type="text"
                 name=""
                 id=""
                 placeholder="Nhập mã nhân viên"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
+              <div class="mt-1 text-sm text-red-500">{{ errors.code }}</div>
             </div>
           </div>
 
@@ -63,13 +65,15 @@
                 Họ và tên
               </span>
               <input
-                v-model="paramsUser.name"
+                v-model="name"
+                v-bind="nameAttrs"
                 type="text"
                 name=""
                 id=""
                 placeholder="Nhập họ tên"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
+              <div class="mt-1 text-sm text-red-500">{{ errors.name }}</div>
             </div>
           </div>
 
@@ -81,13 +85,15 @@
                 Số điện thoại
               </span>
               <input
-                v-model="paramsUser.phone"
+                v-model="phone"
+                v-bind="phoneAttrs"
                 type="text"
                 name=""
                 id=""
                 placeholder="Nhập số điện thoại"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
+              <div class="mt-1 text-sm text-red-500">{{ errors.phone }}</div>
             </div>
           </div>
 
@@ -99,14 +105,15 @@
                 Email
               </span>
               <input
-                v-model="paramsUser.email"
+                v-model="email"
+                v-bind="emailAttrs"
                 type="text"
                 name=""
                 id=""
                 placeholder="Nhập email"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
-              <div>{{ errors.email }}</div>
+              <div class="mt-1 text-sm text-red-500">{{ errors.email }}</div>
             </div>
           </div>
 
@@ -146,7 +153,7 @@
                 Nhóm người dùng
               </span>
 
-              <SelectRoot v-model="valueGrPermiss">
+              <SelectRoot v-model="group_user" v-bind="guAttrs">
                 <SelectTrigger
                   class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                   aria-label="Customise options"
@@ -194,6 +201,10 @@
                   </SelectContent>
                 </SelectPortal>
               </SelectRoot>
+
+              <div class="mt-1 text-sm text-red-500">
+                {{ errors.group_user }}
+              </div>
             </div>
           </div>
 
@@ -707,7 +718,7 @@
 
 <script lang="ts" setup>
 import Modal from '@/components/Modals.vue'
-import { onBeforeMount, onMounted, reactive, ref } from 'vue'
+import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import flatPickr from 'vue-flatpickr-component'
 import { Vietnamese } from 'flatpickr/dist/l10n/vn.js'
 import 'flatpickr/dist/flatpickr.css'
@@ -734,6 +745,9 @@ import { Icon } from '@iconify/vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/yup'
 import * as yup from 'yup'
+import { useSystemUser } from '@/composables/system-user'
+import { tableMagic } from '@/utils/main'
+import { apiUri } from '@/constants/apiUri'
 
 const auth = useAuth()
 
@@ -771,42 +785,37 @@ const paramsUser = reactive<any>({
 })
 
 // Định nghĩa schema validate với yup
-
 const schema = toTypedSchema(
   yup.object({
-    name: yup.string().required('Họ tên là bắt buộc'),
+    name: yup.string().required('Bạn hãy nhập họ tên'),
+    code: yup.string().required('Bạn hãy nhập mã nhân viên'),
     email: yup
       .string()
-      .email()
-      .required('Email là bắt buộc')
+      .required('Bạn hãy nhập email')
       .matches(
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        'Định dạng Email không hợp lệ'
+        'Email không hợp lệ'
       ),
     phone: yup
       .string()
-      .required('Số điện thoại là bắt buộc')
-      .matches(/^[0-9]{10}$/, 'Số điện thoại không hợp lệ (yêu cầu 10 số)')
+      .required('Bạn hãy nhập số điện thoại')
+      .matches(/^[0-9]{10}$/, 'Bạn cần nhập đúng 10 số'),
+    group_user: yup.string().required('Bạn hãy chọn nhóm người dùng')
   })
 )
 
 // Sử dụng useForm hook
 const { handleSubmit, errors, values, meta, defineField, resetForm } = useForm({
-  validationSchema: schema,
-  initialValues: {
-    name: '',
-    email: '',
-    phone: ''
-  }
+  validationSchema: schema
 })
 
-paramsUser.name = defineField('name')
-paramsUser.email = defineField('email')
-paramsUser.phone = defineField('phone')
+const [email, emailAttrs] = defineField('email')
+const [phone, phoneAttrs] = defineField('phone')
+const [name, nameAttrs] = defineField('name')
+const [code, codeAttrs] = defineField('code')
+const [group_user, guAttrs] = defineField('group_user')
 
-const valueGrPermiss = ref<string>('')
 const listGrPermiss = ref<any | null>(null)
-
 const fetchListPermission = async () => {
   try {
     const response = await apiClient.get('/permission/list', {
@@ -817,7 +826,6 @@ const fetchListPermission = async () => {
 
     const { data } = response.data
     listGrPermiss.value = data
-    console.log('🚀 ~ fetchListPermission ~ response:', listGrPermiss.value)
   } catch (error) {
     console.error('Error fetching permission list:', error)
   }
@@ -908,37 +916,84 @@ const fetchListLeader = async () => {
   }
 }
 
-onMounted(() => {
-  fetchListPermission()
-  fetchListStaff()
-  fetchListPosition()
-  fetchListRegion()
-  fetchListLeader()
+const params = reactive({
+  part_id: '',
+  position_id: '',
+  per_group_name: '',
+  phone: ''
 })
+const paginate = reactive({
+  page: 1,
+  per_page: 10
+})
+const debounceTime = ref<{
+  timeOut: number | null
+  counter: number
+}>({
+  timeOut: null,
+  counter: 0
+})
+
+const fetchDataDocument = () => {
+  if (debounceTime.value.timeOut !== null) {
+    clearTimeout(debounceTime.value.timeOut)
+  }
+
+  debounceTime.value.timeOut = setTimeout(() => {
+    const res = {
+      ...params,
+      page: paginate.page,
+      per_page: paginate.per_page
+    }
+
+    doFetch(
+      `${apiUri}/user/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
+      auth.token() as string
+    ).then(() => {
+      // console.log('🚀 ~ fetchDataDocument ~ res:', res)
+      tableMagic()
+    })
+  }, 300)
+}
 
 const onSubmitRegister = handleSubmit(async () => {
   try {
     const formDataUser = new FormData()
-    formDataUser.append('code', paramsUser.code)
-    formDataUser.append('phone', paramsUser.phone)
-    formDataUser.append('name', paramsUser.name)
-    formDataUser.append('email', paramsUser.email)
-    formDataUser.append('dob', paramsUser.dob)
-    formDataUser.append('per_group_name', paramsUser.per_group_name)
-    formDataUser.append('identification', paramsUser.identification)
-    formDataUser.append('date_of_issue', paramsUser.date_of_issue)
-    formDataUser.append('place_of_issue', paramsUser.place_of_issue)
-    formDataUser.append('original_place', paramsUser.original_place)
-    formDataUser.append('part_id', staffType.id)
-    formDataUser.append('position_id', positionType.id)
-    formDataUser.append('region_id', regionType.id)
-    formDataUser.append('parent_id', leaderType.id)
-    formDataUser.append('permanent_address', paramsUser.permanent_address)
-    formDataUser.append('residence_address', paramsUser.residence_address)
-    formDataUser.append('work_contract', paramsUser.work_contract)
-    formDataUser.append('working_day', paramsUser.working_day)
-    formDataUser.append('total_days_off', paramsUser.total_days_off)
-    formDataUser.append('status', paramsUser.status)
+
+    if (paramsUser.code) formDataUser.append('code', paramsUser.code)
+    if (paramsUser.phone) formDataUser.append('phone', paramsUser.phone)
+    if (paramsUser.name) formDataUser.append('name', paramsUser.name)
+    if (paramsUser.email) formDataUser.append('email', paramsUser.email)
+    if (paramsUser.dob) formDataUser.append('dob', paramsUser.dob)
+    if (paramsUser.per_group_name)
+      formDataUser.append('per_group_name', paramsUser.per_group_name)
+    if (paramsUser.identification)
+      formDataUser.append('identification', paramsUser.identification)
+    if (paramsUser.date_of_issue)
+      formDataUser.append('date_of_issue', paramsUser.date_of_issue)
+    if (paramsUser.place_of_issue)
+      formDataUser.append('place_of_issue', paramsUser.place_of_issue)
+    if (paramsUser.original_place)
+      formDataUser.append('original_place', paramsUser.original_place)
+    if (staffType.id) formDataUser.append('part_id', staffType.id)
+    if (positionType.id) formDataUser.append('position_id', positionType.id)
+    if (regionType.id) formDataUser.append('region_id', regionType.id)
+    if (leaderType.id) formDataUser.append('parent_id', leaderType.id)
+    if (paramsUser.permanent_address)
+      formDataUser.append('permanent_address', paramsUser.permanent_address)
+    if (paramsUser.residence_address)
+      formDataUser.append('residence_address', paramsUser.residence_address)
+    if (paramsUser.work_contract)
+      formDataUser.append('work_contract', paramsUser.work_contract)
+    if (paramsUser.working_day)
+      formDataUser.append('working_day', paramsUser.working_day)
+    if (paramsUser.total_days_off)
+      formDataUser.append('total_days_off', paramsUser.total_days_off)
+    if (paramsUser.status) {
+      formDataUser.append('status', paramsUser.status)
+    } else {
+      formDataUser.append('status', '1')
+    }
 
     const response = await apiClient.post('/user/create', formDataUser, {
       headers: {
@@ -946,10 +1001,29 @@ const onSubmitRegister = handleSubmit(async () => {
         Authorization: `Bearer ${auth.token()}`
       }
     })
+    fetchDataDocument()
     console.log('🚀 ~ handleSubmit ~ response:', response)
   } catch (error) {
     console.error('Error fetching position list:', error)
   }
+})
+
+const { doFetch } = useSystemUser()
+
+watch([email, phone, name, group_user, code], (newVal) => {
+  paramsUser.email = newVal[0]
+  paramsUser.phone = newVal[1]
+  paramsUser.name = newVal[2]
+  paramsUser.per_group_name = newVal[3]
+  paramsUser.code = newVal[4]
+})
+
+onMounted(() => {
+  fetchListPermission()
+  fetchListStaff()
+  fetchListPosition()
+  fetchListRegion()
+  fetchListLeader()
 })
 </script>
 

@@ -484,7 +484,7 @@ const fetchDataDocument = () => {
 const handlePageChange = (pageNum: number) => {
   // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
   paginate.page = pageNum
-  // fetchDataDocument();
+  fetchDataDocument()
 }
 
 const handleSearchDocument = async () => {
@@ -510,10 +510,6 @@ const dataTotalPages = computed(() =>
     Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page)
   )
 )
-
-const categoryDocument = reactive({
-  data: categories.value || undefined
-})
 
 onMounted(() => {
   if (auth.check()) {

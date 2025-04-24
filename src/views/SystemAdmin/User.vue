@@ -663,7 +663,7 @@ const fetchDataDocument = () => {
 const handlePageChange = (pageNum: number) => {
   // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
   paginate.page = pageNum
-  // fetchDataDocument();
+  fetchDataDocument()
 }
 
 const handleSearchUser = async () => {
@@ -690,6 +690,19 @@ watch(
     console.log('🚀 ~ watch ~ value:', newVal)
   },
   { deep: true }
+)
+
+watch(
+  paginate,
+  async () => {
+    fetchDataDocument()
+  },
+  {
+    // must pass deep option to watch for changes on object properties
+    deep: true,
+    // can also pass immediate to handle that first request AND when queries change
+    immediate: true
+  }
 )
 
 const dataTotalPages = computed(() =>
