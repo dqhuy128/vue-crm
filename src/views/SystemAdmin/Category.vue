@@ -194,7 +194,9 @@
                     </div>
                   </template>
 
-                  <template v-if="Number(it.status) === 0">
+                  <template
+                    v-if="Number(it.status) === 0 || it.status === null"
+                  >
                     <div class="cell status status-red status-body">
                       Dừng hoạt động
                     </div>
@@ -203,12 +205,14 @@
                   <div class="cell pinned pinned-body">
                     <div class="cell edit edit-body">
                       <button
+                        @click="getDetailCategory(it.id)"
                         type="button"
                         class="cursor-pointer cell-btn-edit shrink-0"
                       >
                         <img src="@/assets/images/action-edit-2.svg" alt="" />
                       </button>
                       <button
+                        @click="handleDeleteCategory(it.id)"
                         type="button"
                         class="cursor-pointer cell-btn-delete shrink-0"
                       >
@@ -373,6 +377,33 @@
         </ModalAddCategory>
       </div>
     </Modal>
+
+    <Modal
+      @close="toggleModal('modalCategoryUpdate')"
+      :modalActive="modalActive.modalCategoryUpdate"
+      maxWidth="max-w-[670px]"
+    >
+      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+            Cập nhật danh mục
+          </h3>
+        </div>
+
+        <ModalCategoryUpdate
+          :datatype="dataDetailCategory"
+          :closeModal="() => toggleModal('modalCategoryUpdate')"
+        >
+          <button
+            @click="toggleModal('modalCategoryUpdate')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Hủy
+          </button>
+        </ModalCategoryUpdate>
+      </div>
+    </Modal>
   </MainLayout>
 </template>
 
@@ -403,7 +434,8 @@ import { apiUri } from '@/constants/apiUri'
 import { useAuth } from 'vue-auth3'
 import { useSystemManager } from '@/composables/system-manager'
 import ModalAddCategory from '@/components/Modal/ModalAddCategory.vue'
-import { apiClient } from '@/plugins/axios'
+import ModalCategoryUpdate from '@/components/Modal/ModalCategoryUpdate.vue'
+import axios from 'axios'
 
 interface recordModal {
   [key: string]: boolean
@@ -411,7 +443,8 @@ interface recordModal {
 
 const modalActive = ref<recordModal>({
   modalAddCateManager: false,
-  modalEditCateManager: false
+  modalEditCateManager: false,
+  modalCategoryUpdate: false
 })
 
 const toggleModal = (modalStateName: any) => {
@@ -497,6 +530,40 @@ const handleSearchDocument = async () => {
   paginate.page = 1
   paginate.per_page = 10
   fetchDataDocument()
+}
+
+const handleDeleteCategory = async (id: any) => {
+  try {
+    const formData = new FormData()
+    if (id) formData.append('id', id)
+
+    const response = await axios.post(`/api/categories/delete`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    fetchDataDocument()
+    console.log('🚀 ~ handleDeleteCategory ~ response:', response)
+  } catch (error) {
+    console.log('🚀 ~ handleDeleteCategory ~ error:', error)
+  }
+}
+
+const dataDetailCategory = ref<any | null>(null)
+const getDetailCategory = async (id: any) => {
+  try {
+    const response = await axios.get(`/api/categories/detail?id=${id}`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    toggleModal('modalCategoryUpdate')
+    dataDetailCategory.value = response.data
+
+    // console.log('🚀 ~ getDetailCategory ~ response:', response.data)
+  } catch (error) {}
 }
 
 const {

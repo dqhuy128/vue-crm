@@ -8,19 +8,54 @@
           >
             Loại tài liệu *
           </span>
-          <select
-            v-model="FormSubmit.docCate"
-            class="border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal w-full"
-          >
-            <template
-              v-for="(item, index) in categoryDocument.data"
-              :key="index"
+
+          <SelectRoot v-model="FormSubmit.docCate">
+            <SelectTrigger
+              class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] data-[placeholder]:text-[#909090]"
+              aria-label="Customise options"
             >
-              <option :value="item.id">
-                {{ item.name }}
-              </option>
-            </template>
-          </select>
+              <SelectValue
+                class="grow text-start font-inter text-[16px] font-normal leading-normal"
+                placeholder="Chọn loại tài liệu"
+              />
+              <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+            </SelectTrigger>
+
+            <SelectPortal>
+              <SelectContent
+                class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                position="popper"
+                :side-offset="5"
+              >
+                <SelectScrollUpButton
+                  class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                >
+                  <Icon icon="radix-icons:chevron-up" />
+                </SelectScrollUpButton>
+
+                <SelectViewport>
+                  <SelectGroup>
+                    <SelectItem
+                      v-for="(item, index) in categoryDocument.data"
+                      :key="index"
+                      class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                      :value="item.id"
+                    >
+                      <SelectItemText>
+                        {{ capitalizeFirstLetter(item.name) }}
+                      </SelectItemText>
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectViewport>
+
+                <SelectScrollDownButton
+                  class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                >
+                  <Icon icon="radix-icons:chevron-down" />
+                </SelectScrollDownButton>
+              </SelectContent>
+            </SelectPortal>
+          </SelectRoot>
         </div>
       </div>
 
@@ -148,6 +183,25 @@ import { useAuth } from 'vue-auth3'
 // import 'vue-multiselect/dist/vue-multiselect.min.css'
 import { tableMagic } from '@/utils/main'
 import FileUpload from '../FileUpload.vue'
+import {
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectItemIndicator,
+  SelectItemText,
+  SelectLabel,
+  SelectPortal,
+  SelectRoot,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport
+} from 'radix-vue'
+import { Icon } from '@iconify/vue'
+import { capitalizeFirstLetter } from '@/utils/main'
+
 const props = defineProps<{
   closeModal: () => void
   data: any
