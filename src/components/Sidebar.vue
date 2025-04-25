@@ -137,7 +137,7 @@ interface UserInfoProps {
     updated_at: string
     device_token: string | null
     device_type: string | null
-    device_onesignal_id: string |null
+    device_onesignal_id: string | null
     enable_notification: string
     identification: string
     place_of_issue: string
@@ -261,17 +261,19 @@ const isDropdownOpen = (idx: any) => {
 }
 
 const permissionData = usePermissionStore()
-const { permision, permissionList } = storeToRefs(permissionData)
-console.log(permision.value, 'permission change state')
+const { permision, permissionList, userPermission } =
+  storeToRefs(permissionData)
+// console.log(permision.value, 'permission change state')
 const checkPermission = (arrRole: any) => {
   if (!permision || !permision.value) return false
+  console.log(userPermission.value, 'userPermission')
   if (arrRole === 'all') {
-    const userInfo: UserInfoProps | null = auth.user()
-    return userInfo?.data?.per_group_name === 'Admin' ? true : false
+    return userPermission && userPermission.value === 'Admin' ? true : false
   }
   const res = permissionList.value.includes(arrRole) ? true : false
   return res
 }
+console.log(permision.value, 'permision permision permision');
 </script>
 
 <style lang="scss" scoped>

@@ -57,6 +57,7 @@ const handleLogin = async () => {
       // Set the access_token as the default token in Vue Auth 3
       auth.token(null, access_token)
       permissionStore.fetchPermission(access_token)
+      permissionStore.setUserPermission(per_group_name)
       // dang nhap thanh cong
       router.push({ name: 'Personal' })
     }

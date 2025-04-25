@@ -13,6 +13,7 @@ interface PermissionType {
 export const usePermissionStore = defineStore('permission', () => {
   const permision = ref<PermissionType | null>(null)
   const permissionList = ref<String[]>([])
+  const userPermission = ref<string | null>(null)
   async function fetchPermission(token: string) {
     try {
       const response = await apiClient.get(`/user/permission`, {
@@ -23,10 +24,8 @@ export const usePermissionStore = defineStore('permission', () => {
       })
 
       const { data } = response.data
-      console.log('run trong context', data)
       permision.value = data
       permissionList.value = Object.keys(data)
-      console.log(Object.keys(data), permissionList.value)
     } catch (error) {
       console.error('Error fetching permision:', error)
     }
@@ -40,19 +39,27 @@ export const usePermissionStore = defineStore('permission', () => {
     if (rolePermission.includes(actions)) return true
     // const rolePermission = checkRole.permission[permission]
   }
-
+  const setUserPermission = (permission: string) => {
+    userPermission.value = permission
+  }
   const getPermission = computed(() => {
     return permision
   })
   const getPermissionList = computed(() => {
     return permissionList
   })
+  const getUserPermission = computed(() => {
+    return userPermission
+  })
   return {
     permision,
     fetchPermission,
     getPermission,
     getPermissionList,
+    getUserPermission,
     checkPermission,
-    permissionList
+    setUserPermission,
+    permissionList,
+    userPermission
   }
 })

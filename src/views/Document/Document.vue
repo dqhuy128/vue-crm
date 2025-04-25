@@ -181,11 +181,9 @@
                     {{ index + 1 }}
                   </div>
                   <div class="cell">
-                    {{
-                      categoryDocument.data.filter(
-                        (cate) => cate.id === item.type_id
-                      )[0].name
-                    }}
+                    <template v-if="categoryDocument.data">
+                      {{ findCategoryName(item.type_id) }}
+                    </template>
                   </div>
                   <div class="cell">
                     {{ item.name }}
@@ -536,7 +534,7 @@ const {
   data,
   // isLoading: isLoadingDocument,
   doFetch,
-  // fetchCategoryDocument,
+  fetchCategoryDocument,
   // fetchDetailDocument,
   categories,
   deleteDocument
@@ -607,9 +605,15 @@ const hdandleViewDocument = async (id: any) => {
     })
   await nextTick()
 }
+
+function findCategoryName(typeId: string) {
+  const category = categoryDocument.data.find((item) => item.id === typeId)
+  return category ? category.name : 'Chưa có loại tài liệu'
+}
 onMounted(() => {
   if (auth.check()) {
     fetchDataDocument()
+    fetchCategoryDocument()
   }
   console.log(dataDocument, 'dataDocument')
 })
