@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="bg-white rounded-[24px] p-2.5">
       <form
-        class="flex flex-wrap items-stretch gap-4"
+        class="flex flex-wrap gap-4 items-stretch"
         @submit.prevent="handleSearchUser"
       >
         <div class="flex flex-wrap gap-4 grow">
@@ -210,14 +210,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
+    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách người dùng
       </div>
 
-      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
+      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
         <button
           type="button"
           id="tableImport"
@@ -264,7 +264,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
-          <div id="tableRowHeader" class="justify-between table-row header">
+          <div id="tableRowHeader" class="table-row justify-between header">
             <div class="cell" v-for="(column, index) in tbhead" :key="index">
               {{ column.title }}
 
@@ -341,12 +341,13 @@
 
                   <div class="cell edit edit-body">
                     <button
-                      @click="handleGetDetailUser(item?.id)"
+                      @click="handleGetDetailUser(item?.phone)"
                       type="button"
                       class="cursor-pointer cell-btn-edit shrink-0"
                     >
                       <img src="@/assets/images/action-edit-2.svg" alt="" />
                     </button>
+
                     <button
                       @click="handleDeleteUser(item?.id)"
                       type="button"
@@ -363,7 +364,7 @@
       </div>
 
       <div
-        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -398,7 +399,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+        <div class="flex flex-wrap gap-2 items-center md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
             <template
               v-if="
@@ -474,6 +475,22 @@
     />
 
     <Modal
+      @close="toggleModal('modalEditUser')"
+      :modalActive="modalActive.modalEditUser"
+      maxWidth="max-w-[865px]"
+    >
+      <ModalEditUser :data="paramsDetailUser">
+        <button
+          @click="toggleModal('modalEditUser')"
+          type="button"
+          class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+        >
+          Hủy
+        </button>
+      </ModalEditUser>
+    </Modal>
+
+    <Modal
       @close="toggleModal('modalExport')"
       :modalActive="modalActive.modalExport"
       maxWidth="max-w-[512px]"
@@ -499,7 +516,7 @@
           Bạn có chắc muốn export danh sách người dùng?
         </div>
 
-        <div class="flex flex-wrap items-stretch gap-6">
+        <div class="flex flex-wrap gap-6 items-stretch">
           <a
             href=""
             class="inline-flex items-center justify-center flex-auto border border-solid border-[#EDEDF6] rounded-lg bg-white p-1.5 text-[#464661] text-[16px] font-semibold uppercase max-w-[175px] hover:shadow-hoverinset transition"
@@ -571,6 +588,7 @@ import {
 } from 'radix-vue'
 import { Icon } from '@iconify/vue'
 import { apiClient } from '@/plugins/axios'
+import ModalEditUser from '@/components/Modal/ModalEditUser.vue'
 
 interface recordModal {
   [key: string]: boolean
@@ -579,7 +597,8 @@ interface recordModal {
 const modalActive = ref<recordModal>({
   modalNewUser: false,
   modalExport: false,
-  modalError: false
+  modalError: false,
+  modalEditUser: false
 })
 
 const toggleModal = (modalStateName: any) => {
@@ -693,16 +712,18 @@ const handleDeleteUser = async (id: any) => {
 }
 
 const paramsDetailUser = ref<any | null>(null)
-const handleGetDetailUser = async (id: any) => {
+const handleGetDetailUser = async (phone: any) => {
   try {
     const response = await apiClient
-      .get(`/user/info/${id}`, {
+      .get(`/user/list?phone=${phone}`, {
         headers: {
           Authorization: `Bearer ${auth.token()}`
         }
       })
       .then((res) => {
-        paramsDetailUser.value = res.data.data
+        const { items } = res.data.data
+        paramsDetailUser.value = items
+        // toggleModal('modalEditUser')
         console.log(
           '🚀 ~ .then ~ paramsDetailUser.value:',
           paramsDetailUser.value
