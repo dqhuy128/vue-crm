@@ -479,7 +479,7 @@
       :modalActive="modalActive.modalEditUser"
       maxWidth="max-w-[865px]"
     >
-      <ModalEditUser :data="paramsDetailUser">
+      <ModalEditUser :userdata="paramsDetailUser">
         <button
           @click="toggleModal('modalEditUser')"
           type="button"
@@ -724,7 +724,7 @@ const handleGetDetailUser = async (phone: any) => {
       .then((res) => {
         const { items } = res.data.data
         paramsDetailUser.value = items
-        // toggleModal('modalEditUser')
+        toggleModal('modalEditUser')
         console.log(
           '🚀 ~ .then ~ paramsDetailUser.value:',
           paramsDetailUser.value
