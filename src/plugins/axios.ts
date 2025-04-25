@@ -19,6 +19,18 @@ export const apiClient = axios.create({
   }
 })
 
+apiClient.interceptors.request.use(
+  (config) => {
+    if (config.headers) {
+      delete config.headers['access-control-max-age']
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
 // Thêm axios interceptor cho response
 // apiClient.interceptors.response.use(
 //   (response) => response,

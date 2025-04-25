@@ -1,5 +1,6 @@
 import { apiUri } from '@/constants/apiUri'
 import { apiClient } from '@/plugins/axios'
+import axios from 'axios'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAuth } from 'vue-auth3'
@@ -29,7 +30,7 @@ export const usePermissionStore = defineStore('permission', () => {
   async function fetchPermission(token: string) {
     if(permision.value) return
     try {
-      const response = await apiClient.get(`/user/permission`, {
+      const response = await axios.get(`/api/user/permission`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

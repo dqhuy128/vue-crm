@@ -4,6 +4,7 @@ import { calcBgBefore } from '../../lib/index'
 import { apiClient } from '@/plugins/axios'
 import router from '@/router'
 import { useRoute } from 'vue-router'
+import axios from 'axios'
 
 const route = useRoute()
 const password1 = ref('')
@@ -34,7 +35,7 @@ const handleResetPassword = async () => {
     formData.append('password', password1.value)
     formData.append('repass', password2.value)
 
-    const response = await apiClient.post('/user/newpass', formData, {
+    const response = await axios.post('/api/user/newpass', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -78,7 +79,7 @@ onMounted(() => {
               >
                 <img
                   src="@/assets/images/logo-login.png"
-                  class="object-scale-down h-auto max-w-full"
+                  class="object-scale-down max-w-full h-auto"
                   alt=""
                 />
               </div>
@@ -90,10 +91,10 @@ onMounted(() => {
                 crm skygroup
               </div>
 
-              <div class="hidden w-full mx-auto mt-auto md:block">
+              <div class="hidden mx-auto mt-auto w-full md:block">
                 <img
                   src="@/assets/images/login-frame.svg"
-                  class="object-scale-down h-auto max-w-full"
+                  class="object-scale-down max-w-full h-auto"
                   alt=""
                 />
               </div>
