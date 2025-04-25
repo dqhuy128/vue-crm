@@ -422,8 +422,10 @@ import ViewDocument from '@/components/Document/ViewDocument.vue'
 import Modal from '@/components/Modals.vue'
 import { useDocument } from '@/composables/document'
 import { apiUri } from '@/constants/apiUri'
+import { usePermissionStore } from '@/store/permission'
 import { tableMagic } from '@/utils/main'
 import axios from 'axios'
+import { storeToRefs } from 'pinia'
 import {
   SelectContent,
   SelectGroup,
@@ -610,12 +612,21 @@ function findCategoryName(typeId: string) {
   const category = categoryDocument.data.find((item) => item.id === typeId)
   return category ? category.name : 'Chưa có loại tài liệu'
 }
+const permissionStore = usePermissionStore()
+const {  permissionList } = storeToRefs(permissionStore)
 onMounted(() => {
   if (auth.check()) {
-    fetchDataDocument()
-    fetchCategoryDocument()
+    console.log(permissionList.value, 'permissionList')
+    const res = permissionList.value.includes('Document') ? true : false
+    if (!res) {
+      console.log(' access denied ')
+      // router.push('/')
+    } else {
+      fetchCategoryDocument()
+      fetchDataDocument()
+      console.log(dataDocument, 'dataDocument')
+    }
   }
-  console.log(dataDocument, 'dataDocument')
 })
 
 watch(
