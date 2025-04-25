@@ -28,7 +28,7 @@ export const usePermissionStore = defineStore('permission', () => {
   const permissionList = ref<String[]>([])
   const userData = ref<UserInfoProps | null>(null)
   async function fetchPermission(token: string) {
-    if(permision.value) return
+    if (permision.value) return
     try {
       const response = await axios.get(`/api/user/permission`, {
         headers: {
@@ -37,9 +37,9 @@ export const usePermissionStore = defineStore('permission', () => {
         }
       })
 
-      const { data } = response.data
-      permision.value = data
-      permissionList.value = Object.keys(data)
+      const dataPermit = response.data
+      permision.value = dataPermit
+      permissionList.value = Object.keys(dataPermit)
     } catch (error) {
       console.error('Error fetching permision:', error)
     }
@@ -55,9 +55,9 @@ export const usePermissionStore = defineStore('permission', () => {
   }
   const fetchUserData = async (token: string) => {
     const auth = useAuth()
-    if(!auth.check()) return ; 
-    if(permision.value) return
-    console.log('call trong store');
+    if (!auth.check()) return
+    if (permision.value) return
+    console.log('call trong store')
     try {
       const response = await auth.fetch({
         method: 'get',

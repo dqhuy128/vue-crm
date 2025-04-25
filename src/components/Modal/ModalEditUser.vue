@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">
     <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-8">
-      <div class="mb-7 text-center">
+      <div class="text-center mb-7">
         <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
           cập nhật người dùng
         </h3>
@@ -20,7 +20,7 @@
           />
         </div>
 
-        <div class="absolute right-0 bottom-0 z-10">
+        <div class="absolute bottom-0 right-0 z-10">
           <img src="@/assets/images/ic-camera.svg" alt="" />
         </div>
       </div>
@@ -29,7 +29,7 @@
     <!-- sform register -->
     <form
       class="w-full mx-auto lg:p-[24px_48px] p-[24px_16px]"
-      @submit.prevent="onSubmitRegister()"
+      @submit.prevent="submitUserUpdate"
     >
       <div class="grid grid-cols-12 gap-6">
         <div class="col-span-12 xl:col-span-4 md:col-span-6">
@@ -129,7 +129,7 @@
                 name="dd/mm/yy"
               />
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -236,7 +236,7 @@
                 name="dd/mm/yy"
               />
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -598,7 +598,7 @@
                 name="dd/mm/yy"
               />
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -680,8 +680,14 @@
         </div>
       </div>
 
+      <template v-if="errorMsg">
+        <div class="mt-3 text-sm text-red-500">
+          {{ errorMsg }}
+        </div>
+      </template>
+
       <div
-        class="flex flex-wrap gap-4 justify-center items-stretch mt-10 text-center xl:gap-6"
+        class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center xl:gap-6"
       >
         <slot />
         <button
@@ -936,7 +942,8 @@ const fetchDataDocument = () => {
   }, 300)
 }
 
-const onSubmitRegister = handleSubmit(async () => {
+const errorMsg = ref<any | null>(null)
+const submitUserUpdate = handleSubmit(async () => {
   try {
     const formDataUser = new FormData()
 
@@ -985,12 +992,17 @@ const onSubmitRegister = handleSubmit(async () => {
       formDataUser.append('status', '1')
     }
 
-    const response = await axios.post('/api/user/create', formDataUser, {
+    const response = await axios.post('/api/user/update', formDataUser, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${auth.token()}`
       }
     })
+
+    if (response.data.errors || response.data.status == 0) {
+      errorMsg.value = response.data.errors + '. ' + response.data.message
+    }
+
     fetchDataDocument()
     console.log('🚀 ~ handleSubmit ~ response:', response)
   } catch (error) {

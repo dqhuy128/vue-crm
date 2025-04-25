@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="bg-white rounded-[24px] p-2.5">
       <form
-        class="flex flex-wrap gap-4 items-stretch"
+        class="flex flex-wrap items-stretch gap-4"
         @submit.prevent="handleSearchUser"
       >
         <div class="flex flex-wrap gap-4 grow">
@@ -72,16 +72,18 @@
                       <template
                         v-for="(items, index) in dataDocument?.doc?.items"
                       >
-                        <SelectItem
-                          v-for="(item, _) in items"
-                          :key="index"
-                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                          :value="String(item.per_group_name)"
-                        >
-                          <SelectItemText>
-                            {{ item.per_group_name }}
-                          </SelectItemText>
-                        </SelectItem>
+                        <template v-for="(item, _) in items">
+                          <SelectItem
+                            :key="index"
+                            class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item.per_group_name)"
+                            v-if="String(item.per_group_name)"
+                          >
+                            <SelectItemText>
+                              {{ item.per_group_name }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
                       </template>
                     </SelectGroup>
                   </SelectViewport>
@@ -210,14 +212,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
+    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách người dùng
       </div>
 
-      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
+      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
         <button
           type="button"
           id="tableImport"
@@ -264,7 +266,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
-          <div id="tableRowHeader" class="table-row justify-between header">
+          <div id="tableRowHeader" class="justify-between table-row header">
             <div class="cell" v-for="(column, index) in tbhead" :key="index">
               {{ column.title }}
 
@@ -364,7 +366,7 @@
       </div>
 
       <div
-        class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -399,7 +401,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2 items-center md:ms-auto">
+        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
             <template
               v-if="
@@ -516,7 +518,7 @@
           Bạn có chắc muốn export danh sách người dùng?
         </div>
 
-        <div class="flex flex-wrap gap-6 items-stretch">
+        <div class="flex flex-wrap items-stretch gap-6">
           <a
             href=""
             class="inline-flex items-center justify-center flex-auto border border-solid border-[#EDEDF6] rounded-lg bg-white p-1.5 text-[#464661] text-[16px] font-semibold uppercase max-w-[175px] hover:shadow-hoverinset transition"

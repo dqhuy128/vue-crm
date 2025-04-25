@@ -3,7 +3,7 @@
     <div class="bg-white rounded-[24px] p-2.5">
       <form
         @submit.prevent="handleSearchDocument"
-        class="flex flex-wrap gap-4 items-stretch"
+        class="flex flex-wrap items-stretch gap-4"
       >
         <div class="flex flex-wrap gap-4 grow">
           <div class="flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
@@ -125,14 +125,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
+    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách tài liệu
       </div>
 
-      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
+      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
         <button
           type="button"
           id="tableAdding"
@@ -153,7 +153,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
-          <div id="tableRowHeader" class="table-row justify-between header">
+          <div id="tableRowHeader" class="justify-between table-row header">
             <div class="cell" v-for="(column, index) in tbhead" :key="index">
               {{ column.title }}
 
@@ -181,9 +181,11 @@
                     {{ index + 1 }}
                   </div>
                   <div class="cell">
-                    <template v-if="categoryDocument.data">
-                      {{ findCategoryName(item.type_id) }}
-                    </template>
+                    {{
+                      categoryDocument.data.filter(
+                        (cate) => cate.id === item.type_id
+                      )[0].name
+                    }}
                   </div>
                   <div class="cell">
                     {{ item.name }}
@@ -228,7 +230,7 @@
       </div>
 
       <div
-        class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -263,7 +265,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2 items-center md:ms-auto">
+        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
             <template
               v-if="
@@ -330,31 +332,30 @@
         </div>
       </div>
     </div>
-    <template v-if="modalActive.modalAddDocument">
-      <Modal
-        @close="toggleModal('modalAddDocument')"
-        :modalActive="modalActive.modalAddDocument"
-        maxWidth="max-w-[670px]"
-      >
-        <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-          <div class="mb-12 text-center max-xl:mb-6">
-            <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-              thêm mới tài liệu
-            </h3>
-          </div>
 
-          <CreateDocument :closeModal="() => toggleModal('modalAddDocument')">
-            <button
-              @click="toggleModal('modalAddDocument')"
-              type="button"
-              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-            >
-              Hủy
-            </button>
-          </CreateDocument>
+    <Modal
+      @close="toggleModal('modalAddDocument')"
+      :modalActive="modalActive.modalAddDocument"
+      maxWidth="max-w-[670px]"
+    >
+      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+            thêm mới tài liệu
+          </h3>
         </div>
-      </Modal>
-    </template>
+
+        <CreateDocument :closeModal="() => toggleModal('modalAddDocument')">
+          <button
+            @click="toggleModal('modalAddDocument')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Hủy
+          </button>
+        </CreateDocument>
+      </div>
+    </Modal>
 
     <template v-if="modalActive.modalEditDocument">
       <Modal
@@ -384,34 +385,33 @@
         </div>
       </Modal>
     </template>
-    <template v-if="modalActive.modalViewDocument">
-      <Modal
-        @close="toggleModal('modalViewDocument')"
-        :modalActive="modalActive.modalViewDocument"
-        maxWidth="max-w-[670px]"
-      >
-        <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-          <div class="mb-12 text-center max-xl:mb-6">
-            <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-              Chi tiết tài liệu
-            </h3>
-          </div>
 
-          <ViewDocument
-            :closeModal="() => toggleModal('modalViewDocument')"
-            :data="detailDocument"
-          >
-            <button
-              @click="toggleModal('modalViewDocument')"
-              type="button"
-              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-            >
-              Hủy
-            </button>
-          </ViewDocument>
+    <Modal
+      @close="toggleModal('modalViewDocument')"
+      :modalActive="modalActive.modalViewDocument"
+      maxWidth="max-w-[670px]"
+    >
+      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+            Chi tiết tài liệu
+          </h3>
         </div>
-      </Modal>
-    </template>
+
+        <ViewDocument
+          :closeModal="() => toggleModal('modalViewDocument')"
+          :data="detailDocument"
+        >
+          <button
+            @click="toggleModal('modalViewDocument')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Hủy
+          </button>
+        </ViewDocument>
+      </div>
+    </Modal>
   </MainLayout>
 </template>
 
@@ -616,7 +616,7 @@ function findCategoryName(typeId: string) {
   return category ? category.name : 'Chưa có loại tài liệu'
 }
 const permissionStore = usePermissionStore()
-const {  permissionList } = storeToRefs(permissionStore)
+const { permissionList } = storeToRefs(permissionStore)
 onMounted(() => {
   if (auth.check()) {
     console.log(permissionList.value, 'permissionList')
