@@ -3,7 +3,7 @@
     <div class="bg-white rounded-[24px] p-2.5">
       <form
         @submit.prevent="handleSearchDocument"
-        class="flex flex-wrap items-stretch gap-4"
+        class="flex flex-wrap gap-4 items-stretch"
       >
         <div class="flex flex-wrap gap-4 grow">
           <div class="flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
@@ -43,6 +43,12 @@
                   <SelectViewport>
                     <SelectGroup>
                       <SelectItem
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        value="0"
+                      >
+                        <SelectItemText> Tất cả loại tài liệu </SelectItemText>
+                      </SelectItem>
+                      <SelectItem
                         v-for="(item, index) in categoryDocument.data"
                         :key="index"
                         class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
@@ -56,12 +62,6 @@
                         <SelectItemText>
                           {{ item.name }}
                         </SelectItemText>
-                      </SelectItem>
-                      <SelectItem
-                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                        value="0"
-                      >
-                        <SelectItemText> Tất cả loại tài liệu </SelectItemText>
                       </SelectItem>
                     </SelectGroup>
                   </SelectViewport>
@@ -125,14 +125,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
+    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách tài liệu
       </div>
 
-      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
+      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
         <button
           type="button"
           id="tableAdding"
@@ -153,7 +153,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
-          <div id="tableRowHeader" class="justify-between table-row header">
+          <div id="tableRowHeader" class="table-row justify-between header">
             <div class="cell" v-for="(column, index) in tbhead" :key="index">
               {{ column.title }}
 
@@ -228,7 +228,7 @@
       </div>
 
       <div
-        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -263,7 +263,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+        <div class="flex flex-wrap gap-2 items-center md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
             <template
               v-if="
@@ -554,13 +554,16 @@ const categoryDocument = reactive({
   data: categories.value || undefined
 })
 const handleDeleteDocument = async (id: any) => {
-  if (window.confirm('Bạn có chắc chắn muốn xóa tài liệu này không?')) {
-    deleteDocument(id).then(() => {
-      fetchDataDocument()
-    })
-  } else {
-    return
-  }
+  deleteDocument(id).then(() => {
+    fetchDataDocument()
+  })
+  // if (window.confirm('Bạn có chắc chắn muốn xóa tài liệu này không?')) {
+  //   deleteDocument(id).then(() => {
+  //     fetchDataDocument()
+  //   })
+  // } else {
+  //   return
+  // }
 }
 
 const detailDocument = ref({
