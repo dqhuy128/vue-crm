@@ -102,7 +102,7 @@ import Proicons from '@/assets/images/proicons_timer.svg'
 import TableUserScan from '@/assets/images/tabler_user-scan.svg'
 import { usePermissionStore } from '@/store/permission'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useAuth } from 'vue-auth3'
 
 interface dataSidebarItem {
@@ -120,41 +120,6 @@ interface dataSubmenu {
   route?: string
   permissionName?: string
 }
-interface UserInfoProps {
-  data: {
-    id: string
-    username: string
-    email: string
-    name: string
-    status: string
-    code: string
-    phone: string
-    dob: string
-    parent_id: string
-    access_token: string
-    expires: string
-    created_at: string
-    updated_at: string
-    device_token: string | null
-    device_type: string | null
-    device_onesignal_id: string |null
-    enable_notification: string
-    identification: string
-    place_of_issue: string
-    date_of_issue: string
-    original_place: string
-    part_id: string
-    position_id: string
-    region_id: string
-    permanent_address: string
-    residence_address: string
-    work_contract: string
-    working_day: string
-    total_days_off: string
-    per_group_name: string
-    avatar: string
-  }
-}
 const auth = useAuth()
 
 const refDataSidebar = ref<dataSidebarItem[]>([
@@ -170,7 +135,7 @@ const refDataSidebar = ref<dataSidebarItem[]>([
     title: 'Quản trị hệ thống',
     route: 'SystemUser',
     nav: true,
-    permissionName: 'all',
+    permissionName: 'Admin',
     submenu: [
       {
         icon: LucideUserCog,
@@ -261,17 +226,33 @@ const isDropdownOpen = (idx: any) => {
 }
 
 const permissionData = usePermissionStore()
-const { permision, permissionList } = storeToRefs(permissionData)
-console.log(permision.value, 'permission change state')
+const { permision, permissionList, userData } = storeToRefs(permissionData)
+// console.log(permision.value, 'permission change state')
 const checkPermission = (arrRole: any) => {
-  if (!permision || !permision.value) return false
+  if (!permision || !permision.value) {
+    const token = auth.token()
+    token && permissionData.fetchUserData(token)
+    return false
+  }
   if (arrRole === 'all') {
-    const userInfo: UserInfoProps | null = auth.user()
-    return userInfo?.data?.per_group_name === 'Admin' ? true : false
+    return true
+  }
+  if (arrRole === 'Admin') {
+    return userData && userData.value?.per_group_name === 'Admin' ? true : false
   }
   const res = permissionList.value.includes(arrRole) ? true : false
   return res
 }
+
+onMounted(() => {
+  if (auth.check()) {
+    const token = auth.token()
+    if (token) {
+      permissionData.fetchPermission(token), permissionData.fetchUserData(token)
+    }
+    // permissionData.setUserPermission()
+  }
+})
 </script>
 
 <style lang="scss" scoped>

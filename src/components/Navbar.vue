@@ -10,9 +10,10 @@ import {
 } from '@/lib/cropper'
 import { apiClient } from '@/plugins/axios'
 import { usePermissionStore } from '@/store/permission'
+import { storeToRefs } from 'pinia'
 import axios from 'axios'
 import { ErrorMessage, Field, Form, useForm } from 'vee-validate'
-import { onBeforeMount, reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import { useAuth } from 'vue-auth3'
@@ -52,53 +53,54 @@ const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
 }
 
-const fetchUser = async () => {
-  isAuthenticated.value = auth.check()
+// const fetchUser = async () => {
+//   isAuthenticated.value = auth.check()
 
-  if (isAuthenticated.value) {
-    token.value = auth.token() // Gets the default token
-    // Fetch user data from the API
-    try {
-      const response = await auth.fetch({
-        method: 'get',
-        url: `${apiUri}/user/info`,
-        credentials: 'include',
-        headers: {
-          Authorization: `Bearer ${token.value}`
-        }
-      })
+//   if (isAuthenticated.value) {
+//     token.value = auth.token() // Gets the default token
+//     // Fetch user data from the API
+//     try {
+//       const response = await auth.fetch({
+//         method: 'get',
+//         url: `${apiUri}/user/info`,
+//         credentials: 'include',
+//         headers: {
+//           Authorization: `Bearer ${token.value}`
+//         }
+//       })
 
-      const { data } = response.data
-      permissionStore.fetchPermission(data.access_token)
-      user.value = data
-    } catch (error: any) {
-      console.error('NavBar.vue ~ Failed to fetch user data:', error)
+//       const { data } = response.data
+//       user.value = data
+//     } catch (error: any) {
+//       console.error('NavBar.vue ~ Failed to fetch user data:', error)
 
-      if (error.response?.status === 401) {
-        // Logout user
-        await auth
-          .logout({
-            makeRequest: false,
-            redirect: '/login'
-          })
-          .then(() => {
-            permissionStore.$reset()
-          })
+//       if (error.response?.status === 401) {
+//         // Logout user
+//         await auth.logout({
+//           makeRequest: false,
+//           redirect: '/login'
+//         }).then(() =>{
+//           permissionStore.$reset();
+//         })
 
-        // console.clear()
-      }
-    }
-  }
-}
+//         // console.clear()
+//       }
+//     }
+//   }
+// }
 
 // Logout handler
 const handleLogout = async () => {
   try {
     // Perform logout without an API call
-    await auth.logout({
-      makeRequest: false, // Disable API request
-      redirect: '/login' // Redirect to login page
-    })
+    await auth
+      .logout({
+        makeRequest: false, // Disable API request
+        redirect: '/login' // Redirect to login page
+      })
+      .then(() => {
+        permissionStore.$reset() // Reset the permission store
+      })
   } catch (error) {
     console.error('Logout failed:', error)
   }
@@ -179,8 +181,21 @@ const isRequired = (text: string) => {
   return (value: any) => (value && value.trim() ? true : text)
 }
 
-onBeforeMount(() => {
-  fetchUser()
+// onBeforeMount(() => {
+//   fetchUser()
+// })
+const permissionData = usePermissionStore()
+const { userData } = storeToRefs(permissionData)
+
+onMounted(() => {
+  if (auth.check()) {
+    if (!userData) {
+      const token = auth.token()
+      if (token) {
+        permissionData.fetchUserData(token)
+      }
+    }
+  }
 })
 </script>
 
@@ -246,9 +261,9 @@ onBeforeMount(() => {
                 <div class="block">
                   <h3
                     class="text-[#464661] font-inter text-[16px] font-bold"
-                    v-if="auth.check() && user"
+                    v-if="auth.check() && userData"
                   >
-                    {{ user?.name }}
+                    {{ userData?.name }}
                   </h3>
                   <span
                     class="block text-[#909090] font-inter text-[14px] font-normal text-right"
@@ -262,7 +277,7 @@ onBeforeMount(() => {
                     <router-link to="">
                       <img
                         class="object-cover w-full h-full"
-                        :src="updateUrlAva || user?.avatar"
+                        :src="updateUrlAva || userData?.avatar"
                         alt=""
                       />
                     </router-link>
@@ -315,7 +330,7 @@ onBeforeMount(() => {
               class="w-full h-full max-w-full bg-[#E9F0F4] rounded-[24px] overflow-hidden"
             >
               <img
-                :src="updateUrlAva || user?.avatar"
+                :src="updateUrlAva || userData?.avatar"
                 class="object-cover w-full h-full"
                 alt=""
               />
@@ -336,7 +351,7 @@ onBeforeMount(() => {
 
           <div class="mb-4 text-center">
             <h3 class="m-0 text-[#464661] text-[16px] font-bold leading-normal">
-              {{ user?.name }}
+              {{ userData?.name }}
             </h3>
           </div>
 
@@ -344,14 +359,14 @@ onBeforeMount(() => {
             <div class="inline-flex gap-2 justify-center items-center grow">
               <img src="@/assets/images/lucide_mail.svg" alt="" />
               <span class="text-[#464661] text-[14px] font-bold leading-normal">
-                {{ user?.email }}
+                {{ userData?.email }}
               </span>
             </div>
 
             <div class="inline-flex gap-2 justify-center items-center grow">
               <img src="@/assets/images/mynaui_mobile.svg" alt="" />
               <span class="text-[#464661] text-[14px] font-bold leading-normal">
-                {{ user?.phone }}
+                {{ userData?.phone }}
               </span>
             </div>
           </div>

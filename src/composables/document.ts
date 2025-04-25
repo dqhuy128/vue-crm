@@ -97,6 +97,7 @@ export function useDocument() {
       .catch((err) => (error.value = err))
       .finally(() => (isLoading.value = false))
   }
+
   return {
     data,
     error,
