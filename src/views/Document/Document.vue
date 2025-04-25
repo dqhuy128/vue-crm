@@ -3,7 +3,7 @@
     <div class="bg-white rounded-[24px] p-2.5">
       <form
         @submit.prevent="handleSearchDocument"
-        class="flex flex-wrap gap-4 items-stretch"
+        class="flex flex-wrap items-stretch gap-4"
       >
         <div class="flex flex-wrap gap-4 grow">
           <div class="flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
@@ -125,14 +125,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
+    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách tài liệu
       </div>
 
-      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
+      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
         <button
           type="button"
           id="tableAdding"
@@ -153,7 +153,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
-          <div id="tableRowHeader" class="table-row justify-between header">
+          <div id="tableRowHeader" class="justify-between table-row header">
             <div class="cell" v-for="(column, index) in tbhead" :key="index">
               {{ column.title }}
 
@@ -202,7 +202,7 @@
                       <button
                         type="button"
                         class="cursor-pointer cell-btn-view shrink-0"
-                         @click="hdandleViewDocument(item.id)"
+                        @click="hdandleViewDocument(item.id)"
                       >
                         <img src="@/assets/images/action-edit-1.svg" alt="" />
                       </button>
@@ -230,7 +230,7 @@
       </div>
 
       <div
-        class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -265,7 +265,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2 items-center md:ms-auto">
+        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
             <template
               v-if="
@@ -332,84 +332,88 @@
         </div>
       </div>
     </div>
+    <template v-if="modalActive.modalAddDocument">
+      <Modal
+        @close="toggleModal('modalAddDocument')"
+        :modalActive="modalActive.modalAddDocument"
+        maxWidth="max-w-[670px]"
+      >
+        <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+          <div class="mb-12 text-center max-xl:mb-6">
+            <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+              thêm mới tài liệu
+            </h3>
+          </div>
 
-    <Modal
-      @close="toggleModal('modalAddDocument')"
-      :modalActive="modalActive.modalAddDocument"
-      maxWidth="max-w-[670px]"
-    >
-      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-        <div class="mb-12 text-center max-xl:mb-6">
-          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-            thêm mới tài liệu
-          </h3>
+          <CreateDocument :closeModal="() => toggleModal('modalAddDocument')">
+            <button
+              @click="toggleModal('modalAddDocument')"
+              type="button"
+              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+            >
+              Hủy
+            </button>
+          </CreateDocument>
         </div>
+      </Modal>
+    </template>
 
-        <CreateDocument :closeModal="() => toggleModal('modalAddDocument')">
-          <button
-            @click="toggleModal('modalAddDocument')"
-            type="button"
-            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+    <template v-if="modalActive.modalEditDocument">
+      <Modal
+        @close="toggleModal('modalEditDocument')"
+        :modalActive="modalActive.modalEditDocument"
+        maxWidth="max-w-[670px]"
+      >
+        <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+          <div class="mb-12 text-center max-xl:mb-6">
+            <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+              Update tài liệu
+            </h3>
+          </div>
+
+          <EditDocument
+            :closeModal="() => toggleModal('modalEditDocument')"
+            :data="detailDocument"
           >
-            Hủy
-          </button>
-        </CreateDocument>
-      </div>
-    </Modal>
-
-    <Modal
-      @close="toggleModal('modalEditDocument')"
-      :modalActive="modalActive.modalEditDocument"
-      maxWidth="max-w-[670px]"
-    >
-      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-        <div class="mb-12 text-center max-xl:mb-6">
-          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-            Update tài liệu
-          </h3>
+            <button
+              @click="toggleModal('modalEditDocument')"
+              type="button"
+              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+            >
+              Hủy
+            </button>
+          </EditDocument>
         </div>
+      </Modal>
+    </template>
+    <template v-if="modalActive.modalViewDocument">
+      <Modal
+        @close="toggleModal('modalViewDocument')"
+        :modalActive="modalActive.modalViewDocument"
+        maxWidth="max-w-[670px]"
+      >
+        <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+          <div class="mb-12 text-center max-xl:mb-6">
+            <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+              Chi tiết tài liệu
+            </h3>
+          </div>
 
-        <EditDocument
-          :closeModal="() => toggleModal('modalEditDocument')"
-          :data="detailDocument"
-        >
-          <button
-            @click="toggleModal('modalEditDocument')"
-            type="button"
-            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          <ViewDocument
+            :closeModal="() => toggleModal('modalViewDocument')"
+            :data="detailDocument"
           >
-            Hủy
-          </button>
-        </EditDocument>
-      </div>
-    </Modal>
-
-    <Modal
-      @close="toggleModal('modalViewDocument')"
-      :modalActive="modalActive.modalViewDocument"
-      maxWidth="max-w-[670px]"
-    >
-      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-        <div class="mb-12 text-center max-xl:mb-6">
-          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-            Chi tiết tài liệu
-          </h3>
+            <button
+              @click="toggleModal('modalViewDocument')"
+              type="button"
+              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+            >
+              Hủy
+            </button>
+          </ViewDocument>
         </div>
-
-        <ViewDocument
-          :closeModal="() => toggleModal('modalViewDocument')"
-          :data="detailDocument"
-        >
-          <button
-            @click="toggleModal('modalViewDocument')"
-            type="button"
-            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-          >
-            Hủy
-          </button>
-        </ViewDocument>
-      </div>
-    </Modal>
+      </Modal>
+    </template>
   </MainLayout>
 </template>
 
@@ -597,12 +601,11 @@ const hdandleViewDocument = async (id: any) => {
     .then((res) => {
       console.log(res.data.data, 'detail document')
       detailDocument.value = res.data.data
-      
-    }).finally(() => {
-      toggleModal('modalViewDocument')
-      
     })
-    await nextTick();
+    .finally(() => {
+      toggleModal('modalViewDocument')
+    })
+  await nextTick()
 }
 onMounted(() => {
   if (auth.check()) {

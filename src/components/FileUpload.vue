@@ -176,6 +176,7 @@ function onFileDrop(event: DragEvent) {
 function onDragover(event: DragEvent) {
   event.preventDefault()
 }
+console.log(files.value, 'files value FileUPload')
 </script>
 
 <template>
