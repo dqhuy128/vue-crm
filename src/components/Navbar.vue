@@ -10,6 +10,7 @@ import {
 } from '@/lib/cropper'
 import { apiClient } from '@/plugins/axios'
 import { usePermissionStore } from '@/store/permission'
+import axios from 'axios'
 import { ErrorMessage, Field, Form, useForm } from 'vee-validate'
 import { onBeforeMount, reactive, ref } from 'vue'
 import { Cropper } from 'vue-advanced-cropper'
@@ -28,7 +29,7 @@ const updateUrlAva = ref<string>('')
 const isPasswordVisible = ref(false)
 const { resetForm } = useForm()
 const cropperRef = ref(null)
-const permissionStore = usePermissionStore();
+const permissionStore = usePermissionStore()
 const modalActive = ref<recordModal>({
   modalUserInfo: false,
   modalUserAvatar: false,
@@ -75,12 +76,14 @@ const fetchUser = async () => {
 
       if (error.response?.status === 401) {
         // Logout user
-        await auth.logout({
-          makeRequest: false,
-          redirect: '/login'
-        }).then(() =>{
-          permissionStore.$reset();
-        })
+        await auth
+          .logout({
+            makeRequest: false,
+            redirect: '/login'
+          })
+          .then(() => {
+            permissionStore.$reset()
+          })
 
         // console.clear()
       }
@@ -135,8 +138,8 @@ const handleChangePass = async () => {
       formChangePass.append('new_pass', changePass.new_pass)
       formChangePass.append('new_repass', changePass.new_repass)
 
-      const response = await apiClient.post(
-        `${apiUri}/user/changepass`,
+      const response = await axios.post(
+        `/api/user/changepass`,
         formChangePass,
         {
           headers: {
@@ -203,7 +206,7 @@ onBeforeMount(() => {
         </svg>
       </button>
 
-      <div class="inline-flex items-center gap-3 md:gap-6 ms-auto">
+      <div class="inline-flex gap-3 items-center md:gap-6 ms-auto">
         <router-link
           to=""
           class="relative inline-block bg-white rounded-[8px] p-2"
@@ -238,7 +241,7 @@ onBeforeMount(() => {
           <tippy tag="button" content-tag="div" content-class="content-wrapper">
             <template #default>
               <div
-                class="inline-flex flex-wrap items-center gap-2 cursor-pointer"
+                class="inline-flex flex-wrap gap-2 items-center cursor-pointer"
               >
                 <div class="block">
                   <h3
@@ -337,15 +340,15 @@ onBeforeMount(() => {
             </h3>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2">
-            <div class="inline-flex items-center justify-center gap-2 grow">
+          <div class="flex flex-wrap gap-2 items-center">
+            <div class="inline-flex gap-2 justify-center items-center grow">
               <img src="@/assets/images/lucide_mail.svg" alt="" />
               <span class="text-[#464661] text-[14px] font-bold leading-normal">
                 {{ user?.email }}
               </span>
             </div>
 
-            <div class="inline-flex items-center justify-center gap-2 grow">
+            <div class="inline-flex gap-2 justify-center items-center grow">
               <img src="@/assets/images/mynaui_mobile.svg" alt="" />
               <span class="text-[#464661] text-[14px] font-bold leading-normal">
                 {{ user?.phone }}

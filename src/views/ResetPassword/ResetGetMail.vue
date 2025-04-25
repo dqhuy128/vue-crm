@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { calcBgBefore } from '../../lib/index'
 import { apiClient } from '@/plugins/axios'
 import router from '@/router'
+import axios from 'axios'
 
 const email = ref<string>('')
 const handleEmailChange = async () => {
@@ -10,7 +11,7 @@ const handleEmailChange = async () => {
   formData.append('email', email.value)
 
   try {
-    const response = await apiClient.post('/user/forgotpass', formData, {
+    const response = await axios.post('/api/user/forgotpass', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -61,7 +62,7 @@ onMounted(() => {
               >
                 <img
                   src="@/assets/images/logo-login.png"
-                  class="object-scale-down h-auto max-w-full"
+                  class="object-scale-down max-w-full h-auto"
                   alt=""
                 />
               </div>
@@ -73,10 +74,10 @@ onMounted(() => {
                 crm skygroup
               </div>
 
-              <div class="hidden w-full mx-auto mt-auto md:block">
+              <div class="hidden mx-auto mt-auto w-full md:block">
                 <img
                   src="@/assets/images/login-frame.svg"
-                  class="object-scale-down h-auto max-w-full"
+                  class="object-scale-down max-w-full h-auto"
                   alt=""
                 />
               </div>

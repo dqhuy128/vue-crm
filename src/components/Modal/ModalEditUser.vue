@@ -727,6 +727,7 @@ import * as yup from 'yup'
 import { useSystemUser } from '@/composables/system-user'
 import { tableMagic } from '@/utils/main'
 import { apiUri } from '@/constants/apiUri'
+import axios from 'axios'
 
 const auth = useAuth()
 
@@ -797,7 +798,7 @@ const [group_user, guAttrs] = defineField('group_user')
 const listGrPermiss = ref<any | null>(null)
 const fetchListPermission = async () => {
   try {
-    const response = await apiClient.get('/permission/list', {
+    const response = await axios.get('/api/permission/list', {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -833,7 +834,7 @@ const leaderData = ref<any | null>(null)
 
 const fetchListStaff = async () => {
   try {
-    const response = await apiClient.get('/categories/list?type=staff', {
+    const response = await axios.get('/api/categories/list?type=staff', {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -849,7 +850,7 @@ const fetchListStaff = async () => {
 
 const fetchListPosition = async () => {
   try {
-    const response = await apiClient.get('/categories/list?type=position', {
+    const response = await axios.get('/api/categories/list?type=position', {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -865,7 +866,7 @@ const fetchListPosition = async () => {
 
 const fetchListRegion = async () => {
   try {
-    const response = await apiClient.get('/location/region', {
+    const response = await axios.get('/api/location/region', {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -881,7 +882,7 @@ const fetchListRegion = async () => {
 
 const fetchListLeader = async () => {
   try {
-    const response = await apiClient.get('/user/list', {
+    const response = await axios.get('/api/user/list', {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -974,7 +975,7 @@ const onSubmitRegister = handleSubmit(async () => {
       formDataUser.append('status', '1')
     }
 
-    const response = await apiClient.post('/user/create', formDataUser, {
+    const response = await axios.post('/api/user/create', formDataUser, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${auth.token()}`
