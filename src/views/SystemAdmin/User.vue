@@ -589,6 +589,7 @@ import {
 import { Icon } from '@iconify/vue'
 import { apiClient } from '@/plugins/axios'
 import ModalEditUser from '@/components/Modal/ModalEditUser.vue'
+import axios from 'axios'
 
 interface recordModal {
   [key: string]: boolean
@@ -699,7 +700,7 @@ const handleDeleteUser = async (id: any) => {
     // const formData = new FormData()
     // formData.append('id', id)
 
-    const response = await apiClient.delete(`/user/delete`, {
+    const response = await axios.delete(`/api/user/delete`, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -714,8 +715,8 @@ const handleDeleteUser = async (id: any) => {
 const paramsDetailUser = ref<any | null>(null)
 const handleGetDetailUser = async (phone: any) => {
   try {
-    const response = await apiClient
-      .get(`/user/list?phone=${phone}`, {
+    const response = await axios
+      .get(`/api/user/list?phone=${phone}`, {
         headers: {
           Authorization: `Bearer ${auth.token()}`
         }
