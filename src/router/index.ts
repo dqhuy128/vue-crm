@@ -62,7 +62,7 @@ const router = createRouter({
       path: '/dashboard',
       name: 'Dashboard',
       component: Dashboard,
-      meta: { auth: true },
+      meta: { auth: true, accessRole: 'Admin' },
       children: [
         {
           path: 'personal',
@@ -80,7 +80,7 @@ const router = createRouter({
       path: '/system',
       name: 'System',
       component: SystemIndexView,
-      meta: { auth: true },
+      meta: { auth: true, accessRole: 'Admin' },
       children: [
         {
           path: 'admin',
@@ -108,7 +108,7 @@ const router = createRouter({
       path: '/leave',
       name: 'Leave',
       component: LeaveIndex,
-      meta: { auth: true },
+      meta: { auth: true, accessRole: 'Admin' },
       children: [
         {
           path: 'info',
@@ -126,7 +126,7 @@ const router = createRouter({
       path: '/time-keeping',
       name: 'TimeKeeping',
       component: TimekeepingIndex,
-      meta: { auth: true },
+      meta: { auth: true, accessRole: 'Admin' },
       children: [
         {
           path: 'history',
@@ -144,13 +144,13 @@ const router = createRouter({
       path: '/document',
       name: 'Document',
       component: Document,
-      meta: { auth: true },
-    },
-    {
-      path: '/permit',
-      name: 'Permit',
-      component: () => import('../views/PermitView.vue')
+      meta: { auth: true }
     }
+    // {
+    //   path: '/permit',
+    //   name: 'Permit',
+    //   component: () => import('../views/PermitView.vue')
+    // }
 
     // {
     //   path: '/admin',
@@ -165,30 +165,5 @@ const router = createRouter({
     // },
   ]
 })
-// router.beforeEach((to) => {
-//   // ✅ This will work because the router starts its navigation after
-//   // the router is installed and pinia will be installed too
-//   const permissionStore = usePermissionStore()
 
-//   console.log(auth, 'use Auth')
-//   // if(!auth.check()) {
-//   //   return { path: "/login" }
-//   // }
-//   // console.log(permissionStore.getPermission.value, 'router permission');
-
-//   if (to.meta.auth) {
-//     try {
-//       console.log(permissionStore.permision, 'permissionStore');
-//       console.log(to, 'to route');
-//     } catch (error) {
-//       if (error) {
-//         // ... handle the error and then cancel the navigation
-//         return false
-//       } else {
-//         // unexpected error, cancel the navigation and pass the error to the global handler
-//         throw error
-//       }
-//     }
-//   }
-// })
 export default router

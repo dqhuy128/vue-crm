@@ -1,6 +1,8 @@
+import { apiUri } from '@/constants/apiUri'
 import { apiClient } from '@/plugins/axios'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { useAuth } from 'vue-auth3'
 
 interface PermissionType {
   // name: string
@@ -10,11 +12,22 @@ interface PermissionType {
   // }
   [key: string]: string[]
 }
+interface UserInfoProps {
+  id: string
+  username: string
+  email: string
+  name: string
+  status: string
+  avatar?: string
+  phone: string
+  per_group_name: string
+}
 export const usePermissionStore = defineStore('permission', () => {
   const permision = ref<PermissionType | null>(null)
   const permissionList = ref<String[]>([])
-  const userPermission = ref<string | null>(null)
+  const userData = ref<UserInfoProps | null>(null)
   async function fetchPermission(token: string) {
+    if(permision.value) return
     try {
       const response = await apiClient.get(`/user/permission`, {
         headers: {
@@ -39,9 +52,42 @@ export const usePermissionStore = defineStore('permission', () => {
     if (rolePermission.includes(actions)) return true
     // const rolePermission = checkRole.permission[permission]
   }
-  const setUserPermission = (permission: string) => {
-    userPermission.value = permission
+  const fetchUserData = async (token: string) => {
+    const auth = useAuth()
+    if(!auth.check()) return ; 
+    if(permision.value) return
+    console.log('call trong store');
+    try {
+      const response = await auth.fetch({
+        method: 'get',
+        url: `${apiUri}/user/info`,
+        credentials: 'include',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      const { data } = response.data
+      userData.value = data
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        // Logout user
+        await auth
+          .logout({
+            makeRequest: false,
+            redirect: '/login'
+          })
+          .then(() => {
+            userData.value = null
+          })
+
+        // console.clear()
+      }
+    }
   }
+  // const setUserPermission = (permission: string) => {
+  //   userData.value = permission
+  // }
   const getPermission = computed(() => {
     return permision
   })
@@ -49,8 +95,14 @@ export const usePermissionStore = defineStore('permission', () => {
     return permissionList
   })
   const getUserPermission = computed(() => {
-    return userPermission
+    return userData
   })
+  function $reset() {
+    permision.value = null
+    permissionList.value = []
+    userData.value = null
+  }
+
   return {
     permision,
     fetchPermission,
@@ -58,8 +110,10 @@ export const usePermissionStore = defineStore('permission', () => {
     getPermissionList,
     getUserPermission,
     checkPermission,
-    setUserPermission,
+    // setUserPermission,
+    $reset,
+    fetchUserData,
     permissionList,
-    userPermission
+    userData
   }
 })

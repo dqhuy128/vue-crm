@@ -35,8 +35,6 @@ const handleLogin = async () => {
       url: `${apiUri}/user/login`,
       data: formData,
       headers: { 'Content-Type': 'multipart/form-data' },
-      staySignedIn: true,
-      fetchUser: true
     })
 
     const { status } = res.data
