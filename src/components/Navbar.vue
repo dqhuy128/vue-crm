@@ -11,6 +11,7 @@ import {
 import { apiClient } from '@/plugins/axios'
 import { usePermissionStore } from '@/store/permission'
 import { storeToRefs } from 'pinia'
+import axios from 'axios'
 import { ErrorMessage, Field, Form, useForm } from 'vee-validate'
 import { onMounted, reactive, ref } from 'vue'
 import { Cropper } from 'vue-advanced-cropper'
@@ -92,12 +93,14 @@ const togglePasswordVisibility = () => {
 const handleLogout = async () => {
   try {
     // Perform logout without an API call
-    await auth.logout({
-      makeRequest: false, // Disable API request
-      redirect: '/login' // Redirect to login page
-    }).then(() => {
-      permissionStore.$reset() // Reset the permission store
-    })
+    await auth
+      .logout({
+        makeRequest: false, // Disable API request
+        redirect: '/login' // Redirect to login page
+      })
+      .then(() => {
+        permissionStore.$reset() // Reset the permission store
+      })
   } catch (error) {
     console.error('Logout failed:', error)
   }
@@ -137,8 +140,8 @@ const handleChangePass = async () => {
       formChangePass.append('new_pass', changePass.new_pass)
       formChangePass.append('new_repass', changePass.new_repass)
 
-      const response = await apiClient.post(
-        `${apiUri}/user/changepass`,
+      const response = await axios.post(
+        `/api/user/changepass`,
         formChangePass,
         {
           headers: {
@@ -189,7 +192,7 @@ onMounted(() => {
     if (!userData) {
       const token = auth.token()
       if (token) {
-          permissionData.fetchUserData(token)
+        permissionData.fetchUserData(token)
       }
     }
   }
@@ -218,7 +221,7 @@ onMounted(() => {
         </svg>
       </button>
 
-      <div class="inline-flex items-center gap-3 md:gap-6 ms-auto">
+      <div class="inline-flex gap-3 items-center md:gap-6 ms-auto">
         <router-link
           to=""
           class="relative inline-block bg-white rounded-[8px] p-2"
@@ -253,7 +256,7 @@ onMounted(() => {
           <tippy tag="button" content-tag="div" content-class="content-wrapper">
             <template #default>
               <div
-                class="inline-flex flex-wrap items-center gap-2 cursor-pointer"
+                class="inline-flex flex-wrap gap-2 items-center cursor-pointer"
               >
                 <div class="block">
                   <h3
@@ -352,15 +355,15 @@ onMounted(() => {
             </h3>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2">
-            <div class="inline-flex items-center justify-center gap-2 grow">
+          <div class="flex flex-wrap gap-2 items-center">
+            <div class="inline-flex gap-2 justify-center items-center grow">
               <img src="@/assets/images/lucide_mail.svg" alt="" />
               <span class="text-[#464661] text-[14px] font-bold leading-normal">
                 {{ userData?.email }}
               </span>
             </div>
 
-            <div class="inline-flex items-center justify-center gap-2 grow">
+            <div class="inline-flex gap-2 justify-center items-center grow">
               <img src="@/assets/images/mynaui_mobile.svg" alt="" />
               <span class="text-[#464661] text-[14px] font-bold leading-normal">
                 {{ userData?.phone }}

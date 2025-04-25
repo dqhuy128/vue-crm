@@ -2,6 +2,7 @@ import { reactive, Ref, ref, useTemplateRef } from 'vue'
 import { apiUri } from '@/constants/apiUri'
 import { useAuth } from 'vue-auth3'
 import { apiClient } from '@/plugins/axios'
+import axios from 'axios'
 
 interface typesImage {
   src: any
@@ -91,7 +92,7 @@ export const postServer = (
     canvas.toBlob(async (blob: any) => {
       form.append('file', blob)
 
-      const response = await apiClient.post('/user/uploadavatar', form, {
+      const response = await axios.post('/api/user/uploadavatar', form, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${authToken}`

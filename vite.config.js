@@ -10,8 +10,7 @@ export default defineConfig({
       '/api': {
         target: 'https://api.skygroupvn.com.vn',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-        secure: false
+        rewrite: (path) => path.replace(/^\/api/, '/api')
       }
     }
   },

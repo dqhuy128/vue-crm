@@ -28,7 +28,7 @@ export function useSystemManager() {
     if (auth.check()) {
       const token = auth.token()
 
-      const response = await apiClient.get('/categories/type', {
+      const response = await axios.get('/api/categories/type', {
         headers: {
           Authorization: `Bearer ${token}`
         }
