@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">
     <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-8">
-      <div class="mb-7 text-center">
+      <div class="text-center mb-7">
         <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
           cập nhật người dùng
         </h3>
@@ -20,7 +20,7 @@
           />
         </div>
 
-        <div class="absolute right-0 bottom-0 z-10">
+        <div class="absolute bottom-0 right-0 z-10">
           <img src="@/assets/images/ic-camera.svg" alt="" />
         </div>
       </div>
@@ -29,7 +29,7 @@
     <!-- sform register -->
     <form
       class="w-full mx-auto lg:p-[24px_48px] p-[24px_16px]"
-      @submit.prevent="onSubmitRegister()"
+      @submit.prevent="submitUserUpdate"
     >
       <div class="grid grid-cols-12 gap-6">
         <div class="col-span-12 xl:col-span-4 md:col-span-6">
@@ -122,14 +122,14 @@
 
             <div class="relative">
               <flat-pickr
-                v-model="paramsUser.dob"
+                v-model="paramsUserDetail.dob"
                 :config="configFlatpickr"
                 class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                 placeholder="Chọn ngày"
                 name="dd/mm/yy"
               />
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -209,7 +209,7 @@
             </span>
 
             <input
-              v-model="paramsUser.identification"
+              v-model="paramsUserDetail.identification"
               type="text"
               name=""
               id=""
@@ -229,14 +229,14 @@
 
             <div class="relative">
               <flat-pickr
-                v-model="paramsUser.date_of_issue"
+                v-model="paramsUserDetail.date_of_issue"
                 :config="configFlatpickr"
                 class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                 placeholder="Chọn ngày"
                 name="dd/mm/yy"
               />
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -253,7 +253,7 @@
             </span>
 
             <input
-              v-model="paramsUser.place_of_issue"
+              v-model="paramsUserDetail.place_of_issue"
               type="text"
               name=""
               id=""
@@ -272,7 +272,7 @@
             </span>
 
             <input
-              v-model="paramsUser.original_place"
+              v-model="paramsUserDetail.original_place"
               type="text"
               name=""
               id=""
@@ -533,7 +533,7 @@
             </span>
 
             <input
-              v-model="paramsUser.permanent_address"
+              v-model="paramsUserDetail.permanent_address"
               type="text"
               name=""
               id=""
@@ -552,7 +552,7 @@
             </span>
 
             <input
-              v-model="paramsUser.residence_address"
+              v-model="paramsUserDetail.residence_address"
               type="text"
               name=""
               id=""
@@ -571,7 +571,7 @@
             </span>
 
             <input
-              v-model="paramsUser.work_contract"
+              v-model="paramsUserDetail.work_contract"
               type="text"
               name=""
               id=""
@@ -591,14 +591,14 @@
 
             <div class="relative">
               <flat-pickr
-                v-model="paramsUser.working_day"
+                v-model="paramsUserDetail.working_day"
                 :config="configFlatpickr"
                 class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
                 placeholder="Chọn ngày"
                 name="dd/mm/yy"
               />
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -614,7 +614,7 @@
               Số ngày nghỉ còn lại
             </span>
             <input
-              v-model="paramsUser.total_days_off"
+              v-model="paramsUserDetail.total_days_off"
               type="text"
               name=""
               id=""
@@ -632,7 +632,7 @@
               Trạng thái
             </span>
 
-            <SelectRoot v-model="paramsUser.status">
+            <SelectRoot v-model="paramsUserDetail.status">
               <SelectTrigger
                 class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
@@ -680,8 +680,14 @@
         </div>
       </div>
 
+      <template v-if="errorMsg">
+        <div class="mt-3 text-sm text-red-500">
+          {{ errorMsg }}
+        </div>
+      </template>
+
       <div
-        class="flex flex-wrap gap-4 justify-center items-stretch mt-10 text-center xl:gap-6"
+        class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center xl:gap-6"
       >
         <slot />
         <button
@@ -731,7 +737,7 @@ import axios from 'axios'
 
 const auth = useAuth()
 
-const props = defineProps(['modal', 'data'])
+const props = defineProps(['modal', 'userdata'])
 const emit = defineEmits(['toggle-modal'])
 
 const configFlatpickr = ref({
@@ -741,7 +747,7 @@ const configFlatpickr = ref({
   locale: Vietnamese // locale for this instance only
 })
 
-const paramsUser = reactive<any>({
+const paramsUserDetail = reactive<any>({
   code: '',
   phone: '',
   name: '',
@@ -936,51 +942,67 @@ const fetchDataDocument = () => {
   }, 300)
 }
 
-const onSubmitRegister = handleSubmit(async () => {
+const errorMsg = ref<any | null>(null)
+const submitUserUpdate = handleSubmit(async () => {
   try {
     const formDataUser = new FormData()
 
-    if (paramsUser.code) formDataUser.append('code', paramsUser.code)
-    if (paramsUser.phone) formDataUser.append('phone', paramsUser.phone)
-    if (paramsUser.name) formDataUser.append('name', paramsUser.name)
-    if (paramsUser.email) formDataUser.append('email', paramsUser.email)
-    if (paramsUser.dob) formDataUser.append('dob', paramsUser.dob)
-    if (paramsUser.per_group_name)
-      formDataUser.append('per_group_name', paramsUser.per_group_name)
-    if (paramsUser.identification)
-      formDataUser.append('identification', paramsUser.identification)
-    if (paramsUser.date_of_issue)
-      formDataUser.append('date_of_issue', paramsUser.date_of_issue)
-    if (paramsUser.place_of_issue)
-      formDataUser.append('place_of_issue', paramsUser.place_of_issue)
-    if (paramsUser.original_place)
-      formDataUser.append('original_place', paramsUser.original_place)
+    if (paramsUserDetail.code)
+      formDataUser.append('code', paramsUserDetail.code)
+    if (paramsUserDetail.phone)
+      formDataUser.append('phone', paramsUserDetail.phone)
+    if (paramsUserDetail.name)
+      formDataUser.append('name', paramsUserDetail.name)
+    if (paramsUserDetail.email)
+      formDataUser.append('email', paramsUserDetail.email)
+    if (paramsUserDetail.dob) formDataUser.append('dob', paramsUserDetail.dob)
+    if (paramsUserDetail.per_group_name)
+      formDataUser.append('per_group_name', paramsUserDetail.per_group_name)
+    if (paramsUserDetail.identification)
+      formDataUser.append('identification', paramsUserDetail.identification)
+    if (paramsUserDetail.date_of_issue)
+      formDataUser.append('date_of_issue', paramsUserDetail.date_of_issue)
+    if (paramsUserDetail.place_of_issue)
+      formDataUser.append('place_of_issue', paramsUserDetail.place_of_issue)
+    if (paramsUserDetail.original_place)
+      formDataUser.append('original_place', paramsUserDetail.original_place)
     if (staffType.id) formDataUser.append('part_id', staffType.id)
     if (positionType.id) formDataUser.append('position_id', positionType.id)
     if (regionType.id) formDataUser.append('region_id', regionType.id)
     if (leaderType.id) formDataUser.append('parent_id', leaderType.id)
-    if (paramsUser.permanent_address)
-      formDataUser.append('permanent_address', paramsUser.permanent_address)
-    if (paramsUser.residence_address)
-      formDataUser.append('residence_address', paramsUser.residence_address)
-    if (paramsUser.work_contract)
-      formDataUser.append('work_contract', paramsUser.work_contract)
-    if (paramsUser.working_day)
-      formDataUser.append('working_day', paramsUser.working_day)
-    if (paramsUser.total_days_off)
-      formDataUser.append('total_days_off', paramsUser.total_days_off)
-    if (paramsUser.status) {
-      formDataUser.append('status', paramsUser.status)
+    if (paramsUserDetail.permanent_address)
+      formDataUser.append(
+        'permanent_address',
+        paramsUserDetail.permanent_address
+      )
+    if (paramsUserDetail.residence_address)
+      formDataUser.append(
+        'residence_address',
+        paramsUserDetail.residence_address
+      )
+    if (paramsUserDetail.work_contract)
+      formDataUser.append('work_contract', paramsUserDetail.work_contract)
+    if (paramsUserDetail.working_day)
+      formDataUser.append('working_day', paramsUserDetail.working_day)
+    if (paramsUserDetail.total_days_off)
+      formDataUser.append('total_days_off', paramsUserDetail.total_days_off)
+    if (paramsUserDetail.status) {
+      formDataUser.append('status', paramsUserDetail.status)
     } else {
       formDataUser.append('status', '1')
     }
 
-    const response = await axios.post('/api/user/create', formDataUser, {
+    const response = await axios.post('/api/user/update', formDataUser, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${auth.token()}`
       }
     })
+
+    if (response.data.errors || response.data.status == 0) {
+      errorMsg.value = response.data.errors + '. ' + response.data.message
+    }
+
     fetchDataDocument()
     console.log('🚀 ~ handleSubmit ~ response:', response)
   } catch (error) {
@@ -991,12 +1013,43 @@ const onSubmitRegister = handleSubmit(async () => {
 const { doFetch } = useSystemUser()
 
 watch([email, phone, name, group_user, code], (newVal) => {
-  paramsUser.email = newVal[0]
-  paramsUser.phone = newVal[1]
-  paramsUser.name = newVal[2]
-  paramsUser.per_group_name = newVal[3]
-  paramsUser.code = newVal[4]
+  paramsUserDetail.email = newVal[0]
+  paramsUserDetail.phone = newVal[1]
+  paramsUserDetail.name = newVal[2]
+  paramsUserDetail.per_group_name = newVal[3]
+  paramsUserDetail.code = newVal[4]
 })
+
+watch(
+  () => props.userdata,
+  (newVal) => {
+    email.value = newVal[0][0].email
+    phone.value = newVal[0][0].phone
+    name.value = newVal[0][0].name
+    code.value = newVal[0][0].code
+    group_user.value = newVal[0][0].per_group_name
+    paramsUserDetail.code = newVal[0][0].code
+    paramsUserDetail.phone = newVal[0][0].phone
+    paramsUserDetail.name = newVal[0][0].name
+    paramsUserDetail.per_group_name = newVal[0][0].per_group_name
+    paramsUserDetail.email = newVal[0][0].email
+    paramsUserDetail.dob = newVal[0][0].dob
+    paramsUserDetail.identification = newVal[0][0].identification
+    paramsUserDetail.date_of_issue = newVal[0][0].date_of_issue
+    paramsUserDetail.place_of_issue = newVal[0][0].place_of_issue
+    paramsUserDetail.original_place = newVal[0][0].original_place
+    paramsUserDetail.part_id = newVal[0][0].part_id
+    paramsUserDetail.position_id = newVal[0][0].position_id
+    paramsUserDetail.region_id = newVal[0][0].region_id
+    paramsUserDetail.parent_id = newVal[0][0].parent_id
+    paramsUserDetail.permanent_address = newVal[0][0].permanent_address
+    paramsUserDetail.residence_address = newVal[0][0].residence_address
+    paramsUserDetail.work_contract = newVal[0][0].work_contract
+    paramsUserDetail.working_day = newVal[0][0].working_day
+    paramsUserDetail.total_days_off = newVal[0][0].total_days_off
+    paramsUserDetail.status = newVal[0][0].status
+  }
+)
 
 onMounted(() => {
   fetchListPermission()

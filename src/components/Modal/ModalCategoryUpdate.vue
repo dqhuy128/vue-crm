@@ -1,7 +1,7 @@
 <template>
-  <form @submit.prevent="handleCreateCategory">
-    <div class="grid grid-cols-12 gap-6">
-      <div class="col-span-12 md:col-span-6">
+  <form @submit.prevent="handleUpdateCategory">
+    <div class="grid grid-cols-12 gap-6 gap-x-4">
+      <div class="col-span-12 xl:col-span-4">
         <div class="block">
           <span
             class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -9,7 +9,7 @@
             Loại danh mục
           </span>
 
-          <SelectRoot v-model="paramsCreate.type">
+          <SelectRoot v-model="paramsUpdate.type">
             <SelectTrigger
               class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] data-[placeholder]:text-[#909090]"
               aria-label="Customise options"
@@ -36,7 +36,7 @@
                 <SelectViewport>
                   <SelectGroup>
                     <SelectItem
-                      v-for="(item, key) in datatype"
+                      v-for="(item, key) in categoriesType"
                       :key="key"
                       class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
                       :value="String(key)"
@@ -59,7 +59,7 @@
         </div>
       </div>
 
-      <div class="col-span-12 md:col-span-6">
+      <div class="col-span-12 xl:col-span-4 md:col-span-6">
         <div class="block">
           <span
             class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
@@ -68,13 +68,72 @@
           </span>
 
           <input
-            v-model="paramsCreate.name"
+            v-model="paramsUpdate.name"
             type="text"
             name=""
             id=""
             placeholder="Trợ lý"
             class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
           />
+
+          <!-- <div class="mt-1 text-xs text-red-500" v-if="checkValidate">
+            {{ checkValidate }}
+          </div> -->
+        </div>
+      </div>
+
+      <div class="col-span-12 xl:col-span-4 md:col-span-6">
+        <div class="block">
+          <span
+            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+          >
+            Trạng thái
+          </span>
+
+          <SelectRoot v-model="paramsUpdate.status">
+            <SelectTrigger
+              class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+              aria-label="Customise options"
+            >
+              <SelectValue
+                class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                placeholder="Chọn trạng thái"
+              />
+              <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+            </SelectTrigger>
+
+            <SelectPortal>
+              <SelectContent
+                class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                position="popper"
+                :side-offset="5"
+              >
+                <SelectViewport>
+                  <SelectGroup>
+                    <SelectItem
+                      class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                      :value="String(1)"
+                    >
+                      <SelectItemText>
+                        <!-- {{ capitalizeFirstLetter(item) }} -->
+                        Đang hoạt động
+                      </SelectItemText>
+                    </SelectItem>
+
+                    <SelectItem
+                      class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                      :value="String(0)"
+                    >
+                      <SelectItemText>
+                        <!-- {{ capitalizeFirstLetter(item) }} -->
+                        Dừng hoạt động
+                      </SelectItemText>
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectViewport>
+              </SelectContent>
+            </SelectPortal>
+          </SelectRoot>
         </div>
       </div>
 
@@ -86,7 +145,7 @@
             Mô tả
           </span>
           <textarea
-            v-model="paramsCreate.description"
+            v-model="paramsUpdate.description"
             name=""
             id=""
             placeholder="Nhập mô tả"
@@ -111,7 +170,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, onMounted, reactive, ref } from 'vue'
+import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import {
   SelectContent,
   SelectGroup,
@@ -129,7 +188,6 @@ import {
   SelectViewport
 } from 'radix-vue'
 import { Icon } from '@iconify/vue'
-import { apiClient } from '@/plugins/axios'
 import { apiUri } from '@/constants/apiUri'
 import { useAuth } from 'vue-auth3'
 import { capitalizeFirstLetter, tableMagic } from '@/utils/main'
@@ -140,14 +198,17 @@ const auth = useAuth()
 const token = auth.token()
 const session = auth.check()
 
-defineProps<{
+const props = defineProps<{
   datatype: any
+  closeModal: () => void
 }>()
 
-const paramsCreate = reactive({
+const paramsUpdate = reactive({
+  id: '',
   type: '',
   name: '',
-  description: ''
+  description: '',
+  status: ''
 })
 
 const params = reactive({
@@ -188,34 +249,54 @@ const fetchDataDocument = () => {
   }, 300)
 }
 
-const handleCreateCategory = async () => {
-  if (session) {
-    const formData = new FormData()
-    formData.append('name', paramsCreate.name)
-    formData.append('type', paramsCreate.type)
-    formData.append('description', paramsCreate.description)
+const categoriesType = ref<any | null>(null)
+const getCategoriesType = async () => {
+  try {
+    const response = await axios.get(`/api/categories/type`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    categoriesType.value = response.data.data
+    // console.log('🚀 ~ getCategoriesType ~ response:', categoriesType.value)
+  } catch (error) {
+    console.log('🚀 ~ getCategoriesType ~ error:', error)
+  }
+}
 
-    const res = await axios
-      .post(`/api/categories/create`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then((res) => {
-        if (res.data.errors.input) {
-          const { message } = res.data
-          const { input } = res.data.errors
-          alert(message + '. ' + input)
-          return
-        }
-        paramsCreate.name = ''
-        paramsCreate.description = ''
-        fetchDataDocument()
-      })
-      .catch((err) => {
-        console.log('handleCreateCategory ~ err', err)
-      })
+const checkValidate = ref('')
+const handleUpdateCategory = async () => {
+  try {
+    // checkValidate.value = ''
+    // if (
+    //   paramsUpdate.name == '' ||
+    //   paramsUpdate.name == null
+    //   // paramsUpdate.type == '' ||
+    //   // paramsUpdate.type == null
+    // ) {
+    //   checkValidate.value = 'Vui lòng nhập tên danh mục'
+    //   return
+    // }
+
+    const formData = new FormData()
+    if (paramsUpdate.id) formData.append('id', paramsUpdate.id)
+    if (paramsUpdate.type) formData.append('type', paramsUpdate.type)
+    if (paramsUpdate.name) formData.append('name', paramsUpdate.name)
+    if (paramsUpdate.description)
+      formData.append('description', paramsUpdate.description)
+    if (paramsUpdate.status) formData.append('status', paramsUpdate.status)
+
+    const response = await axios.post(`/api/categories/update`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`
+      }
+    })
+    fetchDataDocument()
+    props.closeModal()
+    console.log('🚀 ~ handleUpdateCategory ~ response:', response)
+  } catch (error) {
+    console.log('🚀 ~ handleUpdateCategory ~ error:', error)
   }
 }
 
@@ -226,6 +307,21 @@ const {
   // fetchCategoryDocument,
   categories
 } = useSystemManager()
+
+onMounted(() => {
+  getCategoriesType()
+})
+
+watch(
+  () => props.datatype,
+  (newVal) => {
+    paramsUpdate.id = newVal.data.id
+    paramsUpdate.type = newVal.data.type
+    paramsUpdate.name = newVal.data.name
+    paramsUpdate.description = newVal.data.description
+    paramsUpdate.status = newVal.data.status
+  }
+)
 </script>
 
 <style lang="scss" scoped></style>
