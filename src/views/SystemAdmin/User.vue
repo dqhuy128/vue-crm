@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="bg-white rounded-[24px] p-2.5">
       <form
-        class="flex flex-wrap items-stretch gap-4"
+        class="flex flex-wrap gap-4 items-stretch"
         @submit.prevent="handleSearchUser"
       >
         <div class="flex flex-wrap gap-4 grow">
@@ -212,14 +212,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
+    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách người dùng
       </div>
 
-      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
+      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
         <button
           type="button"
           id="tableImport"
@@ -266,7 +266,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
-          <div id="tableRowHeader" class="justify-between table-row header">
+          <div id="tableRowHeader" class="table-row justify-between header">
             <div class="cell" v-for="(column, index) in tbhead" :key="index">
               {{ column.title }}
 
@@ -366,7 +366,7 @@
       </div>
 
       <div
-        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -401,7 +401,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+        <div class="flex flex-wrap gap-2 items-center md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
             <template
               v-if="
@@ -518,7 +518,7 @@
           Bạn có chắc muốn export danh sách người dùng?
         </div>
 
-        <div class="flex flex-wrap items-stretch gap-6">
+        <div class="flex flex-wrap gap-6 items-stretch">
           <a
             href=""
             class="inline-flex items-center justify-center flex-auto border border-solid border-[#EDEDF6] rounded-lg bg-white p-1.5 text-[#464661] text-[16px] font-semibold uppercase max-w-[175px] hover:shadow-hoverinset transition"
@@ -699,10 +699,10 @@ const handleSearchUser = async () => {
 
 const handleDeleteUser = async (id: any) => {
   try {
-    // const formData = new FormData()
-    // formData.append('id', id)
+    const formData = new FormData()
+    formData.append('id', id)
 
-    const response = await axios.delete(`/api/user/delete`, {
+    const response = await axios.post(`/api/user/delete`, formData, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }

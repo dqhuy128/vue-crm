@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">
     <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-8">
-      <div class="text-center mb-7">
+      <div class="mb-7 text-center">
         <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
           cập nhật người dùng
         </h3>
@@ -20,7 +20,7 @@
           />
         </div>
 
-        <div class="absolute bottom-0 right-0 z-10">
+        <div class="absolute right-0 bottom-0 z-10">
           <img src="@/assets/images/ic-camera.svg" alt="" />
         </div>
       </div>
@@ -129,7 +129,7 @@
                 name="dd/mm/yy"
               />
               <div
-                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
+                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -236,7 +236,7 @@
                 name="dd/mm/yy"
               />
               <div
-                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
+                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -598,7 +598,7 @@
                 name="dd/mm/yy"
               />
               <div
-                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
+                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -687,7 +687,7 @@
       </template>
 
       <div
-        class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center xl:gap-6"
+        class="flex flex-wrap gap-4 justify-center items-stretch mt-10 text-center xl:gap-6"
       >
         <slot />
         <button
@@ -748,6 +748,7 @@ const configFlatpickr = ref({
 })
 
 const paramsUserDetail = reactive<any>({
+  id: '',
   code: '',
   phone: '',
   name: '',
@@ -947,6 +948,7 @@ const submitUserUpdate = handleSubmit(async () => {
   try {
     const formDataUser = new FormData()
 
+    if (paramsUserDetail.id) formDataUser.append('id', paramsUserDetail.id)
     if (paramsUserDetail.code)
       formDataUser.append('code', paramsUserDetail.code)
     if (paramsUserDetail.phone)
@@ -1028,6 +1030,7 @@ watch(
     name.value = newVal[0][0].name
     code.value = newVal[0][0].code
     group_user.value = newVal[0][0].per_group_name
+    paramsUserDetail.id = newVal[0][0].id
     paramsUserDetail.code = newVal[0][0].code
     paramsUserDetail.phone = newVal[0][0].phone
     paramsUserDetail.name = newVal[0][0].name
