@@ -145,6 +145,11 @@ const router = createRouter({
       name: 'Document',
       component: Document,
       meta: { auth: true }
+    },
+    {
+      path: '/404',
+      name: 'NotFound404',
+      component: () => import('../views/Error/NotFound.vue'),
     }
     // {
     //   path: '/permit',

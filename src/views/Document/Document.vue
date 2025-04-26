@@ -43,12 +43,6 @@
                   <SelectViewport>
                     <SelectGroup>
                       <SelectItem
-                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                        value="0"
-                      >
-                        <SelectItemText> Tất cả loại tài liệu </SelectItemText>
-                      </SelectItem>
-                      <SelectItem
                         v-for="(item, index) in categoryDocument.data"
                         :key="index"
                         class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
@@ -62,6 +56,12 @@
                         <SelectItemText>
                           {{ item.name }}
                         </SelectItemText>
+                      </SelectItem>
+                      <SelectItem
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        value="0"
+                      >
+                        <SelectItemText> Tất cả loại tài liệu </SelectItemText>
                       </SelectItem>
                     </SelectGroup>
                   </SelectViewport>
@@ -181,11 +181,9 @@
                     {{ index + 1 }}
                   </div>
                   <div class="cell">
-                    {{
-                      categoryDocument.data.filter(
-                        (cate) => cate.id === item.type_id
-                      )[0].name
-                    }}
+                    <template v-if="categoryDocument.data">
+                      {{ findCategoryName(item.type_id) }}
+                    </template>
                   </div>
                   <div class="cell">
                     {{ item.name }}
@@ -332,30 +330,31 @@
         </div>
       </div>
     </div>
+    <template v-if="modalActive.modalAddDocument">
+      <Modal
+        @close="toggleModal('modalAddDocument')"
+        :modalActive="modalActive.modalAddDocument"
+        maxWidth="max-w-[670px]"
+      >
+        <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+          <div class="mb-12 text-center max-xl:mb-6">
+            <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+              thêm mới tài liệu
+            </h3>
+          </div>
 
-    <Modal
-      @close="toggleModal('modalAddDocument')"
-      :modalActive="modalActive.modalAddDocument"
-      maxWidth="max-w-[670px]"
-    >
-      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-        <div class="mb-12 text-center max-xl:mb-6">
-          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-            thêm mới tài liệu
-          </h3>
+          <CreateDocument :closeModal="() => toggleModal('modalAddDocument')">
+            <button
+              @click="toggleModal('modalAddDocument')"
+              type="button"
+              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+            >
+              Hủy
+            </button>
+          </CreateDocument>
         </div>
-
-        <CreateDocument :closeModal="() => toggleModal('modalAddDocument')">
-          <button
-            @click="toggleModal('modalAddDocument')"
-            type="button"
-            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-          >
-            Hủy
-          </button>
-        </CreateDocument>
-      </div>
-    </Modal>
+      </Modal>
+    </template>
 
     <template v-if="modalActive.modalEditDocument">
       <Modal
@@ -385,33 +384,34 @@
         </div>
       </Modal>
     </template>
+    <template v-if="modalActive.modalViewDocument">
+      <Modal
+        @close="toggleModal('modalViewDocument')"
+        :modalActive="modalActive.modalViewDocument"
+        maxWidth="max-w-[670px]"
+      >
+        <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+          <div class="mb-12 text-center max-xl:mb-6">
+            <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+              Chi tiết tài liệu
+            </h3>
+          </div>
 
-    <Modal
-      @close="toggleModal('modalViewDocument')"
-      :modalActive="modalActive.modalViewDocument"
-      maxWidth="max-w-[670px]"
-    >
-      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-        <div class="mb-12 text-center max-xl:mb-6">
-          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-            Chi tiết tài liệu
-          </h3>
-        </div>
-
-        <ViewDocument
-          :closeModal="() => toggleModal('modalViewDocument')"
-          :data="detailDocument"
-        >
-          <button
-            @click="toggleModal('modalViewDocument')"
-            type="button"
-            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          <ViewDocument
+            :closeModal="() => toggleModal('modalViewDocument')"
+            :data="detailDocument"
           >
-            Hủy
-          </button>
-        </ViewDocument>
-      </div>
-    </Modal>
+            <button
+              @click="toggleModal('modalViewDocument')"
+              type="button"
+              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+            >
+              Hủy
+            </button>
+          </ViewDocument>
+        </div>
+      </Modal>
+    </template>
   </MainLayout>
 </template>
 
@@ -422,6 +422,7 @@ import ViewDocument from '@/components/Document/ViewDocument.vue'
 import Modal from '@/components/Modals.vue'
 import { useDocument } from '@/composables/document'
 import { apiUri } from '@/constants/apiUri'
+import router from '@/router'
 import { usePermissionStore } from '@/store/permission'
 import { tableMagic } from '@/utils/main'
 import axios from 'axios'
@@ -556,16 +557,13 @@ const categoryDocument = reactive({
   data: categories.value || undefined
 })
 const handleDeleteDocument = async (id: any) => {
-  deleteDocument(id).then(() => {
-    fetchDataDocument()
-  })
-  // if (window.confirm('Bạn có chắc chắn muốn xóa tài liệu này không?')) {
-  //   deleteDocument(id).then(() => {
-  //     fetchDataDocument()
-  //   })
-  // } else {
-  //   return
-  // }
+  if (window.confirm('Bạn có chắc chắn muốn xóa tài liệu này không?')) {
+    deleteDocument(id).then(() => {
+      fetchDataDocument()
+    })
+  } else {
+    return
+  }
 }
 
 const detailDocument = ref({
@@ -615,15 +613,42 @@ function findCategoryName(typeId: string) {
   const category = categoryDocument.data.find((item) => item.id === typeId)
   return category ? category.name : 'Chưa có loại tài liệu'
 }
-const permissionStore = usePermissionStore()
-const { permissionList } = storeToRefs(permissionStore)
 onMounted(() => {
   if (auth.check()) {
-    console.log(permissionList.value, 'permissionList')
-    const res = permissionList.value.includes('Document') ? true : false
-    if (!res) {
-      console.log(' access denied ')
-      // router.push('/')
+    fetchDataDocument()
+    fetchCategoryDocument()
+  }
+  console.log(dataDocument, 'dataDocument')
+})
+const checkPermission = ref(false)
+// onMounted(() => {
+const permissionStore = usePermissionStore()
+const { permissionList } = storeToRefs(permissionStore)
+
+// if (auth.check()) {
+//   if (permissionList.value) {
+//     // console.log(permissionList.value, 'permissionList')
+//     checkPermission.value = permissionList.value.includes('Document') ? true : false
+//     if (!checkPermission.value) {
+//       // alert('Bạn không có quyền truy cập vào trang này')
+//       // router.push({ name: 'NotFound404' })
+//     } else {
+//       // fetchCategoryDocument()
+//       fetchDataDocument()
+//       console.log(dataDocument, 'dataDocument')
+//     }
+//   }
+// }
+// })
+watch(permissionList, () => {
+  console.log('🚀 ~ //onMounted ~ permissionList:', permissionList)
+  if (auth.check()) {
+    checkPermission.value = permissionList.value.includes('Document')
+      ? true
+      : false
+    if (!checkPermission.value) {
+      alert('Bạn không có quyền truy cập vào trang này')
+      router.push({ name: 'NotFound404' })
     } else {
       fetchCategoryDocument()
       fetchDataDocument()
@@ -631,7 +656,6 @@ onMounted(() => {
     }
   }
 })
-
 watch(
   paginate,
   async () => {

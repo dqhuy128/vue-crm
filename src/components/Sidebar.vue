@@ -227,7 +227,7 @@ const isDropdownOpen = (idx: any) => {
 
 const permissionData = usePermissionStore()
 const { permision, permissionList, userData } = storeToRefs(permissionData)
-// console.log(permision.value, 'permission change state')
+console.log(permissionList.value, 'permission change state')
 const checkPermission = (arrRole: any) => {
   if (!permision || !permision.value) {
     const token = auth.token()
