@@ -7,45 +7,12 @@
       >
         <div class="flex flex-wrap gap-4 grow">
           <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
-            <SelectRoot v-model="params.phone">
-              <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090]"
-                aria-label="Customise options"
-              >
-                <SelectValue
-                  class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
-                  placeholder="Tên, số điện thoại"
-                />
-                <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
-              </SelectTrigger>
-
-              <SelectPortal>
-                <SelectContent
-                  class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
-                  position="popper"
-                  :side-offset="5"
-                >
-                  <SelectViewport>
-                    <SelectGroup>
-                      <template
-                        v-for="(items, index) in dataDocument?.doc?.items"
-                      >
-                        <SelectItem
-                          v-for="(item, _) in items"
-                          :key="index"
-                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                          :value="String(item.phone)"
-                        >
-                          <SelectItemText>
-                            {{ item.phone }}
-                          </SelectItemText>
-                        </SelectItem>
-                      </template>
-                    </SelectGroup>
-                  </SelectViewport>
-                </SelectContent>
-              </SelectPortal>
-            </SelectRoot>
+            <input
+              type="text"
+              v-model="params.phone"
+              class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090] focus:outline-none"
+              placeholder="Tên, số điện thoại"
+            />
           </div>
 
           <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
@@ -69,21 +36,17 @@
                 >
                   <SelectViewport>
                     <SelectGroup>
-                      <template
-                        v-for="(items, index) in dataDocument?.doc?.items"
-                      >
-                        <template v-for="(item, _) in items">
-                          <SelectItem
-                            :key="index"
-                            class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                            :value="String(item.per_group_name)"
-                            v-if="String(item.per_group_name)"
-                          >
-                            <SelectItemText>
-                              {{ item.per_group_name }}
-                            </SelectItemText>
-                          </SelectItem>
-                        </template>
+                      <template v-for="(item, index) in dataPerGroupName">
+                        <SelectItem
+                          :key="index"
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.name)"
+                          v-if="String(item.name)"
+                        >
+                          <SelectItemText>
+                            {{ item.name }} - {{ item.description }}
+                          </SelectItemText>
+                        </SelectItem>
                       </template>
                     </SelectGroup>
                   </SelectViewport>
@@ -685,6 +648,21 @@ const fetchDataDocument = () => {
   }, 300)
 }
 
+const dataPerGroupName = ref<any | null>(null)
+const fetchPerGroupName = async () => {
+  try {
+    const response = await axios.get(`/api/permission/list`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    dataPerGroupName.value = response.data.data
+    console.log('🚀 ~ fetchPerGroupName ~ response:', dataPerGroupName.value)
+  } catch (error) {
+    console.log('🚀 ~ fetchPerGroupName ~ error:', error)
+  }
+}
+
 const handlePageChange = (pageNum: number) => {
   // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
   paginate.page = pageNum
@@ -779,6 +757,7 @@ const dataTotalPages = computed(() =>
 onMounted(() => {
   if (auth.check()) {
     fetchDataDocument()
+    fetchPerGroupName()
   }
 
   tableMagic()
