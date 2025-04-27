@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="bg-white rounded-[24px] p-2.5">
       <form
-        class="flex flex-wrap gap-4 items-stretch"
+        class="flex flex-wrap items-stretch gap-4"
         @submit.prevent="handleSearchUser"
       >
         <div class="flex flex-wrap gap-4 grow">
@@ -38,10 +38,8 @@
                     <SelectGroup>
                       <template v-for="(item, index) in dataPerGroupName">
                         <SelectItem
-                          :key="index"
                           class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
                           :value="String(item.name)"
-                          v-if="String(item.name)"
                         >
                           <SelectItemText>
                             {{ item.name }} - {{ item.description }}
@@ -76,17 +74,15 @@
                 >
                   <SelectViewport>
                     <SelectGroup>
-                      <template
-                        v-for="(items, index) in dataDocument?.doc?.items"
-                      >
+                      <template v-for="(items, index) in dataStaff">
                         <SelectItem
                           v-for="(item, _) in items"
                           :key="index"
                           class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                          :value="String(item.part_id)"
+                          :value="String(item.id)"
                         >
                           <SelectItemText>
-                            {{ item.part_id }}
+                            {{ item.name }}
                           </SelectItemText>
                         </SelectItem>
                       </template>
@@ -118,17 +114,15 @@
                 >
                   <SelectViewport>
                     <SelectGroup>
-                      <template
-                        v-for="(items, index) in dataDocument?.doc?.items"
-                      >
+                      <template v-for="(items, index) in dataPosition">
                         <SelectItem
                           v-for="(item, _) in items"
                           :key="index"
                           class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                          :value="String(item.position_id)"
+                          :value="String(item.id)"
                         >
                           <SelectItemText>
-                            {{ item.position_id }}
+                            {{ item.name }}
                           </SelectItemText>
                         </SelectItem>
                       </template>
@@ -175,14 +169,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
+    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách người dùng
       </div>
 
-      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
+      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
         <button
           type="button"
           id="tableImport"
@@ -229,7 +223,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
-          <div id="tableRowHeader" class="table-row justify-between header">
+          <div id="tableRowHeader" class="justify-between table-row header">
             <div class="cell" v-for="(column, index) in tbhead" :key="index">
               {{ column.title }}
 
@@ -329,7 +323,7 @@
       </div>
 
       <div
-        class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -364,7 +358,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2 items-center md:ms-auto">
+        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
             <template
               v-if="
@@ -481,7 +475,7 @@
           Bạn có chắc muốn export danh sách người dùng?
         </div>
 
-        <div class="flex flex-wrap gap-6 items-stretch">
+        <div class="flex flex-wrap items-stretch gap-6">
           <a
             href=""
             class="inline-flex items-center justify-center flex-auto border border-solid border-[#EDEDF6] rounded-lg bg-white p-1.5 text-[#464661] text-[16px] font-semibold uppercase max-w-[175px] hover:shadow-hoverinset transition"
@@ -663,6 +657,36 @@ const fetchPerGroupName = async () => {
   }
 }
 
+const dataStaff = ref<any | null>(null)
+const fetchStaffList = async () => {
+  try {
+    const response = await axios.get(`/api/categories/list?type=staff`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    dataStaff.value = response.data.data.items
+    console.log('🚀 ~ fetchStaff ~ dataStaff:', dataStaff.value)
+  } catch (error) {
+    console.log('🚀 ~ fetchStaff ~ error:', error)
+  }
+}
+
+const dataPosition = ref<any | null>(null)
+const fetchPositionList = async () => {
+  try {
+    const response = await axios.get(`/api/categories/list?type=position`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    dataPosition.value = response.data.data.items
+    console.log('🚀 ~ fetchPosition ~ dataPosition:', dataPosition.value)
+  } catch (error) {
+    console.log('🚀 ~ fetchPosition ~ error:', error)
+  }
+}
+
 const handlePageChange = (pageNum: number) => {
   // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
   paginate.page = pageNum
@@ -670,9 +694,13 @@ const handlePageChange = (pageNum: number) => {
 }
 
 const handleSearchUser = async () => {
-  paginate.page = 1
-  paginate.per_page = 10
-  fetchDataDocument()
+  try {
+    paginate.page = 1
+    paginate.per_page = 10
+    await fetchDataDocument()
+  } catch (error) {
+    console.log('🚀 ~ handleSearchUser ~ error:', error)
+  }
 }
 
 const handleDeleteUser = async (id: any) => {
@@ -736,6 +764,14 @@ watch(
 )
 
 watch(
+  () => params.part_id,
+  (newVal) => {
+    console.log('🚀 ~ watch ~ value:', newVal)
+  },
+  { deep: true }
+)
+
+watch(
   paginate,
   async () => {
     fetchDataDocument()
@@ -758,6 +794,8 @@ onMounted(() => {
   if (auth.check()) {
     fetchDataDocument()
     fetchPerGroupName()
+    fetchStaffList()
+    fetchPositionList()
   }
 
   tableMagic()
