@@ -5,13 +5,12 @@
     maxWidth="max-w-[865px]"
   >
     <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">
-      <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-8">
-        <div class="mb-7 text-center">
-          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-            thêm mới người dùng
-          </h3>
-        </div>
-
+      <div class="mt-8 text-center mb-7">
+        <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+          thêm mới người dùng
+        </h3>
+      </div>
+      <!-- <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-8">
         <div
           class="relative max-w-[112px] max-h-[112px] w-full h-full mx-auto mb-4"
         >
@@ -25,11 +24,11 @@
             />
           </div>
 
-          <div class="absolute right-0 bottom-0 z-10">
+          <div class="absolute bottom-0 right-0 z-10">
             <img src="@/assets/images/ic-camera.svg" alt="" />
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- sform register -->
       <form
@@ -134,7 +133,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -244,7 +243,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -609,7 +608,7 @@
                   name="dd/mm/yy"
                 />
                 <div
-                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
                 >
                   <img
                     src="@/assets/images/cuidaa_calendar-outline.svg"
@@ -695,7 +694,7 @@
         </div>
 
         <div
-          class="flex flex-wrap gap-4 justify-center items-stretch mt-10 text-center xl:gap-6"
+          class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center xl:gap-6"
         >
           <button
             @click="() => emit('toggle-modal')"
@@ -753,7 +752,7 @@ import axios from 'axios'
 const auth = useAuth()
 
 const props = defineProps(['modal'])
-const emit = defineEmits(['toggle-modal'])
+const emit = defineEmits(['toggle-modal', 'post-request'])
 
 const configFlatpickr = ref({
   // enableTime: true,
@@ -957,6 +956,7 @@ const fetchDataDocument = () => {
   }, 300)
 }
 
+const postRequest = ref<any | null>(null)
 const onSubmitRegister = handleSubmit(async () => {
   try {
     const formDataUser = new FormData()
@@ -1001,6 +1001,11 @@ const onSubmitRegister = handleSubmit(async () => {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${auth.token()}`
       }
+    })
+    postRequest.value = response.data
+    emit('post-request', postRequest.value)
+    Object.keys(paramsUser).map((key) => {
+      paramsUser[key] = ''
     })
     fetchDataDocument()
     console.log('🚀 ~ handleSubmit ~ response:', response)

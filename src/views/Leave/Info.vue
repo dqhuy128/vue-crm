@@ -1,7 +1,7 @@
 <template>
   <MainLayout>
     <div class="bg-white rounded-[24px] p-2.5 max-w-[552px]">
-      <form class="flex flex-wrap gap-4" @submit.prevent="">
+      <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchLeave">
         <div class="flex flex-wrap items-stretch gap-4 grow">
           <div class="flex-[100%]">
             <SelectRoot v-model="params.status">
@@ -30,6 +30,13 @@
 
                   <SelectViewport>
                     <SelectGroup>
+                      <SelectItem
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        value="all"
+                      >
+                        <SelectItemText> Tất cả trạng thái </SelectItemText>
+                      </SelectItem>
+
                       <template v-for="item in 2" :key="item">
                         <SelectItem
                           class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
@@ -104,7 +111,7 @@
           type="button"
           id="tableAdding"
           class="max-md:flex-auto rounded-[24px] bg-[#1b4dea] inline-flex items-end justify-center max-md:items-center max-md:gap-1 gap-2 p-[7px_12px] cursor-pointer transition hover:shadow-hoverinset"
-          @click="toggleModal('modalNewUser')"
+          @click="toggleModal('modalAddLeave')"
         >
           <img src="@/assets/images/si_add-fill.svg" alt="" />
           <span
@@ -190,14 +197,12 @@
                 <div class="cell pinned pinned-body">
                   <div class="cell edit edit-body">
                     <button
-                      @click=""
                       type="button"
                       class="cursor-pointer cell-btn-edit shrink-0"
                     >
                       <img src="@/assets/images/action-edit-2.svg" alt="" />
                     </button>
                     <button
-                      @click=""
                       type="button"
                       class="cursor-pointer cell-btn-delete shrink-0"
                     >
@@ -346,19 +351,47 @@
       <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
         <div class="mb-12 text-center max-xl:mb-6">
           <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-            thêm mới danh mục
+            Xin nghỉ phép
           </h3>
         </div>
 
-        <ModalAddCategory>
+        <ModalAddingLeave :datatype="null" @post-request="getPostRequest">
           <button
-            @click="toggleModal('modalAddCateManager')"
+            @click="toggleModal('modalAddLeave')"
             type="button"
             class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
           >
             Hủy
           </button>
-        </ModalAddCategory>
+        </ModalAddingLeave>
+      </div>
+    </Modal>
+
+    <Modal
+      @close="toggleModal('modalStatusAddLeave')"
+      :modalActive="modalActive.modalStatusAddLeave"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
+        >
+          {{ dataPostRequest?.message }}
+        </div>
       </div>
     </Modal>
   </MainLayout>
@@ -390,6 +423,7 @@ import axios from 'axios'
 import { useLeaveInfo } from '@/composables/leave-info'
 import { apiUri } from '@/constants/apiUri'
 import { tableMagic } from '@/utils/main'
+import ModalAddingLeave from '@/components/Modal/ModalAddingLeave.vue'
 
 const auth = useAuth()
 
@@ -398,6 +432,7 @@ interface recordModal {
 }
 
 const modalActive = ref<recordModal>({
+  modalStatusAddLeave: false,
   modalAddLeave: false
 })
 
@@ -476,6 +511,31 @@ const handlePageChange = (pageNum: number) => {
   fetchDataLeave()
 }
 
+const handleSearchLeave = async () => {
+  try {
+    paginate.page = 1
+    paginate.per_page = 10
+    await fetchDataLeave()
+  } catch (error) {
+    console.log('🚀 ~ handleSearchLeave ~ error:', error)
+  } finally {
+    fetchDataLeave()
+  }
+}
+
+const handleEditLeave = async (id: number) => {
+  try {
+    const res = await axios.post(`/leave/list`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    console.log('🚀 ~ handleEditLeave ~ res:', res)
+  } catch (error) {
+    console.log('🚀 ~ handleEditLeave ~ error:', error)
+  }
+}
+
 const { data, doFetch, categories } = useLeaveInfo()
 
 const dataLeave = reactive({
@@ -486,6 +546,43 @@ const dataTotalPages = computed(() =>
   Math.ceil(
     Number(dataLeave.doc?.pagination?.total) / Number(paginate.per_page)
   )
+)
+
+const dataPostRequest = ref<any | null>(null)
+const getPostRequest = (data: any) => {
+  dataPostRequest.value = data
+  // console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
+  if (dataPostRequest.value) {
+    toggleModal('modalStatusAddLeave')
+  }
+
+  if (dataPostRequest.value.status == 1) {
+    toggleModal('modalAddLeave')
+  }
+}
+
+watch(
+  () => params.status,
+  () => {
+    if (params.status === 'all') {
+      params.status = null
+      fetchDataLeave()
+    }
+  },
+  { deep: true, immediate: true }
+)
+
+watch(
+  paginate,
+  async () => {
+    fetchDataLeave()
+  },
+  {
+    // must pass deep option to watch for changes on object properties
+    deep: true,
+    // can also pass immediate to handle that first request AND when queries change
+    immediate: true
+  }
 )
 
 onMounted(() => {

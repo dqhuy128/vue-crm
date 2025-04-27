@@ -1,12 +1,6 @@
 <template>
   <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">
-    <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-8">
-      <div class="mb-7 text-center">
-        <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-          cập nhật người dùng
-        </h3>
-      </div>
-
+    <!-- <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-8">
       <div
         class="relative max-w-[112px] max-h-[112px] w-full h-full mx-auto mb-4"
       >
@@ -20,10 +14,16 @@
           />
         </div>
 
-        <div class="absolute right-0 bottom-0 z-10">
+        <div class="absolute bottom-0 right-0 z-10">
           <img src="@/assets/images/ic-camera.svg" alt="" />
         </div>
       </div>
+    </div> -->
+
+    <div class="mt-8 text-center mb-7">
+      <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+        cập nhật người dùng
+      </h3>
     </div>
 
     <!-- sform register -->
@@ -129,7 +129,7 @@
                 name="dd/mm/yy"
               />
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -236,7 +236,7 @@
                 name="dd/mm/yy"
               />
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -598,7 +598,7 @@
                 name="dd/mm/yy"
               />
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -680,14 +680,8 @@
         </div>
       </div>
 
-      <template v-if="errorMsg">
-        <div class="mt-3 text-sm text-red-500">
-          {{ errorMsg }}
-        </div>
-      </template>
-
       <div
-        class="flex flex-wrap gap-4 justify-center items-stretch mt-10 text-center xl:gap-6"
+        class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center xl:gap-6"
       >
         <slot />
         <button
@@ -738,7 +732,7 @@ import axios from 'axios'
 const auth = useAuth()
 
 const props = defineProps(['modal', 'userdata'])
-const emit = defineEmits(['toggle-modal'])
+const emit = defineEmits(['toggle-modal', 'post-request-edit'])
 
 const configFlatpickr = ref({
   // enableTime: true,
@@ -847,8 +841,7 @@ const fetchListStaff = async () => {
       }
     })
 
-    const { items } = response.data.data
-    staffData.value = items
+    staffData.value = response.data.data.items
     // console.log('🚀 ~ fetchListStaff ~ response:', staffData.value)
   } catch (error) {
     console.error('Error fetching staff list:', error)
@@ -863,8 +856,7 @@ const fetchListPosition = async () => {
       }
     })
 
-    const { items } = response.data.data
-    positionData.value = items
+    positionData.value = response.data.data.items
     // console.log('🚀 ~ fetchListPosition ~ response:', positionData.value)
   } catch (error) {
     console.error('Error fetching position list:', error)
@@ -879,8 +871,7 @@ const fetchListRegion = async () => {
       }
     })
 
-    const { items } = response.data.data
-    regionData.value = items
+    regionData.value = response.data.data.items
     // console.log('🚀 ~ fetchListPosition ~ response:', regionData.value)
   } catch (error) {
     console.error('Error fetching position list:', error)
@@ -895,8 +886,7 @@ const fetchListLeader = async () => {
       }
     })
 
-    const { items } = response.data.data
-    leaderData.value = items
+    leaderData.value = response.data.data.items
     // console.log('🚀 ~ fetchListLeader ~ items:', leaderData.value)
   } catch (error) {
     console.error('Error fetching position list:', error)
@@ -944,6 +934,7 @@ const fetchDataDocument = () => {
 }
 
 const errorMsg = ref<any | null>(null)
+const postRequestEdit = ref<any | null>(null)
 const submitUserUpdate = handleSubmit(async () => {
   try {
     const formDataUser = new FormData()
@@ -1005,6 +996,8 @@ const submitUserUpdate = handleSubmit(async () => {
       errorMsg.value = response.data.errors + '. ' + response.data.message
     }
 
+    postRequestEdit.value = response.data
+    emit('post-request-edit', postRequestEdit.value)
     fetchDataDocument()
     console.log('🚀 ~ handleSubmit ~ response:', response)
   } catch (error) {
@@ -1025,32 +1018,96 @@ watch([email, phone, name, group_user, code], (newVal) => {
 watch(
   () => props.userdata,
   (newVal) => {
-    email.value = newVal[0][0].email
-    phone.value = newVal[0][0].phone
-    name.value = newVal[0][0].name
-    code.value = newVal[0][0].code
-    group_user.value = newVal[0][0].per_group_name
-    paramsUserDetail.id = newVal[0][0].id
-    paramsUserDetail.code = newVal[0][0].code
-    paramsUserDetail.phone = newVal[0][0].phone
-    paramsUserDetail.name = newVal[0][0].name
-    paramsUserDetail.per_group_name = newVal[0][0].per_group_name
-    paramsUserDetail.email = newVal[0][0].email
-    paramsUserDetail.dob = newVal[0][0].dob
-    paramsUserDetail.identification = newVal[0][0].identification
-    paramsUserDetail.date_of_issue = newVal[0][0].date_of_issue
-    paramsUserDetail.place_of_issue = newVal[0][0].place_of_issue
-    paramsUserDetail.original_place = newVal[0][0].original_place
-    paramsUserDetail.part_id = newVal[0][0].part_id
-    paramsUserDetail.position_id = newVal[0][0].position_id
-    paramsUserDetail.region_id = newVal[0][0].region_id
-    paramsUserDetail.parent_id = newVal[0][0].parent_id
-    paramsUserDetail.permanent_address = newVal[0][0].permanent_address
-    paramsUserDetail.residence_address = newVal[0][0].residence_address
-    paramsUserDetail.work_contract = newVal[0][0].work_contract
-    paramsUserDetail.working_day = newVal[0][0].working_day
-    paramsUserDetail.total_days_off = newVal[0][0].total_days_off
-    paramsUserDetail.status = newVal[0][0].status
+    if (newVal[0][0].email) {
+      email.value = newVal[0][0].email
+    }
+    if (newVal[0][0].phone) {
+      phone.value = newVal[0][0].phone
+    }
+    if (newVal[0][0].name) {
+      name.value = newVal[0][0].name
+    }
+    if (newVal[0][0].code) {
+      code.value = newVal[0][0].code
+    }
+    if (newVal[0][0].per_group_name) {
+      group_user.value = newVal[0][0].per_group_name
+    }
+    if (newVal[0][0].id) {
+      paramsUserDetail.id = newVal[0][0].id
+    }
+    if (newVal[0][0].dob) {
+      paramsUserDetail.dob = newVal[0][0].dob
+    }
+    if (newVal[0][0].identification) {
+      paramsUserDetail.identification = newVal[0][0].identification
+    }
+    if (newVal[0][0].date_of_issue) {
+      paramsUserDetail.date_of_issue = newVal[0][0].date_of_issue
+    }
+    if (newVal[0][0].place_of_issue) {
+      paramsUserDetail.place_of_issue = newVal[0][0].place_of_issue
+    }
+    if (newVal[0][0].original_place) {
+      paramsUserDetail.original_place = newVal[0][0].original_place
+    }
+    if (newVal[0][0].per_group_name) {
+      paramsUserDetail.per_group_name = newVal[0][0].per_group_name
+    }
+    if (newVal[0][0].dob) {
+      paramsUserDetail.dob = newVal[0][0].dob
+    }
+    if (newVal[0][0].identification) {
+      paramsUserDetail.identification = newVal[0][0].identification
+    }
+    if (newVal[0][0].date_of_issue) {
+      paramsUserDetail.date_of_issue = newVal[0][0].date_of_issue
+    }
+    if (newVal[0][0].original_place) {
+      paramsUserDetail.original_place = newVal[0][0].original_place
+    }
+    if (newVal[0][0].part_id) {
+      paramsUserDetail.part_id = newVal[0][0].part_id
+    }
+    if (newVal[0][0].position_id) {
+      paramsUserDetail.position_id = newVal[0][0].position_id
+    }
+    if (newVal[0][0].region_id) {
+      paramsUserDetail.region_id = newVal[0][0].region_id
+    }
+    if (newVal[0][0].permanent_address) {
+      paramsUserDetail.permanent_address = newVal[0][0].permanent_address
+    }
+    if (newVal[0][0].residence_address) {
+      paramsUserDetail.residence_address = newVal[0][0].residence_address
+    }
+    if (newVal[0][0].work_contract) {
+      paramsUserDetail.work_contract = newVal[0][0].work_contract
+    }
+    if (newVal[0][0].working_day) {
+      paramsUserDetail.working_day = newVal[0][0].working_day
+    }
+    if (newVal[0][0].total_days_off) {
+      paramsUserDetail.total_days_off = newVal[0][0].total_days_off
+    }
+    if (newVal[0][0].status) {
+      paramsUserDetail.status = newVal[0][0].status
+    }
+    if (newVal[0][0].part_text) {
+      paramsUserDetail.part_text = newVal[0][0].part_text
+    }
+    if (newVal[0][0].region_text) {
+      paramsUserDetail.region_text = newVal[0][0].region_text
+    }
+    if (newVal[0][0].region_id) {
+      regionType.id = newVal[0][0].region_id
+    }
+    if (newVal[0][0].position_id) {
+      positionType.id = newVal[0][0].position_id
+    }
+    if (newVal[0][0].part_id) {
+      staffType.id = newVal[0][0].part_id
+    }
   }
 )
 

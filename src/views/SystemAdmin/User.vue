@@ -10,7 +10,7 @@
             <input
               type="text"
               v-model="params.phone"
-              class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090] focus:outline-none"
+              class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090] focus:outline-none"
               placeholder="Tên, số điện thoại"
             />
           </div>
@@ -18,7 +18,7 @@
           <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
             <SelectRoot v-model="params.per_group_name">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -36,13 +36,19 @@
                 >
                   <SelectViewport>
                     <SelectGroup>
+                      <SelectItem
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        value="all"
+                      >
+                        <SelectItemText> Tất cả người dùng </SelectItemText>
+                      </SelectItem>
                       <template v-for="(item, index) in dataPerGroupName">
                         <SelectItem
                           class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
                           :value="String(item.name)"
                         >
                           <SelectItemText>
-                            {{ item.name }} - {{ item.description }}
+                            {{ item.description }}
                           </SelectItemText>
                         </SelectItem>
                       </template>
@@ -56,7 +62,7 @@
           <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
             <SelectRoot v-model="params.part_id">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -74,6 +80,12 @@
                 >
                   <SelectViewport>
                     <SelectGroup>
+                      <SelectItem
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        value="all"
+                      >
+                        <SelectItemText> Tất cả bộ phận </SelectItemText>
+                      </SelectItem>
                       <template v-for="(items, index) in dataStaff">
                         <SelectItem
                           v-for="(item, _) in items"
@@ -96,7 +108,7 @@
           <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
             <SelectRoot v-model="params.position_id">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[10px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -114,6 +126,12 @@
                 >
                   <SelectViewport>
                     <SelectGroup>
+                      <SelectItem
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        value="all"
+                      >
+                        <SelectItemText> Tất cả chức vụ </SelectItemText>
+                      </SelectItem>
                       <template v-for="(items, index) in dataPosition">
                         <SelectItem
                           v-for="(item, _) in items"
@@ -266,11 +284,19 @@
                 </div>
 
                 <div class="cell">
+                  {{ item?.dob || 'Chưa có ngày sinh' }}
+                </div>
+
+                <div class="cell">
                   {{ item?.phone || 'Chưa có số điện thoại' }}
                 </div>
 
                 <div class="cell">
                   {{ item?.email || 'Chưa có email' }}
+                </div>
+
+                <div class="cell">
+                  {{ item?.per_group_name || 'Chưa có nhóm người dùng' }}
                 </div>
 
                 <div class="cell">
@@ -282,7 +308,15 @@
                 </div>
 
                 <div class="cell">
-                  {{ item?.permanent_address || 'Chưa có địa điểm' }}
+                  {{ item?.work_contract || 'Chưa có hợp đồng' }}
+                </div>
+
+                <div class="cell">
+                  {{ item?.working_day || 'Chưa có ngày vào làm việc' }}
+                </div>
+
+                <div class="cell">
+                  {{ item?.region_text || 'Chưa có địa điểm' }}
                 </div>
 
                 <div class="cell pinned pinned-body">
@@ -431,6 +465,7 @@
     <ModalRegisterUser
       @toggle-modal="toggleModal('modalNewUser')"
       :modal="modalActive.modalNewUser"
+      @post-request="getPostRequest"
     />
 
     <Modal
@@ -438,7 +473,10 @@
       :modalActive="modalActive.modalEditUser"
       maxWidth="max-w-[865px]"
     >
-      <ModalEditUser :userdata="paramsDetailUser">
+      <ModalEditUser
+        :userdata="paramsDetailUser"
+        @post-request-edit="getPostRequestEdit"
+      >
         <button
           @click="toggleModal('modalEditUser')"
           type="button"
@@ -491,15 +529,15 @@
     </Modal>
 
     <Modal
-      @close="toggleModal('modalError')"
-      :modalActive="modalActive.modalError"
+      @close="toggleModal('modalStatusRegister')"
+      :modalActive="modalActive.modalStatusRegister"
       maxWidth="max-w-[512px]"
     >
       <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
         <div
           class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
         >
-          Thông báo lỗi
+          Thông báo
         </div>
 
         <div class="mb-3 text-center">
@@ -513,7 +551,35 @@
         <div
           class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
         >
-          Export danh sách người dùng gặp lỗi!
+          {{ dataPostRequest?.message }}
+        </div>
+      </div>
+    </Modal>
+
+    <Modal
+      @close="toggleModal('modalStatusEdit')"
+      :modalActive="modalActive.modalStatusEdit"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
+        >
+          {{ dataPostRequestEdit?.message }}
         </div>
       </div>
     </Modal>
@@ -557,8 +623,9 @@ interface recordModal {
 const modalActive = ref<recordModal>({
   modalNewUser: false,
   modalExport: false,
-  modalError: false,
-  modalEditUser: false
+  modalEditUser: false,
+  modalStatusRegister: false,
+  modalStatusEdit: false
 })
 
 const toggleModal = (modalStateName: any) => {
@@ -579,6 +646,10 @@ const tbhead = reactive([
     hasSort: true
   },
   {
+    title: 'Ngày sinh',
+    hasSort: false
+  },
+  {
     title: 'Số điện thoại',
     hasSort: false
   },
@@ -587,11 +658,23 @@ const tbhead = reactive([
     hasSort: false
   },
   {
+    title: 'Nhóm người dùng',
+    hasSort: false
+  },
+  {
     title: 'Chức vụ',
     hasSort: false
   },
   {
     title: 'Bộ phận',
+    hasSort: false
+  },
+  {
+    title: 'Hợp đồng',
+    hasSort: false
+  },
+  {
+    title: 'Ngày vào làm việc',
     hasSort: false
   },
   {
@@ -723,23 +806,46 @@ const handleDeleteUser = async (id: any) => {
 const paramsDetailUser = ref<any | null>(null)
 const handleGetDetailUser = async (phone: any) => {
   try {
-    const response = await axios
-      .get(`/api/user/list?phone=${phone}`, {
-        headers: {
-          Authorization: `Bearer ${auth.token()}`
-        }
-      })
-      .then((res) => {
-        const { items } = res.data.data
-        paramsDetailUser.value = items
-        toggleModal('modalEditUser')
-        console.log(
-          '🚀 ~ .then ~ paramsDetailUser.value:',
-          paramsDetailUser.value
-        )
-      })
+    const response = await axios.get(`/api/user/list?phone=${phone}`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    paramsDetailUser.value = response.data.data.items
+    toggleModal('modalEditUser')
+    console.log('🚀 ~ .then ~ paramsDetailUser.value:', paramsDetailUser.value)
   } catch (error) {
     console.log('🚀 ~ getDetailUser ~ error:', error)
+  }
+}
+
+const dataPostRequest = ref<any | null>(null)
+const getPostRequest = (data: any) => {
+  dataPostRequest.value = data
+  console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
+  if (dataPostRequest.value) {
+    toggleModal('modalStatusRegister')
+  }
+
+  if (dataPostRequest.value.status == 1) {
+    toggleModal('modalNewUser')
+  }
+}
+
+const dataPostRequestEdit = ref<any | null>(null)
+const getPostRequestEdit = (data: any) => {
+  dataPostRequestEdit.value = data
+  console.log(
+    '🚀 ~ getPostRequestEdit ~ dataPostRequestEdit:',
+    dataPostRequestEdit.value
+  )
+  if (dataPostRequestEdit.value) {
+    toggleModal('modalStatusEdit')
+  }
+
+  if (dataPostRequestEdit.value.status == 1) {
+    toggleModal('modalEditUser')
   }
 }
 
@@ -788,6 +894,36 @@ const dataTotalPages = computed(() =>
   Math.ceil(
     Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page)
   )
+)
+
+watch(
+  () => params.per_group_name,
+  () => {
+    if (params.per_group_name === 'all') {
+      params.per_group_name = ''
+    }
+  },
+  { deep: true, immediate: true }
+)
+
+watch(
+  () => params.part_id,
+  () => {
+    if (params.part_id === 'all') {
+      params.part_id = ''
+    }
+  },
+  { deep: true, immediate: true }
+)
+
+watch(
+  () => params.position_id,
+  () => {
+    if (params.position_id === 'all') {
+      params.position_id = ''
+    }
+  },
+  { deep: true, immediate: true }
 )
 
 onMounted(() => {
