@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 /* @import "../tailwind.config.js"; */
 
 /* custom breakpoint */
@@ -11,6 +11,42 @@
 
 @theme {
   --color-main: #013878;
-  --font-inter: "Inter";
+  --font-inter: 'Inter';
   --shadow-hoverinset: inset 0 200px 0 #0000002d;
+}
+
+.dp__input {
+  border-radius: 8px;
+  border: 1px solid #ededf6;
+  background: #fff;
+  color: #000;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  padding-block: 9px 9px;
+}
+
+.dp__cell_inner {
+  font-size: 12px;
+  height: 25px;
+}
+
+.dp--year-select,
+.dp__month_year_select {
+  font-size: 14px !important;
+  height: auto !important;
+}
+
+.dp__calendar_header_item {
+  height: auto;
+  font-size: 12px;
+}
+
+.dp__action_row {
+  padding-top: 0;
+}
+
+.dp__selection_preview {
+  font-size: 10px;
 }

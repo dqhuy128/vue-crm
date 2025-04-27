@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router"
-import { uppercasedFirstWord, splitPath } from "../utils/main"
+import { useRoute } from 'vue-router'
+import { uppercasedFirstWord, splitPath } from '../utils/main'
 
 const route = useRoute()
 const currentPath = splitPath(route.path)
@@ -23,13 +23,13 @@ const currentPath = splitPath(route.path)
       </router-link>
     </div>
 
-    <div id="titlePage">
+    <!-- <div id="titlePage">
       <h1
         class="block text-[#464661] font-inter text-[20px] font-bold leading-normal m-0"
       >
         {{ uppercasedFirstWord(currentPath) }}
       </h1>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -38,7 +38,7 @@ const currentPath = splitPath(route.path)
   position: relative;
 
   &::after {
-    content: ">";
+    content: '>';
     display: inline-block;
     margin-left: 4px;
   }

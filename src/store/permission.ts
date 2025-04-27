@@ -1,5 +1,4 @@
 import { apiUri } from '@/constants/apiUri'
-import { apiClient } from '@/plugins/axios'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -37,7 +36,7 @@ export const usePermissionStore = defineStore('permission', () => {
         }
       })
 
-      const dataPermit = response.data
+      const dataPermit = response.data.data
       permision.value = dataPermit
       permissionList.value = Object.keys(dataPermit)
     } catch (error) {

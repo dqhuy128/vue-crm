@@ -14,12 +14,12 @@
         </router-link>
       </template>
     </div>
-    <PageTitle> <slot></slot></PageTitle>
+    <!-- <PageTitle> <slot></slot></PageTitle> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import PageTitle from "./PageTitle.vue"
+import PageTitle from './PageTitle.vue'
 
 interface Breadcrumb {
   name: string
@@ -34,7 +34,7 @@ const props = defineProps<{
   position: relative;
 
   &::after {
-    content: ">";
+    content: '>';
     display: inline-block;
     margin-left: 4px;
   }
