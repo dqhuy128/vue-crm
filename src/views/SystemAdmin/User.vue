@@ -296,27 +296,27 @@
                 </div>
 
                 <div class="cell">
-                  {{ item?.per_group_name || 'Chưa có nhóm người dùng' }}
+                  {{ item?.per_group_name || 'Chưa có' }}
                 </div>
 
                 <div class="cell">
-                  {{ item?.position_id || 'Chưa có chức vụ' }}
+                  {{ item?.position_id || 'Chưa có' }}
                 </div>
 
                 <div class="cell">
-                  {{ item?.part_id || 'Chưa có bộ phận' }}
+                  {{ item?.part_id || 'Chưa có' }}
                 </div>
 
                 <div class="cell">
-                  {{ item?.work_contract || 'Chưa có hợp đồng' }}
+                  {{ item?.work_contract || 'Chưa có' }}
                 </div>
 
                 <div class="cell">
-                  {{ item?.working_day || 'Chưa có ngày vào làm việc' }}
+                  {{ item?.working_day || 'Chưa có' }}
                 </div>
 
                 <div class="cell">
-                  {{ item?.region_text || 'Chưa có địa điểm' }}
+                  {{ item?.region_text || 'Chưa có' }}
                 </div>
 
                 <div class="cell pinned pinned-body">
