@@ -44,7 +44,7 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  const checkPermission = (permission: string, actions: string) => {
+  function checkPermission(permission: string, actions: string){
     if (!permision.value) return false
     const rolePermission = permision.value[permission]
     if (!rolePermission) return false
@@ -85,9 +85,12 @@ export const usePermissionStore = defineStore('permission', () => {
       }
     }
   }
-  // const setUserPermission = (permission: string) => {
-  //   userData.value = permission
-  // }
+  const setUserPermission = (permission: string) => {
+    if(!userData.value) return
+    if (userData.value) {
+      userData.value.per_group_name = permission
+    }
+  }
   const getPermission = computed(() => {
     return permision
   })
@@ -110,7 +113,7 @@ export const usePermissionStore = defineStore('permission', () => {
     getPermissionList,
     getUserPermission,
     checkPermission,
-    // setUserPermission,
+    setUserPermission,
     $reset,
     fetchUserData,
     permissionList,
