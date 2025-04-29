@@ -97,7 +97,7 @@
     </div>
 
     <div
-      class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
+      class="flex flex-wrap gap-4 justify-center items-stretch mt-9 text-center xl:gap-6"
     >
       <slot />
       <button
@@ -139,6 +139,8 @@ import axios from 'axios'
 const auth = useAuth()
 const token = auth.token()
 const session = auth.check()
+
+const emit = defineEmits(['post-request'])
 
 defineProps<{
   datatype: any
@@ -188,6 +190,7 @@ const fetchDataDocument = () => {
   }, 300)
 }
 
+const postRequest = ref<any | null>(null)
 const handleCreateCategory = async () => {
   if (session) {
     const formData = new FormData()
@@ -211,6 +214,8 @@ const handleCreateCategory = async () => {
         }
         paramsCreate.name = ''
         paramsCreate.description = ''
+        postRequest.value = res.data
+        emit('post-request', postRequest.value)
         fetchDataDocument()
       })
       .catch((err) => {

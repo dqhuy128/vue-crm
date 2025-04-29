@@ -106,14 +106,14 @@
       </form>
     </div>
 
-    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
+    <div class="flex flex-wrap gap-2 items-center mt-5 mb-3">
       <div
         class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách danh mục hệ thống
       </div>
 
-      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
+      <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
         <button
           type="button"
           id="tableAdding"
@@ -134,7 +134,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
-          <div id="tableRowHeader" class="justify-between table-row header">
+          <div id="tableRowHeader" class="table-row justify-between header">
             <div class="cell" v-for="(column, index) in tbhead" :key="index">
               {{ column.title }}
 
@@ -251,7 +251,7 @@
       </div>
 
       <div
-        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -286,7 +286,7 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+        <div class="flex flex-wrap gap-2 items-center md:ms-auto">
           <div class="text-[#464661] text-[14px] font-normal">
             <template
               v-if="
@@ -366,7 +366,7 @@
           </h3>
         </div>
 
-        <ModalAddCategory :datatype="selectData">
+        <ModalAddCategory :datatype="selectData" @post-request="getPostRequest">
           <button
             @click="toggleModal('modalAddCateManager')"
             type="button"
@@ -379,8 +379,8 @@
     </Modal>
 
     <Modal
-      @close="toggleModal('modalCategoryUpdate')"
-      :modalActive="modalActive.modalCategoryUpdate"
+      @close="toggleModal('modalEditCateManager')"
+      :modalActive="modalActive.modalEditCateManager"
       maxWidth="max-w-[670px]"
     >
       <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
@@ -390,18 +390,75 @@
           </h3>
         </div>
 
+        <!-- :closeModal="() => toggleModal('modalEditCateManager')" -->
         <ModalCategoryUpdate
           :datatype="dataDetailCategory"
-          :closeModal="() => toggleModal('modalCategoryUpdate')"
+          @post-request-edit="getPostRequestEdit"
         >
           <button
-            @click="toggleModal('modalCategoryUpdate')"
+            @click="toggleModal('modalEditCateManager')"
             type="button"
             class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
           >
             Hủy
           </button>
         </ModalCategoryUpdate>
+      </div>
+    </Modal>
+
+    <Modal
+      @close="toggleModal('modalStatusAdd')"
+      :modalActive="modalActive.modalStatusAdd"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
+        >
+          {{ dataPostRequest?.message }}
+        </div>
+      </div>
+    </Modal>
+
+    <Modal
+      @close="toggleModal('modalStatusEdit')"
+      :modalActive="modalActive.modalStatusEdit"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
+        >
+          {{ dataPostRequestEdit?.message }}
+        </div>
       </div>
     </Modal>
   </MainLayout>
@@ -444,7 +501,8 @@ interface recordModal {
 const modalActive = ref<recordModal>({
   modalAddCateManager: false,
   modalEditCateManager: false,
-  modalCategoryUpdate: false
+  modalStatusAdd: false,
+  modalStatusEdit: false
 })
 
 const toggleModal = (modalStateName: any) => {
@@ -559,11 +617,40 @@ const getDetailCategory = async (id: any) => {
       }
     })
 
-    toggleModal('modalCategoryUpdate')
+    toggleModal('modalEditCateManager')
     dataDetailCategory.value = response.data
 
     // console.log('🚀 ~ getDetailCategory ~ response:', response.data)
   } catch (error) {}
+}
+
+const dataPostRequest = ref<any | null>(null)
+const getPostRequest = (data: any) => {
+  dataPostRequest.value = data
+  console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
+  if (dataPostRequest.value) {
+    toggleModal('modalStatusAdd')
+  }
+
+  if (dataPostRequest.value.status == 1) {
+    toggleModal('modalAddCateManager')
+  }
+}
+
+const dataPostRequestEdit = ref<any | null>(null)
+const getPostRequestEdit = (data: any) => {
+  dataPostRequestEdit.value = data
+  console.log(
+    '🚀 ~ getPostRequestEdit ~ dataPostRequestEdit:',
+    dataPostRequestEdit.value
+  )
+  if (dataPostRequestEdit.value) {
+    toggleModal('modalStatusEdit')
+
+    toggleModal('modalEditCateManager')
+    // if (dataPostRequestEdit.value.status == 1) {
+    // }
+  }
 }
 
 const {

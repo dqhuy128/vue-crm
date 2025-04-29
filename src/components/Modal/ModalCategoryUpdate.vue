@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="handleUpdateCategory">
-    <div class="grid grid-cols-12 gap-6 gap-x-4">
+    <div class="grid grid-cols-12 gap-x-4 gap-6">
       <div class="col-span-12 xl:col-span-4">
         <div class="block">
           <span
@@ -156,7 +156,7 @@
     </div>
 
     <div
-      class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
+      class="flex flex-wrap gap-4 justify-center items-stretch mt-9 text-center xl:gap-6"
     >
       <slot />
       <button
@@ -198,9 +198,11 @@ const auth = useAuth()
 const token = auth.token()
 const session = auth.check()
 
+const emit = defineEmits(['post-request-edit'])
+
 const props = defineProps<{
   datatype: any
-  closeModal: () => void
+  // closeModal: () => void
 }>()
 
 const paramsUpdate = reactive({
@@ -265,6 +267,7 @@ const getCategoriesType = async () => {
 }
 
 const checkValidate = ref('')
+const postRequestEdit = ref<any | null>(null)
 const handleUpdateCategory = async () => {
   try {
     // checkValidate.value = ''
@@ -292,8 +295,10 @@ const handleUpdateCategory = async () => {
         Authorization: `Bearer ${token}`
       }
     })
+    // props.closeModal()
+    postRequestEdit.value = response.data
+    emit('post-request-edit', postRequestEdit.value)
     fetchDataDocument()
-    props.closeModal()
     console.log('🚀 ~ handleUpdateCategory ~ response:', response)
   } catch (error) {
     console.log('🚀 ~ handleUpdateCategory ~ error:', error)
