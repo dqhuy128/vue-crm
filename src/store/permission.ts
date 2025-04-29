@@ -29,15 +29,12 @@ export const usePermissionStore = defineStore('permission', () => {
   async function fetchPermission(token: string) {
     if (permision.value) return
     try {
-      const response = await axios.get(
-        `https://api.skygroupvn.com.vn/api/user/permission`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+      const response = await axios.get(`${apiUri}/user/permission`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      )
+      })
 
       const dataPermit = response.data.data
       permision.value = dataPermit

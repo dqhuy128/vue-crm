@@ -28,7 +28,7 @@ export function useSystemUser() {
     if (auth.check()) {
       const token = auth.token()
 
-      const response = await axios.get('/api/categories/type', {
+      const response = await axios.get(`${apiUri}/categories/type`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

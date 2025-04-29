@@ -5,6 +5,7 @@ import { apiClient } from '@/plugins/axios'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
+import { apiUri } from '@/constants/apiUri'
 
 // Get email from route query params
 const route = useRoute()
@@ -42,7 +43,7 @@ const handlePostOtp = async () => {
     formData.append('otp', otpPost.value)
     formData.append('email', email.value)
 
-    const response = await axios.post('/api/user/otp', formData, {
+    const response = await axios.post(`${apiUri}/user/otp`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -121,7 +122,7 @@ onMounted(() => {
               >
                 <img
                   src="@/assets/images/logo-login.png"
-                  class="object-scale-down max-w-full h-auto"
+                  class="object-scale-down h-auto max-w-full"
                   alt=""
                 />
               </div>
@@ -133,10 +134,10 @@ onMounted(() => {
                 crm skygroup
               </div>
 
-              <div class="hidden mx-auto mt-auto w-full md:block">
+              <div class="hidden w-full mx-auto mt-auto md:block">
                 <img
                   src="@/assets/images/login-frame.svg"
-                  class="object-scale-down max-w-full h-auto"
+                  class="object-scale-down h-auto max-w-full"
                   alt=""
                 />
               </div>
