@@ -799,7 +799,7 @@ const [group_user, guAttrs] = defineField('group_user')
 const listGrPermiss = ref<any | null>(null)
 const fetchListPermission = async () => {
   try {
-    const response = await axios.get('/api/permission/list', {
+    const response = await axios.get(`${apiUri}/permission/list`, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -835,7 +835,7 @@ const leaderData = ref<any | null>(null)
 
 const fetchListStaff = async () => {
   try {
-    const response = await axios.get('/api/categories/list?type=staff', {
+    const response = await axios.get(`${apiUri}/categories/list?type=staff`, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -850,11 +850,14 @@ const fetchListStaff = async () => {
 
 const fetchListPosition = async () => {
   try {
-    const response = await axios.get('/api/categories/list?type=position', {
-      headers: {
-        Authorization: `Bearer ${auth.token()}`
+    const response = await axios.get(
+      `${apiUri}/categories/list?type=position`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`
+        }
       }
-    })
+    )
 
     positionData.value = response.data.data.items
     // console.log('🚀 ~ fetchListPosition ~ response:', positionData.value)
@@ -865,7 +868,7 @@ const fetchListPosition = async () => {
 
 const fetchListRegion = async () => {
   try {
-    const response = await axios.get('/api/location/region', {
+    const response = await axios.get(`${apiUri}/location/region`, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -880,7 +883,7 @@ const fetchListRegion = async () => {
 
 const fetchListLeader = async () => {
   try {
-    const response = await axios.get('/api/user/list', {
+    const response = await axios.get(`${apiUri}/user/list`, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -985,7 +988,7 @@ const submitUserUpdate = handleSubmit(async () => {
       formDataUser.append('status', '1')
     }
 
-    const response = await axios.post('/api/user/update', formDataUser, {
+    const response = await axios.post(`${apiUri}/user/update`, formDataUser, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${auth.token()}`

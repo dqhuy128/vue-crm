@@ -92,7 +92,7 @@ export const postServer = (
     canvas.toBlob(async (blob: any) => {
       form.append('file', blob)
 
-      const response = await axios.post('/api/user/uploadavatar', form, {
+      const response = await axios.post(`${apiUri}/user/uploadavatar`, form, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${authToken}`
