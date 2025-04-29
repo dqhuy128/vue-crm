@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="handleUpdateCategory">
-    <div class="grid grid-cols-12 gap-x-4 gap-6">
+    <div class="grid grid-cols-12 gap-6 gap-x-4">
       <div class="col-span-12 xl:col-span-4">
         <div class="block">
           <span
@@ -156,7 +156,7 @@
     </div>
 
     <div
-      class="flex flex-wrap gap-4 justify-center items-stretch mt-9 text-center xl:gap-6"
+      class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
     >
       <slot />
       <button
@@ -254,7 +254,7 @@ const fetchDataDocument = () => {
 const categoriesType = ref<any | null>(null)
 const getCategoriesType = async () => {
   try {
-    const response = await axios.get(`/api/categories/type`, {
+    const response = await axios.get(`${apiUri}/categories/type`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -289,7 +289,7 @@ const handleUpdateCategory = async () => {
       formData.append('description', paramsUpdate.description)
     if (paramsUpdate.status) formData.append('status', paramsUpdate.status)
 
-    const response = await axios.post(`/api/categories/update`, formData, {
+    const response = await axios.post(`${apiUri}/categories/update`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`

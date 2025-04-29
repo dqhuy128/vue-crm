@@ -97,7 +97,7 @@
     </div>
 
     <div
-      class="flex flex-wrap gap-4 justify-center items-stretch mt-9 text-center xl:gap-6"
+      class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
     >
       <slot />
       <button
@@ -199,7 +199,7 @@ const handleCreateCategory = async () => {
     formData.append('description', paramsCreate.description)
 
     const res = await axios
-      .post(`/api/categories/create`, formData, {
+      .post(`${apiUri}/categories/create`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`

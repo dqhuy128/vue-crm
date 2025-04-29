@@ -141,7 +141,7 @@ const handleChangePass = async () => {
       formChangePass.append('new_repass', changePass.new_repass)
 
       const response = await axios.post(
-        `/api/user/changepass`,
+        `${apiUri}/user/changepass`,
         formChangePass,
         {
           headers: {
@@ -221,7 +221,7 @@ onMounted(() => {
         </svg>
       </button>
 
-      <div class="inline-flex gap-3 items-center md:gap-6 ms-auto">
+      <div class="inline-flex items-center gap-3 md:gap-6 ms-auto">
         <router-link
           to=""
           class="relative inline-block bg-white rounded-[8px] p-2"
@@ -256,7 +256,7 @@ onMounted(() => {
           <tippy tag="button" content-tag="div" content-class="content-wrapper">
             <template #default>
               <div
-                class="inline-flex flex-wrap gap-2 items-center cursor-pointer"
+                class="inline-flex flex-wrap items-center gap-2 cursor-pointer"
               >
                 <div class="block">
                   <h3
@@ -355,15 +355,15 @@ onMounted(() => {
             </h3>
           </div>
 
-          <div class="flex flex-wrap gap-2 items-center">
-            <div class="inline-flex gap-2 justify-center items-center grow">
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="inline-flex items-center justify-center gap-2 grow">
               <img src="@/assets/images/lucide_mail.svg" alt="" />
               <span class="text-[#464661] text-[14px] font-bold leading-normal">
                 {{ userData?.email }}
               </span>
             </div>
 
-            <div class="inline-flex gap-2 justify-center items-center grow">
+            <div class="inline-flex items-center justify-center gap-2 grow">
               <img src="@/assets/images/mynaui_mobile.svg" alt="" />
               <span class="text-[#464661] text-[14px] font-bold leading-normal">
                 {{ userData?.phone }}

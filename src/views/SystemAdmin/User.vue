@@ -728,7 +728,7 @@ const fetchDataDocument = () => {
 const dataPerGroupName = ref<any | null>(null)
 const fetchPerGroupName = async () => {
   try {
-    const response = await axios.get(`/api/permission/list`, {
+    const response = await axios.get(`${apiUri}/permission/list`, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -743,7 +743,7 @@ const fetchPerGroupName = async () => {
 const dataStaff = ref<any | null>(null)
 const fetchStaffList = async () => {
   try {
-    const response = await axios.get(`/api/categories/list?type=staff`, {
+    const response = await axios.get(`${apiUri}/categories/list?type=staff`, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -758,11 +758,14 @@ const fetchStaffList = async () => {
 const dataPosition = ref<any | null>(null)
 const fetchPositionList = async () => {
   try {
-    const response = await axios.get(`/api/categories/list?type=position`, {
-      headers: {
-        Authorization: `Bearer ${auth.token()}`
+    const response = await axios.get(
+      `${apiUri}/categories/list?type=position`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`
+        }
       }
-    })
+    )
     dataPosition.value = response.data.data.items
     console.log('🚀 ~ fetchPosition ~ dataPosition:', dataPosition.value)
   } catch (error) {
@@ -791,7 +794,7 @@ const handleDeleteUser = async (id: any) => {
     const formData = new FormData()
     formData.append('id', id)
 
-    const response = await axios.post(`/api/user/delete`, formData, {
+    const response = await axios.post(`${apiUri}/user/delete`, formData, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
@@ -806,7 +809,7 @@ const handleDeleteUser = async (id: any) => {
 const paramsDetailUser = ref<any | null>(null)
 const handleGetDetailUser = async (phone: any) => {
   try {
-    const response = await axios.get(`/api/user/list?phone=${phone}`, {
+    const response = await axios.get(`${apiUri}/user/list?phone=${phone}`, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
