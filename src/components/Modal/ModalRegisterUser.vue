@@ -125,12 +125,15 @@
               </span>
 
               <div class="relative">
-                <flat-pickr
-                  v-model="paramsUser.dob"
-                  :config="configFlatpickr"
-                  class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-                  placeholder="Chọn ngày"
-                  name="dd/mm/yy"
+                <VueDatePicker
+                  v-model="pickerDOB"
+                  :enable-time-picker="false"
+                  locale="vi"
+                  :format-locale="vi"
+                  cancelText="Huỷ"
+                  selectText="Chọn"
+                  format="dd/MM/yyyy"
+                  :min-date="new Date()"
                 />
                 <div
                   class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
@@ -748,11 +751,30 @@ import { useSystemUser } from '@/composables/system-user'
 import { tableMagic } from '@/utils/main'
 import { apiUri } from '@/constants/apiUri'
 import axios from 'axios'
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+import { vi } from 'date-fns/locale/vi'
+import { format } from 'date-fns'
 
 const auth = useAuth()
 
 const props = defineProps(['modal'])
 const emit = defineEmits(['toggle-modal', 'post-request'])
+
+const pickerDOB = ref<any | null>(null)
+const initDates = () => {
+  pickerDOB.value = new Date(new Date().setDate(new Date().getDate() + 1))
+}
+const updateDates = () => {
+  if (pickerDOB.value) {
+    paramsUser.dob = format(pickerDOB.value, 'yyyy/MM/dd')
+  }
+}
+watch(pickerDOB, () => {
+  if (auth.check()) {
+    updateDates()
+  }
+})
 
 const configFlatpickr = ref({
   // enableTime: true,
@@ -1033,6 +1055,8 @@ onMounted(() => {
   fetchListPosition()
   fetchListRegion()
   fetchListLeader()
+  initDates()
+  updateDates()
 })
 </script>
 

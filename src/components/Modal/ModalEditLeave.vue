@@ -1,0 +1,191 @@
+<template>
+  <form @submit.prevent="submitEditLeave">
+    <div class="grid grid-cols-12 gap-6">
+      <div class="col-span-12">
+        <span
+          class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+        >
+          Ngày nghỉ
+        </span>
+        <!-- multi-calendars -->
+        <VueDatePicker
+          v-model="datepicker"
+          :enable-time-picker="false"
+          locale="vi"
+          :format-locale="vi"
+          cancelText="Huỷ"
+          selectText="Chọn"
+          range
+          format="dd/MM/yyyy"
+          :min-date="new Date()"
+          @update:model-value="updateDates"
+        />
+      </div>
+
+      <div class="col-span-12">
+        <div class="block">
+          <span
+            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+          >
+            Lý do
+          </span>
+          <textarea
+            v-model="paramsLeaveEdit.reason"
+            name=""
+            id=""
+            placeholder="Nhập mô tả"
+            class="w-full border min-h-[120px] border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
+    >
+      <slot />
+      <button
+        type="submit"
+        class="max-md:grow inline-block md:min-w-[175px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+      >
+        Lưu
+      </button>
+    </div>
+  </form>
+</template>
+
+<script lang="ts" setup>
+import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
+import { apiUri } from '@/constants/apiUri'
+import { useAuth } from 'vue-auth3'
+import { tableMagic } from '@/utils/main'
+import axios from 'axios'
+import { useLeaveInfo } from '@/composables/leave-info'
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+import { vi } from 'date-fns/locale/vi'
+import { format } from 'date-fns'
+
+const auth = useAuth()
+
+const emit = defineEmits(['post-request-edit'])
+
+const props = defineProps<{
+  datatype: any
+}>()
+
+watch(
+  () => props.datatype,
+  (newVal) => {
+    const { id } = newVal.data
+    const { begin_date } = newVal.data
+    const { finish_date } = newVal.data
+    const { reason } = newVal.data
+
+    startDate.value = begin_date.toString()
+    endDate.value = finish_date.toString()
+    datepicker.value = [startDate.value, endDate.value]
+    paramsLeaveEdit.id = id.toString()
+    paramsLeaveEdit.begin_date = begin_date.toString()
+    paramsLeaveEdit.finish_date = finish_date.toString()
+    paramsLeaveEdit.reason = reason.toString()
+  }
+)
+
+const startDate = ref<any | null>(null)
+const endDate = ref<any | null>(null)
+const datepicker = ref<any | null>(null)
+datepicker.value = [startDate.value, endDate.value]
+
+const updateDates = () => {
+  if (datepicker.value) {
+    paramsLeaveEdit.begin_date = startDate
+    paramsLeaveEdit.finish_date = endDate
+  }
+}
+watch(datepicker, () => {
+  if (auth.check()) {
+    updateDates()
+  }
+})
+
+const paramsLeaveEdit = reactive<any | null>({
+  id: '',
+  begin_date: '',
+  finish_date: '',
+  reason: ''
+})
+
+const paginate = reactive({
+  page: 1,
+  per_page: 10
+})
+const debounceTime = ref<{
+  timeOut: number | null
+  counter: number
+}>({
+  timeOut: null,
+  counter: 0
+})
+
+const fetchDataLeave = () => {
+  if (debounceTime.value.timeOut !== null) {
+    clearTimeout(debounceTime.value.timeOut)
+  }
+
+  debounceTime.value.timeOut = setTimeout(() => {
+    const res = {
+      ...paramsLeaveEdit,
+      page: paginate.page,
+      per_page: paginate.per_page
+    }
+
+    doFetch(
+      `${apiUri}/leave/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
+      auth.token() as string
+    ).then(() => {
+      // console.log('🚀 ~ fetchDataLeave ~ res:', res)
+      tableMagic()
+    })
+  }, 300)
+}
+
+const postRequestEdit = ref<any | null>(null)
+const submitEditLeave = async () => {
+  try {
+    const formData = new FormData()
+    formData.append('id', paramsLeaveEdit.id)
+    formData.append('begin_date', paramsLeaveEdit.begin_date)
+    formData.append('finish_date', paramsLeaveEdit.finish_date)
+    formData.append('reason', paramsLeaveEdit.reason)
+
+    const res = await axios.post(`${apiUri}/leave/update`, formData, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    datepicker.value = [null, null]
+    startDate.value = null
+    endDate.value = null
+    paramsLeaveEdit.reason = null
+    paramsLeaveEdit.begin_date = null
+    paramsLeaveEdit.finish_date = null
+    fetchDataLeave()
+    postRequestEdit.value = res.data
+    emit('post-request-edit', postRequestEdit.value)
+    // console.log('🚀 ~ postAddLeave ~ res:', postRequest.value)
+  } catch (error) {
+    console.log('🚀 ~ postAddLeave ~ error:', error)
+  }
+}
+
+const { doFetch } = useLeaveInfo()
+
+onMounted(() => {
+  if (auth.check()) {
+    updateDates()
+  }
+})
+</script>
+
+<style lang="scss"></style>

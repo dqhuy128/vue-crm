@@ -214,7 +214,7 @@
                       <button
                         type="button"
                         class="cursor-pointer cell-btn-delete shrink-0"
-                        @click="handleDeleteDocument(item.id)"
+                        @click="confirmDeleteDocument(item.id)"
                       >
                         <img src="@/assets/images/action-edit-3.svg" alt="" />
                       </button>
@@ -343,7 +343,10 @@
             </h3>
           </div>
 
-          <CreateDocument :closeModal="() => toggleModal('modalAddDocument')">
+          <CreateDocument
+            :closeModal="() => toggleModal('modalAddDocument')"
+            @post-request="getPostRequest"
+          >
             <button
               @click="toggleModal('modalAddDocument')"
               type="button"
@@ -412,6 +415,109 @@
         </div>
       </Modal>
     </template>
+
+    <Modal
+      @close="toggleModal('modalStatusAdd')"
+      :modalActive="modalActive.modalStatusAdd"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
+        >
+          {{ dataPostRequest?.message }}
+        </div>
+      </div>
+    </Modal>
+
+    <Modal
+      @close="toggleModal('modalStatusEdit')"
+      :modalActive="modalActive.modalStatusEdit"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
+        >
+          {{ dataPostRequestEdit?.message }}
+        </div>
+      </div>
+    </Modal>
+
+    <Modal
+      @close="toggleModal('modalStatusConfirm')"
+      :modalActive="modalActive.modalStatusConfirm"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_16px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold mb-6 underline"
+        >
+          Bạn chắc chắn muốn xoá tài liệu này ?
+        </div>
+
+        <div
+          class="flex flex-wrap items-stretch justify-center gap-3 text-center mt-9 xl:gap-6"
+        >
+          <button
+            @click="toggleModal('modalStatusConfirm')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[130px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Hủy
+          </button>
+          <button
+            @click="handleDeleteDocument"
+            type="submit"
+            class="max-md:grow inline-block md:min-w-[130px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </Modal>
   </MainLayout>
 </template>
 
@@ -469,7 +575,10 @@ interface recordModal {
 const modalActive = ref<recordModal>({
   modalAddDocument: false,
   modalEditDocument: false,
-  modalViewDocument: false
+  modalViewDocument: false,
+  modalStatusConfirm: false,
+  modalStatusAdd: false,
+  modalStatusEdit: false
 })
 
 const toggleModal = (modalStateName: any) => {
@@ -553,16 +662,32 @@ const dataTotalPages = computed(() =>
   )
 )
 
+const documentToDelete = ref<any | null>(null)
+const confirmDeleteDocument = (id: number) => {
+  toggleModal('modalStatusConfirm')
+  documentToDelete.value = id.toString()
+}
 const categoryDocument = reactive({
   data: categories.value || undefined
 })
-const handleDeleteDocument = async (id: any) => {
-  if (window.confirm('Bạn có chắc chắn muốn xóa tài liệu này không?')) {
-    deleteDocument(id).then(() => {
-      fetchDataDocument()
+const handleDeleteDocument = async () => {
+  if (!documentToDelete.value) return
+
+  try {
+    const formData = new FormData()
+    formData.append('id', documentToDelete.value)
+
+    const response = await axios.post(`${apiUri}/document/delete`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${auth.token()}`
+      }
     })
-  } else {
-    return
+    toggleModal('modalStatusConfirm')
+    fetchDataDocument()
+    // console.log('🚀 ~ handleDeleteDocument ~ response:', response)
+  } catch (error) {
+    console.log('🚀 ~ handleDeleteDocument ~ error:', error)
   }
 }
 
@@ -613,6 +738,36 @@ function findCategoryName(typeId: string) {
   const category = categoryDocument.data.find((item) => item.id === typeId)
   return category ? category.name : 'Chưa có loại tài liệu'
 }
+
+const dataPostRequest = ref<any | null>(null)
+const getPostRequest = (data: any) => {
+  dataPostRequest.value = data
+  console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
+  if (dataPostRequest.value) {
+    toggleModal('modalStatusAdd')
+  }
+
+  if (dataPostRequest.value.status == 1) {
+    toggleModal('modalAddCateManager')
+  }
+}
+
+const dataPostRequestEdit = ref<any | null>(null)
+const getPostRequestEdit = (data: any) => {
+  dataPostRequestEdit.value = data
+  console.log(
+    '🚀 ~ getPostRequestEdit ~ dataPostRequestEdit:',
+    dataPostRequestEdit.value
+  )
+  if (dataPostRequestEdit.value) {
+    toggleModal('modalStatusEdit')
+
+    toggleModal('modalEditCateManager')
+    // if (dataPostRequestEdit.value.status == 1) {
+    // }
+  }
+}
+
 onMounted(() => {
   if (auth.check()) {
     fetchDataDocument()

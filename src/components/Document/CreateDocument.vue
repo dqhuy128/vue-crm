@@ -151,6 +151,7 @@ import FileUpload from '../FileUpload.vue'
 const props = defineProps<{
   closeModal: () => void
 }>()
+const emit = defineEmits(['post-request'])
 
 type previewFiles = {
   name: string
@@ -159,9 +160,9 @@ type previewFiles = {
 }
 const fileUploadPreview = ref<previewFiles[]>([])
 const FormSubmit = ref({
-  name:  null,
-  description:  '',
-  docCate:  null,
+  name: null,
+  description: '',
+  docCate: null
 })
 const setUrlFromFiles = async (files: FileList | File) => {
   let file: File
@@ -211,6 +212,7 @@ const categoryDocument = reactive({
   data: categories.value || undefined
 })
 
+const postRequest = ref<any | null>(null)
 const submit = async () => {
   if (FormSubmit.value.name === null) {
     alert('Vui lòng nhập tên tài liệu')
@@ -245,6 +247,8 @@ const submit = async () => {
         auth.token() as string
       ).then(() => {
         tableMagic()
+        postRequest.value = res.data
+        emit('post-request', postRequest.value)
       })
     })
     .catch(function (error) {

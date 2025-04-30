@@ -53,7 +53,7 @@ export function useLeaveInfo() {
       .then((res) => res.data)
       .then((json) => {
         data.value = json.data
-        console.log('🚀 ~ .then ~ data.value:', data.value)
+        // console.log('🚀 ~ .then ~ data.value:', data.value)
         return data.value
       })
       .catch((err) => (error.value = err))

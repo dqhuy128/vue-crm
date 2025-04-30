@@ -169,8 +169,11 @@
                 </div>
 
                 <div class="cell">
-                  <template v-if="it.reason">
+                  <template v-if="it.reason && String(it.reason) !== 'null'">
                     {{ it.reason }}
+                  </template>
+                  <template v-else>
+                    {{ 'Chưa có lý do' }}
                   </template>
                 </div>
 
@@ -197,12 +200,14 @@
                 <div class="cell pinned pinned-body">
                   <div class="cell edit edit-body">
                     <button
+                      @click="handleEditLeave(it.id)"
                       type="button"
                       class="cursor-pointer cell-btn-edit shrink-0"
                     >
                       <img src="@/assets/images/action-edit-2.svg" alt="" />
                     </button>
                     <button
+                      @click="confirmDeleteLeave(it.id)"
                       type="button"
                       class="cursor-pointer cell-btn-delete shrink-0"
                     >
@@ -368,6 +373,33 @@
     </Modal>
 
     <Modal
+      @close="toggleModal('modalEditLeave')"
+      :modalActive="modalActive.modalEditLeave"
+      maxWidth="max-w-[670px]"
+    >
+      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+            Sửa đơn nghỉ phép
+          </h3>
+        </div>
+
+        <ModalEditLeave
+          :datatype="dataEditLeave"
+          @post-request-edit="getPostRequestEdit"
+        >
+          <button
+            @click="toggleModal('modalEditLeave')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Hủy
+          </button>
+        </ModalEditLeave>
+      </div>
+    </Modal>
+
+    <Modal
       @close="toggleModal('modalStatusAddLeave')"
       :modalActive="modalActive.modalStatusAddLeave"
       maxWidth="max-w-[512px]"
@@ -391,6 +423,81 @@
           class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
         >
           {{ dataPostRequest?.message }}
+        </div>
+      </div>
+    </Modal>
+
+    <Modal
+      @close="toggleModal('modalStatusAddLeave')"
+      :modalActive="modalActive.modalStatusAddLeave"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
+        >
+          {{ dataPostRequestEdit?.message }}
+        </div>
+      </div>
+    </Modal>
+
+    <Modal
+      @close="toggleModal('modalStatusConfirm')"
+      :modalActive="modalActive.modalStatusConfirm"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_16px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold mb-6 underline"
+        >
+          Bạn chắc chắn muốn xoá đơn nghỉ phép này ?
+        </div>
+
+        <div
+          class="flex flex-wrap items-stretch justify-center gap-3 text-center mt-9 xl:gap-6"
+        >
+          <button
+            @click="toggleModal('modalStatusConfirm')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[130px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Hủy
+          </button>
+          <button
+            @click="handleDeleteLeave"
+            type="submit"
+            class="max-md:grow inline-block md:min-w-[130px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Xác nhận
+          </button>
         </div>
       </div>
     </Modal>
@@ -424,6 +531,7 @@ import { useLeaveInfo } from '@/composables/leave-info'
 import { apiUri } from '@/constants/apiUri'
 import { tableMagic } from '@/utils/main'
 import ModalAddingLeave from '@/components/Modal/ModalAddingLeave.vue'
+import ModalEditLeave from '@/components/Modal/ModalEditLeave.vue'
 
 const auth = useAuth()
 
@@ -433,7 +541,9 @@ interface recordModal {
 
 const modalActive = ref<recordModal>({
   modalStatusAddLeave: false,
-  modalAddLeave: false
+  modalAddLeave: false,
+  modalStatusConfirm: false,
+  modalEditLeave: false
 })
 
 const toggleModal = (modalStateName: any) => {
@@ -523,16 +633,47 @@ const handleSearchLeave = async () => {
   }
 }
 
+const dataEditLeave = ref<any | null>(null)
 const handleEditLeave = async (id: number) => {
   try {
-    const res = await axios.post(`/leave/list`, {
+    const res = await axios.get(`${apiUri}/leave/detail?id=${id}`, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
     })
-    console.log('🚀 ~ handleEditLeave ~ res:', res)
+    dataEditLeave.value = res.data
+    toggleModal('modalEditLeave')
+    // console.log(
+    //   '🚀 ~ handleEditLeave ~ dataEditLeave.value:',
+    //   dataEditLeave.value
+    // )
   } catch (error) {
     console.log('🚀 ~ handleEditLeave ~ error:', error)
+  }
+}
+
+const leaveToDelete = ref<number | null>(null)
+const confirmDeleteLeave = (id: number) => {
+  leaveToDelete.value = id
+  toggleModal('modalStatusConfirm')
+}
+const handleDeleteLeave = async () => {
+  try {
+    if (!leaveToDelete.value) return
+
+    const formData = new FormData()
+    formData.append('id', leaveToDelete.value.toString())
+
+    const res = await axios.post(`${apiUri}/leave/delete`, formData, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    fetchDataLeave()
+    toggleModal('modalStatusConfirm')
+    console.log('🚀 ~ handleDeleteLeave ~ res:', res)
+  } catch (error) {
+    console.log('🚀 ~ handleDeleteLeave ~ error:', error)
   }
 }
 
@@ -549,6 +690,7 @@ const dataTotalPages = computed(() =>
 )
 
 const dataPostRequest = ref<any | null>(null)
+
 const getPostRequest = (data: any) => {
   dataPostRequest.value = data
   // console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
@@ -558,6 +700,19 @@ const getPostRequest = (data: any) => {
 
   if (dataPostRequest.value.status == 1) {
     toggleModal('modalAddLeave')
+  }
+}
+
+const dataPostRequestEdit = ref<any | null>(null)
+const getPostRequestEdit = (data: any) => {
+  dataPostRequestEdit.value = data
+  // console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
+  if (dataPostRequestEdit.value) {
+    toggleModal('modalStatusAddLeave')
+  }
+
+  if (dataPostRequestEdit.value.status == 1) {
+    toggleModal('modalEditLeave')
   }
 }
 

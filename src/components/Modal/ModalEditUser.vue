@@ -46,7 +46,7 @@
               name=""
               id=""
               placeholder="Nhập mã nhân viên"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
             />
             <div class="mt-1 text-sm text-red-500">{{ errors.code }}</div>
           </div>
@@ -66,7 +66,7 @@
               name=""
               id=""
               placeholder="Nhập họ tên"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
             />
             <div class="mt-1 text-sm text-red-500">{{ errors.name }}</div>
           </div>
@@ -86,7 +86,7 @@
               name=""
               id=""
               placeholder="Nhập số điện thoại"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
             />
             <div class="mt-1 text-sm text-red-500">{{ errors.phone }}</div>
           </div>
@@ -106,7 +106,7 @@
               name=""
               id=""
               placeholder="Nhập email"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
             />
             <div class="mt-1 text-sm text-red-500">{{ errors.email }}</div>
           </div>
@@ -120,20 +120,25 @@
               Ngày tháng năm sinh
             </span>
 
-            <div class="relative">
-              <flat-pickr
-                v-model="paramsUserDetail.dob"
-                :config="configFlatpickr"
-                class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-                placeholder="Chọn ngày"
-                name="dd/mm/yy"
-              />
+            <VueDatePicker
+              v-model="pickerEditDOB"
+              :enable-time-picker="false"
+              locale="vi"
+              :format-locale="vi"
+              cancelText="Huỷ"
+              selectText="Chọn"
+              format="dd-MM-yyyy"
+              :max-date="new Date()"
+              @update:model-value="updateDates"
+            />
+
+            <!-- <div class="relative">
               <div
                 class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -147,7 +152,7 @@
 
             <SelectRoot v-model="group_user" v-bind="guAttrs">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] px-2.5 py-1.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -178,8 +183,8 @@
                         :value="String(item.name)"
                       >
                         <SelectItemText>
-                          <!-- {{ capitalizeFirstLetter(item) }} -->
-                          {{ item.name }} - {{ item.description }}
+                          <!-- {{ item.name }} - {{ item.description }} -->
+                          {{ item.description }}
                         </SelectItemText>
                       </SelectItem>
                     </SelectGroup>
@@ -214,7 +219,7 @@
               name=""
               id=""
               placeholder="Nhập số CCCD"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
             />
           </div>
         </div>
@@ -227,20 +232,25 @@
               Ngày cấp
             </span>
 
-            <div class="relative">
-              <flat-pickr
-                v-model="paramsUserDetail.date_of_issue"
-                :config="configFlatpickr"
-                class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-                placeholder="Chọn ngày"
-                name="dd/mm/yy"
-              />
+            <VueDatePicker
+              v-model="pickerEditDateissue"
+              :enable-time-picker="false"
+              locale="vi"
+              :format-locale="vi"
+              cancelText="Huỷ"
+              selectText="Chọn"
+              format="dd-MM-yyyy"
+              :max-date="new Date()"
+              @update:model-value="updateDates"
+            />
+
+            <!-- <div class="relative">
               <div
                 class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -258,7 +268,7 @@
               name=""
               id=""
               placeholder="Nhập nơi cấp"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
             />
           </div>
         </div>
@@ -277,7 +287,7 @@
               name=""
               id=""
               placeholder="Nhập địa chỉ"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
             />
           </div>
         </div>
@@ -292,7 +302,7 @@
 
             <SelectRoot v-model="staffType.id">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-2.5 px-1.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -353,7 +363,7 @@
 
             <SelectRoot v-model="positionType.id">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] px-1.5 py-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -414,7 +424,7 @@
 
             <SelectRoot v-model="regionType.id">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] px-1.5 py-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -473,7 +483,7 @@
 
             <SelectRoot v-model="leaderType.id">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] px-1.5 py-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -538,7 +548,7 @@
               name=""
               id=""
               placeholder="Nhập địa chỉ"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
             />
           </div>
         </div>
@@ -557,7 +567,7 @@
               name=""
               id=""
               placeholder="Nhập địa chỉ tạm trú"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
             />
           </div>
         </div>
@@ -576,7 +586,7 @@
               name=""
               id=""
               placeholder="Nhập hợp đồng làm việc"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
             />
           </div>
         </div>
@@ -589,20 +599,24 @@
               Ngày tháng vào làm việc
             </span>
 
-            <div class="relative">
-              <flat-pickr
-                v-model="paramsUserDetail.working_day"
-                :config="configFlatpickr"
-                class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-                placeholder="Chọn ngày"
-                name="dd/mm/yy"
-              />
+            <VueDatePicker
+              v-model="pickerWorkingDay"
+              :enable-time-picker="false"
+              locale="vi"
+              :format-locale="vi"
+              cancelText="Huỷ"
+              selectText="Chọn"
+              format="dd-MM-yyyy"
+              @update:model-value="updateDates"
+            />
+
+            <!-- <div class="relative">
               <div
                 class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -619,7 +633,7 @@
               name=""
               id=""
               placeholder="Nhập số ngày nghỉ còn lại"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
             />
           </div>
         </div>
@@ -634,7 +648,7 @@
 
             <SelectRoot v-model="paramsUserDetail.status">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] px-1.5 py-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -697,7 +711,7 @@
 
 <script lang="ts" setup>
 import Modal from '@/components/Modals.vue'
-import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
+import { onBeforeMount, onMounted, reactive, ref, watch, nextTick } from 'vue'
 import flatPickr from 'vue-flatpickr-component'
 import { Vietnamese } from 'flatpickr/dist/l10n/vn.js'
 import 'flatpickr/dist/flatpickr.css'
@@ -728,17 +742,78 @@ import { useSystemUser } from '@/composables/system-user'
 import { tableMagic } from '@/utils/main'
 import { apiUri } from '@/constants/apiUri'
 import axios from 'axios'
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+import { vi } from 'date-fns/locale/vi'
+import { format } from 'date-fns'
 
 const auth = useAuth()
 
 const props = defineProps(['modal', 'userdata'])
 const emit = defineEmits(['toggle-modal', 'post-request-edit'])
 
-const configFlatpickr = ref({
-  // enableTime: true,
-  wrap: true, // set wrap to true only when using 'input-group'
-  dateFormat: 'd/m/Y',
-  locale: Vietnamese // locale for this instance only
+// Sử dụng type any cho date picker để có thể xử lý nhiều loại giá trị
+const pickerEditDOB = ref<any>(null)
+const pickerEditDateissue = ref<any>(null)
+const pickerWorkingDay = ref<any>(null)
+
+// Hàm xử lý và cập nhật giá trị ngày tháng cho các fields để tránh lỗi __vnode
+const updateDates = () => {
+  try {
+    if (!pickerEditDOB.value || String(pickerEditDOB.value) === '0000-00-00') {
+      // Nếu giá trị rỗng hoặc không hợp lệ, tạo ngày mới
+      pickerEditDOB.value = new Date(
+        new Date().setDate(new Date().getDate() + 1)
+      )
+    } else if (pickerEditDOB.value instanceof Date) {
+      // Nếu là đối tượng Date, format theo chuẩn yyyy-MM-dd
+      paramsUserDetail.dob = format(pickerEditDOB.value, 'yyyy-MM-dd')
+    } else if (typeof pickerEditDOB.value === 'string') {
+      // Nếu là chuỗi, sử dụng trực tiếp
+      paramsUserDetail.dob = pickerEditDOB.value
+    }
+
+    if (
+      !pickerEditDateissue.value ||
+      String(pickerEditDateissue.value) === '0000-00-00'
+    ) {
+      pickerEditDateissue.value = new Date(
+        new Date().setDate(new Date().getDate() + 1)
+      )
+    } else if (pickerEditDateissue.value instanceof Date) {
+      paramsUserDetail.date_of_issue = format(
+        pickerEditDateissue.value,
+        'yyyy-MM-dd'
+      )
+    } else if (typeof pickerEditDateissue.value === 'string') {
+      paramsUserDetail.date_of_issue = pickerEditDateissue.value
+    }
+
+    if (
+      !pickerWorkingDay.value ||
+      String(pickerWorkingDay.value) === '0000-00-00'
+    ) {
+      pickerWorkingDay.value = new Date(
+        new Date().setDate(new Date().getDate() + 1)
+      )
+    } else if (pickerWorkingDay.value instanceof Date) {
+      paramsUserDetail.working_day = format(
+        pickerWorkingDay.value,
+        'yyyy-MM-dd'
+      )
+    } else if (typeof pickerWorkingDay.value === 'string') {
+      paramsUserDetail.working_day = pickerWorkingDay.value
+    }
+  } catch (error) {
+    console.error('Error updating dates:', error)
+  }
+}
+
+// Theo dõi thay đổi của các date picker để cập nhật dữ liệu
+watch([pickerEditDOB, pickerEditDateissue, pickerWorkingDay], () => {
+  if (auth.check()) {
+    updateDates()
+  }
 })
 
 const paramsUserDetail = reactive<any>({
@@ -1040,13 +1115,11 @@ watch(
       paramsUserDetail.id = newVal[0][0].id
     }
     if (newVal[0][0].dob) {
+      pickerEditDOB.value = newVal[0][0].dob
       paramsUserDetail.dob = newVal[0][0].dob
     }
     if (newVal[0][0].identification) {
       paramsUserDetail.identification = newVal[0][0].identification
-    }
-    if (newVal[0][0].date_of_issue) {
-      paramsUserDetail.date_of_issue = newVal[0][0].date_of_issue
     }
     if (newVal[0][0].place_of_issue) {
       paramsUserDetail.place_of_issue = newVal[0][0].place_of_issue
@@ -1057,14 +1130,12 @@ watch(
     if (newVal[0][0].per_group_name) {
       paramsUserDetail.per_group_name = newVal[0][0].per_group_name
     }
-    if (newVal[0][0].dob) {
-      paramsUserDetail.dob = newVal[0][0].dob
-    }
     if (newVal[0][0].identification) {
       paramsUserDetail.identification = newVal[0][0].identification
     }
     if (newVal[0][0].date_of_issue) {
       paramsUserDetail.date_of_issue = newVal[0][0].date_of_issue
+      pickerEditDateissue.value = newVal[0][0].date_of_issue
     }
     if (newVal[0][0].original_place) {
       paramsUserDetail.original_place = newVal[0][0].original_place
@@ -1089,6 +1160,7 @@ watch(
     }
     if (newVal[0][0].working_day) {
       paramsUserDetail.working_day = newVal[0][0].working_day
+      pickerWorkingDay.value = newVal[0][0].working_day
     }
     if (newVal[0][0].total_days_off) {
       paramsUserDetail.total_days_off = newVal[0][0].total_days_off
@@ -1120,6 +1192,14 @@ onMounted(() => {
   fetchListPosition()
   fetchListRegion()
   fetchListLeader()
+
+  // Đảm bảo cập nhật ngày tháng sau khi component đã được render đầy đủ
+  // Sử dụng nextTick để đảm bảo DOM đã cập nhật trước khi làm việc với các ref
+  nextTick(() => {
+    if (auth.check()) {
+      updateDates()
+    }
+  })
 })
 </script>
 
