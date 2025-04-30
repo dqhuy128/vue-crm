@@ -167,7 +167,7 @@
             id=""
             v-model="FormSubmit.description"
             placeholder="Nhập mô tả"
-            class="w-full border min-h-[120px] border-solid border-[#161616] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
+            class="min-h-[120px] w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
           ></textarea>
         </div>
       </div>
@@ -279,10 +279,6 @@ const categoryDocument = reactive({
 
 const postRequest = ref<any | null>(null)
 const submit = async () => {
-  if (FormSubmit.value.name === null) {
-    alert('Vui lòng nhập tên tài liệu')
-    return
-  }
   const formData = new FormData()
   formData.append('name', FormSubmit.value.name || '')
 
@@ -304,7 +300,7 @@ const submit = async () => {
     })
     .then(function (res) {
       // successful response flow
-      FormSubmit.value.docCate = null
+      FormSubmit.value.docCate = ''
       fileUploadPreview.value = []
       props.closeModal()
       postRequest.value = res.data

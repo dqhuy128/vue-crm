@@ -167,17 +167,11 @@
 
                   <div class="cell">
                     <template v-if="it.type === 'document'">
-                      Danh mục loại tài liệu
+                      Tài liệu
                     </template>
-                    <template v-if="it.type === 'ticket'">
-                      Danh mục loại ticket
-                    </template>
-                    <template v-if="it.type === 'position'">
-                      Danh mục loại chức vụ
-                    </template>
-                    <template v-if="it.type === 'staff'">
-                      Danh mục loại bộ phận
-                    </template>
+                    <template v-if="it.type === 'ticket'"> Ticket </template>
+                    <template v-if="it.type === 'position'"> Chức vụ </template>
+                    <template v-if="it.type === 'staff'"> Bộ phận </template>
                   </div>
 
                   <div class="cell">

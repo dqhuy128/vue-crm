@@ -300,11 +300,11 @@
                 </div>
 
                 <div class="cell">
-                  {{ item?.position_id || 'Chưa có' }}
+                  {{ item?.position_text || 'Chưa có' }}
                 </div>
 
                 <div class="cell">
-                  {{ item?.part_id || 'Chưa có' }}
+                  {{ item?.part_text || 'Chưa có' }}
                 </div>
 
                 <div class="cell">

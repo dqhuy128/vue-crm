@@ -129,7 +129,7 @@
               selectText="Chọn"
               format="dd-MM-yyyy"
               :max-date="new Date()"
-              @update:model-value="updateDates"
+              @update:model-value="updateDatesEdit"
             />
 
             <!-- <div class="relative">
@@ -241,7 +241,7 @@
               selectText="Chọn"
               format="dd-MM-yyyy"
               :max-date="new Date()"
-              @update:model-value="updateDates"
+              @update:model-value="updateDatesEdit"
             />
 
             <!-- <div class="relative">
@@ -302,7 +302,7 @@
 
             <SelectRoot v-model="staffType.id">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-2.5 px-1.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] px-2.5 py-1.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -363,7 +363,7 @@
 
             <SelectRoot v-model="positionType.id">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] px-1.5 py-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -424,7 +424,7 @@
 
             <SelectRoot v-model="regionType.id">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] px-1.5 py-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -483,7 +483,7 @@
 
             <SelectRoot v-model="leaderType.id">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] px-1.5 py-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -600,14 +600,14 @@
             </span>
 
             <VueDatePicker
-              v-model="pickerWorkingDay"
+              v-model="pickerEditWorkingDay"
               :enable-time-picker="false"
               locale="vi"
               :format-locale="vi"
               cancelText="Huỷ"
               selectText="Chọn"
               format="dd-MM-yyyy"
-              @update:model-value="updateDates"
+              @update:model-value="updateDatesEdit"
             />
 
             <!-- <div class="relative">
@@ -648,7 +648,7 @@
 
             <SelectRoot v-model="paramsUserDetail.status">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] px-1.5 py-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
@@ -755,10 +755,10 @@ const emit = defineEmits(['toggle-modal', 'post-request-edit'])
 // Sử dụng type any cho date picker để có thể xử lý nhiều loại giá trị
 const pickerEditDOB = ref<any>(null)
 const pickerEditDateissue = ref<any>(null)
-const pickerWorkingDay = ref<any>(null)
+const pickerEditWorkingDay = ref<any>(null)
 
 // Hàm xử lý và cập nhật giá trị ngày tháng cho các fields để tránh lỗi __vnode
-const updateDates = () => {
+const updateDatesEdit = () => {
   try {
     if (!pickerEditDOB.value || String(pickerEditDOB.value) === '0000-00-00') {
       // Nếu giá trị rỗng hoặc không hợp lệ, tạo ngày mới
@@ -790,19 +790,19 @@ const updateDates = () => {
     }
 
     if (
-      !pickerWorkingDay.value ||
-      String(pickerWorkingDay.value) === '0000-00-00'
+      !pickerEditWorkingDay.value ||
+      String(pickerEditWorkingDay.value) === '0000-00-00'
     ) {
-      pickerWorkingDay.value = new Date(
+      pickerEditWorkingDay.value = new Date(
         new Date().setDate(new Date().getDate() + 1)
       )
-    } else if (pickerWorkingDay.value instanceof Date) {
+    } else if (pickerEditWorkingDay.value instanceof Date) {
       paramsUserDetail.working_day = format(
-        pickerWorkingDay.value,
+        pickerEditWorkingDay.value,
         'yyyy-MM-dd'
       )
-    } else if (typeof pickerWorkingDay.value === 'string') {
-      paramsUserDetail.working_day = pickerWorkingDay.value
+    } else if (typeof pickerEditWorkingDay.value === 'string') {
+      paramsUserDetail.working_day = pickerEditWorkingDay.value
     }
   } catch (error) {
     console.error('Error updating dates:', error)
@@ -810,9 +810,9 @@ const updateDates = () => {
 }
 
 // Theo dõi thay đổi của các date picker để cập nhật dữ liệu
-watch([pickerEditDOB, pickerEditDateissue, pickerWorkingDay], () => {
+watch([pickerEditDOB, pickerEditDateissue, pickerEditWorkingDay], () => {
   if (auth.check()) {
-    updateDates()
+    updateDatesEdit()
   }
 })
 
@@ -1160,7 +1160,7 @@ watch(
     }
     if (newVal[0][0].working_day) {
       paramsUserDetail.working_day = newVal[0][0].working_day
-      pickerWorkingDay.value = newVal[0][0].working_day
+      pickerEditWorkingDay.value = newVal[0][0].working_day
     }
     if (newVal[0][0].total_days_off) {
       paramsUserDetail.total_days_off = newVal[0][0].total_days_off
@@ -1197,7 +1197,7 @@ onMounted(() => {
   // Sử dụng nextTick để đảm bảo DOM đã cập nhật trước khi làm việc với các ref
   nextTick(() => {
     if (auth.check()) {
-      updateDates()
+      updateDatesEdit()
     }
   })
 })
