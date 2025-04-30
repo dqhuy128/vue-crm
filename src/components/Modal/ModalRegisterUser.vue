@@ -133,7 +133,7 @@
                   cancelText="Huỷ"
                   selectText="Chọn"
                   format="dd/MM/yyyy"
-                  :min-date="new Date()"
+                  :max-date="new Date()"
                 />
                 <div
                   class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
@@ -237,23 +237,17 @@
                 Ngày cấp
               </span>
 
-              <div class="relative">
-                <flat-pickr
-                  v-model="paramsUser.date_of_issue"
-                  :config="configFlatpickr"
-                  class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-                  placeholder="Chọn ngày"
-                  name="dd/mm/yy"
-                />
-                <div
-                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
-                >
-                  <img
-                    src="@/assets/images/cuidaa_calendar-outline.svg"
-                    alt=""
-                  />
-                </div>
-              </div>
+              <VueDatePicker
+                v-model="pickerDateissue"
+                :enable-time-picker="false"
+                locale="vi"
+                :format-locale="vi"
+                cancelText="Huỷ"
+                selectText="Chọn"
+                format="dd-MM-yyyy"
+                :max-date="new Date()"
+                @update:model-value="updateDates"
+              />
             </div>
           </div>
 
@@ -602,23 +596,16 @@
                 Ngày tháng vào làm việc
               </span>
 
-              <div class="relative">
-                <flat-pickr
-                  v-model="paramsUser.working_day"
-                  :config="configFlatpickr"
-                  class="form-control w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-                  placeholder="Chọn ngày"
-                  name="dd/mm/yy"
-                />
-                <div
-                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
-                >
-                  <img
-                    src="@/assets/images/cuidaa_calendar-outline.svg"
-                    alt=""
-                  />
-                </div>
-              </div>
+              <VueDatePicker
+                v-model="pickerWorkingDay"
+                :enable-time-picker="false"
+                locale="vi"
+                :format-locale="vi"
+                cancelText="Huỷ"
+                selectText="Chọn"
+                format="dd-MM-yyyy"
+                @update:model-value="updateDates"
+              />
             </div>
           </div>
 
@@ -762,25 +749,34 @@ const props = defineProps(['modal'])
 const emit = defineEmits(['toggle-modal', 'post-request'])
 
 const pickerDOB = ref<any | null>(null)
+const pickerDateissue = ref<any | null>(null)
+const pickerWorkingDay = ref<any | null>(null)
+
 const initDates = () => {
   pickerDOB.value = new Date(new Date().setDate(new Date().getDate() + 1))
+  pickerDateissue.value = new Date(new Date().setDate(new Date().getDate() + 1))
+  pickerWorkingDay.value = new Date(
+    new Date().setDate(new Date().getDate() + 1)
+  )
 }
 const updateDates = () => {
   if (pickerDOB.value) {
-    paramsUser.dob = format(pickerDOB.value, 'yyyy/MM/dd')
+    // Nếu là đối tượng Date, format theo chuẩn yyyy-MM-dd
+    paramsUser.dob = format(pickerDOB.value, 'yyyy-MM-dd')
+  }
+  if (pickerDateissue.value) {
+    paramsUser.date_of_issue = format(pickerDateissue.value, 'yyyy-MM-dd')
+  }
+  if (pickerWorkingDay.value) {
+    paramsUser.working_day = format(pickerWorkingDay.value, 'yyyy-MM-dd')
   }
 }
-watch(pickerDOB, () => {
+
+// Theo dõi thay đổi của các date picker để cập nhật dữ liệu
+watch([pickerDOB, pickerDateissue, pickerWorkingDay], () => {
   if (auth.check()) {
     updateDates()
   }
-})
-
-const configFlatpickr = ref({
-  // enableTime: true,
-  wrap: true, // set wrap to true only when using 'input-group'
-  dateFormat: 'd/m/Y',
-  locale: Vietnamese // locale for this instance only
 })
 
 const paramsUser = reactive<any>({

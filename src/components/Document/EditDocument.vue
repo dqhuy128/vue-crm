@@ -9,7 +9,7 @@
             Loại tài liệu
           </span>
 
-          <SelectRoot v-model="FormSubmit.docCate">
+          <SelectRoot v-model="FormSubmitEdit.docCate">
             <SelectTrigger
               class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] data-[placeholder]:text-[#909090]"
               aria-label="Customise options"
@@ -73,7 +73,7 @@
             id=""
             placeholder="Trợ lý"
             class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-            v-model="FormSubmit.name"
+            v-model="FormSubmitEdit.name"
           />
         </div>
       </div>
@@ -152,9 +152,9 @@
           <textarea
             name=""
             id=""
-            v-model="FormSubmit.description"
+            v-model="FormSubmitEdit.description"
             placeholder="Nhập mô tả"
-            class="w-full border min-h-[120px] border-solid border-[#161616] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
+            class="min-h-[120px] w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
           ></textarea>
         </div>
       </div>
@@ -215,7 +215,7 @@ type previewFiles = {
   file: File
 }
 const fileUploadPreview = ref<previewFiles[]>([])
-const FormSubmit = ref({
+const FormSubmitEdit = ref({
   name: props.data?.name || null,
   description: props.data?.description || null,
   docCate: props.data?.type_id || null,
@@ -274,10 +274,10 @@ const categoryDocument = reactive({
 const postRequestEdit = ref<any | null>(null)
 const submit = async () => {
   const formData = new FormData()
-  formData.append('name', FormSubmit.value.name || '')
-  formData.append('id', FormSubmit.value.id || '')
-  formData.append('type_id', FormSubmit.value.docCate || '')
-  formData.append('description', FormSubmit.value.description)
+  formData.append('name', FormSubmitEdit.value.name || '')
+  formData.append('id', FormSubmitEdit.value.id || '')
+  formData.append('type_id', FormSubmitEdit.value.docCate || '')
+  formData.append('description', FormSubmitEdit.value.description)
   if (fileUploadPreview.value.length > 0) {
     fileUploadPreview.value.forEach((item) => {
       formData.append('files', item.file)
@@ -294,7 +294,7 @@ const submit = async () => {
     .then(function (res) {
       // successful response flow
       //   fileUploadPreview.value = []
-      FormSubmit.value.docCate = null
+      FormSubmitEdit.value.docCate = ''
       props.closeModal()
       postRequestEdit.value = res.data
       emit('post-request-edit', postRequestEdit.value)
@@ -320,11 +320,11 @@ onMounted(() => {
 watch(
   () => props.data,
   () => {
-    FormSubmit.value.name = props.data.name
-    FormSubmit.value.description = props.data.description
-    FormSubmit.value.docCate = Number(props.data.type_id)
-    FormSubmit.value.id = props.data.id
-    FormSubmit.value.link = props.data.link
+    FormSubmitEdit.value.name = props.data.name
+    FormSubmitEdit.value.description = props.data.description
+    FormSubmitEdit.value.docCate = props.data.type_id
+    FormSubmitEdit.value.id = props.data.id
+    FormSubmitEdit.value.link = props.data.link
   }
 )
 </script>

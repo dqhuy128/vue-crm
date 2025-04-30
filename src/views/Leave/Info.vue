@@ -173,7 +173,7 @@
                     {{ it.reason }}
                   </template>
                   <template v-else>
-                    {{ 'Chưa có lý do' }}
+                    {{ 'Chưa có' }}
                   </template>
                 </div>
 
@@ -428,8 +428,8 @@
     </Modal>
 
     <Modal
-      @close="toggleModal('modalStatusAddLeave')"
-      :modalActive="modalActive.modalStatusAddLeave"
+      @close="toggleModal('modalStatusEditLeave')"
+      :modalActive="modalActive.modalStatusEditLeave"
       maxWidth="max-w-[512px]"
     >
       <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
@@ -541,6 +541,7 @@ interface recordModal {
 
 const modalActive = ref<recordModal>({
   modalStatusAddLeave: false,
+  modalStatusEditLeave: false,
   modalAddLeave: false,
   modalStatusConfirm: false,
   modalEditLeave: false
@@ -578,7 +579,7 @@ const tbhead = reactive([
 ])
 
 const params = reactive<any | null>({
-  status: null
+  status: ''
 })
 
 const paginate = reactive({
@@ -708,7 +709,7 @@ const getPostRequestEdit = (data: any) => {
   dataPostRequestEdit.value = data
   // console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
   if (dataPostRequestEdit.value) {
-    toggleModal('modalStatusAddLeave')
+    toggleModal('modalStatusEditLeave')
   }
 
   if (dataPostRequestEdit.value.status == 1) {

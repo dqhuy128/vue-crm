@@ -197,16 +197,23 @@
 
                   <div class="cell pinned pinned-body">
                     <div class="cell edit edit-body">
-                      <button
-                        type="button"
-                        class="cursor-pointer cell-btn-view shrink-0"
-                        @click="hdandleViewDocument(item.id)"
+                      <template
+                        v-if="
+                          item.link && item.link !== null && item.link !== ''
+                        "
                       >
-                        <img src="@/assets/images/action-edit-1.svg" alt="" />
-                      </button>
+                        <router-link
+                          :to="item.link"
+                          target="_blank"
+                          class="cursor-pointer cell-btn-view shrink-0"
+                        >
+                          <img src="@/assets/images/action-edit-1.svg" alt="" />
+                        </router-link>
+                      </template>
+
                       <button
                         type="button"
-                        class="cursor-pointer cell-btn-edit shrink-0"
+                        class="cursor-pointer cell-btn-edit shrink-0 ms-auto"
                         @click="handleEditDocument(item.id)"
                       >
                         <img src="@/assets/images/action-edit-2.svg" alt="" />
@@ -330,92 +337,65 @@
         </div>
       </div>
     </div>
-    <template v-if="modalActive.modalAddDocument">
-      <Modal
-        @close="toggleModal('modalAddDocument')"
-        :modalActive="modalActive.modalAddDocument"
-        maxWidth="max-w-[670px]"
-      >
-        <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-          <div class="mb-12 text-center max-xl:mb-6">
-            <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-              thêm mới tài liệu
-            </h3>
-          </div>
 
-          <CreateDocument
-            :closeModal="() => toggleModal('modalAddDocument')"
-            @post-request="getPostRequest"
-          >
-            <button
-              @click="toggleModal('modalAddDocument')"
-              type="button"
-              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-            >
-              Hủy
-            </button>
-          </CreateDocument>
+    <!-- <template v-if="modalActive.modalAddDocument"> -->
+    <Modal
+      @close="toggleModal('modalAddDocument')"
+      :modalActive="modalActive.modalAddDocument"
+      maxWidth="max-w-[670px]"
+    >
+      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+            thêm mới tài liệu
+          </h3>
         </div>
-      </Modal>
-    </template>
 
-    <template v-if="modalActive.modalEditDocument">
-      <Modal
-        @close="toggleModal('modalEditDocument')"
-        :modalActive="modalActive.modalEditDocument"
-        maxWidth="max-w-[670px]"
-      >
-        <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-          <div class="mb-12 text-center max-xl:mb-6">
-            <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-              Update tài liệu
-            </h3>
-          </div>
-
-          <EditDocument
-            :closeModal="() => toggleModal('modalEditDocument')"
-            :data="detailDocument"
-            @post-request-edit="getPostRequestEdit"
+        <CreateDocument
+          :closeModal="() => toggleModal('modalAddDocument')"
+          @post-request="getPostRequest"
+        >
+          <button
+            @click="toggleModal('modalAddDocument')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
           >
-            <button
-              @click="toggleModal('modalEditDocument')"
-              type="button"
-              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-            >
-              Hủy
-            </button>
-          </EditDocument>
-        </div>
-      </Modal>
-    </template>
-    <template v-if="modalActive.modalViewDocument">
-      <Modal
-        @close="toggleModal('modalViewDocument')"
-        :modalActive="modalActive.modalViewDocument"
-        maxWidth="max-w-[670px]"
-      >
-        <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-          <div class="mb-12 text-center max-xl:mb-6">
-            <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-              Chi tiết tài liệu
-            </h3>
-          </div>
+            Hủy
+          </button>
+        </CreateDocument>
+      </div>
+    </Modal>
+    <!-- </template> -->
 
-          <ViewDocument
-            :closeModal="() => toggleModal('modalViewDocument')"
-            :data="detailDocument"
-          >
-            <button
-              @click="toggleModal('modalViewDocument')"
-              type="button"
-              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-            >
-              Hủy
-            </button>
-          </ViewDocument>
+    <!-- <template v-if="modalActive.modalEditDocument"> -->
+    <Modal
+      @close="toggleModal('modalEditDocument')"
+      :modalActive="modalActive.modalEditDocument"
+      maxWidth="max-w-[670px]"
+    >
+      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+            Update tài liệu
+          </h3>
         </div>
-      </Modal>
-    </template>
+
+        <EditDocument
+          :closeModal="() => toggleModal('modalEditDocument')"
+          :data="detailDocument"
+          @post-request-edit="getPostRequestEdit"
+        >
+          <button
+            @click="toggleModal('modalEditDocument')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Hủy
+          </button>
+        </EditDocument>
+      </div>
+    </Modal>
+    <!-- </template> -->
 
     <Modal
       @close="toggleModal('modalStatusAdd')"
@@ -576,7 +556,6 @@ interface recordModal {
 const modalActive = ref<recordModal>({
   modalAddDocument: false,
   modalEditDocument: false,
-  modalViewDocument: false,
   modalStatusConfirm: false,
   modalStatusAdd: false,
   modalStatusEdit: false
@@ -715,25 +694,6 @@ const handleEditDocument = async (id: any) => {
       toggleModal('modalEditDocument')
     })
 }
-const hdandleViewDocument = async (id: any) => {
-  await axios
-    .get(`${apiUri}/document/detail`, {
-      headers: {
-        Authorization: `Bearer ${auth.token()}`
-      },
-      params: {
-        id: id
-      }
-    })
-    .then((res) => {
-      console.log(res.data.data, 'detail document')
-      detailDocument.value = res.data.data
-    })
-    .finally(() => {
-      toggleModal('modalViewDocument')
-    })
-  await nextTick()
-}
 
 function findCategoryName(typeId: string) {
   const category = categoryDocument.data.find((item) => item.id === typeId)
@@ -746,9 +706,6 @@ const getPostRequest = (data: any) => {
   console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
   if (dataPostRequest.value) {
     toggleModal('modalStatusAdd')
-  }
-
-  if (dataPostRequest.value.status === 1) {
     toggleModal('modalAddDocument')
   }
 }
