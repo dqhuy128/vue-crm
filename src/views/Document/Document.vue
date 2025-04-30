@@ -375,6 +375,7 @@
           <EditDocument
             :closeModal="() => toggleModal('modalEditDocument')"
             :data="detailDocument"
+            @post-request-edit="getPostRequestEdit"
           >
             <button
               @click="toggleModal('modalEditDocument')"
@@ -747,8 +748,8 @@ const getPostRequest = (data: any) => {
     toggleModal('modalStatusAdd')
   }
 
-  if (dataPostRequest.value.status == 1) {
-    toggleModal('modalAddCateManager')
+  if (dataPostRequest.value.status === 1) {
+    toggleModal('modalAddDocument')
   }
 }
 
@@ -761,11 +762,10 @@ const getPostRequestEdit = (data: any) => {
   )
   if (dataPostRequestEdit.value) {
     toggleModal('modalStatusEdit')
-
-    toggleModal('modalEditCateManager')
-    // if (dataPostRequestEdit.value.status == 1) {
-    // }
+    toggleModal('modalEditDocument')
   }
+
+  // if (Number(dataPostRequestEdit.value.status) === 1) {}
 }
 
 onMounted(() => {

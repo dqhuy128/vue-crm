@@ -6,7 +6,7 @@
           <span
             class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
           >
-            Loại tài liệu *
+            Loại tài liệu
           </span>
 
           <SelectRoot v-model="FormSubmit.docCate">
@@ -64,7 +64,7 @@
           <span
             class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
           >
-            Tên tài liệu *
+            Tên tài liệu
           </span>
 
           <input
@@ -206,6 +206,9 @@ const props = defineProps<{
   closeModal: () => void
   data: any
 }>()
+
+const emit = defineEmits(['post-request-edit'])
+
 type previewFiles = {
   name: string
   path: string
@@ -268,11 +271,8 @@ const categoryDocument = reactive({
   data: categories.value || undefined
 })
 
+const postRequestEdit = ref<any | null>(null)
 const submit = async () => {
-  if (FormSubmit.value.name === null) {
-    alert('Vui lòng nhập tên tài liệu')
-    return
-  }
   const formData = new FormData()
   formData.append('name', FormSubmit.value.name || '')
   formData.append('id', FormSubmit.value.id || '')
@@ -283,8 +283,7 @@ const submit = async () => {
       formData.append('files', item.file)
     })
   }
-  // console.log(FormSubmit.value, 'formData')
-  // return ;
+
   const response = await axios
     .post(`${apiUri}/document/update`, formData, {
       headers: {
@@ -294,9 +293,11 @@ const submit = async () => {
     })
     .then(function (res) {
       // successful response flow
-      FormSubmit.value.docCate = null
       //   fileUploadPreview.value = []
+      FormSubmit.value.docCate = null
       props.closeModal()
+      postRequestEdit.value = res.data
+      emit('post-request-edit', postRequestEdit.value)
       doFetch(
         `${apiUri}/document/list?page=1&per_page=10`,
         auth.token() as string
@@ -307,8 +308,6 @@ const submit = async () => {
     .catch(function (error) {
       alert('Tạo tài liệu thất bại')
     })
-
-  console.log('🚀 ~ submit ~ response:', response)
 }
 
 onMounted(() => {
