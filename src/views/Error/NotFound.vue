@@ -1,7 +1,7 @@
 <template>
   <MainLayout>
-    <div class="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 class="text-2xl font-bold text-gray-800">Page Not Found</h1>
+    <div class="flex flex-col items-center justify-center h-screen">
+      <h1 class="text-2xl font-bold text-[#464661]">Page Not Found</h1>
       <p class="text-gray-600">
         Sorry, the page you are looking for does not exist.
       </p>
@@ -13,5 +13,5 @@
 </template>
 
 <script lang="ts" setup>
-import MainLayout from '@/views/MainLayout.vue';
+import MainLayout from '@/views/MainLayout.vue'
 </script>
