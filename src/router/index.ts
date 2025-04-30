@@ -26,7 +26,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: { name: 'Personal' }
+      redirect: { name: 'Login' }
     },
     {
       path: '/login',
@@ -149,7 +149,7 @@ const router = createRouter({
     {
       path: '/404',
       name: 'NotFound404',
-      component: () => import('../views/Error/NotFound.vue'),
+      component: () => import('../views/Error/NotFound.vue')
     }
     // {
     //   path: '/permit',

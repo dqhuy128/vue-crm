@@ -31,15 +31,17 @@ const handleLogin = async () => {
     formData.append('password', form.password)
 
     const res = await auth.login({
-      method: 'post',
+      method: 'POST',
       url: `${apiUri}/user/login`,
       data: formData,
       headers: { 'Content-Type': 'multipart/form-data' },
+      staySignedIn: true,
+      fetchUser: true
     })
 
-    const { status } = res.data
-    console.log('Status type:', typeof status, 'Status value:', status)
+    console.log(res.data)
 
+    const { status } = res.data
     if (status == 0) {
       //  dang nhap ko thanh cong
       error.value = 'Đăng nhập thất bại'
@@ -48,15 +50,11 @@ const handleLogin = async () => {
       }
       return
     } else {
-      // get access token
       const { access_token, per_group_name } = res.data.data
       console.log('Access token received:', !!access_token)
-
-      // Set the access_token as the default token in Vue Auth 3
       auth.token(null, access_token)
+      // permissionStore.setUserPermission(per_group_name)
       permissionStore.fetchPermission(access_token)
-      permissionStore.setUserPermission(per_group_name)
-      // dang nhap thanh cong
       router.push({ name: 'Personal' })
     }
   } catch (err: any) {
@@ -64,8 +62,8 @@ const handleLogin = async () => {
     if (err.response?.status === 401) {
       await auth
         .logout({
-          makeRequest: false, // Disable API request
-          redirect: '/login' // Redirect to login page
+          makeRequest: false,
+          redirect: '/login'
         })
         .then(() => {
           permissionStore.$reset()
