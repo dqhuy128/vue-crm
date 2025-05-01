@@ -721,8 +721,6 @@ const getPostRequestEdit = (data: any) => {
     toggleModal('modalStatusEdit')
     toggleModal('modalEditDocument')
   }
-
-  // if (Number(dataPostRequestEdit.value.status) === 1) {}
 }
 
 onMounted(() => {
@@ -732,26 +730,10 @@ onMounted(() => {
   }
   console.log(dataDocument, 'dataDocument')
 })
+
 const checkPermission = ref(false)
-// onMounted(() => {
 const permissionStore = usePermissionStore()
 const { permissionList } = storeToRefs(permissionStore)
-
-// if (auth.check()) {
-//   if (permissionList.value) {
-//     // console.log(permissionList.value, 'permissionList')
-//     checkPermission.value = permissionList.value.includes('Document') ? true : false
-//     if (!checkPermission.value) {
-//       // alert('Bạn không có quyền truy cập vào trang này')
-//       // router.push({ name: 'NotFound404' })
-//     } else {
-//       // fetchCategoryDocument()
-//       fetchDataDocument()
-//       console.log(dataDocument, 'dataDocument')
-//     }
-//   }
-// }
-// })
 watch(permissionList, () => {
   console.log('🚀 ~ //onMounted ~ permissionList:', permissionList)
   if (auth.check()) {
@@ -768,6 +750,7 @@ watch(permissionList, () => {
     }
   }
 })
+
 watch(
   paginate,
   async () => {

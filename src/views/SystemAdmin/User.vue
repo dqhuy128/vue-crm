@@ -661,6 +661,9 @@ import {
 import { Icon } from '@iconify/vue'
 import ModalEditUser from '@/components/Modal/ModalEditUser.vue'
 import axios from 'axios'
+import { usePermissionStore } from '@/store/permission'
+import { storeToRefs } from 'pinia'
+import router from '@/router'
 
 interface recordModal {
   [key: string]: boolean
@@ -919,21 +922,31 @@ const dataDocument = reactive<any>({
   doc: data
 })
 
-watch(
-  () => params.position_id,
-  (newVal) => {
-    console.log('🚀 ~ watch ~ value:', newVal)
-  },
-  { deep: true }
+const dataTotalPages = computed(() =>
+  Math.ceil(
+    Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page)
+  )
 )
 
-watch(
-  () => params.part_id,
-  (newVal) => {
-    console.log('🚀 ~ watch ~ value:', newVal)
-  },
-  { deep: true }
-)
+const checkPermission = ref(false)
+const permissionStore = usePermissionStore()
+const { permissionList } = storeToRefs(permissionStore)
+watch(permissionList, () => {
+  console.log('🚀 ~ //onMounted ~ permissionList:', permissionList)
+  if (auth.check()) {
+    checkPermission.value = permissionList.value.includes('Document')
+      ? true
+      : false
+    if (!checkPermission.value) {
+      alert('Bạn không có quyền truy cập vào trang này')
+      router.push({ name: 'NotFound404' })
+    } else {
+      // fetchCategoryDocument()
+      fetchDataDocument()
+      console.log(dataDocument, 'dataDocument')
+    }
+  }
+})
 
 watch(
   paginate,
@@ -948,35 +961,17 @@ watch(
   }
 )
 
-const dataTotalPages = computed(() =>
-  Math.ceil(
-    Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page)
-  )
-)
-
 watch(
-  () => params.per_group_name,
+  () => [params.per_group_name, params.position_id, params.part_id],
   () => {
     if (params.per_group_name === 'all') {
       params.per_group_name = ''
     }
-  },
-  { deep: true, immediate: true }
-)
 
-watch(
-  () => params.part_id,
-  () => {
     if (params.part_id === 'all') {
       params.part_id = ''
     }
-  },
-  { deep: true, immediate: true }
-)
 
-watch(
-  () => params.position_id,
-  () => {
     if (params.position_id === 'all') {
       params.position_id = ''
     }
