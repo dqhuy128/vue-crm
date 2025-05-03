@@ -191,7 +191,7 @@
                     {{ item.name }}
                   </div>
                   <div class="cell">
-                    {{ item.description || 'Chưa có mô tả' }}
+                    {{ item.description }}
                   </div>
                   <div class="cell">
                     {{ item.created_at }}
@@ -251,7 +251,7 @@
       </div>
 
       <div
-        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap items-center gap-2 tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -555,7 +555,7 @@ const params = reactive({
 })
 const paginate = reactive({
   page: 1,
-  per_page: 10
+  per_page: 20
 })
 const debounceTime = ref<{
   timeOut: number | null
@@ -713,7 +713,7 @@ const handleEditDocument = async (id: any) => {
 
 function findCategoryName(typeId: string) {
   const category = categoryDocument.data.find((item) => item.id === typeId)
-  return category ? category.name : 'Chưa có loại tài liệu'
+  return category ? category.name : ''
 }
 
 const dataPostRequest = ref<any | null>(null)

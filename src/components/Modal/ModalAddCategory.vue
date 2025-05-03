@@ -158,7 +158,7 @@ const params = reactive({
 })
 const paginate = reactive({
   page: 1,
-  per_page: 10
+  per_page: 20
 })
 const debounceTime = ref<{
   timeOut: number | null

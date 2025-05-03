@@ -307,7 +307,7 @@
               >
                 <SelectValue
                   class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
-                  placeholder="Chọn loại danh mục"
+                  placeholder="Chọn bộ phận"
                 />
                 <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
               </SelectTrigger>
@@ -368,7 +368,7 @@
               >
                 <SelectValue
                   class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
-                  placeholder="Chọn loại danh mục"
+                  placeholder="Chọn chức vụ"
                 />
                 <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
               </SelectTrigger>
@@ -429,7 +429,7 @@
               >
                 <SelectValue
                   class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
-                  placeholder="Chọn loại danh mục"
+                  placeholder="Chọn địa điểm"
                 />
                 <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
               </SelectTrigger>
@@ -488,7 +488,7 @@
               >
                 <SelectValue
                   class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
-                  placeholder="Chọn loại danh mục"
+                  placeholder="Chọn quản lý"
                 />
                 <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
               </SelectTrigger>
@@ -979,7 +979,7 @@ const params = reactive({
 })
 const paginate = reactive({
   page: 1,
-  per_page: 10
+  per_page: 20
 })
 const debounceTime = ref<{
   timeOut: number | null

@@ -14,67 +14,67 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue"
-import TreeNode from "./TreeNode.vue"
+import { ref, reactive } from 'vue'
+import TreeNode from '@/components/TreeNode.vue'
 
 // Sample tree data structure matching the image
 const treeData = reactive([
   {
-    id: "system",
-    label: "Quản trị hệ thống",
+    id: 'system',
+    label: 'Quản trị hệ thống',
     expanded: true,
     children: [
       {
-        id: "user-management",
-        label: "Quản lý người dùng",
+        id: 'user-management',
+        label: 'Quản lý người dùng',
         children: []
       },
       {
-        id: "permission-management",
-        label: "Quản lý phân quyền",
+        id: 'permission-management',
+        label: 'Quản lý phân quyền',
         children: []
       },
       {
-        id: "system-catalog",
-        label: "Quản lý danh mục chung của hệ thống",
+        id: 'system-catalog',
+        label: 'Quản lý danh mục chung của hệ thống',
         children: []
       }
     ]
   },
   {
-    id: "documents",
-    label: "Tài liệu",
+    id: 'documents',
+    label: 'Tài liệu',
     expanded: false,
     children: []
   },
   {
-    id: "attendance",
-    label: "Quản lý chấm công",
+    id: 'attendance',
+    label: 'Quản lý chấm công',
     expanded: false,
     children: []
   },
   {
-    id: "leave",
-    label: "Quản lý ngày nghỉ",
+    id: 'leave',
+    label: 'Quản lý ngày nghỉ',
     expanded: false,
     children: []
   },
   {
-    id: "tickets",
-    label: "Xin/duyệt ticket",
+    id: 'tickets',
+    label: 'Xin/duyệt ticket',
     expanded: false,
     children: []
   },
   {
-    id: "notifications",
-    label: "Quản lý thông báo",
+    id: 'notifications',
+    label: 'Quản lý thông báo',
     expanded: false,
     children: []
   }
 ])
 
 // Track selected items
-const selectedItems = reactive(new Set(["user-management", "system-catalog"]))
+const selectedItems = reactive(new Set(['user-management', 'system-catalog']))
 
 // Toggle selection of a node
 const toggleSelect = (node) => {

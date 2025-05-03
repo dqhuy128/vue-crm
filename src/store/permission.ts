@@ -44,7 +44,7 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  function checkPermission(permission: string, actions: string){
+  function checkPermission(permission: string, actions: string) {
     if (!permision.value) return false
     const rolePermission = permision.value[permission]
     if (!rolePermission) return false
@@ -86,7 +86,7 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
   const setUserPermission = (permission: string) => {
-    if(!userData.value) return
+    if (!userData.value) return
     if (userData.value) {
       userData.value.per_group_name = permission
     }
