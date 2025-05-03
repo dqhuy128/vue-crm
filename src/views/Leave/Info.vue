@@ -1,5 +1,7 @@
 <template>
   <MainLayout>
+    <Breadcrums name="Thông tin nghỉ phép" path="/leave/info" />
+
     <div class="bg-white rounded-[24px] p-2.5 max-w-[552px]">
       <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchLeave">
         <div class="flex flex-wrap items-stretch gap-4 grow">
@@ -543,6 +545,7 @@ import ModalEditLeave from '@/components/Modal/ModalEditLeave.vue'
 import { usePermissionStore } from '@/store/permission'
 import { storeToRefs } from 'pinia'
 import router from '@/router'
+import Breadcrums from '@/components/BreadcrumsNew.vue'
 
 const auth = useAuth()
 

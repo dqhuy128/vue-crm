@@ -1,5 +1,7 @@
 <template>
   <MainLayout>
+    <Breadcrums name="Quản lý danh mục" path="/system/category" />
+
     <div class="bg-white rounded-[24px] p-2.5">
       <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchDocument">
         <div class="flex flex-wrap gap-4 grow">
@@ -544,6 +546,7 @@ import axios from 'axios'
 import { usePermissionStore } from '@/store/permission'
 import { storeToRefs } from 'pinia'
 import router from '@/router'
+import Breadcrums from '@/components/BreadcrumsNew.vue'
 
 interface recordModal {
   [key: string]: boolean

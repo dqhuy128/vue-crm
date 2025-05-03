@@ -1,5 +1,7 @@
 <template>
   <MainLayout>
+    <Breadcrums name="Tài liệu" path="/document" />
+
     <div class="bg-white rounded-[24px] p-2.5">
       <form
         @submit.prevent="handleSearchDocument"
@@ -521,7 +523,6 @@
 <script lang="ts" setup>
 import CreateDocument from '@/components/Document/CreateDocument.vue'
 import EditDocument from '@/components/Document/EditDocument.vue'
-import ViewDocument from '@/components/Document/ViewDocument.vue'
 import Modal from '@/components/Modals.vue'
 import { useDocument } from '@/composables/document'
 import { apiUri } from '@/constants/apiUri'
@@ -546,6 +547,7 @@ import {
 import { computed, nextTick, onMounted, reactive, Ref, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
 import MainLayout from '../MainLayout.vue'
+import Breadcrums from '@/components/BreadcrumsNew.vue'
 
 const auth = useAuth()
 

@@ -1,5 +1,7 @@
 <template>
   <MainLayout>
+    <Breadcrums name="Quản lý người dùng" path="/system/user" />
+
     <div class="bg-white rounded-[24px] p-2.5">
       <form
         class="flex flex-wrap items-stretch gap-4"
@@ -676,6 +678,7 @@ import axios from 'axios'
 import { usePermissionStore } from '@/store/permission'
 import { storeToRefs } from 'pinia'
 import router from '@/router'
+import Breadcrums from '@/components/BreadcrumsNew.vue'
 
 interface recordModal {
   [key: string]: boolean

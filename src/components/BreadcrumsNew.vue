@@ -1,7 +1,7 @@
 <template>
-  <div class="block mt-5 mb-7">
-    <div id="breadcrumbs" class="flex flex-wrap items-center gap-2 mb-2">
-      <template v-for="(n, idx) in props.breadcrumbList">
+  <div class="block my-4">
+    <div id="breadcrumbs" class="flex flex-wrap items-center gap-2">
+      <template v-for="(n, idx) in breadcrumbsList">
         <router-link
           :to="n.path"
           :class="[
@@ -14,21 +14,32 @@
         </router-link>
       </template>
     </div>
-    <!-- <PageTitle> <slot></slot></PageTitle> -->
+    <PageTitle><slot /></PageTitle>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import PageTitle from './PageTitle.vue'
 
-interface Breadcrumb {
+const breadcrumbsList = ref([
+  {
+    name: 'Home',
+    path: '/dashboard/personal'
+  }
+])
+
+const props = defineProps<{
   name: string
   path: string
-}
-const props = defineProps<{
-  breadcrumbList: Breadcrumb[]
 }>()
+
+breadcrumbsList.value.push({
+  name: props.name,
+  path: props.path
+})
 </script>
+
 <style lang="scss" scoped>
 .breadcrumbs-nav-first {
   position: relative;
