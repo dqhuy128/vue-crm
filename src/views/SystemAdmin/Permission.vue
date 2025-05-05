@@ -1,21 +1,58 @@
 <template>
   <MainLayout>
-    <div class="mb-3">
-      <div class="grid grid-cols-12 gap-6">
-        <div class="col-span-12 lg:col-span-6">
-          <SeachBox class="max-w-[550px]">
-            <div class="relative grow">
-              <input
-                type="text"
-                name=""
-                id=""
-                placeholder="Nhập chức vụ"
-                class="w-full text-[#909090] text-[16px] max-md:text-[14px] font-normal p-2.5 bg-white border border-solid border-[#EDEDF6] rounded-[24px]"
-              />
-            </div>
-          </SeachBox>
+    <Breadcrums name="Quản lý phân quyền" path="/system/permission" />
+
+    <div class="bg-white rounded-[24px] p-2.5 max-w-[552px]">
+      <form
+        class="flex flex-wrap gap-4"
+        @submit.prevent="handleSearchPermission"
+      >
+        <div class="flex flex-wrap items-stretch gap-4 grow">
+          <div class="flex-[100%]">
+            <input
+              v-model="params.name"
+              type="text"
+              name=""
+              id=""
+              placeholder="Nhập chức vụ"
+              class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
+            />
+          </div>
         </div>
-      </div>
+
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center max-md:flex-[100%] gap-2 bg-[#013878] rounded-[24px] p-[8px_16px] transition hover:shadow-hoverinset cursor-pointer"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path
+              d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M21.0002 21L16.7002 16.7"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span
+            class="text-white font-inter text-[15px] font-bold leading-normal"
+          >
+            Tìm kiếm
+          </span>
+        </button>
+      </form>
     </div>
 
     <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
@@ -24,120 +61,427 @@
       >
         Danh sách phân quyền
       </div>
-
-      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
-        <button
-          type="button"
-          id="tableAdding"
-          class="rounded-[24px] bg-[#1b4dea] inline-flex items-end max-md:items-center md:gap-2 p-[7px_12px] cursor-pointer transition hover:shadow-hoverinset"
-          @click="toggleModal('modalNewPermission')"
-        >
-          <img src="@/assets/images/si_add-fill.svg" alt="" />
-          <span
-            class="text-white font-inter text-[16px] max-md:text-[12px] font-bold leading-normal"
-          >
-            Thêm mới
-          </span>
-        </button>
-      </div>
     </div>
 
+    <template v-if="checkPermission('Leave', 'List')">
+      <div class="flex flex-col h-full">
+        <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
+          <div class="relative table-container">
+            <!-- Example column -->
+            <div id="tableRowHeader" class="justify-between table-row header">
+              <div class="cell" v-for="(column, index) in tbhead" :key="index">
+                {{ column.title }}
+
+                <div class="tb-sort" v-if="column.hasSort">
+                  <button type="button">
+                    <img src="@/assets/images/tb-sort.svg" alt="" />
+                  </button>
+                </div>
+              </div>
+              <div class="!pr-2 cell pinned">
+                <div class="cell edit">Thao tác</div>
+              </div>
+            </div>
+
+            <!-- Example row -->
+            <div id="tableRowBody" class="table-row body">
+              <template v-if="dataPermission.doc">
+                <div
+                  class="justify-between table-item"
+                  v-for="(it, index) in dataPermission.doc"
+                  :key="index"
+                >
+                  <!-- bg-blue , bg-green , bg-red , bg-purple , :class="{ 'bg-blue': id === 1 }"-->
+                  <div class="cell">
+                    <template v-if="Number(index) < 9">
+                      0{{ Number(index) + 1 }}
+                    </template>
+                    <template v-else>{{ Number(index) + 1 }}</template>
+                  </div>
+
+                  <div class="cell">
+                    {{ it.name }}
+                  </div>
+
+                  <div class="cell">
+                    {{ it.description }}
+                  </div>
+
+                  <!-- <div class="cell"></div> -->
+
+                  <div class="cell pinned pinned-body">
+                    <div class="justify-center cell edit edit-body">
+                      <template v-if="checkPermission('Leave', 'Update')">
+                        <button
+                          @click="handleEditPermission(it.name)"
+                          type="button"
+                          class="cursor-pointer cell-btn-edit shrink-0"
+                        >
+                          <img src="@/assets/images/action-edit-2.svg" alt="" />
+                        </button>
+                      </template>
+
+                      <!-- <template v-if="checkPermission('Leave', 'Delete')">
+                        <button
+                          @click="confirmDeleteLeave(it.id)"
+                          type="button"
+                          class="cursor-pointer cell-btn-delete shrink-0"
+                        >
+                          <img src="@/assets/images/action-edit-3.svg" alt="" />
+                        </button>
+                      </template> -->
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
     <Modal
-      @close="toggleModal('modalNewPermission')"
-      :modalActive="modalActive.modalNewPermission"
-      maxWidth="max-w-[865px]"
+      @close="toggleModal('modalEditPermission')"
+      :modalActive="modalActive.modalEditPermission"
+      maxWidth="max-w-[670px]"
     >
-      <div class="rounded-[24px] p-1.5 bg-white overflow-hidden py-12 px-6">
-        <div class="mb-12 text-center max-md:mb-6">
-          <h3
-            class="inline-block text-[#464661] text-[16px] font-bold uppercase"
-          >
-            thêm mới nhóm quyền
+      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
+            chỉnh sửa nhóm quyền
           </h3>
         </div>
 
-        <form action="" class="">
-          <div class="block mb-6">
-            <span
-              class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-            >
-              Chức vụ
-            </span>
-            <input
-              type="text"
-              name=""
-              id=""
-              placeholder="Nhập chức vụ"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
-            />
-          </div>
-
-          <div class="block mb-4">
-            <span
-              class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-            >
-              Mô tả
-            </span>
-            <textarea
-              name=""
-              id=""
-              placeholder="Nhập mô tả"
-              class="w-full border min-h-[120px] border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
-            ></textarea>
-          </div>
-
-          <div class="block mb-4">
-            <span
-              class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-            >
-              Chức năng nhóm quyền
-            </span>
-
-            <TreeComponent />
-          </div>
-
-          <div
-            class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center max-md:mt-6 xl:gap-6"
+        <ModalEditPermission
+          :datatype="dataEditPermission"
+          :userPermission="permissionListData"
+          @post-request="getPostRequest"
+        >
+          <button
+            @click="toggleModal('modalEditPermission')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
           >
-            <button
-              @click="toggleModal('modalNewPermission')"
-              type="button"
-              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] max-md:text-[14px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              class="max-md:grow inline-block md:min-w-[175px] border border-solid border-main bg-main text-white text-[16px] max-md:text-[14px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition"
-            >
-              Lưu
-            </button>
-          </div>
-        </form>
+            Hủy
+          </button>
+        </ModalEditPermission>
+      </div>
+    </Modal>
+
+    <Modal
+      @close="toggleModal('modalStatusEditPermission')"
+      :modalActive="modalActive.modalStatusEditPermission"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
+        >
+          {{ dataPostRequestEdit?.message }}
+        </div>
+      </div>
+    </Modal>
+
+    <Modal
+      @close="toggleModal('modalStatusConfirm')"
+      :modalActive="modalActive.modalStatusConfirm"
+      maxWidth="max-w-[512px]"
+    >
+      <div class="rounded-[24px] p-[45px_16px] bg-white overflow-hidden">
+        <div
+          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        >
+          Thông báo
+        </div>
+
+        <div class="mb-3 text-center">
+          <img
+            class="mx-auto"
+            src="@/assets/images/icon-park-outline_attention.svg"
+            alt=""
+          />
+        </div>
+
+        <div
+          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold mb-6 underline"
+        >
+          Bạn chắc chắn muốn xoá đơn nghỉ phép này ?
+        </div>
+
+        <div
+          class="flex flex-wrap items-stretch justify-center gap-3 text-center mt-9 xl:gap-6"
+        >
+          <button
+            @click="toggleModal('modalStatusConfirm')"
+            type="button"
+            class="max-md:grow inline-block md:min-w-[130px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Hủy
+          </button>
+          <button
+            @click="handleDeleteLeave"
+            type="submit"
+            class="max-md:grow inline-block md:min-w-[130px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+          >
+            Xác nhận
+          </button>
+        </div>
       </div>
     </Modal>
   </MainLayout>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
-import MainLayout from "../MainLayout.vue"
-import SeachBox from "../../components/SeachBox.vue"
-import Modal from "@/components/Modals.vue"
-import TreeComponent from "../../components/TreeComponent.vue"
-import "flatpickr/dist/flatpickr.css"
+import { onMounted, reactive, ref, watch } from 'vue'
+import MainLayout from '../MainLayout.vue'
+import Modal from '@/components/Modals.vue'
+import { useAuth } from 'vue-auth3'
+import axios from 'axios'
+import { apiUri } from '@/constants/apiUri'
+import { tableMagic } from '@/utils/main'
+import ModalEditPermission from '@/components/Modal/ModalEditPermission.vue'
+import { usePermissionStore } from '@/store/permission'
+import { storeToRefs } from 'pinia'
+import router from '@/router'
+import { usePermission } from '@/composables/permission'
+import Breadcrums from '@/components/BreadcrumsNew.vue'
+
+const auth = useAuth()
 
 interface recordModal {
   [key: string]: boolean
 }
 
 const modalActive = ref<recordModal>({
-  modalNewPermission: false
+  modalEditPermission: false,
+  modalStatusEditPermission: false
 })
 
 const toggleModal = (modalStateName: any) => {
   modalActive.value[modalStateName] = !modalActive.value[modalStateName]
 }
+
+const tbhead = reactive([
+  {
+    title: 'STT',
+    hasSort: false
+  },
+  {
+    title: 'Chức vụ',
+    hasSort: false
+  },
+  {
+    title: 'Mô tả',
+    hasSort: false
+  }
+  // {
+  //   title: 'Ngày cập nhật',
+  //   hasSort: true
+  // }
+])
+
+const params = reactive<any | null>({
+  name: ''
+})
+
+const debounceTime = ref<{
+  timeOut: number | null
+  counter: number
+}>({
+  timeOut: null,
+  counter: 0
+})
+
+const fetchDataPermission = () => {
+  if (debounceTime.value.timeOut !== null) {
+    clearTimeout(debounceTime.value.timeOut)
+  }
+
+  debounceTime.value.timeOut = setTimeout(() => {
+    const res = {
+      ...params
+    }
+
+    doFetch(
+      `${apiUri}/permission/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
+      auth.token() as string
+    ).then(() => {
+      // console.log('🚀 ~ fetchdataPermission ~ res:', res)
+      tableMagic()
+    })
+  }, 300)
+}
+
+const dataEditPermission = ref<any | null>(null)
+const handleEditPermission = async (name: string) => {
+  try {
+    const response = await axios.get(`${apiUri}/permission/list?name=${name}`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+
+    const { data } = response.data
+    dataEditPermission.value = data
+
+    // console.log(
+    //   '🚀 ~ handleEditPermission ~ dataEditPermission:',
+    //   dataEditPermission.value
+    // )
+  } catch (error) {
+    console.log('🚀 ~ handleEditPermission ~ error:', error)
+  } finally {
+    toggleModal('modalEditPermission')
+    // fetchDataPermission()
+  }
+}
+
+const handleSearchPermission = async () => {
+  try {
+    const formData = new FormData()
+    formData.append('name', params.name)
+
+    const response = await axios.post(`${apiUri}/permission/list`, formData, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    console.log('🚀 ~ handleSearchPermission ~ response:', response)
+  } catch (error) {
+    console.log('🚀 ~ handleSearchPermission ~ error:', error)
+  } finally {
+    fetchDataPermission()
+  }
+}
+
+const { data, doFetch } = usePermission()
+
+const dataPermission = reactive({
+  doc: data
+})
+
+const dataPostRequest = ref<any | null>(null)
+const getPostRequest = (data: any) => {
+  dataPostRequest.value = data
+  // console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
+  if (dataPostRequest.value) {
+    toggleModal('modalStatusAddLeave')
+  }
+
+  if (dataPostRequest.value.status == 1) {
+    toggleModal('modalAddLeave')
+  }
+}
+
+const permissionStore = usePermissionStore()
+const { permissionList, permissionListData } = storeToRefs(permissionStore)
+const { checkPermission } = permissionStore
+
+watch(permissionList, () => {
+  // console.log('🚀 ~ onMounted ~ permissionList:', permissionList)
+  if (auth.check()) {
+    if (!permissionList.value.includes('Document')) {
+      alert('Bạn không có quyền truy cập vào trang này')
+      router.push({ name: 'NotFound404' })
+    } else {
+      fetchDataPermission()
+      // console.log(dataPermission, 'dataPermission')
+    }
+  }
+})
+
+watch(
+  () => params.name,
+  () => {
+    if (params.name == '' || params.name == null) {
+      fetchDataPermission()
+    }
+  },
+  { deep: true, immediate: true }
+)
+
+onMounted(() => {
+  if (auth.check()) {
+    fetchDataPermission()
+  }
+})
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@import '../../styles/table.module.scss';
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #464661;
+
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  padding: 6px 10px !important;
+  border-radius: 24px;
+
+  @media (max-width: 767px) {
+    padding: 6px !important;
+    font-size: 10px !important;
+    padding-left: 0 !important;
+  }
+
+  &-body {
+    @media (max-width: 767px) {
+      padding: 6px !important;
+      font-size: 7px !important;
+    }
+  }
+}
+
+.status-green {
+  border: 1px solid #12f13e;
+  background: #c4ffd0;
+}
+
+.status-red {
+  border: 1px solid #ff0000;
+  background: #ff00003d;
+}
+
+.status-gray {
+  border: 1px solid #9c9c9c;
+  background: #9c9c9c73;
+}
+
+.select-block {
+  position: relative;
+
+  &::after {
+    content: url('data:image/svg+xml,<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.96389 10.164C9.04747 10.0804 9.1467 10.0141 9.25591 9.96881C9.36512 9.92356 9.48218 9.90027 9.60039 9.90027C9.71861 9.90027 9.83566 9.92356 9.94487 9.96881C10.0541 10.0141 10.1533 10.0804 10.2369 10.164L11.9999 11.927L13.7639 10.164C13.9338 10.0011 14.1607 9.91123 14.3961 9.91366C14.6314 9.91609 14.8564 10.0106 15.0229 10.177C15.1894 10.3433 15.2841 10.5683 15.2867 10.8036C15.2893 11.039 15.1996 11.266 15.0369 11.436L12.6369 13.836C12.5533 13.9196 12.4541 13.9859 12.3449 14.0311C12.2357 14.0764 12.1186 14.0997 12.0004 14.0997C11.8822 14.0997 11.7651 14.0764 11.6559 14.0311C11.5467 13.9859 11.4475 13.9196 11.3639 13.836L8.96389 11.436C8.79535 11.2672 8.70068 11.0385 8.70068 10.8C8.70068 10.5615 8.79535 10.3327 8.96389 10.164Z" fill="%23464661"/></svg>');
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-40%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  select {
+    appearance: none;
+    width: 100%;
+  }
+}
+</style>

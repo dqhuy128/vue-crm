@@ -26,6 +26,8 @@ export const usePermissionStore = defineStore('permission', () => {
   const permision = ref<PermissionType | null>(null)
   const permissionList = ref<String[]>([])
   const userData = ref<UserInfoProps | null>(null)
+  const permissionListData = ref<String[]>([])
+
   async function fetchPermission(token: string) {
     if (permision.value) return
     try {
@@ -44,14 +46,29 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  const checkPermission = (permission: string, actions: string) => {
+  const fetchPermissionList = async (token: string) => {
+    try {
+      const response = await axios.get(`${apiUri}/permission/list`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      const { data } = response.data
+      permissionListData.value = data
+    } catch (error) {
+      console.error('Error fetching permision:', error)
+    }
+  }
+
+  function checkPermission(permission: string, actions: string) {
     if (!permision.value) return false
     const rolePermission = permision.value[permission]
     if (!rolePermission) return false
     if (rolePermission.length === 0) return false
     if (rolePermission.includes(actions)) return true
-    // const rolePermission = checkRole.permission[permission]
   }
+
   const fetchUserData = async (token: string) => {
     const auth = useAuth()
     if (!auth.check()) return
@@ -85,18 +102,26 @@ export const usePermissionStore = defineStore('permission', () => {
       }
     }
   }
-  // const setUserPermission = (permission: string) => {
-  //   userData.value = permission
-  // }
+
+  const setUserPermission = (permission: string) => {
+    if (!userData.value) return
+    if (userData.value) {
+      userData.value.per_group_name = permission
+    }
+  }
+
   const getPermission = computed(() => {
     return permision
   })
+
   const getPermissionList = computed(() => {
     return permissionList
   })
+
   const getUserPermission = computed(() => {
     return userData
   })
+
   function $reset() {
     permision.value = null
     permissionList.value = []
@@ -105,12 +130,14 @@ export const usePermissionStore = defineStore('permission', () => {
 
   return {
     permision,
+    permissionListData,
     fetchPermission,
+    fetchPermissionList,
     getPermission,
     getPermissionList,
     getUserPermission,
     checkPermission,
-    // setUserPermission,
+    setUserPermission,
     $reset,
     fetchUserData,
     permissionList,

@@ -74,6 +74,24 @@ const props = defineProps<{
   datatype: any
 }>()
 
+const datepicker = ref<any | null>(null)
+const startDate = ref<any | null>(null)
+const endDate = ref<any | null>(null)
+datepicker.value = [startDate.value, endDate.value]
+
+const updateDates = () => {
+  if (datepicker.value) {
+    paramsLeaveEdit.begin_date = format(datepicker.value[0], 'yyyy-MM-dd')
+    paramsLeaveEdit.finish_date = format(datepicker.value[1], 'yyyy-MM-dd')
+    // paramsLeaveEdit.begin_date = startDate
+    // paramsLeaveEdit.finish_date = endDate
+  }
+}
+watch(datepicker, () => {
+  if (auth.check()) {
+    updateDates()
+  }
+})
 watch(
   () => props.datatype,
   (newVal) => {
@@ -92,23 +110,6 @@ watch(
   }
 )
 
-const startDate = ref<any | null>(null)
-const endDate = ref<any | null>(null)
-const datepicker = ref<any | null>(null)
-datepicker.value = [startDate.value, endDate.value]
-
-const updateDates = () => {
-  if (datepicker.value) {
-    paramsLeaveEdit.begin_date = startDate
-    paramsLeaveEdit.finish_date = endDate
-  }
-}
-watch(datepicker, () => {
-  if (auth.check()) {
-    updateDates()
-  }
-})
-
 const paramsLeaveEdit = reactive<any | null>({
   id: '',
   begin_date: '',
@@ -118,7 +119,7 @@ const paramsLeaveEdit = reactive<any | null>({
 
 const paginate = reactive({
   page: 1,
-  per_page: 10
+  per_page: 20
 })
 const debounceTime = ref<{
   timeOut: number | null
@@ -173,7 +174,7 @@ const submitEditLeave = async () => {
     fetchDataLeave()
     postRequestEdit.value = res.data
     emit('post-request-edit', postRequestEdit.value)
-    // console.log('🚀 ~ postAddLeave ~ res:', postRequest.value)
+    console.log('🚀 ~ postAddLeave ~ res:', postRequestEdit.value)
   } catch (error) {
     console.log('🚀 ~ postAddLeave ~ error:', error)
   }

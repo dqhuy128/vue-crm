@@ -124,26 +124,16 @@
                 Ngày tháng năm sinh
               </span>
 
-              <div class="relative">
-                <VueDatePicker
-                  v-model="pickerDOB"
-                  :enable-time-picker="false"
-                  locale="vi"
-                  :format-locale="vi"
-                  cancelText="Huỷ"
-                  selectText="Chọn"
-                  format="dd/MM/yyyy"
-                  :max-date="new Date()"
-                />
-                <div
-                  class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
-                >
-                  <img
-                    src="@/assets/images/cuidaa_calendar-outline.svg"
-                    alt=""
-                  />
-                </div>
-              </div>
+              <VueDatePicker
+                v-model="pickerDOB"
+                :enable-time-picker="false"
+                locale="vi"
+                :format-locale="vi"
+                cancelText="Huỷ"
+                selectText="Chọn"
+                format="dd/MM/yyyy"
+                :max-date="new Date()"
+              />
             </div>
           </div>
 
@@ -189,7 +179,7 @@
                         >
                           <SelectItemText>
                             <!-- {{ capitalizeFirstLetter(item) }} -->
-                            {{ item.name }} - {{ item.description }}
+                            {{ item.description }}
                           </SelectItemText>
                         </SelectItem>
                       </SelectGroup>
@@ -304,7 +294,7 @@
                 >
                   <SelectValue
                     class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
-                    placeholder="Chọn loại danh mục"
+                    placeholder="Chọn bộ phận"
                   />
                   <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
                 </SelectTrigger>
@@ -365,7 +355,7 @@
                 >
                   <SelectValue
                     class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
-                    placeholder="Chọn loại danh mục"
+                    placeholder="Chọn chức vụ"
                   />
                   <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
                 </SelectTrigger>
@@ -426,7 +416,7 @@
                 >
                   <SelectValue
                     class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
-                    placeholder="Chọn loại danh mục"
+                    placeholder="Chọn địa điểm"
                   />
                   <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
                 </SelectTrigger>
@@ -485,7 +475,7 @@
                 >
                   <SelectValue
                     class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
-                    placeholder="Chọn loại danh mục"
+                    placeholder="Chọn quản lý"
                   />
                   <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
                 </SelectTrigger>
@@ -945,7 +935,7 @@ const params = reactive({
 })
 const paginate = reactive({
   page: 1,
-  per_page: 10
+  per_page: 20
 })
 const debounceTime = ref<{
   timeOut: number | null

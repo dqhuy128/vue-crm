@@ -72,7 +72,7 @@
     </div>
 
     <div
-      class="flex flex-wrap gap-2 items-center mt-auto tb-pagination max-md:justify-center md:gap-4"
+      class="flex flex-wrap gap-2 items-center tb-pagination max-md:justify-center md:gap-4"
     >
       <div class="relative">
         <select

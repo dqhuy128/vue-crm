@@ -1,5 +1,7 @@
 <template>
   <MainLayout>
+    <Breadcrums name="Quản lý danh mục" path="/system/category" />
+
     <div class="bg-white rounded-[24px] p-2.5">
       <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchDocument">
         <div class="flex flex-wrap gap-4 grow">
@@ -113,21 +115,23 @@
         Danh sách danh mục hệ thống
       </div>
 
-      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
-        <button
-          type="button"
-          id="tableAdding"
-          class="max-md:flex-auto rounded-[24px] bg-[#1b4dea] inline-flex items-end justify-center max-md:items-center max-md:gap-1 gap-2 p-[7px_12px] cursor-pointer transition hover:shadow-hoverinset"
-          @click="toggleModal('modalAddCateManager')"
-        >
-          <img src="@/assets/images/si_add-fill.svg" alt="" />
-          <span
-            class="text-white font-inter text-[16px] max-md:text-[14px] font-bold leading-normal"
+      <template v-if="checkPermission('Categories', 'Create')">
+        <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
+          <button
+            type="button"
+            id="tableAdding"
+            class="max-md:flex-auto rounded-[24px] bg-[#1b4dea] inline-flex items-end justify-center max-md:items-center max-md:gap-1 gap-2 p-[7px_12px] cursor-pointer transition hover:shadow-hoverinset"
+            @click="toggleModal('modalAddCateManager')"
           >
-            Thêm mới
-          </span>
-        </button>
-      </div>
+            <img src="@/assets/images/si_add-fill.svg" alt="" />
+            <span
+              class="text-white font-inter text-[16px] max-md:text-[14px] font-bold leading-normal"
+            >
+              Thêm mới
+            </span>
+          </button>
+        </div>
+      </template>
     </div>
 
     <div class="flex flex-col h-full">
@@ -179,7 +183,7 @@
                   </div>
 
                   <div class="cell">
-                    {{ it.description || 'Chưa có mô tả' }}
+                    {{ it.description }}
                   </div>
 
                   <template v-if="Number(it.status) === 1">
@@ -198,20 +202,25 @@
 
                   <div class="cell pinned pinned-body">
                     <div class="cell edit edit-body">
-                      <button
-                        @click="getDetailCategory(it.id)"
-                        type="button"
-                        class="cursor-pointer cell-btn-edit shrink-0"
-                      >
-                        <img src="@/assets/images/action-edit-2.svg" alt="" />
-                      </button>
-                      <button
-                        @click="confirmDeleteCategory(it.id)"
-                        type="button"
-                        class="cursor-pointer cell-btn-delete shrink-0"
-                      >
-                        <img src="@/assets/images/action-edit-3.svg" alt="" />
-                      </button>
+                      <template v-if="checkPermission('Categories', 'Update')">
+                        <button
+                          @click="getDetailCategory(it.id)"
+                          type="button"
+                          class="cursor-pointer cell-btn-edit shrink-0"
+                        >
+                          <img src="@/assets/images/action-edit-2.svg" alt="" />
+                        </button>
+                      </template>
+
+                      <template v-if="checkPermission('Categories', 'Delete')">
+                        <button
+                          @click="confirmDeleteCategory(it.id)"
+                          type="button"
+                          class="cursor-pointer cell-btn-delete shrink-0"
+                        >
+                          <img src="@/assets/images/action-edit-3.svg" alt="" />
+                        </button>
+                      </template>
                     </div>
                   </div>
                 </template>
@@ -245,7 +254,7 @@
       </div>
 
       <div
-        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap items-center gap-2 tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -534,6 +543,10 @@ import { useSystemManager } from '@/composables/system-manager'
 import ModalAddCategory from '@/components/Modal/ModalAddCategory.vue'
 import ModalCategoryUpdate from '@/components/Modal/ModalCategoryUpdate.vue'
 import axios from 'axios'
+import { usePermissionStore } from '@/store/permission'
+import { storeToRefs } from 'pinia'
+import router from '@/router'
+import Breadcrums from '@/components/BreadcrumsNew.vue'
 
 interface recordModal {
   [key: string]: boolean
@@ -588,7 +601,7 @@ const params = reactive({
 })
 const paginate = reactive({
   page: 1,
-  per_page: 10
+  per_page: 20
 })
 const debounceTime = ref<{
   timeOut: number | null
@@ -726,8 +739,23 @@ onMounted(() => {
     fetchingSelected()
     fetchDataDocument()
   }
+})
 
-  // console.log('🚀 ~ dataDocument:', dataDocument)
+const permissionStore = usePermissionStore()
+const { permissionList } = storeToRefs(permissionStore)
+const { checkPermission } = permissionStore
+
+watch(permissionList, () => {
+  console.log('🚀 ~ //onMounted ~ permissionList:', permissionList)
+  if (auth.check()) {
+    if (!permissionList.value.includes('Document')) {
+      alert('Bạn không có quyền truy cập vào trang này')
+      router.push({ name: 'NotFound404' })
+    } else {
+      fetchDataDocument()
+      console.log(dataDocument, 'dataDocument')
+    }
+  }
 })
 
 watch(

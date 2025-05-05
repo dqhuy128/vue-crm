@@ -1,5 +1,7 @@
 <template>
   <MainLayout>
+    <Breadcrums name="Tài liệu" path="/document" />
+
     <div class="bg-white rounded-[24px] p-2.5">
       <form
         @submit.prevent="handleSearchDocument"
@@ -132,21 +134,23 @@
         Danh sách tài liệu
       </div>
 
-      <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
-        <button
-          type="button"
-          id="tableAdding"
-          class="max-md:flex-auto rounded-[24px] bg-[#1b4dea] inline-flex items-end justify-center max-md:items-center max-md:gap-1 gap-2 p-[7px_12px] cursor-pointer transition hover:shadow-hoverinset"
-          @click="toggleModal('modalAddDocument')"
-        >
-          <img src="@/assets/images/si_add-fill.svg" alt="" />
-          <span
-            class="text-white font-inter text-[16px] max-md:text-[14px] font-bold leading-normal"
+      <template v-if="checkPermission('Document', 'Create')">
+        <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
+          <button
+            type="button"
+            id="tableAdding"
+            class="max-md:flex-auto rounded-[24px] bg-[#1b4dea] inline-flex items-end justify-center max-md:items-center max-md:gap-1 gap-2 p-[7px_12px] cursor-pointer transition hover:shadow-hoverinset"
+            @click="toggleModal('modalAddDocument')"
           >
-            Thêm mới
-          </span>
-        </button>
-      </div>
+            <img src="@/assets/images/si_add-fill.svg" alt="" />
+            <span
+              class="text-white font-inter text-[16px] max-md:text-[14px] font-bold leading-normal"
+            >
+              Thêm mới
+            </span>
+          </button>
+        </div>
+      </template>
     </div>
 
     <div class="flex flex-col h-full">
@@ -189,44 +193,58 @@
                     {{ item.name }}
                   </div>
                   <div class="cell">
-                    {{ item.description || 'Chưa có mô tả' }}
+                    {{ item.description }}
                   </div>
                   <div class="cell">
                     {{ item.created_at }}
                   </div>
 
-                  <div class="cell pinned pinned-body">
-                    <div class="cell edit edit-body">
-                      <template
-                        v-if="
-                          item.link && item.link !== null && item.link !== ''
-                        "
-                      >
-                        <router-link
-                          :to="item.link"
-                          target="_blank"
-                          class="cursor-pointer cell-btn-view shrink-0"
+                  <template v-if="permissionList">
+                    <div class="cell pinned pinned-body">
+                      <div class="cell edit edit-body">
+                        <template
+                          v-if="
+                            item.link && item.link !== null && item.link !== ''
+                          "
                         >
-                          <img src="@/assets/images/action-edit-1.svg" alt="" />
-                        </router-link>
-                      </template>
-
-                      <button
-                        type="button"
-                        class="cursor-pointer cell-btn-edit shrink-0 ms-auto"
-                        @click="handleEditDocument(item.id)"
-                      >
-                        <img src="@/assets/images/action-edit-2.svg" alt="" />
-                      </button>
-                      <button
-                        type="button"
-                        class="cursor-pointer cell-btn-delete shrink-0"
-                        @click="confirmDeleteDocument(item.id)"
-                      >
-                        <img src="@/assets/images/action-edit-3.svg" alt="" />
-                      </button>
+                          <router-link
+                            :to="item.link"
+                            target="_blank"
+                            class="cursor-pointer cell-btn-view shrink-0"
+                          >
+                            <img
+                              src="@/assets/images/action-edit-1.svg"
+                              alt=""
+                            />
+                          </router-link>
+                        </template>
+                        <template v-if="checkPermission('Document', 'Update')">
+                          <button
+                            type="button"
+                            class="cursor-pointer cell-btn-edit shrink-0"
+                            @click="handleEditDocument(item.id)"
+                          >
+                            <img
+                              src="@/assets/images/action-edit-2.svg"
+                              alt=""
+                            />
+                          </button>
+                        </template>
+                        <template v-if="checkPermission('Document', 'Delete')">
+                          <button
+                            type="button"
+                            class="cursor-pointer cell-btn-delete shrink-0"
+                            @click="confirmDeleteDocument(item.id)"
+                          >
+                            <img
+                              src="@/assets/images/action-edit-3.svg"
+                              alt=""
+                            />
+                          </button>
+                        </template>
+                      </div>
                     </div>
-                  </div>
+                  </template>
                 </template>
               </div>
             </template>
@@ -235,7 +253,7 @@
       </div>
 
       <div
-        class="flex flex-wrap items-center gap-2 mt-auto tb-pagination max-md:justify-center md:gap-4"
+        class="flex flex-wrap items-center gap-2 tb-pagination max-md:justify-center md:gap-4"
       >
         <div class="relative">
           <select
@@ -505,7 +523,6 @@
 <script lang="ts" setup>
 import CreateDocument from '@/components/Document/CreateDocument.vue'
 import EditDocument from '@/components/Document/EditDocument.vue'
-import ViewDocument from '@/components/Document/ViewDocument.vue'
 import Modal from '@/components/Modals.vue'
 import { useDocument } from '@/composables/document'
 import { apiUri } from '@/constants/apiUri'
@@ -527,9 +544,10 @@ import {
   SelectValue,
   SelectViewport
 } from 'radix-vue'
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, reactive, Ref, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
 import MainLayout from '../MainLayout.vue'
+import Breadcrums from '@/components/BreadcrumsNew.vue'
 
 const auth = useAuth()
 
@@ -539,7 +557,7 @@ const params = reactive({
 })
 const paginate = reactive({
   page: 1,
-  per_page: 10
+  per_page: 20
 })
 const debounceTime = ref<{
   timeOut: number | null
@@ -697,7 +715,7 @@ const handleEditDocument = async (id: any) => {
 
 function findCategoryName(typeId: string) {
   const category = categoryDocument.data.find((item) => item.id === typeId)
-  return category ? category.name : 'Chưa có loại tài liệu'
+  return category ? category.name : ''
 }
 
 const dataPostRequest = ref<any | null>(null)
@@ -721,8 +739,6 @@ const getPostRequestEdit = (data: any) => {
     toggleModal('modalStatusEdit')
     toggleModal('modalEditDocument')
   }
-
-  // if (Number(dataPostRequestEdit.value.status) === 1) {}
 }
 
 onMounted(() => {
@@ -732,42 +748,24 @@ onMounted(() => {
   }
   console.log(dataDocument, 'dataDocument')
 })
-const checkPermission = ref(false)
-// onMounted(() => {
+
 const permissionStore = usePermissionStore()
 const { permissionList } = storeToRefs(permissionStore)
+const { checkPermission } = permissionStore
 
-// if (auth.check()) {
-//   if (permissionList.value) {
-//     // console.log(permissionList.value, 'permissionList')
-//     checkPermission.value = permissionList.value.includes('Document') ? true : false
-//     if (!checkPermission.value) {
-//       // alert('Bạn không có quyền truy cập vào trang này')
-//       // router.push({ name: 'NotFound404' })
-//     } else {
-//       // fetchCategoryDocument()
-//       fetchDataDocument()
-//       console.log(dataDocument, 'dataDocument')
-//     }
-//   }
-// }
-// })
 watch(permissionList, () => {
   console.log('🚀 ~ //onMounted ~ permissionList:', permissionList)
   if (auth.check()) {
-    checkPermission.value = permissionList.value.includes('Document')
-      ? true
-      : false
-    if (!checkPermission.value) {
+    if (!permissionList.value.includes('Document')) {
       alert('Bạn không có quyền truy cập vào trang này')
       router.push({ name: 'NotFound404' })
     } else {
-      fetchCategoryDocument()
       fetchDataDocument()
       console.log(dataDocument, 'dataDocument')
     }
   }
 })
+
 watch(
   paginate,
   async () => {

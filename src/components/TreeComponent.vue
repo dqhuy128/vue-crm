@@ -14,67 +14,115 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue"
-import TreeNode from "./TreeNode.vue"
+import { ref, reactive, onMounted, watch } from 'vue'
+import TreeNode from '@/components/TreeNode.vue'
+
+const props = defineProps({
+  permission: {
+    type: Array,
+    required: true
+  }
+})
+watch(
+  () => props.permission,
+  (newVal) => {
+    console.log('🚀 ~ newVal:', newVal)
+    console.log('props.permission watch')
+    initializeSelectedItems()
+  }
+)
 
 // Sample tree data structure matching the image
 const treeData = reactive([
   {
-    id: "system",
-    label: "Quản trị hệ thống",
+    id: 'Admin',
+    label: 'Quản lý hệ thống',
     expanded: true,
     children: [
       {
-        id: "user-management",
-        label: "Quản lý người dùng",
+        id: 'User',
+        label: 'Quản lý người dùng',
         children: []
       },
       {
-        id: "permission-management",
-        label: "Quản lý phân quyền",
+        id: 'Permission',
+        label: 'Quản lý phân quyền',
         children: []
       },
       {
-        id: "system-catalog",
-        label: "Quản lý danh mục chung của hệ thống",
+        id: 'Categories',
+        label: 'Quản lý danh mục',
         children: []
       }
     ]
   },
   {
-    id: "documents",
-    label: "Tài liệu",
+    id: 'Document',
+    label: 'Quản lý tài liệu',
     expanded: false,
     children: []
   },
   {
-    id: "attendance",
-    label: "Quản lý chấm công",
+    id: 'Leave',
+    label: 'Quản lý nghỉ phép',
     expanded: false,
     children: []
   },
   {
-    id: "leave",
-    label: "Quản lý ngày nghỉ",
-    expanded: false,
-    children: []
-  },
-  {
-    id: "tickets",
-    label: "Xin/duyệt ticket",
-    expanded: false,
-    children: []
-  },
-  {
-    id: "notifications",
-    label: "Quản lý thông báo",
+    id: 'Work',
+    label: 'Quản lý chấm công',
     expanded: false,
     children: []
   }
 ])
 
 // Track selected items
-const selectedItems = reactive(new Set(["user-management", "system-catalog"]))
+const selectedItems = reactive(new Set())
+
+// Initialize selectedItems based on permission prop
+const initializeSelectedItems = () => {
+  // Reset selections
+  selectedItems.clear()
+  // Helper function to check nodes recursively
+  const checkNode = (node) => {
+    if (props.permission.includes(node.id)) {
+      selectedItems.add(node.id)
+    }
+    if (node.children && node.children.length > 0) {
+      node.children.map((child) => checkNode(child))
+    }
+  }
+  // Process all root nodes
+  treeData.map((node) => checkNode(node))
+  // Check parent nodes after all children have been processed
+  updateParentNodes()
+}
+
+// Helper function to update parent nodes based on children selection
+const updateParentNodes = () => {
+  const checkParentNode = (node) => {
+    if (!node.children || node.children.length === 0) return false
+
+    const allChildrenSelected = node.children.every((child) => {
+      // For nodes with their own children, recursively check
+      if (child.children && child.children.length > 0) {
+        return checkParentNode(child)
+      }
+      // For leaf nodes, just check if they're selected
+      return selectedItems.has(child.id)
+    })
+
+    if (allChildrenSelected) {
+      selectedItems.add(node.id)
+      return true
+    }
+
+    return selectedItems.has(node.id)
+  }
+
+  // Process all root nodes
+  treeData.map((node) => checkParentNode(node))
+}
 
 // Toggle selection of a node
 const toggleSelect = (node) => {
@@ -123,6 +171,10 @@ const unselectChildren = (node) => {
     unselectChildren(child)
   })
 }
+
+onMounted(() => {
+  // initializeSelectedItems()
+})
 </script>
 
 <style lang="scss" scoped>

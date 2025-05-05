@@ -1,149 +1,150 @@
 <script setup lang="ts">
-import Buttons from "@/components/Buttons.vue"
-import MainLayout from "@/views/MainLayout.vue"
-import Ticket from "@/components/Ticket.vue"
-import iconTicket1 from "@/assets/images/ticket-icon-1.png"
-import iconTicket2 from "@/assets/images/ticket-icon-2.png"
-import iconTicket3 from "@/assets/images/ticket-icon-3.png"
-import iconTicket4 from "@/assets/images/ticket-icon-4.png"
-import { useRoute } from "vue-router"
-import SeachBox from "@/components/SeachBox.vue"
-import { ref, reactive } from "vue"
-import flatPickr from "vue-flatpickr-component"
-import "flatpickr/dist/flatpickr.css"
-import { Vietnamese } from "flatpickr/dist/l10n/vn.js"
+import Buttons from '@/components/Buttons.vue'
+import MainLayout from '@/views/MainLayout.vue'
+import Ticket from '@/components/Ticket.vue'
+import iconTicket1 from '@/assets/images/ticket-icon-1.png'
+import iconTicket2 from '@/assets/images/ticket-icon-2.png'
+import iconTicket3 from '@/assets/images/ticket-icon-3.png'
+import iconTicket4 from '@/assets/images/ticket-icon-4.png'
+import { useRoute } from 'vue-router'
+import SeachBox from '@/components/SeachBox.vue'
+import { ref, reactive } from 'vue'
+import flatPickr from 'vue-flatpickr-component'
+import 'flatpickr/dist/flatpickr.css'
+import { Vietnamese } from 'flatpickr/dist/l10n/vn.js'
+import Breadcrums from '@/components/BreadcrumsNew.vue'
 
 const ticket: any = [
   {
     icon: iconTicket1,
-    title: "Tổng số ticket",
+    title: 'Tổng số ticket',
     ticketList: [
       {
-        title: "Tổng số yêu cầu chưa xử lý",
-        status: "normal",
-        count: "1"
+        title: 'Tổng số yêu cầu chưa xử lý',
+        status: 'normal',
+        count: '1'
       },
       {
-        title: "Chờ xử lý",
-        status: "pending",
-        count: "12"
+        title: 'Chờ xử lý',
+        status: 'pending',
+        count: '12'
       },
       {
-        title: "Đang xử lý",
-        status: "waiting",
-        count: "4"
+        title: 'Đang xử lý',
+        status: 'waiting',
+        count: '4'
       },
       {
-        title: "Đã xử lý trong ngày",
-        status: "done",
-        count: "66"
+        title: 'Đã xử lý trong ngày',
+        status: 'done',
+        count: '66'
       },
       {
-        title: "Đã từ chối trong ngày",
-        status: "reject",
-        count: "8"
+        title: 'Đã từ chối trong ngày',
+        status: 'reject',
+        count: '8'
       }
     ]
   },
   {
     icon: iconTicket2,
-    title: "Nghỉ phép",
+    title: 'Nghỉ phép',
     ticketList: [
       {
-        title: "Tổng số ngày nghỉ",
-        status: "normal"
+        title: 'Tổng số ngày nghỉ',
+        status: 'normal'
       },
       {
-        title: "Số ngày nghỉ còn lại",
-        status: "normal"
+        title: 'Số ngày nghỉ còn lại',
+        status: 'normal'
       },
       {
-        title: "Số ngày nghỉ đã sử dụng",
-        status: "normal"
+        title: 'Số ngày nghỉ đã sử dụng',
+        status: 'normal'
       }
     ]
   },
   {
     icon: iconTicket3,
-    title: "Chấm công",
+    title: 'Chấm công',
     ticketList: [
       {
-        title: "Số lỗi chấm công trong tháng",
-        status: "reject"
+        title: 'Số lỗi chấm công trong tháng',
+        status: 'reject'
       },
       {
-        title: "Đã giải trình",
-        status: "normal"
+        title: 'Đã giải trình',
+        status: 'normal'
       },
       {
-        title: "Chưa giải trình",
-        status: "reject"
+        title: 'Chưa giải trình',
+        status: 'reject'
       },
       {
-        title: "Chờ phê duyệt",
-        status: "reject"
+        title: 'Chờ phê duyệt',
+        status: 'reject'
       }
     ]
   },
   {
     icon: iconTicket4,
-    title: "Nghỉ phép",
+    title: 'Nghỉ phép',
     ticketList: [
       {
-        title: "Tổng số nhân viên",
-        status: "normal",
-        count: "12"
+        title: 'Tổng số nhân viên',
+        status: 'normal',
+        count: '12'
       },
       {
-        title: "Ban Điều Hành",
-        status: "normal",
-        count: "4"
+        title: 'Ban Điều Hành',
+        status: 'normal',
+        count: '4'
       },
       {
-        title: "Phòng Sale Admin",
-        status: "normal",
-        count: "22"
+        title: 'Phòng Sale Admin',
+        status: 'normal',
+        count: '22'
       },
       {
-        title: "Ban Trợ Lý",
-        status: "normal",
-        count: "1"
+        title: 'Ban Trợ Lý',
+        status: 'normal',
+        count: '1'
       },
       {
-        title: "Phòng Pháp Chế",
-        status: "normal",
-        count: "123"
+        title: 'Phòng Pháp Chế',
+        status: 'normal',
+        count: '123'
       },
       {
-        title: "Ban Dự Án",
-        status: "normal",
-        count: "12"
+        title: 'Ban Dự Án',
+        status: 'normal',
+        count: '12'
       },
       {
-        title: "Phòng HCNS",
-        status: "normal",
-        count: "12"
+        title: 'Phòng HCNS',
+        status: 'normal',
+        count: '12'
       },
       {
-        title: "Phòng Marketing",
-        status: "normal",
-        count: "12"
+        title: 'Phòng Marketing',
+        status: 'normal',
+        count: '12'
       },
       {
-        title: "Phòng Tuyển Dụng",
-        status: "normal",
-        count: "12"
+        title: 'Phòng Tuyển Dụng',
+        status: 'normal',
+        count: '12'
       }
     ]
   },
   {
     icon: iconTicket4,
-    title: "Số lượng nhân sự nghỉ / Số lượng nhân sự mới",
+    title: 'Số lượng nhân sự nghỉ / Số lượng nhân sự mới',
     ticketList: [
       {
-        title: "Tổng",
-        status: "reject",
-        count: "0/0"
+        title: 'Tổng',
+        status: 'reject',
+        count: '0/0'
       }
     ]
   }
@@ -156,20 +157,22 @@ const date2 = ref(null)
 
 const dateConfig: any = reactive({
   locale: Vietnamese,
-  dateFormat: "d / m / Y",
+  dateFormat: 'd / m / Y',
   disableMobile: true
 })
 
 const dateRange: any = reactive({
-  mode: "range",
+  mode: 'range',
   locale: Vietnamese,
-  dateFormat: "d / m / Y",
+  dateFormat: 'd / m / Y',
   disableMobile: true
 })
 </script>
 
 <template>
   <MainLayout>
+    <Breadcrums name="Dashboard" path="/dashboard/personal" />
+
     <Buttons :title="`active`" />
 
     <div class="mt-3"></div>

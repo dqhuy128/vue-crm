@@ -66,12 +66,6 @@
               </svg>
             </button>
           </div>
-          <!-- <transition
-          name="slide"
-          @before-enter="beforeEnter"
-          @enter="enter"
-          @leave="leave"
-        > -->
           <ul class="sidebar-menu-sub" v-show="isDropdownOpen(id)">
             <li v-for="(sub, idx) in item.submenu" :key="idx">
               <router-link :to="{ name: `${sub.route}` }" class="sub-link">
@@ -80,7 +74,6 @@
               </router-link>
             </li>
           </ul>
-          <!-- </transition> -->
         </template>
       </li>
     </ul>
@@ -227,7 +220,7 @@ const isDropdownOpen = (idx: any) => {
 
 const permissionData = usePermissionStore()
 const { permision, permissionList, userData } = storeToRefs(permissionData)
-console.log(permissionList.value, 'permission change state')
+// console.log(permissionList.value, 'permission change state')
 const checkPermission = (arrRole: any) => {
   if (!permision || !permision.value) {
     const token = auth.token()
