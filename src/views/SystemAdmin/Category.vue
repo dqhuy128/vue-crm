@@ -3,8 +3,11 @@
     <Breadcrums name="Quản lý danh mục" path="/system/category" />
 
     <div class="bg-white rounded-[24px] p-2.5">
-      <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchDocument">
-        <div class="flex flex-wrap gap-4 grow">
+      <form
+        class="flex flex-wrap gap-2 xxl:gap-4"
+        @submit.prevent="handleSearchDocument"
+      >
+        <div class="flex flex-wrap gap-2 xxl:gap-4 grow">
           <div class="flex-[0_0_calc(50%-8px)] max-md:flex-[100%]">
             <input
               v-model="params.name"
