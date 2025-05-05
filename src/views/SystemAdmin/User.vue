@@ -246,7 +246,7 @@
     </div>
 
     <template v-if="checkPermission('User', 'List')">
-      <div class="flex flex-col h-full">
+      <div class="flex flex-col h-full overflow-hidden">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="relative table-container">
             <!-- Example column -->
@@ -847,7 +847,7 @@ const handlePageChange = (pageNum: number) => {
 const handleSearchUser = async () => {
   try {
     paginate.page = 1
-    paginate.per_page = 10
+    paginate.per_page = 20
     await fetchDataDocument()
   } catch (error) {
     console.log('🚀 ~ handleSearchUser ~ error:', error)

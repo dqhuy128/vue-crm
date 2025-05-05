@@ -64,7 +64,7 @@
     </div>
 
     <template v-if="checkPermission('Leave', 'List')">
-      <div class="flex flex-col h-full">
+      <div class="flex flex-col h-full overflow-hidden">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="relative table-container">
             <!-- Example column -->

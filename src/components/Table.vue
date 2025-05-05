@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col h-full overflow-hidden">
     <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
       <div class="relative table-container">
         <!-- Example column -->
@@ -72,7 +72,7 @@
     </div>
 
     <div
-      class="flex flex-wrap gap-2 items-center tb-pagination max-md:justify-center md:gap-4"
+      class="flex flex-wrap items-center gap-2 tb-pagination max-md:justify-center md:gap-4"
     >
       <div class="relative">
         <select
@@ -104,7 +104,7 @@
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-2 items-center md:ms-auto">
+      <div class="flex flex-wrap items-center gap-2 md:ms-auto">
         <div class="text-[#464661] text-[14px] font-normal">
           1 - 10 trong 10 kết quả
         </div>

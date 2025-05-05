@@ -25,7 +25,7 @@
               >
                 <SelectValue
                   class="grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
-                  placeholder="Chọn loại danh mục"
+                  placeholder="Chọn loại tài liệu"
                 />
                 <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
               </SelectTrigger>
@@ -45,6 +45,12 @@
                   <SelectViewport>
                     <SelectGroup>
                       <SelectItem
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        value="0"
+                      >
+                        <SelectItemText> Tất cả loại tài liệu </SelectItemText>
+                      </SelectItem>
+                      <SelectItem
                         v-for="(item, index) in categoryDocument.data"
                         :key="index"
                         class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
@@ -58,12 +64,6 @@
                         <SelectItemText>
                           {{ item.name }}
                         </SelectItemText>
-                      </SelectItem>
-                      <SelectItem
-                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                        value="0"
-                      >
-                        <SelectItemText> Tất cả loại tài liệu </SelectItemText>
                       </SelectItem>
                     </SelectGroup>
                   </SelectViewport>
@@ -153,7 +153,7 @@
       </template>
     </div>
 
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col h-full overflow-hidden">
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="relative table-container">
           <!-- Example column -->
@@ -168,7 +168,7 @@
               </div>
             </div>
             <div class="cell pinned">
-              <div class="cell edit">Thao tác</div>
+              <div class="!justify-center cell edit">Thao tác</div>
             </div>
           </div>
 
@@ -201,7 +201,7 @@
 
                   <template v-if="permissionList">
                     <div class="cell pinned pinned-body">
-                      <div class="cell edit edit-body">
+                      <div class="justify-end cell edit edit-body">
                         <template
                           v-if="
                             item.link && item.link !== null && item.link !== ''
@@ -636,19 +636,11 @@ const handlePageChange = (pageNum: number) => {
 
 const handleSearchDocument = async () => {
   paginate.page = 1
-  paginate.per_page = 10
+  paginate.per_page = 20
   fetchDataDocument()
 }
 
-const {
-  data,
-  // isLoading: isLoadingDocument,
-  doFetch,
-  fetchCategoryDocument,
-  // fetchDetailDocument,
-  categories,
-  deleteDocument
-} = useDocument()
+const { data, doFetch, fetchCategoryDocument, categories } = useDocument()
 
 const dataDocument = reactive({
   doc: data
