@@ -4,10 +4,10 @@
 
     <div class="bg-white rounded-[24px] p-2.5">
       <form
-        class="flex flex-wrap items-stretch gap-4"
+        class="flex flex-wrap items-stretch gap-2 xxl:gap-4"
         @submit.prevent="handleSearchUser"
       >
-        <div class="flex flex-wrap gap-4 grow">
+        <div class="flex flex-wrap gap-2 xxl:gap-4 grow">
           <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
             <input
               type="text"
