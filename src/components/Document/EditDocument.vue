@@ -181,26 +181,22 @@ import axios from 'axios'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
 // import 'vue-multiselect/dist/vue-multiselect.min.css'
-import { tableMagic } from '@/utils/main'
-import FileUpload from '../FileUpload.vue'
+import { capitalizeFirstLetter, tableMagic } from '@/utils/main'
+import { Icon } from '@iconify/vue'
 import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectItemIndicator,
   SelectItemText,
-  SelectLabel,
   SelectPortal,
   SelectRoot,
   SelectScrollDownButton,
   SelectScrollUpButton,
-  SelectSeparator,
   SelectTrigger,
   SelectValue,
   SelectViewport
 } from 'radix-vue'
-import { Icon } from '@iconify/vue'
-import { capitalizeFirstLetter } from '@/utils/main'
+import FileUpload from '../FileUpload.vue'
 
 const props = defineProps<{
   closeModal: () => void
@@ -280,7 +276,7 @@ const submit = async () => {
   formData.append('description', FormSubmitEdit.value.description)
   if (fileUploadPreview.value.length > 0) {
     fileUploadPreview.value.forEach((item) => {
-      formData.append('files', item.file)
+      formData.append('file', item.file)
     })
   }
 

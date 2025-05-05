@@ -521,6 +521,7 @@
 </template>
 
 <script lang="ts" setup>
+import Breadcrums from '@/components/BreadcrumsNew.vue'
 import CreateDocument from '@/components/Document/CreateDocument.vue'
 import EditDocument from '@/components/Document/EditDocument.vue'
 import Modal from '@/components/Modals.vue'
@@ -544,10 +545,9 @@ import {
   SelectValue,
   SelectViewport
 } from 'radix-vue'
-import { computed, nextTick, onMounted, reactive, Ref, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
 import MainLayout from '../MainLayout.vue'
-import Breadcrums from '@/components/BreadcrumsNew.vue'
 
 const auth = useAuth()
 

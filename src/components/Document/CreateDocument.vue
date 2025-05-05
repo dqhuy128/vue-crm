@@ -190,27 +190,24 @@
 <script lang="ts" setup>
 import { useDocument } from '@/composables/document'
 import { apiUri } from '@/constants/apiUri'
+import { capitalizeFirstLetter, tableMagic } from '@/utils/main'
+import { Icon } from '@iconify/vue'
 import axios from 'axios'
-import { onMounted, reactive, ref } from 'vue'
-import { useAuth } from 'vue-auth3'
 import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectItemIndicator,
   SelectItemText,
-  SelectLabel,
   SelectPortal,
   SelectRoot,
   SelectScrollDownButton,
   SelectScrollUpButton,
-  SelectSeparator,
   SelectTrigger,
   SelectValue,
   SelectViewport
 } from 'radix-vue'
-import { Icon } from '@iconify/vue'
-import { tableMagic, capitalizeFirstLetter } from '@/utils/main'
+import { onMounted, reactive, ref } from 'vue'
+import { useAuth } from 'vue-auth3'
 import FileUpload from '../FileUpload.vue'
 
 const props = defineProps<{
@@ -286,7 +283,7 @@ const submit = async () => {
   formData.append('description', FormSubmit.value.description)
   if (fileUploadPreview.value.length > 0) {
     fileUploadPreview.value.forEach((item) => {
-      formData.append('files', item.file)
+      formData.append('file', item.file)
     })
   }
   console.log(FormSubmit.value, 'formData')
