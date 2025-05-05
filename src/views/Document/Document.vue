@@ -356,7 +356,7 @@
       </div>
     </div>
 
-    <template v-if="modalActive.modalAddDocument">
+    <!-- <template v-if="modalActive.modalAddDocument"> -->
     <Modal
       @close="toggleModal('modalAddDocument')"
       :modalActive="modalActive.modalAddDocument"
@@ -383,9 +383,9 @@
         </CreateDocument>
       </div>
     </Modal>
-    </template>
+    <!-- </template> -->
 
-    <template v-if="modalActive.modalEditDocument">
+    <!-- <template v-if="modalActive.modalEditDocument"> -->
     <Modal
       @close="toggleModal('modalEditDocument')"
       :modalActive="modalActive.modalEditDocument"
@@ -413,7 +413,7 @@
         </EditDocument>
       </div>
     </Modal>
-    </template>
+    <!-- </template> -->
 
     <Modal
       @close="toggleModal('modalStatusAdd')"
