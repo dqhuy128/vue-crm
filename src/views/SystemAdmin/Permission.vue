@@ -145,7 +145,9 @@
       :modalActive="modalActive.modalEditPermission"
       maxWidth="max-w-[670px]"
     >
-      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
+      <div
+        class="relative rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden"
+      >
         <div class="mb-12 text-center max-xl:mb-6">
           <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
             chỉnh sửa nhóm quyền
@@ -191,54 +193,7 @@
         <div
           class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
         >
-          {{ dataPostRequestEdit?.message }}
-        </div>
-      </div>
-    </Modal>
-
-    <Modal
-      @close="toggleModal('modalStatusConfirm')"
-      :modalActive="modalActive.modalStatusConfirm"
-      maxWidth="max-w-[512px]"
-    >
-      <div class="rounded-[24px] p-[45px_16px] bg-white overflow-hidden">
-        <div
-          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
-        >
-          Thông báo
-        </div>
-
-        <div class="mb-3 text-center">
-          <img
-            class="mx-auto"
-            src="@/assets/images/icon-park-outline_attention.svg"
-            alt=""
-          />
-        </div>
-
-        <div
-          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold mb-6 underline"
-        >
-          Bạn chắc chắn muốn xoá đơn nghỉ phép này ?
-        </div>
-
-        <div
-          class="flex flex-wrap items-stretch justify-center gap-3 text-center mt-9 xl:gap-6"
-        >
-          <button
-            @click="toggleModal('modalStatusConfirm')"
-            type="button"
-            class="max-md:grow inline-block md:min-w-[130px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-          >
-            Hủy
-          </button>
-          <button
-            @click="handleDeleteLeave"
-            type="submit"
-            class="max-md:grow inline-block md:min-w-[130px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-          >
-            Xác nhận
-          </button>
+          {{ dataPostRequest?.message }}
         </div>
       </div>
     </Modal>
@@ -380,11 +335,11 @@ const getPostRequest = (data: any) => {
   dataPostRequest.value = data
   // console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
   if (dataPostRequest.value) {
-    toggleModal('modalStatusAddLeave')
+    toggleModal('modalStatusEditPermission')
   }
 
   if (dataPostRequest.value.status == 1) {
-    toggleModal('modalAddLeave')
+    toggleModal('modalEditPermission')
   }
 }
 
