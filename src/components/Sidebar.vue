@@ -95,8 +95,9 @@ import Proicons from '@/assets/images/proicons_timer.svg'
 import TableUserScan from '@/assets/images/tabler_user-scan.svg'
 import { usePermissionStore } from '@/store/permission'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
+import { useRoute } from 'vue-router'
 
 interface dataSidebarItem {
   icon: any
@@ -113,7 +114,6 @@ interface dataSubmenu {
   route?: string
   permissionName?: string
 }
-const auth = useAuth()
 
 const refDataSidebar = ref<dataSidebarItem[]>([
   {
@@ -201,6 +201,10 @@ const refDataSidebar = ref<dataSidebarItem[]>([
   }
 ])
 
+const auth = useAuth()
+const route = useRoute()
+console.log('🚀 ~ route:', route)
+
 // Mảng lưu trạng thái dropdown của từng item
 interface DropdownState {
   [key: number]: boolean // Mảng các giá trị boolean tương ứng với các dropdown item
@@ -217,6 +221,30 @@ const isDropdownOpen = (idx: any) => {
   // Kiểm tra dropdown có đang mở không
   return dropdownState.value[idx]
 }
+
+const isChildRoute = (item: dataSidebarItem) => {
+  if (!item.submenu) return false
+
+  return item.submenu.some((sub) => sub.route === route.name)
+}
+
+// Hàm mở dropdown dựa trên route hiện tại
+const openActiveDropdowns = () => {
+  refDataSidebar.value.map((item, idx) => {
+    if (isChildRoute(item)) {
+      dropdownState.value[idx] = true
+    }
+  })
+}
+
+// Theo dõi thay đổi route để cập nhật dropdown
+watch(
+  () => route.name,
+  () => {
+    openActiveDropdowns()
+  },
+  { immediate: true }
+)
 
 const permissionData = usePermissionStore()
 const { permision, permissionList, userData } = storeToRefs(permissionData)
@@ -239,6 +267,8 @@ const checkPermission = (arrRole: any) => {
 
 onMounted(() => {
   if (auth.check()) {
+    openActiveDropdowns()
+
     const token = auth.token()
     if (token) {
       permissionData.fetchPermission(token), permissionData.fetchUserData(token)
@@ -338,6 +368,14 @@ onMounted(() => {
   &-sub {
     li {
       padding: 0 10px;
+
+      .router-link-active {
+        color: white;
+
+        img {
+          filter: brightness(9999);
+        }
+      }
 
       &:not(:last-child) {
         .sub-link {
