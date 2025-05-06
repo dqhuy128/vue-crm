@@ -37,7 +37,7 @@ function onChangeFile(e: Event) {
 </script> -->
 
 <script setup lang="ts">
-import { computed, inject, ref, Ref } from 'vue'
+import { computed, inject, onMounted, ref, Ref } from 'vue'
 type MimeTypes =
   | 'application/vnd.ms-excel'
   | 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -50,17 +50,20 @@ type MimeTypes =
 export interface Props {
   accept?: MimeTypes | MimeTypes[]
   multiple?: boolean
+  id?: string | number
 }
 
 const injectedOptions = inject('VFileDropOptions', {
   accept: undefined,
-  multiple: undefined
+  multiple: undefined,
+  id: undefined,
 }) as Props
-const { accept: injectedAccept, multiple: injectedMultiple } = injectedOptions
+const { accept: injectedAccept, multiple: injectedMultiple, id: injectedId } = injectedOptions
 
 const props = withDefaults(defineProps<Props>(), {
   accept: () => [],
-  multiple: false
+  multiple: false,
+  id: undefined,
 })
 
 const emit = defineEmits<{
@@ -176,7 +179,10 @@ function onFileDrop(event: DragEvent) {
 function onDragover(event: DragEvent) {
   event.preventDefault()
 }
-console.log(files.value, 'files value FileUPload')
+// unmount then clear the files
+onMounted(() => {
+  console.log('Run Mounted FileUpload');
+})
 </script>
 
 <template>
@@ -185,7 +191,7 @@ console.log(files.value, 'files value FileUPload')
       class="file-upload__input"
       @change="onFileChange"
       type="file"
-      id="upload-file"
+      :id="'upload-file' + (props.id ? `-${props.id}` : '')"
       :accept="acceptInputMimeTypes"
       :multiple="multiple"
     />
@@ -196,7 +202,7 @@ console.log(files.value, 'files value FileUPload')
       @drop="onFileDrop"
       @dragover="onDragover"
       class="file-upload__label"
-      for="upload-file"
+      :htmlFor="'upload-file' + (props.id ? `-${props.id}` : '')"
     ></label>
   </div>
 </template>

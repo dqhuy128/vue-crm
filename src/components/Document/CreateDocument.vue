@@ -92,7 +92,7 @@
       </div>
       <div class="col-span-12">
         <FileUpload
-          :key="'modal-create'"
+          :id="'modal-create'"
           @change="onFileChange"
           :accept="[
             'application/vnd.ms-excel',

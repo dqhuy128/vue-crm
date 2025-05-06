@@ -403,13 +403,7 @@
           :data="detailDocument"
           @post-request-edit="getPostRequestEdit"
         >
-          <button
-            @click="toggleModal('modalEditDocument')"
-            type="button"
-            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-          >
-            Hủy
-          </button>
+         
         </EditDocument>
       </div>
     </Modal>
