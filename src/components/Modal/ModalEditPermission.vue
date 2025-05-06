@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="postAddLeave">
+  <form @submit.prevent="submitEditPermission">
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12">
         <div class="block">
@@ -15,6 +15,7 @@
             id=""
             placeholder="Nhập chức vụ"
             class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
+            readonly
           />
         </div>
       </div>
@@ -45,7 +46,7 @@
             Chức năng nhóm quyền
           </span>
 
-          <TreeComponent :permission="paramsEditPermission.permission" />
+          <TreeComponent :permission="paramsEditPermission" />
         </div>
       </div>
     </div>
@@ -74,6 +75,7 @@ import { useLeaveInfo } from '@/composables/leave-info'
 import TreeComponent from '../TreeComponent.vue'
 import { storeToRefs } from 'pinia'
 import { usePermissionStore } from '@/store/permission'
+import { usePermission } from '@/composables/permission'
 
 const auth = useAuth()
 
@@ -87,7 +89,8 @@ const props = defineProps<{
 const paramsEditPermission = reactive<any | null>({
   name: null,
   description: null,
-  permission: null
+  permission: null,
+  listPermission: null
 })
 
 const debounceTime = ref<{
@@ -98,7 +101,7 @@ const debounceTime = ref<{
   counter: 0
 })
 
-const fetchDataLeave = () => {
+const fetchDataPermission = () => {
   if (debounceTime.value.timeOut !== null) {
     clearTimeout(debounceTime.value.timeOut)
   }
@@ -108,10 +111,7 @@ const fetchDataLeave = () => {
       ...paramsEditPermission
     }
 
-    doFetch(
-      `${apiUri}/leave/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
-      auth.token() as string
-    ).then(() => {
+    doFetch(`${apiUri}/permission/list`, auth.token() as string).then(() => {
       // console.log('🚀 ~ fetchDataLeave ~ res:', res)
       tableMagic()
     })
@@ -119,31 +119,27 @@ const fetchDataLeave = () => {
 }
 
 const postRequest = ref<any | null>(null)
-const postAddLeave = async () => {
+const submitEditPermission = async () => {
   try {
     const formData = new FormData()
-    formData.append('begin_date', paramsEditPermission.begin_date)
-    formData.append('finish_date', paramsEditPermission.finish_date)
-    formData.append('reason', paramsEditPermission.reason)
+    formData.append('description', paramsEditPermission.description)
+    formData.append('name', paramsEditPermission.name)
 
-    const res = await axios.post(`${apiUri}/leave/create`, formData, {
+    const res = await axios.post(`${apiUri}/permission/update`, formData, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
     })
-    paramsEditPermission.reason = null
-    paramsEditPermission.begin_date = null
-    paramsEditPermission.finish_date = null
-    fetchDataLeave()
+    fetchDataPermission()
     postRequest.value = res.data
     emit('post-request', postRequest.value)
-    // console.log('🚀 ~ postAddLeave ~ res:', postRequest.value)
+    console.log('🚀 ~ postAddLeave ~ res:', postRequest.value)
   } catch (error) {
     console.log('🚀 ~ postAddLeave ~ error:', error)
   }
 }
 
-const { doFetch } = useLeaveInfo()
+const { doFetch } = usePermission()
 
 const permissionStore = usePermissionStore()
 const { permissionListData, userData } = storeToRefs(permissionStore)
@@ -168,9 +164,13 @@ watch(
     if (description) paramsEditPermission.description = description
     if (permission) {
       paramsEditPermission.permission = Object.keys(permission)
+      paramsEditPermission.listPermission = permission
     } else {
       paramsEditPermission.permission = []
+      paramsEditPermission.listPermission = []
     }
+
+    // console.log('🚀 ~ permission:', paramsEditPermission.permission)
   }
 )
 
