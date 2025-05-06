@@ -1,30 +1,34 @@
 <template>
   <div class="tree-node">
     <div class="node-content" :style="{ paddingLeft: `${level * 20}px` }">
-      <span
-        v-if="hasChildren"
-        class="expand-icon"
-        @click="$emit('toggle-expand', node)"
-      >
-        <template v-if="node.expanded">
-          <img src="@/assets/images/tabler_caret-down-filled.svg" alt="" />
-        </template>
+      <template v-if="hasChildren">
+        <span
+          v-if="hasChildren"
+          class="expand-icon"
+          @click="$emit('toggle-expand', node)"
+        >
+          <template v-if="node.expanded">
+            <img src="@/assets/images/tabler_caret-down-filled.svg" alt="" />
+          </template>
 
-        <template v-else>
-          <img src="@/assets/images/tabler_caret-right-filled.svg" alt="" />
-        </template>
-      </span>
-      <span v-else class="expand-placeholder"></span>
+          <template v-else>
+            <img src="@/assets/images/tabler_caret-right-filled.svg" alt="" />
+          </template>
+        </span>
+        <span v-else class="expand-placeholder"></span>
+      </template>
 
-      <input
-        :id="node.id"
-        type="checkbox"
-        :checked="isSelected"
-        @change="$emit('toggle-select', node)"
-        class="checkbox"
-      />
+      <template v-if="!hasChildren">
+        <input
+          :id="node.id"
+          type="checkbox"
+          :checked="isSelected"
+          @change="$emit('toggle-select', node)"
+          class="checkbox"
+        />
 
-      <label :for="node.id" class="checkbox-label"></label>
+        <label :for="node.id" class="checkbox-label"></label>
+      </template>
 
       <label :for="node.id" class="node-label">{{ node.label }}</label>
     </div>
@@ -44,7 +48,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed } from 'vue'
 
 // Define props
 const props = defineProps({
@@ -63,7 +67,7 @@ const props = defineProps({
 })
 
 // Define emits
-const emit = defineEmits(["toggle-select", "toggle-expand"])
+const emit = defineEmits(['toggle-select', 'toggle-expand'])
 
 // Computed properties
 const hasChildren = computed(() => {
@@ -103,11 +107,10 @@ const isSelected = computed(() => {
   width: 24px;
   cursor: pointer;
   user-select: none;
-  margin-right: 12px;
+  margin-right: 6px;
 
   @media (max-width: 767px) {
     width: 14px;
-    margin-right: 5px;
   }
 }
 
@@ -146,7 +149,6 @@ const isSelected = computed(() => {
     @media (max-width: 767px) {
       width: 14px;
       height: 14px;
-      margin-right: 6px;
     }
 
     &::after {

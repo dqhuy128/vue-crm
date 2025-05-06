@@ -65,15 +65,15 @@
         display: flex;
         flex-flow: column;
         gap: 4px;
-        max-height: 350px;
+        // max-height: 350px;
 
-        @media (min-width: 1280px) {
-          max-height: 470px;
-        }
+        // @media (min-width: 1280px) {
+        //   max-height: 470px;
+        // }
 
-        @media (min-width: 1680px) {
-          max-height: 540px;
-        }
+        // @media (min-width: 1680px) {
+        //   max-height: 540px;
+        // }
 
         .cell {
           color: #464661;

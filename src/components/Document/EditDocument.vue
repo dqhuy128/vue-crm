@@ -79,6 +79,7 @@
       </div>
       <div class="col-span-12">
         <FileUpload
+          :key="'modal-edit'"
           @change="onFileUpdate"
           :accept="[
             'application/vnd.ms-excel',
@@ -109,6 +110,35 @@
             </div>
           </div>
         </FileUpload>
+        <template v-if="FormSubmitEdit.link">
+          <ul>
+            <li class="relative flex items-center pt-3">
+              <p>
+                {{ FormSubmitEdit.link }}
+              </p>
+
+              <button
+                @click="removeFilePreview"
+                class="bg-red-500 rounded-sm cursor-pointer ms-2"
+              >
+                <svg
+                  data-v-d642cc0b=""
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    data-v-d642cc0b=""
+                    d="M11.9998 13.4L7.0998 18.3C6.91647 18.4833 6.68314 18.575 6.3998 18.575C6.11647 18.575 5.88314 18.4833 5.6998 18.3C5.51647 18.1167 5.4248 17.8833 5.4248 17.6C5.4248 17.3167 5.51647 17.0833 5.6998 16.9L10.5998 12L5.6998 7.1C5.51647 6.91667 5.4248 6.68334 5.4248 6.4C5.4248 6.11667 5.51647 5.88334 5.6998 5.7C5.88314 5.51667 6.11647 5.425 6.3998 5.425C6.68314 5.425 6.91647 5.51667 7.0998 5.7L11.9998 10.6L16.8998 5.7C17.0831 5.51667 17.3165 5.425 17.5998 5.425C17.8831 5.425 18.1165 5.51667 18.2998 5.7C18.4831 5.88334 18.5748 6.11667 18.5748 6.4C18.5748 6.68334 18.4831 6.91667 18.2998 7.1L13.3998 12L18.2998 16.9C18.4831 17.0833 18.5748 17.3167 18.5748 17.6C18.5748 17.8833 18.4831 18.1167 18.2998 18.3C18.1165 18.4833 17.8831 18.575 17.5998 18.575C17.3165 18.575 17.0831 18.4833 16.8998 18.3L11.9998 13.4Z"
+                    fill="#fff"
+                  ></path>
+                </svg>
+              </button>
+            </li>
+          </ul>
+        </template>
         <template v-if="fileUploadPreview">
           <ul>
             <li
@@ -181,26 +211,22 @@ import axios from 'axios'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
 // import 'vue-multiselect/dist/vue-multiselect.min.css'
-import { tableMagic } from '@/utils/main'
-import FileUpload from '../FileUpload.vue'
+import { capitalizeFirstLetter, tableMagic } from '@/utils/main'
+import { Icon } from '@iconify/vue'
 import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectItemIndicator,
   SelectItemText,
-  SelectLabel,
   SelectPortal,
   SelectRoot,
   SelectScrollDownButton,
   SelectScrollUpButton,
-  SelectSeparator,
   SelectTrigger,
   SelectValue,
   SelectViewport
 } from 'radix-vue'
-import { Icon } from '@iconify/vue'
-import { capitalizeFirstLetter } from '@/utils/main'
+import FileUpload from '../FileUpload.vue'
 
 const props = defineProps<{
   closeModal: () => void
@@ -222,6 +248,9 @@ const FormSubmitEdit = ref({
   id: props.data?.id || null,
   link: props.data?.link || null
 })
+function removeFilePreview() {
+  FormSubmitEdit.value.link = null
+}
 const setUrlFromFiles = async (files: FileList | File) => {
   let file: File
 
@@ -232,7 +261,8 @@ const setUrlFromFiles = async (files: FileList | File) => {
     if (list.length === 0) return
     file = list[list.length - 1] // get the latest (last) file
   }
-
+  console.log('Run here')
+  removeFilePreview()
   const path = await readFileAsDataURL(file)
 
   // Replace previous file, only keep one
@@ -280,7 +310,7 @@ const submit = async () => {
   formData.append('description', FormSubmitEdit.value.description)
   if (fileUploadPreview.value.length > 0) {
     fileUploadPreview.value.forEach((item) => {
-      formData.append('files', item.file)
+      formData.append('file', item.file)
     })
   }
 
@@ -299,7 +329,7 @@ const submit = async () => {
       postRequestEdit.value = res.data
       emit('post-request-edit', postRequestEdit.value)
       doFetch(
-        `${apiUri}/document/list?page=1&per_page=10`,
+        `${apiUri}/document/list?page=1&per_page=20`,
         auth.token() as string
       ).then(() => {
         tableMagic()

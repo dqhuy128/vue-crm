@@ -128,7 +128,7 @@
     </div>
 
     <template v-if="checkPermission('Leave', 'List')">
-      <div class="flex flex-col h-full">
+      <div class="flex flex-col h-full overflow-hidden">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="relative table-container">
             <!-- Example column -->
@@ -639,7 +639,7 @@ const handlePageChange = (pageNum: number) => {
 const handleSearchLeave = async () => {
   try {
     paginate.page = 1
-    paginate.per_page = 10
+    paginate.per_page = 20
     await fetchDataLeave()
   } catch (error) {
     console.log('🚀 ~ handleSearchLeave ~ error:', error)
