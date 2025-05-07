@@ -68,10 +68,12 @@
           </div>
           <ul class="sidebar-menu-sub" v-show="isDropdownOpen(id)">
             <li v-for="(sub, idx) in item.submenu" :key="idx">
-              <router-link :to="{ name: `${sub.route}` }" class="sub-link">
-                <img :src="sub.icon" alt="" />
-                {{ sub.title }}
-              </router-link>
+              <template v-if="permision && checkPermission(sub.permissionName)">
+                <router-link :to="{ name: `${sub.route}` }" class="sub-link">
+                  <img :src="sub.icon" alt="" />
+                  {{ sub.title }}
+                </router-link>
+              </template>
             </li>
           </ul>
         </template>
@@ -128,7 +130,7 @@ const refDataSidebar = ref<dataSidebarItem[]>([
     title: 'Quản trị hệ thống',
     route: 'SystemUser',
     nav: true,
-    permissionName: 'Admin',
+    permissionName: 'all',
     submenu: [
       {
         icon: LucideUserCog,
@@ -261,8 +263,7 @@ const checkPermission = (arrRole: any) => {
   if (arrRole === 'Admin') {
     return userData && userData.value?.per_group_name === 'Admin' ? true : false
   }
-  const res = permissionList.value.includes(arrRole) ? true : false
-  return res
+  return permissionList.value.includes(arrRole) ? true : false
 }
 
 onMounted(() => {
@@ -389,11 +390,11 @@ onMounted(() => {
       align-items: center;
       gap: 8px;
       color: #c6c6c6;
-      font-size: 16px;
+      font-size: 14px;
       font-style: normal;
       font-weight: 700;
       line-height: normal;
-      padding: 15px 0;
+      padding: 10px 0 10px 10px;
 
       @media (hover: hover) {
         &:hover {

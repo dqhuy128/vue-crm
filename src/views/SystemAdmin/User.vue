@@ -9,12 +9,23 @@
       >
         <div class="flex flex-wrap gap-2 xxl:gap-4 grow">
           <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
-            <input
-              type="text"
-              v-model="params.phone"
-              class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090] focus:outline-none"
-              placeholder="Tên, số điện thoại"
-            />
+            <div class="relative">
+              <input
+                type="text"
+                v-model="params.phone"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-[#000] data-[placeholder]:text-[#909090] focus:outline-none"
+                placeholder="Tên, số điện thoại"
+              />
+
+              <button
+                v-if="params.phone"
+                type="button"
+                class="absolute -translate-y-1/2 cursor-pointer top-1/2 right-3"
+                @click="() => (params.phone = '')"
+              >
+                <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
           <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[100%]">
@@ -341,7 +352,7 @@
                       </div>
                     </template>
 
-                    <div class="cell edit edit-body">
+                    <div class="justify-end cell edit edit-body ms-auto">
                       <template v-if="checkPermission('User', 'Update')">
                         <button
                           @click="handleGetDetailUser(item?.phone)"
@@ -477,6 +488,7 @@
     </template>
 
     <ModalRegisterUser
+      :propFunction="fetchDataDocument"
       @toggle-modal="toggleModal('modalNewUser')"
       :modal="modalActive.modalNewUser"
       @post-request="getPostRequest"
@@ -489,6 +501,7 @@
     >
       <ModalEditUser
         :userdata="paramsDetailUser"
+        :propFunction="fetchDataDocument"
         @post-request-edit="getPostRequestEdit"
       >
         <button
