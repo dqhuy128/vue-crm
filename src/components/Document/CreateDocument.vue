@@ -305,7 +305,7 @@ const submit = async () => {
       emit('post-request', postRequest.value)
 
       doFetch(
-        `${apiUri}/document/list?page=1&per_page=10`,
+        `${apiUri}/document/list?page=1&per_page=20`,
         auth.token() as string
       ).then(() => {
         tableMagic()
