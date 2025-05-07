@@ -142,8 +142,9 @@ const session = auth.check()
 
 const emit = defineEmits(['post-request'])
 
-defineProps<{
+const props = defineProps<{
   datatype: any
+  propFunction: Function
 }>()
 
 const paramsCreate = reactive({
@@ -151,44 +152,6 @@ const paramsCreate = reactive({
   name: '',
   description: ''
 })
-
-const params = reactive({
-  type: '',
-  name: ''
-})
-const paginate = reactive({
-  page: 1,
-  per_page: 20
-})
-const debounceTime = ref<{
-  timeOut: number | null
-  counter: number
-}>({
-  timeOut: null,
-  counter: 0
-})
-
-const fetchDataDocument = () => {
-  if (debounceTime.value.timeOut !== null) {
-    clearTimeout(debounceTime.value.timeOut)
-  }
-
-  debounceTime.value.timeOut = setTimeout(() => {
-    const res = {
-      ...params,
-      page: paginate.page,
-      per_page: paginate.per_page
-    }
-
-    doFetch(
-      `${apiUri}/categories/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
-      auth.token() as string
-    ).then(() => {
-      // console.log('🚀 ~ fetchDataDocument ~ res:', res)
-      tableMagic()
-    })
-  }, 300)
-}
 
 const postRequest = ref<any | null>(null)
 const handleCreateCategory = async () => {
@@ -216,21 +179,13 @@ const handleCreateCategory = async () => {
         paramsCreate.description = ''
         postRequest.value = res.data
         emit('post-request', postRequest.value)
-        fetchDataDocument()
+        props.propFunction()
       })
       .catch((err) => {
         console.log('handleCreateCategory ~ err', err)
       })
   }
 }
-
-const {
-  data,
-  // isLoading: isLoadingDocument,
-  doFetch,
-  // fetchCategoryDocument,
-  categories
-} = useSystemManager()
 </script>
 
 <style lang="scss" scoped></style>

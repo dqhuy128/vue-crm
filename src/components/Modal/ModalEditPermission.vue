@@ -6,7 +6,7 @@
           <span
             class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
           >
-            Chức vụ
+            Nhóm quyền
           </span>
           <input
             v-model="paramsEditPermission.name"
@@ -69,9 +69,7 @@
 import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { apiUri } from '@/constants/apiUri'
 import { useAuth } from 'vue-auth3'
-import { tableMagic } from '@/utils/main'
 import axios from 'axios'
-import { useLeaveInfo } from '@/composables/leave-info'
 import TreeComponent from '../TreeComponent.vue'
 import { storeToRefs } from 'pinia'
 import { usePermissionStore } from '@/store/permission'
@@ -84,6 +82,7 @@ const emit = defineEmits(['post-request'])
 const props = defineProps<{
   datatype: any
   userPermission: any
+  propFunction: Function
 }>()
 
 const paramsEditPermission = reactive<any | null>({
@@ -92,31 +91,6 @@ const paramsEditPermission = reactive<any | null>({
   permission: null,
   listPermission: null
 })
-
-const debounceTime = ref<{
-  timeOut: number | null
-  counter: number
-}>({
-  timeOut: null,
-  counter: 0
-})
-
-const fetchDataPermission = () => {
-  if (debounceTime.value.timeOut !== null) {
-    clearTimeout(debounceTime.value.timeOut)
-  }
-
-  debounceTime.value.timeOut = setTimeout(() => {
-    const res = {
-      ...paramsEditPermission
-    }
-
-    doFetch(`${apiUri}/permission/list`, auth.token() as string).then(() => {
-      // console.log('🚀 ~ fetchDataLeave ~ res:', res)
-      tableMagic()
-    })
-  }, 300)
-}
 
 const postRequest = ref<any | null>(null)
 const submitEditPermission = async () => {
@@ -130,7 +104,7 @@ const submitEditPermission = async () => {
         Authorization: `Bearer ${auth.token()}`
       }
     })
-    fetchDataPermission()
+    props.propFunction()
     postRequest.value = res.data
     emit('post-request', postRequest.value)
     console.log('🚀 ~ postAddLeave ~ res:', postRequest.value)
@@ -139,19 +113,9 @@ const submitEditPermission = async () => {
   }
 }
 
-const { doFetch } = usePermission()
-
 const permissionStore = usePermissionStore()
 const { permissionListData, userData } = storeToRefs(permissionStore)
 const { fetchPermissionList, fetchUserData } = permissionStore
-
-// watch(permissionListData, () => {
-//   console.log('🚀 ~ permissionListData:', permissionListData)
-// })
-
-// watch(userData, () => {
-//   console.log('🚀 ~ userData:', userData.value?.per_group_name)
-// })
 
 watch(
   () => props.datatype,

@@ -193,7 +193,13 @@
     <div
       class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
     >
-      <slot></slot>
+      <button
+        @click="clearAndCloseModal"
+        type="button"
+        class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+      >
+        Hủy
+      </button>
       <button
         type="submit"
         class="max-md:grow inline-block md:min-w-[175px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
@@ -231,6 +237,7 @@ import FileUpload from '../FileUpload.vue'
 const props = defineProps<{
   closeModal: () => void
   data: any
+  propFunction: Function
 }>()
 
 const emit = defineEmits(['post-request-edit'])
@@ -248,6 +255,15 @@ const FormSubmitEdit = ref({
   id: props.data?.id || null,
   link: props.data?.link || null
 })
+function clearAndCloseModal() {
+  fileUploadPreview.value = []
+  FormSubmitEdit.value.name = null
+  FormSubmitEdit.value.description = null
+  FormSubmitEdit.value.docCate = null
+  FormSubmitEdit.value.id = null
+  FormSubmitEdit.value.link = null
+  props.closeModal()
+}
 function removeFilePreview() {
   FormSubmitEdit.value.link = null
 }
@@ -312,6 +328,8 @@ const submit = async () => {
     fileUploadPreview.value.forEach((item) => {
       formData.append('file', item.file)
     })
+  } else {
+    formData.append('file', '')
   }
 
   const response = await axios
@@ -328,15 +346,10 @@ const submit = async () => {
       props.closeModal()
       postRequestEdit.value = res.data
       emit('post-request-edit', postRequestEdit.value)
-      doFetch(
-        `${apiUri}/document/list?page=1&per_page=20`,
-        auth.token() as string
-      ).then(() => {
-        tableMagic()
-      })
+      props.propFunction()
     })
     .catch(function (error) {
-      alert('Tạo tài liệu thất bại')
+      console.log(error, 'error /document/update')
     })
 }
 

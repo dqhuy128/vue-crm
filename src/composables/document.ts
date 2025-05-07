@@ -55,6 +55,7 @@ export function useDocument() {
     //   .finally(() => (isLoading.value = false))
   }
   const fetchCategoryDocument = async () => {
+    if(categories.value.length > 0) return
     const response = await axios.get(
       `${apiUri}/categories/list?type=document`,
       {

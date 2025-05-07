@@ -92,7 +92,7 @@
       </div>
       <div class="col-span-12">
         <FileUpload
-          :key="'modal-create'"
+          :id="'modal-create'"
           @change="onFileChange"
           :accept="[
             'application/vnd.ms-excel',
@@ -213,6 +213,7 @@ import FileUpload from '../FileUpload.vue'
 
 const props = defineProps<{
   closeModal: () => void
+  propFunction: Function
 }>()
 const emit = defineEmits(['post-request'])
 
@@ -303,16 +304,10 @@ const submit = async () => {
       props.closeModal()
       postRequest.value = res.data
       emit('post-request', postRequest.value)
-
-      doFetch(
-        `${apiUri}/document/list?page=1&per_page=20`,
-        auth.token() as string
-      ).then(() => {
-        tableMagic()
-      })
+      props.propFunction()
     })
     .catch(function (error) {
-      alert('Tạo tài liệu thất bại')
+      console.log(error, 'error /document/create')
     })
 
   console.log('🚀 ~ submit ~ response:', response)

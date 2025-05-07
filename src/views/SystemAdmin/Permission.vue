@@ -9,14 +9,25 @@
       >
         <div class="flex flex-wrap items-stretch gap-4 grow">
           <div class="flex-[100%]">
-            <input
-              v-model="params.name"
-              type="text"
-              name=""
-              id=""
-              placeholder="Nhập chức vụ"
-              class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
-            />
+            <div class="relative">
+              <input
+                v-model="params.name"
+                type="text"
+                name=""
+                id=""
+                placeholder="Nhập chức vụ"
+                class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#000] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
+              />
+
+              <button
+                v-if="params.name"
+                type="button"
+                class="absolute -translate-y-1/2 cursor-pointer top-1/2 right-3"
+                @click="() => (params.name = '')"
+              >
+                <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -63,7 +74,7 @@
       </div>
     </div>
 
-    <template v-if="checkPermission('Leave', 'List')">
+    <template v-if="checkPermission('Permission', 'List')">
       <div class="flex flex-col h-full overflow-hidden">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="relative table-container">
@@ -111,7 +122,7 @@
 
                   <div class="cell pinned pinned-body">
                     <div class="justify-center cell edit edit-body">
-                      <template v-if="checkPermission('Leave', 'Update')">
+                      <template v-if="checkPermission('Permission', 'Update')">
                         <button
                           @click="handleEditPermission(it.name)"
                           type="button"
@@ -157,6 +168,7 @@
         <ModalEditPermission
           :datatype="dataEditPermission"
           :userPermission="permissionListData"
+          :propFunction="fetchDataPermission"
           @post-request="getPostRequest"
         >
           <button
@@ -202,6 +214,7 @@
 
 <script lang="ts" setup>
 import { onMounted, reactive, ref, watch } from 'vue'
+import { Icon } from '@iconify/vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
 import { useAuth } from 'vue-auth3'

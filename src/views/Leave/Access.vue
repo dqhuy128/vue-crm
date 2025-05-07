@@ -6,21 +6,31 @@
       <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchLeave">
         <div class="flex flex-wrap items-stretch gap-4 grow">
           <div class="flex-[0_0_calc(50%-8px)] max-md:flex-[100%]">
-            <input
-              v-model="params.name"
-              type="text"
-              name=""
-              id=""
-              placeholder="Nhập tên"
-              class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
-            />
+            <div class="relative">
+              <input
+                v-model="params.name"
+                type="text"
+                name=""
+                id=""
+                placeholder="Nhập tên"
+                class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#000] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
+              />
+
+              <button
+                v-if="params.name"
+                type="button"
+                class="absolute -translate-y-1/2 cursor-pointer top-1/2 right-3"
+                @click="() => (params.name = '')"
+              >
+                <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
           <div class="flex-[0_0_calc(50%-8px)] max-md:flex-[100%]">
             <SelectRoot v-model="params.status">
               <SelectTrigger
                 class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] h-full focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
-                aria-label="Customise options"
               >
                 <SelectValue
                   class="grow font-inter text-[15px] max-md:text-[14px] font-normal leading-normal text-start"
@@ -135,9 +145,12 @@
                   </button>
                 </div>
               </div>
-              <div class="cell pinned">
-                <div class="cell edit">Edit</div>
-              </div>
+
+              <template v-if="checkPermission('Leave', 'Delete')">
+                <div class="cell pinned">
+                  <div class="cell edit">Edit</div>
+                </div>
+              </template>
             </div>
 
             <!-- Example row -->
@@ -247,24 +260,26 @@
                     </div>
                   </div>
 
-                  <div class="cell pinned pinned-body">
-                    <div class="cell edit edit-body !ps-0">
-                      <!-- <button
+                  <template v-if="checkPermission('Leave', 'Delete')">
+                    <div class="cell pinned pinned-body">
+                      <div class="cell edit edit-body !ps-0">
+                        <!-- <button
                         @click="handleEditLeave(it.id)"
                         type="button"
                         class="cursor-pointer cell-btn-edit shrink-0"
                       >
                         <img src="@/assets/images/action-edit-2.svg" alt="" />
                       </button> -->
-                      <button
-                        @click="confirmDeleteLeave(it.id)"
-                        type="button"
-                        class="cursor-pointer cell-btn-delete shrink-0"
-                      >
-                        <img src="@/assets/images/action-edit-3.svg" alt="" />
-                      </button>
+                        <button
+                          @click="confirmDeleteLeave(it.id)"
+                          type="button"
+                          class="cursor-pointer cell-btn-delete shrink-0"
+                        >
+                          <img src="@/assets/images/action-edit-3.svg" alt="" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </template>
                 </div>
               </template>
             </div>

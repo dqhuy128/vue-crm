@@ -370,7 +370,11 @@
           </h3>
         </div>
 
-        <ModalAddingLeave :datatype="null" @post-request="getPostRequest">
+        <ModalAddingLeave
+          :datatype="null"
+          :propFunction="fetchDataLeave"
+          @post-request="getPostRequest"
+        >
           <button
             @click="toggleModal('modalAddLeave')"
             type="button"
@@ -396,6 +400,7 @@
 
         <ModalEditLeave
           :datatype="dataEditLeave"
+          :propFunction="fetchDataLeave"
           @post-request-edit="getPostRequestEdit"
         >
           <button
@@ -644,7 +649,7 @@ const handleSearchLeave = async () => {
   } catch (error) {
     console.log('🚀 ~ handleSearchLeave ~ error:', error)
   } finally {
-    fetchDataLeave()
+    await fetchDataLeave()
   }
 }
 

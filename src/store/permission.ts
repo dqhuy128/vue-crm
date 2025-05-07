@@ -64,6 +64,7 @@ export const usePermissionStore = defineStore('permission', () => {
   function checkPermission(permission: string, actions: string) {
     if (!permision.value) return false
     const rolePermission = permision.value[permission]
+
     if (!rolePermission) return false
     if (rolePermission.length === 0) return false
     if (rolePermission.includes(actions)) return true
