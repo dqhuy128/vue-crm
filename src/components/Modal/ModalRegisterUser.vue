@@ -678,7 +678,7 @@
                 >
                   <SelectValue
                     class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
-                    placeholder="Chọn loại danh mục"
+                    placeholder="Chọn trạng thái"
                   />
                   <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
                 </SelectTrigger>
