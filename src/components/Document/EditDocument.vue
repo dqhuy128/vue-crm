@@ -112,7 +112,7 @@
         </FileUpload>
         <template v-if="FormSubmitEdit.link">
           <ul>
-            <li class="relative flex items-center pt-3">
+            <li class="flex relative items-center pt-3">
               <p>
                 {{ FormSubmitEdit.link }}
               </p>
@@ -143,7 +143,7 @@
           <ul>
             <li
               v-for="(list, index) in fileUploadPreview"
-              class="relative flex items-center pt-3"
+              class="flex relative items-center pt-3"
             >
               <p>
                 {{ list.name }}
@@ -191,7 +191,7 @@
     </div>
 
     <div
-      class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
+      class="flex flex-wrap gap-4 justify-center items-stretch mt-9 text-center xl:gap-6"
     >
       <button
         @click="clearAndCloseModal"
