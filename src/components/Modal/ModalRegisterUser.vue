@@ -5,7 +5,7 @@
     maxWidth="max-w-[865px]"
   >
     <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">
-      <div class="mt-8 mb-7 text-center">
+      <div class="mt-8 text-center mb-7">
         <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
           thêm mới người dùng
         </h3>
@@ -24,7 +24,7 @@
             />
           </div>
 
-          <div class="absolute right-0 bottom-0 z-10">
+          <div class="absolute bottom-0 right-0 z-10">
             <img src="@/assets/images/ic-camera.svg" alt="" />
           </div>
         </div>
@@ -720,7 +720,7 @@
         </div>
 
         <div
-          class="flex flex-wrap gap-4 justify-center items-stretch mt-10 text-center xl:gap-6"
+          class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center xl:gap-6"
         >
           <button
             @click="() => emit('toggle-modal')"
@@ -1052,6 +1052,9 @@ const onSubmitRegister = handleSubmit(async () => {
       formDataUser.append('status', paramsUser.status)
     } else {
       formDataUser.append('status', '1')
+    }
+    if (paramsUser.mcc_user_id) {
+      formDataUser.append('mcc_user_id', paramsUser.mcc_user_id)
     }
 
     const response = await axios.post(`${apiUri}/user/create`, formDataUser, {

@@ -14,13 +14,13 @@
           />
         </div>
 
-        <div class="absolute right-0 bottom-0 z-10">
+        <div class="absolute bottom-0 right-0 z-10">
           <img src="@/assets/images/ic-camera.svg" alt="" />
         </div>
       </div>
     </div> -->
 
-    <div class="mt-8 mb-7 text-center">
+    <div class="mt-8 text-center mb-7">
       <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
         cập nhật người dùng
       </h3>
@@ -134,7 +134,7 @@
 
             <!-- <div class="relative">
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -246,7 +246,7 @@
 
             <!-- <div class="relative">
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -640,7 +640,7 @@
 
             <!-- <div class="relative">
               <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                class="absolute -translate-y-1/2 pointer-events-none right-3 top-1/2"
               >
                 <img src="@/assets/images/cuidaa_calendar-outline.svg" alt="" />
               </div>
@@ -648,7 +648,7 @@
           </div>
         </div>
 
-        <div class="col-span-12 md:col-span-6">
+        <div class="col-span-12 md:col-span-4">
           <div class="block">
             <span
               class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -666,7 +666,25 @@
           </div>
         </div>
 
-        <div class="col-span-12 md:col-span-6">
+        <div class="col-span-12 md:col-span-4">
+          <div class="block">
+            <span
+              class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
+            >
+              ID máy chấm công
+            </span>
+            <input
+              v-model="paramsUserDetail.mcc_user_id"
+              type="text"
+              name=""
+              id=""
+              placeholder=" ID máy chấm công"
+              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+            />
+          </div>
+        </div>
+
+        <div class="col-span-12 md:col-span-4">
           <div class="block">
             <span
               class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -723,7 +741,7 @@
       </div>
 
       <div
-        class="flex flex-wrap gap-4 justify-center items-stretch mt-10 text-center xl:gap-6"
+        class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center xl:gap-6"
       >
         <slot />
         <button
@@ -865,7 +883,8 @@ const paramsUserDetail = reactive<any>({
   work_contract: '',
   working_day: '',
   total_days_off: '',
-  status: ''
+  status: '',
+  mcc_user_id: ''
 })
 
 // Định nghĩa schema validate với yup
@@ -1089,6 +1108,9 @@ const submitUserUpdate = handleSubmit(async () => {
       formDataUser.append('status', paramsUserDetail.status)
     } else {
       formDataUser.append('status', '1')
+    }
+    if (paramsUserDetail.mcc_user_id) {
+      formDataUser.append('mcc_user_id', paramsUserDetail.mcc_user_id)
     }
 
     const response = await axios.post(`${apiUri}/user/update`, formDataUser, {
