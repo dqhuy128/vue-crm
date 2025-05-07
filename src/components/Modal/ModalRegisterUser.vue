@@ -5,7 +5,7 @@
     maxWidth="max-w-[865px]"
   >
     <div class="rounded-[24px] p-1.5 bg-white overflow-hidden">
-      <div class="mt-8 text-center mb-7">
+      <div class="mt-8 mb-7 text-center">
         <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
           thêm mới người dùng
         </h3>
@@ -24,7 +24,7 @@
             />
           </div>
 
-          <div class="absolute bottom-0 right-0 z-10">
+          <div class="absolute right-0 bottom-0 z-10">
             <img src="@/assets/images/ic-camera.svg" alt="" />
           </div>
         </div>
@@ -313,6 +313,13 @@
 
                     <SelectViewport>
                       <SelectGroup>
+                        <SelectItem
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          value="all"
+                        >
+                          <SelectItemText> Chọn bộ phận </SelectItemText>
+                        </SelectItem>
+
                         <template v-for="(items, key) in staffData">
                           <SelectItem
                             v-for="(item, _) in items"
@@ -374,6 +381,13 @@
 
                     <SelectViewport>
                       <SelectGroup>
+                        <SelectItem
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          value="all"
+                        >
+                          <SelectItemText> Chọn chức vụ </SelectItemText>
+                        </SelectItem>
+
                         <template v-for="(items, key) in positionData">
                           <SelectItem
                             v-for="(item, _) in items"
@@ -436,6 +450,13 @@
                     <SelectViewport>
                       <SelectGroup>
                         <SelectItem
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          value="all"
+                        >
+                          <SelectItemText> Chọn địa điểm </SelectItemText>
+                        </SelectItem>
+
+                        <SelectItem
                           v-for="(item, _) in regionData"
                           :key="item.id"
                           class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
@@ -494,6 +515,13 @@
 
                     <SelectViewport>
                       <SelectGroup>
+                        <SelectItem
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          value="all"
+                        >
+                          <SelectItemText> Chọn quản lý </SelectItemText>
+                        </SelectItem>
+
                         <template v-for="(items, key) in leaderData">
                           <SelectItem
                             v-for="(item, _) in items"
@@ -599,7 +627,7 @@
             </div>
           </div>
 
-          <div class="col-span-12 md:col-span-6">
+          <div class="col-span-12 md:col-span-4">
             <div class="block">
               <span
                 class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -617,7 +645,25 @@
             </div>
           </div>
 
-          <div class="col-span-12 md:col-span-6">
+          <div class="col-span-12 md:col-span-4">
+            <div class="block">
+              <span
+                class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
+              >
+                ID máy chấm công
+              </span>
+              <input
+                v-model="paramsUser.mcc_user_id"
+                type="text"
+                name=""
+                id=""
+                placeholder=" ID máy chấm công"
+                class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+              />
+            </div>
+          </div>
+
+          <div class="col-span-12 md:col-span-4">
             <div class="block">
               <span
                 class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
@@ -674,7 +720,7 @@
         </div>
 
         <div
-          class="flex flex-wrap items-stretch justify-center gap-4 mt-10 text-center xl:gap-6"
+          class="flex flex-wrap gap-4 justify-center items-stretch mt-10 text-center xl:gap-6"
         >
           <button
             @click="() => emit('toggle-modal')"
@@ -789,7 +835,8 @@ const paramsUser = reactive<any>({
   work_contract: '',
   working_day: '',
   total_days_off: '',
-  status: ''
+  status: '',
+  mcc_user_id: ''
 })
 
 // Định nghĩa schema validate với yup
@@ -1033,6 +1080,21 @@ watch([email, phone, name, group_user, code], (newVal) => {
   paramsUser.name = newVal[2]
   paramsUser.per_group_name = newVal[3]
   paramsUser.code = newVal[4]
+})
+
+watch([staffType, positionType, regionType, leaderType], () => {
+  if (staffType.id === 'all') {
+    staffType.id = String(0)
+  }
+  if (positionType.id === 'all') {
+    positionType.id = String(0)
+  }
+  if (regionType.id === 'all') {
+    regionType.id = String(0)
+  }
+  if (leaderType.id === 'all') {
+    leaderType.id = String(0)
+  }
 })
 
 onMounted(() => {
