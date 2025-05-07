@@ -305,7 +305,7 @@
                   </div>
 
                   <div class="cell">
-                    {{ item?.per_group_name }}
+                    {{ item?.per_text }}
                   </div>
 
                   <div class="cell">
