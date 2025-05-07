@@ -202,7 +202,7 @@ const emit = defineEmits(['post-request-edit'])
 
 const props = defineProps<{
   datatype: any
-  // closeModal: () => void
+  propFunction: Function
 }>()
 
 const paramsUpdate = reactive({
@@ -212,44 +212,6 @@ const paramsUpdate = reactive({
   description: '',
   status: ''
 })
-
-const params = reactive({
-  type: '',
-  name: ''
-})
-const paginate = reactive({
-  page: 1,
-  per_page: 20
-})
-const debounceTime = ref<{
-  timeOut: number | null
-  counter: number
-}>({
-  timeOut: null,
-  counter: 0
-})
-
-const fetchDataDocument = () => {
-  if (debounceTime.value.timeOut !== null) {
-    clearTimeout(debounceTime.value.timeOut)
-  }
-
-  debounceTime.value.timeOut = setTimeout(() => {
-    const res = {
-      ...params,
-      page: paginate.page,
-      per_page: paginate.per_page
-    }
-
-    doFetch(
-      `${apiUri}/categories/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
-      auth.token() as string
-    ).then(() => {
-      // console.log('🚀 ~ fetchDataDocument ~ res:', res)
-      tableMagic()
-    })
-  }, 300)
-}
 
 const categoriesType = ref<any | null>(null)
 const getCategoriesType = async () => {
@@ -270,17 +232,6 @@ const checkValidate = ref('')
 const postRequestEdit = ref<any | null>(null)
 const handleUpdateCategory = async () => {
   try {
-    // checkValidate.value = ''
-    // if (
-    //   paramsUpdate.name == '' ||
-    //   paramsUpdate.name == null
-    //   // paramsUpdate.type == '' ||
-    //   // paramsUpdate.type == null
-    // ) {
-    //   checkValidate.value = 'Vui lòng nhập tên danh mục'
-    //   return
-    // }
-
     const formData = new FormData()
     if (paramsUpdate.id) formData.append('id', paramsUpdate.id)
     if (paramsUpdate.type) formData.append('type', paramsUpdate.type)
@@ -298,20 +249,12 @@ const handleUpdateCategory = async () => {
     // props.closeModal()
     postRequestEdit.value = response.data
     emit('post-request-edit', postRequestEdit.value)
-    fetchDataDocument()
+    props.propFunction()
     console.log('🚀 ~ handleUpdateCategory ~ response:', response)
   } catch (error) {
     console.log('🚀 ~ handleUpdateCategory ~ error:', error)
   }
 }
-
-const {
-  data,
-  // isLoading: isLoadingDocument,
-  doFetch,
-  // fetchCategoryDocument,
-  categories
-} = useSystemManager()
 
 onMounted(() => {
   getCategoriesType()

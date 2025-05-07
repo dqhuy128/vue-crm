@@ -9,22 +9,33 @@
       >
         <div class="flex flex-wrap gap-2 xxl:gap-4 grow">
           <div class="flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
-            <input
-              name=""
-              v-model="params.name"
-              placeholder="Nhập tên tài liệu"
-              class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
-            />
+            <div class="relative">
+              <input
+                name=""
+                v-model="params.name"
+                placeholder="Nhập tên tài liệu"
+                class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#000] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
+              />
+
+              <button
+                v-if="params.name"
+                type="button"
+                class="absolute -translate-y-1/2 cursor-pointer top-1/2 right-3"
+                @click="() => (params.name = '')"
+              >
+                <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
-          <div class="select-block flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
+          <div class="flex-[0_0_calc(50%-8px)] max-lg:flex-[100%]">
             <SelectRoot v-model="params.type_id">
               <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] focus:outline-none"
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
               >
                 <SelectValue
-                  class="grow text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                  class="grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
                   placeholder="Chọn loại tài liệu"
                 />
                 <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
@@ -153,208 +164,216 @@
       </template>
     </div>
 
-    <div class="flex flex-col h-full overflow-hidden">
-      <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
-        <div class="relative table-container">
-          <!-- Example column -->
-          <div id="tableRowHeader" class="justify-between table-row header">
-            <div class="cell" v-for="(column, index) in tbhead" :key="index">
-              {{ column.title }}
+    <template v-if="checkPermission('Document', 'List')">
+      <div class="flex flex-col h-full overflow-hidden">
+        <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
+          <div class="relative table-container">
+            <!-- Example column -->
+            <div id="tableRowHeader" class="justify-between table-row header">
+              <div class="cell" v-for="(column, index) in tbhead" :key="index">
+                {{ column.title }}
 
-              <div class="tb-sort" v-if="column.hasSort">
-                <button type="button">
-                  <img src="@/assets/images/tb-sort.svg" alt="" />
-                </button>
+                <div class="tb-sort" v-if="column.hasSort">
+                  <button type="button">
+                    <img src="@/assets/images/tb-sort.svg" alt="" />
+                  </button>
+                </div>
+              </div>
+              <div class="cell pinned">
+                <div class="!justify-center cell edit">Thao tác</div>
               </div>
             </div>
-            <div class="cell pinned">
-              <div class="!justify-center cell edit">Thao tác</div>
-            </div>
-          </div>
 
-          <!-- Example row -->
-          <div id="tableRowBody" class="table-row body">
-            <template v-if="dataDocument.doc">
-              <div
-                class="justify-between table-item"
-                v-for="(document, index) in dataDocument.doc.items"
-                :key="index"
-              >
-                <template v-for="(item, _) in document">
-                  <div class="cell">
-                    {{ index + 1 }}
-                  </div>
-                  <div class="cell">
-                    <template v-if="categoryDocument.data">
-                      {{ findCategoryName(item.type_id) }}
-                    </template>
-                  </div>
-                  <div class="cell">
-                    {{ item.name }}
-                  </div>
-                  <div class="cell">
-                    {{ item.description }}
-                  </div>
-                  <div class="cell">
-                    {{ item.created_at }}
-                  </div>
-
-                  <template v-if="permissionList">
-                    <div class="cell pinned pinned-body">
-                      <div class="justify-end cell edit edit-body">
-                        <template
-                          v-if="
-                            item.link && item.link !== null && item.link !== ''
-                          "
-                        >
-                          <router-link
-                            :to="item.link"
-                            target="_blank"
-                            class="cursor-pointer cell-btn-view shrink-0"
-                          >
-                            <img
-                              src="@/assets/images/action-edit-1.svg"
-                              alt=""
-                            />
-                          </router-link>
-                        </template>
-                        <template v-if="checkPermission('Document', 'Update')">
-                          <button
-                            type="button"
-                            class="cursor-pointer cell-btn-edit shrink-0"
-                            @click="handleEditDocument(item.id)"
-                          >
-                            <img
-                              src="@/assets/images/action-edit-2.svg"
-                              alt=""
-                            />
-                          </button>
-                        </template>
-                        <template v-if="checkPermission('Document', 'Delete')">
-                          <button
-                            type="button"
-                            class="cursor-pointer cell-btn-delete shrink-0"
-                            @click="confirmDeleteDocument(item.id)"
-                          >
-                            <img
-                              src="@/assets/images/action-edit-3.svg"
-                              alt=""
-                            />
-                          </button>
-                        </template>
-                      </div>
+            <!-- Example row -->
+            <div id="tableRowBody" class="table-row body">
+              <template v-if="dataDocument.doc">
+                <div
+                  class="justify-between table-item"
+                  v-for="(document, index) in dataDocument.doc.items"
+                  :key="index"
+                >
+                  <template v-for="(item, _) in document">
+                    <div class="cell">
+                      {{ index + 1 }}
                     </div>
+                    <div class="cell">
+                      <template v-if="categoryDocument.data">
+                        {{ findCategoryName(item.type_id) }}
+                      </template>
+                    </div>
+                    <div class="cell">
+                      {{ item.name }}
+                    </div>
+                    <div class="cell">
+                      {{ item.description }}
+                    </div>
+                    <div class="cell">
+                      {{ item.created_at }}
+                    </div>
+
+                    <template v-if="permissionList">
+                      <div class="cell pinned pinned-body">
+                        <div class="justify-end cell edit edit-body">
+                          <template
+                            v-if="
+                              item.link &&
+                              item.link !== null &&
+                              item.link !== ''
+                            "
+                          >
+                            <router-link
+                              :to="item.link"
+                              target="_blank"
+                              class="cursor-pointer cell-btn-view shrink-0"
+                            >
+                              <img
+                                src="@/assets/images/action-edit-1.svg"
+                                alt=""
+                              />
+                            </router-link>
+                          </template>
+                          <template
+                            v-if="checkPermission('Document', 'Update')"
+                          >
+                            <button
+                              type="button"
+                              class="cursor-pointer cell-btn-edit shrink-0"
+                              @click="handleEditDocument(item.id)"
+                            >
+                              <img
+                                src="@/assets/images/action-edit-2.svg"
+                                alt=""
+                              />
+                            </button>
+                          </template>
+                          <template
+                            v-if="checkPermission('Document', 'Delete')"
+                          >
+                            <button
+                              type="button"
+                              class="cursor-pointer cell-btn-delete shrink-0"
+                              @click="confirmDeleteDocument(item.id)"
+                            >
+                              <img
+                                src="@/assets/images/action-edit-3.svg"
+                                alt=""
+                              />
+                            </button>
+                          </template>
+                        </div>
+                      </div>
+                    </template>
                   </template>
-                </template>
-              </div>
-            </template>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="flex flex-wrap items-center gap-2 tb-pagination max-md:justify-center md:gap-4"
-      >
-        <div class="relative">
-          <select
-            v-model="paginate.per_page"
-            name=""
-            id="selectPerPage"
-            class="appearance-none cursor-pointer p-[8px_12px] bg-white rounded-[24px] md:min-w-[264px] text-[#464661] text-[14px] font-normal border border-solid border-[#EDEDF6] focus:outline-none"
-          >
-            <option value="10" :selected="paginate.per_page === 10">
-              10 bản ghi / trang
-            </option>
-            <option value="20">20 bản ghi / trang</option>
-            <option value="30">30 bản ghi / trang</option>
-            <option value="40">40 bản ghi / trang</option>
-          </select>
-
-          <div
-            class="max-md:hidden pointer-events-none absolute right-3 top-[50%] -translate-y-[50%]"
-          >
-            <svg
-              width="8"
-              height="6"
-              viewBox="0 0 8 6"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M0.964013 1.1641C1.04759 1.08049 1.14682 1.01417 1.25603 0.968927C1.36524 0.92368 1.4823 0.900391 1.60051 0.900391C1.71873 0.900391 1.83578 0.92368 1.945 0.968927C2.05421 1.01417 2.15344 1.08049 2.23701 1.1641L4.00001 2.9271L5.76401 1.1641C5.9339 1.00121 6.16083 0.911356 6.39617 0.913785C6.63152 0.916214 6.85654 1.01073 7.02303 1.17709C7.18952 1.34345 7.28422 1.5684 7.28683 1.80374C7.28944 2.03908 7.19976 2.26609 7.03701 2.4361L4.63701 4.8361C4.55344 4.9197 4.45421 4.98602 4.345 5.03127C4.23578 5.07652 4.11873 5.09981 4.00051 5.09981C3.8823 5.09981 3.76524 5.07652 3.65603 5.03127C3.54682 4.98602 3.44759 4.9197 3.36401 4.8361L0.964013 2.4361C0.795473 2.26735 0.700806 2.0386 0.700806 1.8001C0.700806 1.5616 0.795473 1.33285 0.964013 1.1641Z"
-                fill="#363636"
-              />
-            </svg>
+                </div>
+              </template>
+            </div>
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
-          <div class="text-[#464661] text-[14px] font-normal">
-            <template
-              v-if="
-                dataDocument.doc?.pagination?.total &&
-                Number(dataDocument.doc?.pagination.total) > paginate.per_page
-              "
-            >
-              1 - {{ paginate.per_page }} trong
-              {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
-            </template>
-            <template v-else>
-              {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
-            </template>
-          </div>
-
-          <div class="flex flex-wrap items-center tb-navigation md:gap-2">
-            <button
-              :class="{ disabled: paginate.page === 1 }"
-              @click="handlePageChange(paginate.page - 1)"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M14.69 17.29C14.7827 17.1975 14.8562 17.0876 14.9064 16.9666C14.9566 16.8456 14.9824 16.7159 14.9824 16.585C14.9824 16.454 14.9566 16.3243 14.9064 16.2034C14.8562 16.0824 14.7827 15.9725 14.69 15.88L10.81 12L14.69 8.11998C14.877 7.933 14.982 7.67941 14.982 7.41498C14.982 7.15055 14.877 6.89695 14.69 6.70998C14.503 6.523 14.2494 6.41796 13.985 6.41796C13.7206 6.41796 13.467 6.523 13.28 6.70998L8.68998 11.3C8.59727 11.3925 8.52373 11.5024 8.47355 11.6234C8.42336 11.7443 8.39753 11.874 8.39753 12.005C8.39753 12.1359 8.42336 12.2656 8.47355 12.3866C8.52373 12.5076 8.59727 12.6175 8.68998 12.71L13.28 17.3C13.66 17.68 14.3 17.68 14.69 17.29Z"
-                  fill="#363636"
-                />
-              </svg>
-            </button>
-
-            <input
-              type="text"
+        <div
+          class="flex flex-wrap items-center gap-2 tb-pagination max-md:justify-center md:gap-4"
+        >
+          <div class="relative">
+            <select
+              v-model="paginate.per_page"
               name=""
-              :value="paginate.page"
-              id=""
-              class="rounded-[8px] bg-white w-[32px] h-[32px] inline-flex flex-col items-center justify-center text-center text-[#464661] text-[16px] font-bold border border-solid border-[#909090]"
-              readonly
-            />
+              id="selectPerPage"
+              class="appearance-none cursor-pointer p-[8px_12px] bg-white rounded-[24px] md:min-w-[264px] text-[#464661] text-[14px] font-normal border border-solid border-[#EDEDF6] focus:outline-none"
+            >
+              <option value="10" :selected="paginate.per_page === 10">
+                10 bản ghi / trang
+              </option>
+              <option value="20">20 bản ghi / trang</option>
+              <option value="30">30 bản ghi / trang</option>
+              <option value="40">40 bản ghi / trang</option>
+            </select>
 
-            <button
-              :class="{
-                disabled: Number(paginate.page) >= dataTotalPages
-              }"
-              @click="handlePageChange(paginate.page + 1)"
+            <div
+              class="max-md:hidden pointer-events-none absolute right-3 top-[50%] -translate-y-[50%]"
             >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
+                width="8"
+                height="6"
+                viewBox="0 0 8 6"
                 fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M9.31002 6.71002C9.21732 6.80254 9.14377 6.91242 9.09359 7.0334C9.04341 7.15437 9.01758 7.28405 9.01758 7.41502C9.01758 7.54599 9.04341 7.67567 9.09359 7.79665C9.14377 7.91762 9.21732 8.02751 9.31002 8.12002L13.19 12L9.31002 15.88C9.12304 16.067 9.018 16.3206 9.018 16.585C9.018 16.8494 9.12304 17.103 9.31002 17.29C9.497 17.477 9.7506 17.582 10.015 17.582C10.2794 17.582 10.533 17.477 10.72 17.29L15.31 12.7C15.4027 12.6075 15.4763 12.4976 15.5265 12.3766C15.5766 12.2557 15.6025 12.126 15.6025 11.995C15.6025 11.8641 15.5766 11.7344 15.5265 11.6134C15.4763 11.4924 15.4027 11.3825 15.31 11.29L10.72 6.70002C10.34 6.32002 9.70002 6.32002 9.31002 6.71002Z"
+                  d="M0.964013 1.1641C1.04759 1.08049 1.14682 1.01417 1.25603 0.968927C1.36524 0.92368 1.4823 0.900391 1.60051 0.900391C1.71873 0.900391 1.83578 0.92368 1.945 0.968927C2.05421 1.01417 2.15344 1.08049 2.23701 1.1641L4.00001 2.9271L5.76401 1.1641C5.9339 1.00121 6.16083 0.911356 6.39617 0.913785C6.63152 0.916214 6.85654 1.01073 7.02303 1.17709C7.18952 1.34345 7.28422 1.5684 7.28683 1.80374C7.28944 2.03908 7.19976 2.26609 7.03701 2.4361L4.63701 4.8361C4.55344 4.9197 4.45421 4.98602 4.345 5.03127C4.23578 5.07652 4.11873 5.09981 4.00051 5.09981C3.8823 5.09981 3.76524 5.07652 3.65603 5.03127C3.54682 4.98602 3.44759 4.9197 3.36401 4.8361L0.964013 2.4361C0.795473 2.26735 0.700806 2.0386 0.700806 1.8001C0.700806 1.5616 0.795473 1.33285 0.964013 1.1641Z"
                   fill="#363636"
                 />
               </svg>
-            </button>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+            <div class="text-[#464661] text-[14px] font-normal">
+              <template
+                v-if="
+                  dataDocument.doc?.pagination?.total &&
+                  Number(dataDocument.doc?.pagination.total) > paginate.per_page
+                "
+              >
+                1 - {{ paginate.per_page }} trong
+                {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
+              </template>
+              <template v-else>
+                {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
+              </template>
+            </div>
+
+            <div class="flex flex-wrap items-center tb-navigation md:gap-2">
+              <button
+                :class="{ disabled: paginate.page === 1 }"
+                @click="handlePageChange(paginate.page - 1)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M14.69 17.29C14.7827 17.1975 14.8562 17.0876 14.9064 16.9666C14.9566 16.8456 14.9824 16.7159 14.9824 16.585C14.9824 16.454 14.9566 16.3243 14.9064 16.2034C14.8562 16.0824 14.7827 15.9725 14.69 15.88L10.81 12L14.69 8.11998C14.877 7.933 14.982 7.67941 14.982 7.41498C14.982 7.15055 14.877 6.89695 14.69 6.70998C14.503 6.523 14.2494 6.41796 13.985 6.41796C13.7206 6.41796 13.467 6.523 13.28 6.70998L8.68998 11.3C8.59727 11.3925 8.52373 11.5024 8.47355 11.6234C8.42336 11.7443 8.39753 11.874 8.39753 12.005C8.39753 12.1359 8.42336 12.2656 8.47355 12.3866C8.52373 12.5076 8.59727 12.6175 8.68998 12.71L13.28 17.3C13.66 17.68 14.3 17.68 14.69 17.29Z"
+                    fill="#363636"
+                  />
+                </svg>
+              </button>
+
+              <input
+                type="text"
+                name=""
+                :value="paginate.page"
+                id=""
+                class="rounded-[8px] bg-white w-[32px] h-[32px] inline-flex flex-col items-center justify-center text-center text-[#464661] text-[16px] font-bold border border-solid border-[#909090]"
+                readonly
+              />
+
+              <button
+                :class="{
+                  disabled: Number(paginate.page) >= dataTotalPages
+                }"
+                @click="handlePageChange(paginate.page + 1)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M9.31002 6.71002C9.21732 6.80254 9.14377 6.91242 9.09359 7.0334C9.04341 7.15437 9.01758 7.28405 9.01758 7.41502C9.01758 7.54599 9.04341 7.67567 9.09359 7.79665C9.14377 7.91762 9.21732 8.02751 9.31002 8.12002L13.19 12L9.31002 15.88C9.12304 16.067 9.018 16.3206 9.018 16.585C9.018 16.8494 9.12304 17.103 9.31002 17.29C9.497 17.477 9.7506 17.582 10.015 17.582C10.2794 17.582 10.533 17.477 10.72 17.29L15.31 12.7C15.4027 12.6075 15.4763 12.4976 15.5265 12.3766C15.5766 12.2557 15.6025 12.126 15.6025 11.995C15.6025 11.8641 15.5766 11.7344 15.5265 11.6134C15.4763 11.4924 15.4027 11.3825 15.31 11.29L10.72 6.70002C10.34 6.32002 9.70002 6.32002 9.31002 6.71002Z"
+                    fill="#363636"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </template>
 
     <!-- <template v-if="modalActive.modalAddDocument"> -->
     <Modal
@@ -371,6 +390,7 @@
 
         <CreateDocument
           :closeModal="() => toggleModal('modalAddDocument')"
+          :propFunction="fetchDataDocument"
           @post-request="getPostRequest"
         >
           <button
@@ -399,11 +419,11 @@
         </div>
 
         <EditDocument
+          :propFunction="fetchDataDocument"
           :closeModal="() => toggleModal('modalEditDocument')"
           :data="detailDocument"
           @post-request-edit="getPostRequestEdit"
         >
-         
         </EditDocument>
       </div>
     </Modal>
@@ -539,6 +559,7 @@ import {
   SelectValue,
   SelectViewport
 } from 'radix-vue'
+import { Icon } from '@iconify/vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
 import MainLayout from '../MainLayout.vue'

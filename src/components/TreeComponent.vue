@@ -49,6 +49,7 @@ const treeData = reactive([
   {
     id: 'User',
     label: 'Quản lý người dùng',
+    expanded: true,
     children: [
       {
         id: 'User.List',
@@ -69,13 +70,29 @@ const treeData = reactive([
         id: 'User.Delete',
         label: 'Xóa người dùng',
         children: []
+      },
+      {
+        id: 'User.Import',
+        label: 'Tải lên danh sách người dùng',
+        children: []
+      },
+      {
+        id: 'User.Export',
+        label: 'Xuất ra danh sách người dùng',
+        children: []
       }
     ]
   },
   {
     id: 'Permission',
     label: 'Quản lý phân quyền',
+    expanded: true,
     children: [
+      {
+        id: 'Permission.List',
+        label: 'Danh sách nhóm quyền',
+        children: []
+      },
       {
         id: 'Permission.Update',
         label: 'Cập nhật nhóm quyền',
@@ -86,6 +103,7 @@ const treeData = reactive([
   {
     id: 'Categories',
     label: 'Quản lý danh mục',
+    expanded: true,
     children: [
       {
         id: 'Categories.List',
@@ -112,7 +130,7 @@ const treeData = reactive([
   {
     id: 'Document',
     label: 'Quản lý tài liệu',
-    expanded: false,
+    expanded: true,
     children: [
       {
         id: 'Document.List',
@@ -139,11 +157,16 @@ const treeData = reactive([
   {
     id: 'Leave',
     label: 'Quản lý nghỉ phép',
-    expanded: false,
+    expanded: true,
     children: [
       {
         id: 'Leave.Approval',
         label: 'Danh sách phê duyệt nghỉ phép',
+        children: []
+      },
+      {
+        id: 'Leave.Status',
+        label: 'Phê duyệt nghỉ phép',
         children: []
       },
       {
@@ -171,7 +194,7 @@ const treeData = reactive([
   {
     id: 'Work',
     label: 'Quản lý chấm công',
-    expanded: false,
+    expanded: true,
     children: [
       {
         id: 'Work.List',
@@ -347,10 +370,10 @@ const findAndAddPermissions = (node: any, permissions: any) => {
 
 // Scan the entire tree and update selectedItems based on permissions
 const updateSelectedItems = () => {
+  if (!permissionsArray.value || permissionsArray.value.length === 0) return
+
   // Clear existing selections if needed
   selectedItems.clear()
-
-  if (!permissionsArray.value || permissionsArray.value.length === 0) return
 
   // Process each top-level node
   treeData.forEach((node: any) => {

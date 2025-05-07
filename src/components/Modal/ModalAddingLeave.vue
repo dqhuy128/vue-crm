@@ -69,8 +69,9 @@ const auth = useAuth()
 
 const emit = defineEmits(['post-request'])
 
-defineProps<{
+const props = defineProps<{
   datatype: any
+  propFunction: Function
 }>()
 
 const datepicker = ref<any | null>(null)
@@ -101,40 +102,6 @@ const paramsLeave = reactive<any | null>({
   reason: null
 })
 
-const paginate = reactive({
-  page: 1,
-  per_page: 20
-})
-const debounceTime = ref<{
-  timeOut: number | null
-  counter: number
-}>({
-  timeOut: null,
-  counter: 0
-})
-
-const fetchDataLeave = () => {
-  if (debounceTime.value.timeOut !== null) {
-    clearTimeout(debounceTime.value.timeOut)
-  }
-
-  debounceTime.value.timeOut = setTimeout(() => {
-    const res = {
-      ...paramsLeave,
-      page: paginate.page,
-      per_page: paginate.per_page
-    }
-
-    doFetch(
-      `${apiUri}/leave/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
-      auth.token() as string
-    ).then(() => {
-      // console.log('🚀 ~ fetchDataLeave ~ res:', res)
-      tableMagic()
-    })
-  }, 300)
-}
-
 const postRequest = ref<any | null>(null)
 const postAddLeave = async () => {
   try {
@@ -152,7 +119,7 @@ const postAddLeave = async () => {
     paramsLeave.begin_date = null
     paramsLeave.finish_date = null
     initDates()
-    fetchDataLeave()
+    props.propFunction()
     postRequest.value = res.data
     emit('post-request', postRequest.value)
     // console.log('🚀 ~ postAddLeave ~ res:', postRequest.value)
@@ -160,8 +127,6 @@ const postAddLeave = async () => {
     console.log('🚀 ~ postAddLeave ~ error:', error)
   }
 }
-
-const { data, doFetch, categories } = useLeaveInfo()
 
 onMounted(() => {
   if (auth.check()) {

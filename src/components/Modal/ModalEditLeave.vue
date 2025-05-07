@@ -55,12 +55,10 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { apiUri } from '@/constants/apiUri'
 import { useAuth } from 'vue-auth3'
-import { tableMagic } from '@/utils/main'
 import axios from 'axios'
-import { useLeaveInfo } from '@/composables/leave-info'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { vi } from 'date-fns/locale/vi'
@@ -72,6 +70,7 @@ const emit = defineEmits(['post-request-edit'])
 
 const props = defineProps<{
   datatype: any
+  propFunction: Function
 }>()
 
 const datepicker = ref<any | null>(null)
@@ -117,40 +116,6 @@ const paramsLeaveEdit = reactive<any | null>({
   reason: ''
 })
 
-const paginate = reactive({
-  page: 1,
-  per_page: 20
-})
-const debounceTime = ref<{
-  timeOut: number | null
-  counter: number
-}>({
-  timeOut: null,
-  counter: 0
-})
-
-const fetchDataLeave = () => {
-  if (debounceTime.value.timeOut !== null) {
-    clearTimeout(debounceTime.value.timeOut)
-  }
-
-  debounceTime.value.timeOut = setTimeout(() => {
-    const res = {
-      ...paramsLeaveEdit,
-      page: paginate.page,
-      per_page: paginate.per_page
-    }
-
-    doFetch(
-      `${apiUri}/leave/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
-      auth.token() as string
-    ).then(() => {
-      // console.log('🚀 ~ fetchDataLeave ~ res:', res)
-      tableMagic()
-    })
-  }, 300)
-}
-
 const postRequestEdit = ref<any | null>(null)
 const submitEditLeave = async () => {
   try {
@@ -171,7 +136,7 @@ const submitEditLeave = async () => {
     paramsLeaveEdit.reason = null
     paramsLeaveEdit.begin_date = null
     paramsLeaveEdit.finish_date = null
-    fetchDataLeave()
+    props.propFunction()
     postRequestEdit.value = res.data
     emit('post-request-edit', postRequestEdit.value)
     console.log('🚀 ~ postAddLeave ~ res:', postRequestEdit.value)
@@ -179,8 +144,6 @@ const submitEditLeave = async () => {
     console.log('🚀 ~ postAddLeave ~ error:', error)
   }
 }
-
-const { doFetch } = useLeaveInfo()
 
 onMounted(() => {
   if (auth.check()) {

@@ -127,7 +127,7 @@
               :format-locale="vi"
               cancelText="Huỷ"
               selectText="Chọn"
-              format="dd-MM-yyyy"
+              format="dd/MM/yyyy"
               :max-date="new Date()"
               @update:model-value="updateDatesEdit"
             />
@@ -239,7 +239,7 @@
               :format-locale="vi"
               cancelText="Huỷ"
               selectText="Chọn"
-              format="dd-MM-yyyy"
+              format="dd/MM/yyyy"
               :max-date="new Date()"
               @update:model-value="updateDatesEdit"
             />
@@ -634,7 +634,7 @@
               :format-locale="vi"
               cancelText="Huỷ"
               selectText="Chọn"
-              format="dd-MM-yyyy"
+              format="dd/MM/yyyy"
               @update:model-value="updateDatesEdit"
             />
 
@@ -795,7 +795,10 @@ import { format } from 'date-fns'
 
 const auth = useAuth()
 
-const props = defineProps(['modal', 'userdata'])
+const props = defineProps<{
+  userdata: any
+  propFunction: Function
+}>()
 const emit = defineEmits(['toggle-modal', 'post-request-edit'])
 
 // Sử dụng type any cho date picker để có thể xử lý nhiều loại giá trị
@@ -813,10 +816,10 @@ const updateDatesEdit = () => {
       )
     } else if (pickerEditDOB.value instanceof Date) {
       // Nếu là đối tượng Date, format theo chuẩn yyyy-MM-dd
-      paramsUserDetail.dob = format(pickerEditDOB.value, 'yyyy-MM-dd')
+      paramsUserDetail.dob = format(pickerEditDOB.value, 'dd/MM/yyyy')
     } else if (typeof pickerEditDOB.value === 'string') {
       // Nếu là chuỗi, sử dụng trực tiếp
-      paramsUserDetail.dob = pickerEditDOB.value
+      paramsUserDetail.dob = new Date(pickerEditDOB.value).toString()
     }
 
     if (
@@ -1018,46 +1021,6 @@ const fetchListLeader = async () => {
   }
 }
 
-const params = reactive({
-  part_id: '',
-  position_id: '',
-  per_group_name: '',
-  phone: ''
-})
-const paginate = reactive({
-  page: 1,
-  per_page: 20
-})
-const debounceTime = ref<{
-  timeOut: number | null
-  counter: number
-}>({
-  timeOut: null,
-  counter: 0
-})
-
-const fetchDataDocument = () => {
-  if (debounceTime.value.timeOut !== null) {
-    clearTimeout(debounceTime.value.timeOut)
-  }
-
-  debounceTime.value.timeOut = setTimeout(() => {
-    const res = {
-      ...params,
-      page: paginate.page,
-      per_page: paginate.per_page
-    }
-
-    doFetch(
-      `${apiUri}/user/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
-      auth.token() as string
-    ).then(() => {
-      // console.log('🚀 ~ fetchDataDocument ~ res:', res)
-      tableMagic()
-    })
-  }, 300)
-}
-
 const errorMsg = ref<any | null>(null)
 const postRequestEdit = ref<any | null>(null)
 const submitUserUpdate = handleSubmit(async () => {
@@ -1126,14 +1089,12 @@ const submitUserUpdate = handleSubmit(async () => {
 
     postRequestEdit.value = response.data
     emit('post-request-edit', postRequestEdit.value)
-    fetchDataDocument()
+    props.propFunction()
     console.log('🚀 ~ handleSubmit ~ response:', response)
   } catch (error) {
     console.error('Error fetching position list:', error)
   }
 })
-
-const { doFetch } = useSystemUser()
 
 watch([email, phone, name, group_user, code], (newVal) => {
   paramsUserDetail.email = newVal[0]
@@ -1180,7 +1141,12 @@ watch(
       paramsUserDetail.id = newVal[0][0].id
     }
     if (newVal[0][0].dob) {
-      pickerEditDOB.value = newVal[0][0].dob
+      const [day, month, year] = newVal[0][0].dob.split('/')
+      pickerEditDOB.value = new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day)
+      )
       paramsUserDetail.dob = newVal[0][0].dob
     }
     if (newVal[0][0].identification) {

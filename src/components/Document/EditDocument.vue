@@ -112,7 +112,7 @@
         </FileUpload>
         <template v-if="FormSubmitEdit.link">
           <ul>
-            <li class="flex relative items-center pt-3">
+            <li class="relative flex items-center pt-3">
               <p>
                 {{ FormSubmitEdit.link }}
               </p>
@@ -143,7 +143,7 @@
           <ul>
             <li
               v-for="(list, index) in fileUploadPreview"
-              class="flex relative items-center pt-3"
+              class="relative flex items-center pt-3"
             >
               <p>
                 {{ list.name }}
@@ -191,7 +191,7 @@
     </div>
 
     <div
-      class="flex flex-wrap gap-4 justify-center items-stretch mt-9 text-center xl:gap-6"
+      class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
     >
       <button
         @click="clearAndCloseModal"
@@ -237,6 +237,7 @@ import FileUpload from '../FileUpload.vue'
 const props = defineProps<{
   closeModal: () => void
   data: any
+  propFunction: Function
 }>()
 
 const emit = defineEmits(['post-request-edit'])
@@ -345,15 +346,10 @@ const submit = async () => {
       props.closeModal()
       postRequestEdit.value = res.data
       emit('post-request-edit', postRequestEdit.value)
-      doFetch(
-        `${apiUri}/document/list?page=1&per_page=20`,
-        auth.token() as string
-      ).then(() => {
-        tableMagic()
-      })
+      props.propFunction()
     })
     .catch(function (error) {
-      alert('Tạo tài liệu thất bại')
+      console.log(error, 'error /document/update')
     })
 }
 

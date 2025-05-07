@@ -781,7 +781,10 @@ import { format } from 'date-fns'
 
 const auth = useAuth()
 
-const props = defineProps(['modal'])
+const props = defineProps<{
+  modal: any
+  propFunction: Function
+}>()
 const emit = defineEmits(['toggle-modal', 'post-request'])
 
 const pickerDOB = ref<any | null>(null)
@@ -974,46 +977,6 @@ const fetchListLeader = async () => {
   }
 }
 
-const params = reactive({
-  part_id: '',
-  position_id: '',
-  per_group_name: '',
-  phone: ''
-})
-const paginate = reactive({
-  page: 1,
-  per_page: 20
-})
-const debounceTime = ref<{
-  timeOut: number | null
-  counter: number
-}>({
-  timeOut: null,
-  counter: 0
-})
-
-const fetchDataDocument = () => {
-  if (debounceTime.value.timeOut !== null) {
-    clearTimeout(debounceTime.value.timeOut)
-  }
-
-  debounceTime.value.timeOut = setTimeout(() => {
-    const res = {
-      ...params,
-      page: paginate.page,
-      per_page: paginate.per_page
-    }
-
-    doFetch(
-      `${apiUri}/user/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
-      auth.token() as string
-    ).then(() => {
-      // console.log('🚀 ~ fetchDataDocument ~ res:', res)
-      tableMagic()
-    })
-  }, 300)
-}
-
 const postRequest = ref<any | null>(null)
 const onSubmitRegister = handleSubmit(async () => {
   try {
@@ -1068,7 +1031,7 @@ const onSubmitRegister = handleSubmit(async () => {
     Object.keys(paramsUser).map((key) => {
       paramsUser[key] = ''
     })
-    fetchDataDocument()
+    props.propFunction()
     console.log('🚀 ~ handleSubmit ~ response:', response)
   } catch (error) {
     console.error('Error fetching position list:', error)
