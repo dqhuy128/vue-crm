@@ -2,108 +2,117 @@
   <MainLayout>
     <Breadcrums name="Thông tin nghỉ phép" path="/leave/info" />
 
-    <div class="bg-white rounded-[24px] p-2.5 max-w-[552px]">
-      <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchLeave">
-        <div class="flex flex-wrap items-stretch gap-4 grow">
-          <div class="flex-[100%]">
-            <SelectRoot v-model="params.status">
-              <SelectTrigger
-                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] h-full focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
-                aria-label="Customise options"
-              >
-                <SelectValue
-                  class="grow font-inter text-[15px] max-md:text-[14px] font-normal leading-normal text-start"
-                  placeholder="Chọn trạng thái"
-                />
-                <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
-              </SelectTrigger>
-
-              <SelectPortal>
-                <SelectContent
-                  class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
-                  position="popper"
-                  :side-offset="5"
+    <template v-if="toggleBoxFilters">
+      <div class="bg-white rounded-[24px] p-2.5 mb-5 max-w-[552px]">
+        <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchLeave">
+          <div class="flex flex-wrap items-stretch gap-4 grow">
+            <div class="flex-[100%]">
+              <SelectRoot v-model="params.status">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] h-full focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                  aria-label="Customise options"
                 >
-                  <SelectScrollUpButton
-                    class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                  <SelectValue
+                    class="grow font-inter text-[15px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Chọn trạng thái"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
                   >
-                    <Icon icon="radix-icons:chevron-up" />
-                  </SelectScrollUpButton>
+                    <SelectScrollUpButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
 
-                  <SelectViewport>
-                    <SelectGroup>
-                      <SelectItem
-                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                        value="all"
-                      >
-                        <SelectItemText> Tất cả trạng thái </SelectItemText>
-                      </SelectItem>
-
-                      <template v-for="item in 2" :key="item">
+                    <SelectViewport>
+                      <SelectGroup>
                         <SelectItem
                           class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                          :value="String(item - 1)"
+                          value="all"
                         >
-                          <SelectItemText v-if="item === 1">
-                            Chờ phê duyệt
-                          </SelectItemText>
-                          <SelectItemText v-if="item === 2">
-                            Đã phê duyệt
-                          </SelectItemText>
+                          <SelectItemText> Tất cả trạng thái </SelectItemText>
                         </SelectItem>
-                      </template>
-                    </SelectGroup>
-                  </SelectViewport>
 
-                  <SelectScrollDownButton
-                    class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
-                  >
-                    <Icon icon="radix-icons:chevron-down" />
-                  </SelectScrollDownButton>
-                </SelectContent>
-              </SelectPortal>
-            </SelectRoot>
+                        <template v-for="item in 2" :key="item">
+                          <SelectItem
+                            class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item - 1)"
+                          >
+                            <SelectItemText v-if="item === 1">
+                              Chờ phê duyệt
+                            </SelectItemText>
+                            <SelectItemText v-if="item === 2">
+                              Đã phê duyệt
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
+            </div>
           </div>
-        </div>
 
-        <button
-          type="submit"
-          class="inline-flex items-center justify-center max-md:flex-[100%] gap-2 bg-[#013878] rounded-[24px] p-[8px_16px] transition hover:shadow-hoverinset cursor-pointer"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
+          <button
+            type="submit"
+            class="inline-flex items-center justify-center max-md:flex-[100%] gap-2 bg-[#013878] rounded-[24px] p-[8px_16px] transition hover:shadow-hoverinset cursor-pointer"
           >
-            <path
-              d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-              stroke="white"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M21.0002 21L16.7002 16.7"
-              stroke="white"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <span
-            class="text-white font-inter text-[15px] font-bold leading-normal"
-          >
-            Tìm kiếm
-          </span>
-        </button>
-      </form>
-    </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M21.0002 21L16.7002 16.7"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span
+              class="text-white font-inter text-[15px] font-bold leading-normal"
+            >
+              Tìm kiếm
+            </span>
+          </button>
+        </form>
+      </div>
+    </template>
 
-    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+      <button
+        @click="toggleBoxFilters = !toggleBoxFilters"
+        type="button"
+        class="inline-block bg-white rounded-md w-9 h-9 md:hidden"
+      >
+        <Icon icon="radix-icons:text-align-center" class="w-full h-full p-1" />
+      </button>
       <div
-        class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
+        class="hidden md:block flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách nghỉ phép
       </div>
@@ -520,7 +529,15 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
+import {
+  computed,
+  onBeforeMount,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  watch
+} from 'vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
 import {
@@ -554,10 +571,36 @@ import Breadcrums from '@/components/BreadcrumsNew.vue'
 
 const auth = useAuth()
 
+const toggleBoxFilters = ref(false)
+const screenWidth = ref(window.innerWidth)
+// Check if screen width is at least 768px and set toggleBoxFilters
+const checkScreenWidth = () => {
+  toggleBoxFilters.value = screenWidth.value >= 768
+}
+// Initial check
+checkScreenWidth()
+// Add event listener for window resize
+onMounted(() => {
+  window.addEventListener('resize', () => {
+    screenWidth.value = window.innerWidth
+    checkScreenWidth()
+  })
+})
+// Remove event listener when component is unmounted
+onUnmounted(() => {
+  window.removeEventListener('resize', () => {
+    screenWidth.value = window.innerWidth
+    checkScreenWidth()
+  })
+})
+// Watch for screenWidth changes
+watch(screenWidth, () => {
+  checkScreenWidth()
+})
+
 interface recordModal {
   [key: string]: boolean
 }
-
 const modalActive = ref<recordModal>({
   modalStatusAddLeave: false,
   modalStatusEditLeave: false,

@@ -212,7 +212,6 @@ import { useAuth } from 'vue-auth3'
 import FileUpload from '../FileUpload.vue'
 
 const props = defineProps<{
-  closeModal: () => void
   propFunction: Function
 }>()
 const emit = defineEmits(['post-request'])
@@ -301,7 +300,6 @@ const submit = async () => {
       // successful response flow
       FormSubmit.value.docCate = ''
       fileUploadPreview.value = []
-      props.closeModal()
       postRequest.value = res.data
       emit('post-request', postRequest.value)
       props.propFunction()
