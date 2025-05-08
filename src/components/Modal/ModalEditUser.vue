@@ -673,14 +673,61 @@
             >
               ID máy chấm công
             </span>
-            <input
-              v-model="paramsUserDetail.mcc_user_id"
-              type="text"
-              name=""
-              id=""
-              placeholder=" ID máy chấm công"
-              class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-            />
+
+            <SelectRoot v-model="paramsUserDetail.mcc_user_id">
+              <SelectTrigger
+                class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[16px] max-md:text-[14px] font-normal leading-normal text-start"
+                  placeholder="Chọn ID máy chấm công"
+                />
+                <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+              </SelectTrigger>
+
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectScrollUpButton
+                    class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                  >
+                    <Icon icon="radix-icons:chevron-up" />
+                  </SelectScrollUpButton>
+
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        value="all"
+                      >
+                        <SelectItemText> Chọn ID máy chấm công </SelectItemText>
+                      </SelectItem>
+
+                      <SelectItem
+                        v-for="(itemValue, index) in mccData.value"
+                        :key="mccData.id[index]"
+                        class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                        :value="String(mccData.id[index])"
+                      >
+                        <SelectItemText>
+                          {{ mccData.id[index] }} - {{ itemValue }}
+                        </SelectItemText>
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectViewport>
+
+                  <SelectScrollDownButton
+                    class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                  >
+                    <Icon icon="radix-icons:chevron-down" />
+                  </SelectScrollDownButton>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
           </div>
         </div>
 
@@ -958,6 +1005,25 @@ const leaderType = reactive({
 })
 const leaderData = ref<any | null>(null)
 
+const mccData = reactive<any>({
+  value: '',
+  id: ''
+})
+const fetchMccData = async () => {
+  try {
+    const response = await axios.get(`${apiUri}/work/usermcc`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    const { items } = response.data.data
+    mccData.value = Object.values(items)
+    mccData.id = Object.keys(items)
+  } catch (error) {
+    console.error('Error fetching mcc data:', error)
+  }
+}
+
 const fetchListStaff = async () => {
   try {
     const response = await axios.get(`${apiUri}/categories/list?type=staff`, {
@@ -1104,7 +1170,7 @@ watch([email, phone, name, group_user, code], (newVal) => {
   paramsUserDetail.code = newVal[4]
 })
 
-watch([staffType, positionType, regionType, leaderType], () => {
+watch([staffType, positionType, regionType, leaderType, mccData], () => {
   if (staffType.id === 'all') {
     staffType.id = String(0)
   }
@@ -1116,6 +1182,9 @@ watch([staffType, positionType, regionType, leaderType], () => {
   }
   if (leaderType.id === 'all') {
     leaderType.id = String(0)
+  }
+  if (mccData.id === 'all') {
+    mccData.id = String(0)
   }
 })
 
@@ -1214,6 +1283,11 @@ watch(
     if (newVal[0][0].part_id) {
       staffType.id = newVal[0][0].part_id
     }
+    if (newVal[0][0].mcc_user_id) {
+      paramsUserDetail.mcc_user_id = newVal[0][0].mcc_user_id
+    } else {
+      paramsUserDetail.mcc_user_id = 'all'
+    }
   }
 )
 
@@ -1223,7 +1297,7 @@ onMounted(() => {
   fetchListPosition()
   fetchListRegion()
   fetchListLeader()
-
+  fetchMccData()
   // Đảm bảo cập nhật ngày tháng sau khi component đã được render đầy đủ
   // Sử dụng nextTick để đảm bảo DOM đã cập nhật trước khi làm việc với các ref
   nextTick(() => {
