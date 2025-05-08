@@ -580,6 +580,10 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
+[data-tippy-root] {
+  z-index: 99 !important;
+}
+
 .tippy-user-login {
   .tippy-box {
     min-width: 192px;

@@ -2,73 +2,83 @@
   <MainLayout>
     <Breadcrums name="Quản lý phân quyền" path="/system/permission" />
 
-    <div class="bg-white rounded-[24px] p-2.5 max-w-[552px]">
-      <form
-        class="flex flex-wrap gap-4"
-        @submit.prevent="handleSearchPermission"
-      >
-        <div class="flex flex-wrap items-stretch gap-4 grow">
-          <div class="flex-[100%]">
-            <div class="relative">
-              <input
-                v-model="params.name"
-                type="text"
-                name=""
-                id=""
-                placeholder="Nhập chức vụ"
-                class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#000] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
-              />
+    <template v-if="toggleBoxFilters">
+      <div class="bg-white rounded-[24px] p-2.5 max-w-[552px] mb-5">
+        <form
+          class="flex flex-wrap gap-4"
+          @submit.prevent="handleSearchPermission"
+        >
+          <div class="flex flex-wrap items-stretch gap-4 grow">
+            <div class="flex-[100%]">
+              <div class="relative">
+                <input
+                  v-model="params.name"
+                  type="text"
+                  name=""
+                  id=""
+                  placeholder="Nhập chức vụ"
+                  class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#000] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
+                />
 
-              <button
-                v-if="params.name"
-                type="button"
-                class="absolute -translate-y-1/2 cursor-pointer top-1/2 right-3"
-                @click="() => (params.name = '')"
-              >
-                <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
-              </button>
+                <button
+                  v-if="params.name"
+                  type="button"
+                  class="absolute -translate-y-1/2 cursor-pointer top-1/2 right-3"
+                  @click="() => (params.name = '')"
+                >
+                  <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <button
-          type="submit"
-          class="inline-flex items-center justify-center max-md:flex-[100%] gap-2 bg-[#013878] rounded-[24px] p-[8px_16px] transition hover:shadow-hoverinset cursor-pointer"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
+          <button
+            type="submit"
+            class="inline-flex items-center justify-center max-md:flex-[100%] gap-2 bg-[#013878] rounded-[24px] p-[8px_16px] transition hover:shadow-hoverinset cursor-pointer"
           >
-            <path
-              d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-              stroke="white"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M21.0002 21L16.7002 16.7"
-              stroke="white"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <span
-            class="text-white font-inter text-[15px] font-bold leading-normal"
-          >
-            Tìm kiếm
-          </span>
-        </button>
-      </form>
-    </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M21.0002 21L16.7002 16.7"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span
+              class="text-white font-inter text-[15px] font-bold leading-normal"
+            >
+              Tìm kiếm
+            </span>
+          </button>
+        </form>
+      </div>
+    </template>
 
-    <div class="flex flex-wrap items-center gap-2 mt-5 mb-3">
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+      <button
+        @click="toggleBoxFilters = !toggleBoxFilters"
+        type="button"
+        class="inline-block bg-white rounded-md w-9 h-9 md:hidden"
+      >
+        <Icon icon="radix-icons:text-align-center" class="w-full h-full p-1" />
+      </button>
+
       <div
-        class="flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
+        class="hidden md:block flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
         Danh sách phân quyền
       </div>
@@ -213,7 +223,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
@@ -230,10 +240,36 @@ import Breadcrums from '@/components/BreadcrumsNew.vue'
 
 const auth = useAuth()
 
+const toggleBoxFilters = ref(false)
+const screenWidth = ref(window.innerWidth)
+// Check if screen width is at least 768px and set toggleBoxFilters
+const checkScreenWidth = () => {
+  toggleBoxFilters.value = screenWidth.value >= 768
+}
+// Initial check
+checkScreenWidth()
+// Add event listener for window resize
+onMounted(() => {
+  window.addEventListener('resize', () => {
+    screenWidth.value = window.innerWidth
+    checkScreenWidth()
+  })
+})
+// Remove event listener when component is unmounted
+onUnmounted(() => {
+  window.removeEventListener('resize', () => {
+    screenWidth.value = window.innerWidth
+    checkScreenWidth()
+  })
+})
+// Watch for screenWidth changes
+watch(screenWidth, () => {
+  checkScreenWidth()
+})
+
 interface recordModal {
   [key: string]: boolean
 }
-
 const modalActive = ref<recordModal>({
   modalEditPermission: false,
   modalStatusEditPermission: false

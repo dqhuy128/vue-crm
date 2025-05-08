@@ -169,14 +169,14 @@ const refDataSidebar = ref<dataSidebarItem[]>([
       {
         icon: TableUserScan,
         title: 'Thông tin nghỉ phép',
-        route: 'Info'
-        // permission: 'Leave'
+        route: 'Info',
+        permissionName: 'Leave'
       },
       {
         icon: TickCircle,
         title: 'Phê duyệt nghỉ phép',
-        route: 'Access'
-        // permission: 'Leave'
+        route: 'Access',
+        permissionName: 'Leave'
       }
     ]
   },
@@ -190,14 +190,14 @@ const refDataSidebar = ref<dataSidebarItem[]>([
       {
         icon: FluentHistory,
         title: 'Lịch sử chấm công',
-        route: 'History'
-        // permission: 'Work'
+        route: 'History',
+        permissionName: 'Work'
       },
       {
         icon: EditNote,
         title: 'Giải trình chấm công',
-        route: 'Explain'
-        // permission: 'Work'
+        route: 'Explain',
+        permissionName: 'Work'
       }
     ]
   }
@@ -394,7 +394,11 @@ onMounted(() => {
       font-style: normal;
       font-weight: 700;
       line-height: normal;
-      padding: 10px 0 10px 10px;
+      padding: 10px 0 10px 15px;
+
+      @media (min-width: 1280px) {
+        padding: 10px 0 10px 15px;
+      }
 
       @media (hover: hover) {
         &:hover {
