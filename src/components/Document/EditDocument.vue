@@ -235,7 +235,6 @@ import {
 import FileUpload from '../FileUpload.vue'
 
 const props = defineProps<{
-  closeModal: () => void
   data: any
   propFunction: Function
 }>()
@@ -262,7 +261,6 @@ function clearAndCloseModal() {
   FormSubmitEdit.value.docCate = null
   FormSubmitEdit.value.id = null
   FormSubmitEdit.value.link = null
-  props.closeModal()
 }
 function removeFilePreview() {
   FormSubmitEdit.value.link = null
@@ -343,7 +341,6 @@ const submit = async () => {
       // successful response flow
       //   fileUploadPreview.value = []
       FormSubmitEdit.value.docCate = ''
-      props.closeModal()
       postRequestEdit.value = res.data
       emit('post-request-edit', postRequestEdit.value)
       props.propFunction()

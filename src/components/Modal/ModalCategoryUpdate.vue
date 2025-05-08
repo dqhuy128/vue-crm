@@ -228,7 +228,6 @@ const getCategoriesType = async () => {
   }
 }
 
-const checkValidate = ref('')
 const postRequestEdit = ref<any | null>(null)
 const handleUpdateCategory = async () => {
   try {
@@ -267,6 +266,8 @@ watch(
     paramsUpdate.type = newVal.data.type
     paramsUpdate.name = newVal.data.name
     paramsUpdate.description = newVal.data.description
+
+    if (newVal.data.status === null) return (paramsUpdate.status = '0')
     paramsUpdate.status = newVal.data.status
   }
 )
