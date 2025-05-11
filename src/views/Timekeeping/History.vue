@@ -4,7 +4,10 @@
 
     <template v-if="toggleBoxFilters">
       <div class="bg-white rounded-[24px] mb-5 p-2.5">
-        <form class="flex flex-wrap gap-4" @submit.prevent="">
+        <form
+          class="flex flex-wrap gap-4"
+          @submit.prevent="handleSearchWorkHistory"
+        >
           <div class="flex flex-wrap items-stretch gap-2 xxl:gap-4 grow">
             <div
               class="flex-[0_0_calc(50%-8px)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
@@ -43,7 +46,7 @@
                 selectText="Chọn"
                 range
                 format="dd/MM/yyyy"
-                :min-date="new Date()"
+                :max-date="new Date()"
                 @update:model-value="updateDates"
               />
             </div>
@@ -105,7 +108,10 @@
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="relative table-container">
             <!-- Example column -->
-            <div id="tableRowHeader" class="justify-between table-row header">
+            <div
+              id="tableRowHeader"
+              class="justify-between table-row !px-5 !py-2 header"
+            >
               <div class="cell" v-for="(column, index) in tbhead" :key="index">
                 {{ column.title }}
 
@@ -116,92 +122,66 @@
                 </div>
               </div>
 
-              <template v-if="checkPermission('Leave', 'Delete')">
-                <div class="cell pinned">
-                  <div class="cell edit">Edit</div>
-                </div>
+              <template v-if="checkPermission('Work', 'Create')">
+                <div class="cell">Giải trình</div>
               </template>
             </div>
 
-            <div id="tableRowBody" class="table-row body">
-              <template v-if="dataWorkHistory.doc">
-                <div
-                  class="justify-between table-item"
-                  v-for="(it, index) in dataWorkHistoryList"
+            <template v-if="dataWorkHistoryList">
+              <div id="tableRowBody" class="table-row body">
+                <template
+                  v-for="(item, index) in dataWorkHistoryList"
                   :key="index"
                 >
-                  <!-- bg-blue , bg-green , bg-red , bg-purple , :class="{ 'bg-blue': id === 1 }"-->
-                  <div class="cell">
-                    <template v-if="index < 9"> 0{{ index + 1 }} </template>
-                    <template v-else>{{ index + 1 }}</template>
-                  </div>
-
-                  <div class="cell">
-                    <template v-if="it.begin_date">
-                      {{ it.begin_date }}
-                    </template>
-                  </div>
-
-                  <div class="cell">
-                    <template v-if="it.finish_date">
-                      {{ it.finish_date }}
-                    </template>
-                  </div>
-
-                  <div class="cell">
-                    <template v-if="it.reason && String(it.reason) !== 'null'">
-                      {{ it.reason }}
-                    </template>
-                  </div>
-
-                  <div class="cell">
-                    <template v-if="it.total_date">
-                      {{ it.total_date }}
-                    </template>
-                  </div>
-
-                  <template v-if="it.status === 'Đã phê duyệt'">
-                    <div
-                      class="cell text-[10px] status status-green status-body"
-                    >
-                      Đã phê duyệt
-                    </div>
-                  </template>
-
-                  <template
-                    v-if="it.status === 'Chờ phê duyệt' || it.status === null"
+                  <div
+                    class="justify-between table-item !px-5 !py-1"
+                    v-for="(it, itIndex) in item.values"
+                    :key="itIndex"
                   >
-                    <div class="cell text-[10px] status status-red status-body">
-                      Chờ phê duyệt
-                    </div>
-                  </template>
+                    <!-- <div class="cell">
+                      <template v-if="index < 9"> 0{{ index + 1 }} </template>
+                      <template v-else>{{ index + 1 }}</template>
+                    </div> -->
 
-                  <div class="cell pinned pinned-body">
-                    <div class="cell edit edit-body">
-                      <template v-if="checkPermission('Leave', 'Update')">
+                    <div class="cell">
+                      {{ it.user_id }}
+                    </div>
+
+                    <div class="cell">
+                      {{ it.user_name }}
+                    </div>
+
+                    <div class="cell">
+                      {{ it.work_date }}
+                    </div>
+
+                    <div class="cell">
+                      {{ it.check_out }}
+                    </div>
+
+                    <div class="cell">
+                      {{ it.check_in }}
+                    </div>
+
+                    <div class="cell">
+                      {{ it.total_hours }}
+                    </div>
+
+                    <template v-if="checkPermission('Work', 'Create')">
+                      <div class="cell">
                         <button
-                          @click="handleEditLeave(it.id)"
+                          @click="handleUserExplain(it.user_name)"
                           type="button"
                           class="cursor-pointer cell-btn-edit shrink-0"
                         >
                           <img src="@/assets/images/action-edit-2.svg" alt="" />
                         </button>
-                      </template>
-
-                      <template v-if="checkPermission('Leave', 'Delete')">
-                        <button
-                          @click="confirmDeleteLeave(it.id)"
-                          type="button"
-                          class="cursor-pointer cell-btn-delete shrink-0"
-                        >
-                          <img src="@/assets/images/action-edit-3.svg" alt="" />
-                        </button>
-                      </template>
-                    </div>
+                      </div>
+                    </template>
                   </div>
-                </div>
-              </template>
-            </div>
+                </template>
+              </div>
+            </template>
           </div>
         </div>
 
@@ -312,26 +292,30 @@
     </template>
 
     <Modal
-      @close="toggleModal('modalAddLeave')"
-      :modalActive="modalActive.modalAddLeave"
+      @close="toggleModal('modalAddWorkHistory')"
+      :modalActive="modalActive.modalAddWorkHistory"
       maxWidth="max-w-[670px]"
     >
       <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
         <div class="mb-12 text-center max-xl:mb-6">
           <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-            Xin nghỉ phép
+            Lý do
           </h3>
         </div>
 
-        <ModalAddingLeave :datatype="null" @post-request="getPostRequest">
+        <ModalAddWorkHistory
+          :datatype="dataUserExplain"
+          :propFunction="fetchDataWorkHistory"
+          @post-request="getPostRequest"
+        >
           <button
-            @click="toggleModal('modalAddLeave')"
+            @click="toggleModal('modalAddWorkHistory')"
             type="button"
             class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
           >
             Hủy
           </button>
-        </ModalAddingLeave>
+        </ModalAddWorkHistory>
       </div>
     </Modal>
 
@@ -472,28 +456,13 @@ import MainLayout from '@/views/MainLayout.vue'
 import Breadcrums from '@/components/BreadcrumsNew.vue'
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import Modal from '@/components/Modals.vue'
-import { RadioGroupItem, RadioGroupRoot } from 'radix-vue'
-import {
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectItemText,
-  SelectPortal,
-  SelectRoot,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
-  SelectTrigger,
-  SelectValue,
-  SelectViewport
-} from 'radix-vue'
 import { Icon } from '@iconify/vue'
 import { useAuth } from 'vue-auth3'
 import axios from 'axios'
-import { useLeaveInfo } from '@/composables/leave-info'
 import { apiUri } from '@/constants/apiUri'
 import { tableMagic } from '@/utils/main'
-import ModalAddingLeave from '@/components/Modal/ModalAddingLeave.vue'
 import ModalEditLeave from '@/components/Modal/ModalEditLeave.vue'
+import ModalAddWorkHistory from '@/components/Modal/ModalAddWorkHistory.vue'
 import { usePermissionStore } from '@/store/permission'
 import { storeToRefs } from 'pinia'
 import router from '@/router'
@@ -538,9 +507,8 @@ interface recordModal {
 const modalActive = ref<recordModal>({
   modalStatusAddLeave: false,
   modalStatusEditLeave: false,
-  modalAddLeave: false,
   modalStatusConfirm: false,
-  modalEditLeave: false
+  modalAddWorkHistory: false
 })
 
 const toggleModal = (modalStateName: any) => {
@@ -549,7 +517,7 @@ const toggleModal = (modalStateName: any) => {
 
 const tbhead = reactive([
   {
-    title: 'STT',
+    title: 'ID',
     hasSort: false
   },
   {
@@ -586,9 +554,11 @@ const paramsWorkHistory = reactive<typeParamsWorkHistory>({
 })
 
 const datepicker = ref<any | null>(null)
-const startDate = new Date()
-const endDate = new Date(new Date().setDate(startDate.getDate() + 1))
+const startDate = new Date(new Date().setDate(new Date().getDate() - 30))
+const endDate = new Date()
 datepicker.value = [startDate, endDate]
+paramsWorkHistory.begin_date = format(startDate, 'yyyy-MM-dd')
+paramsWorkHistory.finish_date = format(endDate, 'yyyy-MM-dd')
 const updateDates = () => {
   if (datepicker.value) {
     paramsWorkHistory.begin_date = format(datepicker.value[0], 'yyyy-MM-dd')
@@ -641,34 +611,41 @@ const handlePageChange = (pageNum: number) => {
   fetchDataWorkHistory()
 }
 
-const handleSearchLeave = async () => {
+const handleSearchWorkHistory = async () => {
   try {
-    paginate.page = 1
-    paginate.per_page = 20
-    await fetchDataWorkHistory()
-  } catch (error) {
-    console.log('🚀 ~ handleSearchLeave ~ error:', error)
-  } finally {
-    await fetchDataWorkHistory()
-  }
-}
+    const formData = new FormData()
+    formData.append('begin_date', paramsWorkHistory.begin_date)
+    formData.append('finish_date', paramsWorkHistory.finish_date)
+    formData.append('name', paramsWorkHistory.name)
 
-const dataEditLeave = ref<any | null>(null)
-const handleEditLeave = async (id: number) => {
-  try {
-    const res = await axios.get(`${apiUri}/leave/detail?id=${id}`, {
+    const res = await axios.post(`${apiUri}/work/list`, formData, {
       headers: {
         Authorization: `Bearer ${auth.token()}`
       }
     })
-    dataEditLeave.value = res.data
-    toggleModal('modalEditLeave')
-    // console.log(
-    //   '🚀 ~ handleEditLeave ~ dataEditLeave.value:',
-    //   dataEditLeave.value
-    // )
+    fetchDataWorkHistory()
+    console.log('🚀 ~ handleSearchWorkHistory ~ res:', res)
   } catch (error) {
-    console.log('🚀 ~ handleEditLeave ~ error:', error)
+    console.log('🚀 ~ handleSearchWorkHistory ~ error:', error)
+  }
+}
+
+const dataUserExplain = ref<any | null>(null)
+const handleUserExplain = async (name: string) => {
+  try {
+    const res = await axios.get(`${apiUri}/work/list?name=${name}`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    dataUserExplain.value = res.data.data
+    console.log(
+      '🚀 ~ handleUserExplain ~   dataUserExplain.value :',
+      dataUserExplain.value
+    )
+    toggleModal('modalAddWorkHistory')
+  } catch (error) {
+    console.log('🚀 ~ handleUserExplain ~ error:', error)
   }
 }
 
@@ -702,15 +679,28 @@ const { data, doFetch, categories } = useWork()
 const dataWorkHistory = reactive({
   doc: data
 })
+
+interface WorkHistoryItem {
+  user_id: number
+  user_name: string
+  work_date: string
+  check_out: string
+  check_in: string
+  total_hours: number
+  finish_date?: string
+  reason?: string
+  total_date?: string
+  status?: string
+  id: number
+}
+
 const dataWorkHistoryList = computed(() => {
   if (!dataWorkHistory.doc?.items) return []
-  // Lấy các khóa và sắp xếp chúng (nếu muốn theo thứ tự số)
-  return Object.keys(dataWorkHistory.doc.items).map(
-    (key) =>
-      dataWorkHistory.doc?.items[key as keyof typeof dataWorkHistory.doc.items]
-  )
 
-  // Chuyển đổi thành mảng với các giá trị từ object
+  return Object.entries(dataWorkHistory.doc.items).map(([key, values]) => ({
+    key: key,
+    values: Object.values(values) as WorkHistoryItem[]
+  }))
 })
 
 console.log('🚀 ~ dataWorkHistoryList:', dataWorkHistoryList)

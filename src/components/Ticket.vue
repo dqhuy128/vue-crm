@@ -1,11 +1,16 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 
-type ticketProps = [icon: any, title: string, ticketList: Array<any>]
+type ticketProps = [
+  icon: any,
+  title: string,
+  ticketList: Array<any>,
+  sroute: any
+]
 // Define props for the component
 const propsTicketProps = defineProps<{ ticketProps: ticketProps }>()
 // Destructuring the array (ticketProps is a tuple, so we access it by index)
-const [icon, title, ticketList] = propsTicketProps.ticketProps
+const [icon, title, ticketList, sroute] = propsTicketProps.ticketProps
 const route = useRoute().path
 </script>
 
@@ -14,7 +19,7 @@ const route = useRoute().path
     <div
       class="flex flex-wrap items-center py-2.5 px-6 border-b border-solid border-[#909090]"
     >
-      <div class="inline-flex gap-2 items-center">
+      <div class="inline-flex items-center gap-2">
         <img :src="icon" alt="" />
         <h3
           class="text-[#464661] font-inter text-[16px] font-bold leading-normal"
@@ -25,7 +30,7 @@ const route = useRoute().path
 
       <div class="ms-auto">
         <router-link
-          to=""
+          :to="{ name: sroute }"
           class="inline-block text-[#909090] font-inter text-[14px] italic font-normal underline hover:text-main transition"
         >
           Xem chi tiết

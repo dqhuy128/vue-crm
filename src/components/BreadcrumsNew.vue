@@ -3,7 +3,7 @@
     <div id="breadcrumbs" class="flex flex-wrap items-center gap-2">
       <template v-for="(n, idx) in breadcrumbsList">
         <router-link
-          :to="n.path"
+          to=""
           :class="[
             idx === 0
               ? 'breadcrumbs-nav-first text-[#464661] font-inter text-[16px] font-normal leading-normal'
@@ -24,19 +24,16 @@ import PageTitle from './PageTitle.vue'
 
 const breadcrumbsList = ref([
   {
-    name: 'Home',
-    path: '/dashboard/personal'
+    name: 'Home'
   }
 ])
 
 const props = defineProps<{
   name: string
-  path: string
 }>()
 
 breadcrumbsList.value.push({
-  name: props.name,
-  path: props.path
+  name: props.name
 })
 </script>
 
