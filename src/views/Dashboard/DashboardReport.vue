@@ -40,49 +40,51 @@ const ticket: any = [
     title: 'Nghỉ phép',
     ticketList: [
       {
-        title: 'Tổng số nhân viên',
+        title: computed(() => dataReport.value?.total?.name),
         status: 'normal',
-        count: '12'
+        count: computed(() => dataReport.value?.total?.count || '0')
       },
       {
-        title: 'Ban Điều Hành',
+        title: computed(() => dataReport.value?.[1]?.name),
         status: 'normal',
-        count: '4'
+        count: computed(() => dataReport.value?.[1]?.count || '0')
       },
       {
-        title: 'Phòng Sale Admin',
+        title: computed(() => dataReport.value?.[2]?.name),
         status: 'normal',
-        count: '22'
+        count: computed(() => dataReport.value?.[2]?.count || '0')
       },
       {
-        title: 'Ban Trợ Lý',
+        title: computed(() => dataReport.value?.[3]?.name),
         status: 'normal',
-        count: computed(() => dataReport.value?.String(1).count)
+        count: computed(() => dataReport.value?.[3]?.count || '0')
       },
       {
-        title: 'Phòng Pháp Chế',
+        title: computed(() => dataReport.value?.[4]?.name),
         status: 'normal',
-        count: '123'
+        count: computed(() => dataReport.value?.[4]?.count || '0')
+      },
+
+      {
+        title: computed(() => dataReport.value?.[14]?.name),
+        status: 'normal',
+        count: computed(() => dataReport.value?.[14]?.count || '0')
       },
       {
-        title: 'Ban Dự Án',
+        title: computed(() => dataReport.value?.[33]?.name),
         status: 'normal',
-        count: '12'
+        count: computed(() => dataReport.value?.[33]?.count || '0')
       },
       {
-        title: 'Phòng HCNS',
+        title: computed(() => dataReport.value?.[34]?.name),
         status: 'normal',
-        count: '12'
+        count: computed(() => dataReport.value?.[34]?.count || '0')
       },
+
       {
-        title: 'Phòng Marketing',
+        title: computed(() => dataReport.value?.[35]?.name),
         status: 'normal',
-        count: '12'
-      },
-      {
-        title: 'Phòng Tuyển Dụng',
-        status: 'normal',
-        count: '12'
+        count: computed(() => dataReport.value?.[35]?.count || '0')
       }
     ]
   },
@@ -93,7 +95,7 @@ const ticket: any = [
       {
         title: 'Tổng',
         status: 'reject',
-        count: '0/0'
+        count: computed(() => dataReport.value?.total?.count || '0')
       }
     ]
   }
@@ -130,7 +132,7 @@ onMounted(() => {
 
     <div class="mt-3"></div>
 
-    <div class="mb-3">
+    <!-- <div class="mb-3">
       <div class="grid grid-cols-12 gap-6">
         <div class="col-span-12 lg:col-span-6">
           <SeachBox>
@@ -172,7 +174,7 @@ onMounted(() => {
           </SeachBox>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="grid grid-cols-12 gap-6">
       <div
