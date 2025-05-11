@@ -28,7 +28,7 @@ const route = useRoute().path
         </h3>
       </div>
 
-      <div class="ms-auto">
+      <div class="ms-auto" v-if="sroute">
         <router-link
           :to="{ name: sroute }"
           class="inline-block text-[#909090] font-inter text-[14px] italic font-normal underline hover:text-main transition"

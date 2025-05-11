@@ -216,7 +216,7 @@
                     </template>
                   </div>
 
-                  <div class="relative group">
+                  <div class="relative" @click.stop="toggleDropdown(it.id)">
                     <template v-if="checkPermission('Leave', 'Approval')">
                       <template v-if="it.status == 'Đã phê duyệt'">
                         <div
@@ -228,15 +228,26 @@
 
                       <template v-if="it.status == 'Chờ phê duyệt'">
                         <div
-                          class="cell text-[10px] status status-red status-body"
+                          class="cell text-[10px] status status-gray status-body"
                         >
                           Chờ phê duyệt
+                        </div>
+                      </template>
+
+                      <template v-if="it.status == 'Đã từ chối'">
+                        <div
+                          class="cell text-[10px] status status-red status-body"
+                        >
+                          Không phê duyệt
                         </div>
                       </template>
                     </template>
 
                     <div
-                      class="absolute left-0 right-0 w-full z-[1] opacity-0 invisible pointer-events-none transition group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto"
+                      class="absolute left-0 right-0 w-full z-[1] opacity-0 invisible transition"
+                      :class="{
+                        'opacity-100 visible': activeDropdownId === it.id
+                      }"
                     >
                       <RadioGroupRoot
                         v-model="radioStateSingle"
@@ -260,7 +271,7 @@
                           @click="handleApproveLeave(it.id)"
                           :id="`r2-${it.id}`"
                           class="block outline-none cursor-pointer p-1.5 hover:bg-[#FFC4C4]"
-                          value="0"
+                          value="2"
                         >
                           <label
                             class="text-center text-[#464661] text-[10px] font-normal cursor-pointer"
@@ -790,10 +801,14 @@ const handleApproveLeave = async (id: number) => {
       .then((res) => {
         if (dataLeave.doc && dataLeave.doc.items) {
           leaveItem.value = dataLeave.doc.items.find((item) => item.id === id)
-          if (leaveItem) {
-            leaveItem.value.status =
-              radioStateSingle.value === '1' ? 'Đã phê duyệt' : 'Chờ phê duyệt'
-          }
+          if (!leaveItem.value) return
+
+          leaveItem.value.status =
+            radioStateSingle.value === '1'
+              ? 'Đã phê duyệt'
+              : radioStateSingle.value === '2'
+                ? 'Đã từ chối'
+                : 'Chờ phê duyệt'
         }
 
         console.log('🚀 ~ handleApproveLeave ~ res:', res.data.message)
@@ -890,6 +905,25 @@ onMounted(() => {
   if (auth.check()) {
     fetchDataLeave()
   }
+})
+
+const activeDropdownId = ref(null)
+const toggleDropdown = (id: any) => {
+  if (activeDropdownId.value === id) {
+    activeDropdownId.value = null
+  } else {
+    activeDropdownId.value = id
+  }
+}
+onMounted(() => {
+  document.addEventListener('click', () => {
+    activeDropdownId.value = null
+  })
+})
+onUnmounted(() => {
+  document.removeEventListener('click', () => {
+    activeDropdownId.value = null
+  })
 })
 </script>
 
