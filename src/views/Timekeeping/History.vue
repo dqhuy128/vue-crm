@@ -94,7 +94,7 @@
         type="button"
         class="inline-block bg-white rounded-md w-9 h-9 md:hidden"
       >
-        <Icon icon="radix-icons:text-align-center" class="w-full h-full p-1" />
+        <Icon icon="lsicon:filter-outline" class="w-full h-full p-1.5" />
       </button>
       <div
         class="hidden md:block flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
@@ -144,33 +144,33 @@
                     </div> -->
 
                     <div class="cell">
-                      {{ it.user_id }}
+                      {{ it?.user_id }}
                     </div>
 
                     <div class="cell">
-                      {{ it.user_name }}
+                      {{ it?.user_name }}
                     </div>
 
                     <div class="cell">
-                      {{ it.work_date }}
+                      {{ it?.work_date }}
                     </div>
 
                     <div class="cell">
-                      {{ it.check_out }}
+                      {{ it?.check_out }}
                     </div>
 
                     <div class="cell">
-                      {{ it.check_in }}
+                      {{ it?.check_in }}
                     </div>
 
                     <div class="cell">
-                      {{ it.total_hours }}
+                      {{ it?.total_hours }}
                     </div>
 
                     <template v-if="checkPermission('Work', 'Create')">
                       <div class="cell">
                         <button
-                          @click="handleUserExplain(it.user_name)"
+                          @click="handleUserExplain(it.user_id, it.work_date)"
                           type="button"
                           class="cursor-pointer cell-btn-edit shrink-0"
                         >
@@ -319,135 +319,27 @@
       </div>
     </Modal>
 
-    <Modal
-      @close="toggleModal('modalEditLeave')"
-      :modalActive="modalActive.modalEditLeave"
-      maxWidth="max-w-[670px]"
-    >
-      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-        <div class="mb-12 text-center max-xl:mb-6">
-          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-            Sửa đơn nghỉ phép
-          </h3>
-        </div>
-
-        <ModalEditLeave
-          :datatype="dataEditLeave"
-          @post-request-edit="getPostRequestEdit"
-        >
-          <button
-            @click="toggleModal('modalEditLeave')"
-            type="button"
-            class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-          >
-            Hủy
-          </button>
-        </ModalEditLeave>
-      </div>
-    </Modal>
-
-    <Modal
-      @close="toggleModal('modalStatusAddLeave')"
-      :modalActive="modalActive.modalStatusAddLeave"
-      maxWidth="max-w-[512px]"
-    >
-      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
-        <div
-          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
-        >
-          Thông báo
-        </div>
-
-        <div class="mb-3 text-center">
-          <img
-            class="mx-auto"
-            src="@/assets/images/icon-park-outline_attention.svg"
-            alt=""
-          />
-        </div>
-
-        <div
-          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
-        >
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastA"
+        :duration="5000"
+        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+      >
+        <ToastTitle class="font-medium text-[13px]">
           {{ dataPostRequest?.message }}
-        </div>
-      </div>
-    </Modal>
-
-    <Modal
-      @close="toggleModal('modalStatusAddLeave')"
-      :modalActive="modalActive.modalStatusAddLeave"
-      maxWidth="max-w-[512px]"
-    >
-      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
-        <div
-          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
+        </ToastTitle>
+        <ToastDescription
+          class="font-normal text-[11px]"
+          v-if="dataPostRequest?.errors"
         >
-          Thông báo
-        </div>
-
-        <div class="mb-3 text-center">
-          <img
-            class="mx-auto"
-            src="@/assets/images/icon-park-outline_attention.svg"
-            alt=""
-          />
-        </div>
-
-        <div
-          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
-        >
-          {{ dataPostRequestEdit?.message }}
-        </div>
-      </div>
-    </Modal>
-
-    <Modal
-      @close="toggleModal('modalStatusConfirm')"
-      :modalActive="modalActive.modalStatusConfirm"
-      maxWidth="max-w-[512px]"
-    >
-      <div class="rounded-[24px] p-[45px_16px] bg-white overflow-hidden">
-        <div
-          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
-        >
-          Thông báo
-        </div>
-
-        <div class="mb-3 text-center">
-          <img
-            class="mx-auto"
-            src="@/assets/images/icon-park-outline_attention.svg"
-            alt=""
-          />
-        </div>
-
-        <div
-          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold mb-6 underline"
-        >
-          Bạn chắc chắn muốn xoá đơn nghỉ phép này ?
-        </div>
-
-        <div
-          class="flex flex-wrap items-stretch justify-center gap-3 text-center mt-9 xl:gap-6"
-        >
-          <button
-            @click="toggleModal('modalStatusConfirm')"
-            type="button"
-            class="max-md:grow inline-block md:min-w-[130px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-          >
-            Hủy
-          </button>
-          <button
-            @click="handleDeleteLeave"
-            type="submit"
-            class="max-md:grow inline-block md:min-w-[130px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-          >
-            Xác nhận
-          </button>
-        </div>
-      </div>
-    </Modal>
+          {{ dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]] }}
+        </ToastDescription>
+        <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
+      </ToastRoot>
+      <ToastViewport
+        class="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none"
+      />
+    </ToastProvider>
   </MainLayout>
 </template>
 
@@ -461,7 +353,6 @@ import { useAuth } from 'vue-auth3'
 import axios from 'axios'
 import { apiUri } from '@/constants/apiUri'
 import { tableMagic } from '@/utils/main'
-import ModalEditLeave from '@/components/Modal/ModalEditLeave.vue'
 import ModalAddWorkHistory from '@/components/Modal/ModalAddWorkHistory.vue'
 import { usePermissionStore } from '@/store/permission'
 import { storeToRefs } from 'pinia'
@@ -471,6 +362,18 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import { vi } from 'date-fns/locale/vi'
 import { format } from 'date-fns'
 import { useWork } from '@/composables/work'
+import {
+  ToastAction,
+  ToastDescription,
+  ToastProvider,
+  ToastRoot,
+  ToastTitle,
+  ToastViewport
+} from 'radix-vue'
+
+const toast = reactive({
+  toastA: false
+})
 
 const auth = useAuth()
 
@@ -631,16 +534,11 @@ const handleSearchWorkHistory = async () => {
 }
 
 const dataUserExplain = ref<any | null>(null)
-const handleUserExplain = async (name: string) => {
+const handleUserExplain = async (id: string, date: string) => {
   try {
-    const res = await axios.get(`${apiUri}/work/list?name=${name}`, {
-      headers: {
-        Authorization: `Bearer ${auth.token()}`
-      }
-    })
-    dataUserExplain.value = res.data.data
+    dataUserExplain.value = dataWorkHistory.doc?.items?.[Number(id)]?.[date]
     console.log(
-      '🚀 ~ handleUserExplain ~   dataUserExplain.value :',
+      '🚀 ~ handleUserExplain ~ dataUserExplain.value:',
       dataUserExplain.value
     )
     toggleModal('modalAddWorkHistory')
@@ -649,49 +547,24 @@ const handleUserExplain = async (name: string) => {
   }
 }
 
-const leaveToDelete = ref<number | null>(null)
-const confirmDeleteLeave = (id: number) => {
-  leaveToDelete.value = id
-  toggleModal('modalStatusConfirm')
-}
-const handleDeleteLeave = async () => {
-  try {
-    if (!leaveToDelete.value) return
-
-    const formData = new FormData()
-    formData.append('id', leaveToDelete.value.toString())
-
-    const res = await axios.post(`${apiUri}/leave/delete`, formData, {
-      headers: {
-        Authorization: `Bearer ${auth.token()}`
-      }
-    })
-    fetchDataWorkHistory()
-    toggleModal('modalStatusConfirm')
-    console.log('🚀 ~ handleDeleteLeave ~ res:', res)
-  } catch (error) {
-    console.log('🚀 ~ handleDeleteLeave ~ error:', error)
-  }
-}
-
-const { data, doFetch, categories } = useWork()
+const { data, doFetch } = useWork()
 
 const dataWorkHistory = reactive({
   doc: data
 })
 
 interface WorkHistoryItem {
-  user_id: number
+  user_id: string
   user_name: string
   work_date: string
   check_out: string
   check_in: string
-  total_hours: number
+  total_hours: string
   finish_date?: string
   reason?: string
   total_date?: string
   status?: string
-  id: number
+  id: string
 }
 
 const dataWorkHistoryList = computed(() => {
@@ -712,30 +585,10 @@ const dataTotalPages = computed(() =>
 )
 
 const dataPostRequest = ref<any | null>(null)
-
 const getPostRequest = (data: any) => {
   dataPostRequest.value = data
-  // console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
-  if (dataPostRequest.value) {
-    toggleModal('modalStatusAddLeave')
-  }
-
-  if (dataPostRequest.value.status == 1) {
-    toggleModal('modalAddLeave')
-  }
-}
-
-const dataPostRequestEdit = ref<any | null>(null)
-const getPostRequestEdit = (data: any) => {
-  dataPostRequestEdit.value = data
-  // console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
-  if (dataPostRequestEdit.value) {
-    toggleModal('modalStatusEditLeave')
-  }
-
-  if (dataPostRequestEdit.value.status == 1) {
-    toggleModal('modalEditLeave')
-  }
+  if (dataPostRequest.value) toast.toastA = true
+  if (dataPostRequest.value.status == 1) toggleModal('modalAddWorkHistory')
 }
 
 const permissionStore = usePermissionStore()
