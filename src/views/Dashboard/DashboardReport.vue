@@ -8,84 +8,33 @@ import iconTicket3 from '@/assets/images/ticket-icon-3.png'
 import iconTicket4 from '@/assets/images/ticket-icon-4.png'
 import { useRoute } from 'vue-router'
 import SeachBox from '@/components/SeachBox.vue'
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import flatPickr from 'vue-flatpickr-component'
 import 'flatpickr/dist/flatpickr.css'
 import { Vietnamese } from 'flatpickr/dist/l10n/vn.js'
 import Breadcrums from '@/components/BreadcrumsNew.vue'
+import axios from 'axios'
+import { apiUri } from '@/constants/apiUri'
+import { useAuth } from 'vue-auth3'
+
+const auth = useAuth()
+
+const dataReport = ref<any>()
+const fetchReport = async () => {
+  try {
+    const res = await axios.get(`${apiUri}/dashboard/report`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    const { data } = res.data
+    dataReport.value = data
+  } catch (error) {
+    console.log('🚀 ~ fetchTicket ~ error:', error)
+  }
+}
 
 const ticket: any = [
-  {
-    icon: iconTicket1,
-    title: 'Tổng số ticket',
-    ticketList: [
-      {
-        title: 'Tổng số yêu cầu chưa xử lý',
-        status: 'normal',
-        count: '1'
-      },
-      {
-        title: 'Chờ xử lý',
-        status: 'pending',
-        count: '12'
-      },
-      {
-        title: 'Đang xử lý',
-        status: 'waiting',
-        count: '4'
-      },
-      {
-        title: 'Đã xử lý trong ngày',
-        status: 'done',
-        count: '66'
-      },
-      {
-        title: 'Đã từ chối trong ngày',
-        status: 'reject',
-        count: '8'
-      }
-    ]
-  },
-  {
-    icon: iconTicket2,
-    title: 'Nghỉ phép',
-    ticketList: [
-      {
-        title: 'Tổng số ngày nghỉ',
-        status: 'normal'
-      },
-      {
-        title: 'Số ngày nghỉ còn lại',
-        status: 'normal'
-      },
-      {
-        title: 'Số ngày nghỉ đã sử dụng',
-        status: 'normal'
-      }
-    ]
-  },
-  {
-    icon: iconTicket3,
-    title: 'Chấm công',
-    ticketList: [
-      {
-        title: 'Số lỗi chấm công trong tháng',
-        status: 'reject'
-      },
-      {
-        title: 'Đã giải trình',
-        status: 'normal'
-      },
-      {
-        title: 'Chưa giải trình',
-        status: 'reject'
-      },
-      {
-        title: 'Chờ phê duyệt',
-        status: 'reject'
-      }
-    ]
-  },
   {
     icon: iconTicket4,
     title: 'Nghỉ phép',
@@ -108,7 +57,7 @@ const ticket: any = [
       {
         title: 'Ban Trợ Lý',
         status: 'normal',
-        count: '1'
+        count: computed(() => dataReport.value?.String(1).count)
       },
       {
         title: 'Phòng Pháp Chế',
@@ -166,6 +115,10 @@ const dateRange: any = reactive({
   locale: Vietnamese,
   dateFormat: 'd / m / Y',
   disableMobile: true
+})
+
+onMounted(() => {
+  fetchReport()
 })
 </script>
 

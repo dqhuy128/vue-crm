@@ -5,7 +5,7 @@ type ticketProps = [
   icon: any,
   title: string,
   ticketList: Array<any>,
-  sroute: any
+  sroute?: any
 ]
 // Define props for the component
 const propsTicketProps = defineProps<{ ticketProps: ticketProps }>()
