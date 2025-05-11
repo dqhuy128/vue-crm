@@ -74,7 +74,7 @@
         type="button"
         class="inline-block bg-white rounded-md w-9 h-9 md:hidden"
       >
-        <Icon icon="radix-icons:text-align-center" class="w-full h-full p-1" />
+        <Icon icon="lsicon:filter-outline" class="w-full h-full p-1.5" />
       </button>
 
       <div
@@ -192,33 +192,27 @@
       </div>
     </Modal>
 
-    <Modal
-      @close="toggleModal('modalStatusEditPermission')"
-      :modalActive="modalActive.modalStatusEditPermission"
-      maxWidth="max-w-[512px]"
-    >
-      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
-        <div
-          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
-        >
-          Thông báo
-        </div>
-
-        <div class="mb-3 text-center">
-          <img
-            class="mx-auto"
-            src="@/assets/images/icon-park-outline_attention.svg"
-            alt=""
-          />
-        </div>
-
-        <div
-          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
-        >
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastCreate"
+        :duration="5000"
+        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+      >
+        <ToastTitle class="font-medium text-[13px]">
           {{ dataPostRequest?.message }}
-        </div>
-      </div>
-    </Modal>
+        </ToastTitle>
+        <ToastDescription
+          class="font-normal text-[11px]"
+          v-if="dataPostRequest?.errors"
+        >
+          {{ dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]] }}
+        </ToastDescription>
+        <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
+      </ToastRoot>
+      <ToastViewport
+        class="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none"
+      />
+    </ToastProvider>
   </MainLayout>
 </template>
 
@@ -237,6 +231,18 @@ import { storeToRefs } from 'pinia'
 import router from '@/router'
 import { usePermission } from '@/composables/permission'
 import Breadcrums from '@/components/BreadcrumsNew.vue'
+import {
+  ToastAction,
+  ToastDescription,
+  ToastProvider,
+  ToastRoot,
+  ToastTitle,
+  ToastViewport
+} from 'radix-vue'
+
+const toast = reactive({
+  toastCreate: false
+})
 
 const auth = useAuth()
 
@@ -382,14 +388,11 @@ const dataPermission = reactive({
 const dataPostRequest = ref<any | null>(null)
 const getPostRequest = (data: any) => {
   dataPostRequest.value = data
-  // console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
   if (dataPostRequest.value) {
-    toggleModal('modalStatusEditPermission')
-  }
-
-  if (dataPostRequest.value.status == 1) {
     toggleModal('modalEditPermission')
+    toast.toastCreate = true
   }
+  // if (dataPostRequest.value.status === 1) toggleModal('modalAddLeave')
 }
 
 const permissionStore = usePermissionStore()

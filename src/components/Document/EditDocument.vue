@@ -114,7 +114,7 @@
           <ul>
             <li class="relative flex items-center pt-3">
               <p>
-                {{ FormSubmitEdit.link }}
+                {{ getFilenameFromUrl(FormSubmitEdit.link) }}
               </p>
 
               <button
@@ -237,6 +237,7 @@ import FileUpload from '../FileUpload.vue'
 const props = defineProps<{
   data: any
   propFunction: Function
+  closeModal: Function
 }>()
 
 const emit = defineEmits(['post-request-edit'])
@@ -255,12 +256,15 @@ const FormSubmitEdit = ref({
   link: props.data?.link || null
 })
 function clearAndCloseModal() {
-  fileUploadPreview.value = []
-  FormSubmitEdit.value.name = null
-  FormSubmitEdit.value.description = null
-  FormSubmitEdit.value.docCate = null
-  FormSubmitEdit.value.id = null
-  FormSubmitEdit.value.link = null
+  props.closeModal()
+  setTimeout(() => {
+    fileUploadPreview.value = []
+    FormSubmitEdit.value.name = null
+    FormSubmitEdit.value.description = null
+    FormSubmitEdit.value.docCate = null
+    FormSubmitEdit.value.id = null
+    FormSubmitEdit.value.link = null
+  }, 200)
 }
 function removeFilePreview() {
   FormSubmitEdit.value.link = null
@@ -367,6 +371,11 @@ watch(
     FormSubmitEdit.value.link = props.data.link
   }
 )
+
+function getFilenameFromUrl(url: string): string {
+  const parts = url.split('/')
+  return parts[parts.length - 1]
+}
 </script>
 
 <style lang="scss" scoped>

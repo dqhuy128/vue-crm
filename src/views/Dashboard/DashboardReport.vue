@@ -7,15 +7,16 @@ import iconTicket2 from '@/assets/images/ticket-icon-2.png'
 import iconTicket3 from '@/assets/images/ticket-icon-3.png'
 import iconTicket4 from '@/assets/images/ticket-icon-4.png'
 import { useRoute } from 'vue-router'
-import SeachBox from '@/components/SeachBox.vue'
-import { ref, reactive, onMounted, computed } from 'vue'
-import flatPickr from 'vue-flatpickr-component'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import 'flatpickr/dist/flatpickr.css'
-import { Vietnamese } from 'flatpickr/dist/l10n/vn.js'
 import Breadcrums from '@/components/BreadcrumsNew.vue'
 import axios from 'axios'
 import { apiUri } from '@/constants/apiUri'
 import { useAuth } from 'vue-auth3'
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+import { vi } from 'date-fns/locale/vi'
+import { format } from 'date-fns'
 
 const auth = useAuth()
 
@@ -103,21 +104,54 @@ const ticket: any = [
 
 const route = useRoute()
 
-const date1 = ref(null)
-const date2 = ref(null)
-
-const dateConfig: any = reactive({
-  locale: Vietnamese,
-  dateFormat: 'd / m / Y',
-  disableMobile: true
+interface typeParamsDashboardReport {
+  begin_date: string
+  finish_date: string
+}
+const paramsDashboardReport = reactive<typeParamsDashboardReport>({
+  begin_date: '',
+  finish_date: ''
 })
 
-const dateRange: any = reactive({
-  mode: 'range',
-  locale: Vietnamese,
-  dateFormat: 'd / m / Y',
-  disableMobile: true
+const datepicker = ref<any | null>(null)
+const startDate = new Date(new Date().setDate(new Date().getDate() - 30))
+const endDate = new Date()
+datepicker.value = [startDate, endDate]
+paramsDashboardReport.begin_date = format(startDate, 'yyyy-MM-dd')
+paramsDashboardReport.finish_date = format(endDate, 'yyyy-MM-dd')
+const updateDates = () => {
+  if (datepicker.value) {
+    paramsDashboardReport.begin_date = format(datepicker.value[0], 'yyyy-MM-dd')
+    paramsDashboardReport.finish_date = format(
+      datepicker.value[1],
+      'yyyy-MM-dd'
+    )
+  }
+}
+watch(datepicker, () => {
+  if (auth.check()) {
+    updateDates()
+  }
 })
+
+const handleSearchReport = async () => {
+  try {
+    const formData = new FormData()
+    formData.append('begin_date', paramsDashboardReport.begin_date)
+    formData.append('finish_date', paramsDashboardReport.finish_date)
+
+    const res = await axios.post(`${apiUri}/dashboard/report`, formData, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    const { data } = res.data
+    dataReport.value = data
+    // console.log('🚀 ~ handleSearchReport ~ dataReport.value:', dataReport.value)
+  } catch (error) {
+    console.log('🚀 ~ handleSearchReport ~ error:', error)
+  }
+}
 
 onMounted(() => {
   fetchReport()
@@ -132,49 +166,63 @@ onMounted(() => {
 
     <div class="mt-3"></div>
 
-    <!-- <div class="mb-3">
+    <div class="mb-3">
       <div class="grid grid-cols-12 gap-6">
         <div class="col-span-12 lg:col-span-6">
-          <SeachBox>
-            <div
-              class="relative flex items-center grow border border-solid border-[#EDEDF6] rounded-[24px] p-[10px_12px]"
+          <div class="search-box-cpn bg-white rounded-[24px] p-2.5">
+            <form
+              @submit.prevent="handleSearchReport"
+              class="flex flex-wrap items-stretch gap-2"
             >
-              <flat-pickr
-                :config="dateConfig"
-                v-model="date1"
-                placeholder="Chọn thời gian"
-                class="grow text-[#000] font-inter text-[16px] font-normal leading-normal focus:outline-0 focus:border-0"
-              />
-              <label
-                class="pointer-events-none absolute right-3 top-1/2 -translate-y-[50%]"
-              >
-                <img src="@/assets/images/cuida_calendar-outline.svg" alt="" />
-              </label>
-            </div>
-          </SeachBox>
-        </div>
+              <div class="grow">
+                <VueDatePicker
+                  class="work-history-datepicker"
+                  v-model="datepicker"
+                  :enable-time-picker="false"
+                  locale="vi"
+                  :format-locale="vi"
+                  cancelText="Huỷ"
+                  selectText="Chọn"
+                  range
+                  format="dd/MM/yyyy"
+                  :max-date="new Date()"
+                  @update:model-value="updateDates"
+                />
+              </div>
 
-        <div class="col-span-12 lg:col-span-6">
-          <SeachBox>
-            <div
-              class="relative flex items-center grow border border-solid border-[#EDEDF6] rounded-[24px] p-[10px_12px]"
-            >
-              <flat-pickr
-                v-model="date2"
-                :config="dateRange"
-                placeholder="Chọn thời gian"
-                class="grow text-[#000] font-inter text-[16px] font-normal leading-normal focus:outline-0 focus:border-0"
-              />
-              <label
-                class="pointer-events-none absolute right-3 top-1/2 -translate-y-[50%]"
+              <button
+                type="submit"
+                class="inline-flex items-center justify-center gap-2 max-md:w-full bg-[#013878] rounded-[24px] p-[8px_16px] text-white font-inter text=[16px] max-md:text-[14px] font-bold leading-normal hover:shadow-hoverinset transition cursor-pointer"
               >
-                <img src="@/assets/images/cuida_calendar-outline.svg" alt="" />
-              </label>
-            </div>
-          </SeachBox>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+                    stroke="white"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M21.0002 21L16.7002 16.7"
+                    stroke="white"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Tìm kiếm
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-    </div> -->
+    </div>
 
     <div class="grid grid-cols-12 gap-6">
       <div
