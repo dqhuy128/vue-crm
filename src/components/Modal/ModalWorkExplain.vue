@@ -1,10 +1,10 @@
 <template>
-  <form @submit.prevent="handleCreateCategory">
+  <form @submit.prevent="">
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 md:col-span-6">
         <div class="block">
           <span
-            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+            class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
           >
             Ngày
           </span>
@@ -26,13 +26,13 @@
       <div class="col-span-12 md:col-span-6">
         <div class="block">
           <span
-            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+            class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
           >
             Họ và tên
           </span>
 
           <input
-            v-model="paramsUserExplain.name"
+            v-model="paramsUser.name"
             type="text"
             name=""
             id=""
@@ -45,12 +45,12 @@
       <div class="col-span-12">
         <div class="block">
           <span
-            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+            class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
           >
             Lý do
           </span>
           <textarea
-            v-model="paramsUserExplain.reason"
+            v-model="paramsUser.reason"
             name=""
             id=""
             placeholder="Nhập lý do"
@@ -65,12 +65,14 @@
     >
       <button
         type="button"
+        @click="handlePostApprove(2)"
         class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
       >
         Không duyệt
       </button>
       <button
         type="button"
+        @click="handlePostApprove(1)"
         class="max-md:grow inline-block md:min-w-[175px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
       >
         Duyệt
@@ -100,24 +102,42 @@ const props = defineProps<{
   propFunction: Function
 }>()
 
-interface typeParamsUserExplain {
-  user_id: string
+interface typeParamsPostExplain {
+  id: string
+  status: string
+}
+interface typeParamsUser {
   work_date: string
   name: string
   reason: string
 }
-const paramsUserExplain = reactive<typeParamsUserExplain>({
-  user_id: '',
-  work_date: '',
-  name: '',
-  reason: ''
+
+const paramsPostExplain = reactive<typeParamsPostExplain>({
+  id: props.datatype?.id || '',
+  status: ''
 })
+const paramsUser = reactive<typeParamsUser>({
+  work_date: props.datatype?.work_date || '',
+  name: props.datatype?.name || '',
+  reason: props.datatype?.reason || ''
+})
+watch(
+  () => props.datatype,
+  (newVal) => {
+    if (newVal) {
+      paramsPostExplain.id = newVal.id || ''
+      paramsUser.work_date = newVal.work_date || ''
+      dateUserExplain.value = newVal.work_date || ''
+      paramsUser.name = newVal.name || ''
+      paramsUser.reason = newVal.reason || ''
+    }
+  }
+)
 
 const dateUserExplain = ref<any | null>(new Date())
-paramsUserExplain.work_date = format(dateUserExplain.value, 'yyyy-MM-dd')
 const updateDates = () => {
   if (dateUserExplain.value) {
-    paramsUserExplain.work_date = format(dateUserExplain.value, 'yyyy-MM-dd')
+    paramsUser.work_date = format(dateUserExplain.value, 'yyyy-MM-dd')
   }
 }
 watch(dateUserExplain, () => {
@@ -126,42 +146,23 @@ watch(dateUserExplain, () => {
   }
 })
 
-const paramsCreate = reactive({
-  type: '',
-  name: '',
-  description: ''
-})
-const postRequest = ref<any | null>(null)
-const handleCreateCategory = async () => {
-  if (session) {
+const handlePostApprove = async (id: number) => {
+  try {
     const formData = new FormData()
-    formData.append('name', paramsCreate.name)
-    formData.append('type', paramsCreate.type)
-    formData.append('description', paramsCreate.description)
+    formData.append('id', paramsPostExplain.id)
+    formData.append('status', id.toString())
 
-    const res = await axios
-      .post(`${apiUri}/categories/create`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then((res) => {
-        if (res.data.errors.input) {
-          const { message } = res.data
-          const { input } = res.data.errors
-          alert(message + '. ' + input)
-          return
-        }
-        paramsCreate.name = ''
-        paramsCreate.description = ''
-        postRequest.value = res.data
-        emit('post-request', postRequest.value)
-        props.propFunction()
-      })
-      .catch((err) => {
-        console.log('handleCreateCategory ~ err', err)
-      })
+    const res = await axios.post(`${apiUri}/work/status`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    console.log('res', res.data)
+    if (res.data?.errors) return
+    props.propFunction()
+    emit('post-request', res.data)
+  } catch (error) {
+    console.log('handlePostApprove ~ error', error)
   }
 }
 </script>

@@ -216,7 +216,7 @@
         type="button"
         class="inline-block bg-white rounded-md w-9 h-9 md:hidden"
       >
-        <Icon icon="radix-icons:text-align-center" class="w-full h-full p-1" />
+        <Icon icon="lsicon:filter-outline" class="w-full h-full p-1.5" />
       </button>
 
       <div
@@ -284,7 +284,11 @@
                 {{ column.title }}
 
                 <div class="tb-sort" v-if="column.hasSort">
-                  <button type="button">
+                  <button
+                    type="button"
+                    class="cursor-pointer"
+                    @click="handleSort(column, index)"
+                  >
                     <img src="@/assets/images/tb-sort.svg" alt="" />
                   </button>
                 </div>
@@ -362,7 +366,7 @@
                   <div class="cell pinned pinned-body">
                     <template v-if="Number(item?.status) === 1">
                       <div
-                        class="cell status status-green status-body !p-0 w-5 h-5"
+                        class="cell status status-green status-body max-md:!p-0 max-md:w-5 max-md:h-5"
                       >
                         <span v-if="screenWidth > 768">Đang hoạt động</span>
                         <span v-else>
@@ -373,7 +377,7 @@
 
                     <template v-if="Number(item?.status) === 2">
                       <div
-                        class="cell status status-red status-body !p-0 w-5 h-5"
+                        class="cell status status-red status-body max:md:!p-0 max-md:w-5 max-md:h-5"
                       >
                         <span v-if="screenWidth > 768">Dừng hoạt động</span>
                         <span v-else>
@@ -586,62 +590,6 @@
     </Modal>
 
     <Modal
-      @close="toggleModal('modalStatusRegister')"
-      :modalActive="modalActive.modalStatusRegister"
-      maxWidth="max-w-[512px]"
-    >
-      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
-        <div
-          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
-        >
-          Thông báo
-        </div>
-
-        <div class="mb-3 text-center">
-          <img
-            class="mx-auto"
-            src="@/assets/images/icon-park-outline_attention.svg"
-            alt=""
-          />
-        </div>
-
-        <div
-          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
-        >
-          {{ dataPostRequest?.message }}
-        </div>
-      </div>
-    </Modal>
-
-    <Modal
-      @close="toggleModal('modalStatusEdit')"
-      :modalActive="modalActive.modalStatusEdit"
-      maxWidth="max-w-[512px]"
-    >
-      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
-        <div
-          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
-        >
-          Thông báo
-        </div>
-
-        <div class="mb-3 text-center">
-          <img
-            class="mx-auto"
-            src="@/assets/images/icon-park-outline_attention.svg"
-            alt=""
-          />
-        </div>
-
-        <div
-          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
-        >
-          {{ dataPostRequestEdit?.message }}
-        </div>
-      </div>
-    </Modal>
-
-    <Modal
       @close="toggleModal('modalStatusConfirm')"
       :modalActive="modalActive.modalStatusConfirm"
       maxWidth="max-w-[512px]"
@@ -687,6 +635,54 @@
         </div>
       </div>
     </Modal>
+
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastCreate"
+        :duration="5000"
+        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+      >
+        <ToastTitle class="font-medium text-[13px]">
+          {{ dataPostRequest?.message }}
+        </ToastTitle>
+        <ToastDescription
+          class="font-normal text-[11px]"
+          v-if="dataPostRequest?.errors"
+        >
+          {{ dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]] }}
+        </ToastDescription>
+        <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
+      </ToastRoot>
+      <ToastViewport
+        class="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none"
+      />
+    </ToastProvider>
+
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastUpdate"
+        :duration="5000"
+        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+      >
+        <ToastTitle class="font-medium text-[13px]">
+          {{ dataPostRequestEdit?.message }}
+        </ToastTitle>
+        <ToastDescription
+          class="font-normal text-[11px]"
+          v-if="dataPostRequestEdit?.errors"
+        >
+          {{
+            dataPostRequestEdit?.errors[
+              Object.keys(dataPostRequestEdit?.errors)[0]
+            ]
+          }}
+        </ToastDescription>
+        <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
+      </ToastRoot>
+      <ToastViewport
+        class="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none"
+      />
+    </ToastProvider>
   </MainLayout>
 </template>
 
@@ -722,6 +718,19 @@ import { usePermissionStore } from '@/store/permission'
 import { storeToRefs } from 'pinia'
 import router from '@/router'
 import Breadcrums from '@/components/BreadcrumsNew.vue'
+import {
+  ToastAction,
+  ToastDescription,
+  ToastProvider,
+  ToastRoot,
+  ToastTitle,
+  ToastViewport
+} from 'radix-vue'
+
+const toast = reactive({
+  toastCreate: false,
+  toastUpdate: false
+})
 
 const toggleBoxFilters = ref(false)
 const screenWidth = ref(window.innerWidth)
@@ -823,7 +832,8 @@ const params = reactive({
   part_id: '',
   position_id: '',
   per_group_name: '',
-  phone: ''
+  phone: '',
+  sort: 'name|asc' // Default sorting
 })
 const paginate = reactive({
   page: 1,
@@ -968,30 +978,21 @@ const handleGetDetailUser = async (phone: any) => {
 const dataPostRequest = ref<any | null>(null)
 const getPostRequest = (data: any) => {
   dataPostRequest.value = data
-  console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
   if (dataPostRequest.value) {
-    toggleModal('modalStatusRegister')
-  }
-
-  if (dataPostRequest.value.status == 1) {
     toggleModal('modalNewUser')
+    toast.toastCreate = true
   }
+  // if (dataPostRequest.value.status === 1) toggleModal('modalAddLeave')
 }
 
 const dataPostRequestEdit = ref<any | null>(null)
 const getPostRequestEdit = (data: any) => {
   dataPostRequestEdit.value = data
-  console.log(
-    '🚀 ~ getPostRequestEdit ~ dataPostRequestEdit:',
-    dataPostRequestEdit.value
-  )
   if (dataPostRequestEdit.value) {
-    toggleModal('modalStatusEdit')
-  }
-
-  if (dataPostRequestEdit.value.status == 1) {
     toggleModal('modalEditUser')
+    toast.toastUpdate = true
   }
+  // if (dataPostRequestEdit.value.status === 1) toggleModal('modalEditLeave')
 }
 
 const {
@@ -1059,6 +1060,34 @@ watch(
   },
   { deep: true, immediate: true }
 )
+
+const handleSort = (column: any, index: any) => {
+  // Determine which field to sort by based on index or column property
+  let field = 'name'
+
+  // Map column index to appropriate field names
+  if (index === 1) {
+    field = 'code' // Mã NV
+  } else if (index === 2) {
+    field = 'name' // Họ và tên
+  }
+
+  // Toggle sort direction
+  const currentSort = params.sort.split('|')
+  const currentField = currentSort[0]
+  const currentDirection = currentSort[1]
+
+  if (currentField === field) {
+    // If already sorting by this field, toggle direction
+    params.sort = `${field}|${currentDirection === 'asc' ? 'desc' : 'asc'}`
+  } else {
+    // If sorting by a new field, default to ascending
+    params.sort = `${field}|asc`
+  }
+
+  // Fetch data with new sort parameters
+  fetchDataDocument()
+}
 
 onMounted(() => {
   if (auth.check()) {
