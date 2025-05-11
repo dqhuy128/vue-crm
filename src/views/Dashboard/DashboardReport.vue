@@ -8,132 +8,83 @@ import iconTicket3 from '@/assets/images/ticket-icon-3.png'
 import iconTicket4 from '@/assets/images/ticket-icon-4.png'
 import { useRoute } from 'vue-router'
 import SeachBox from '@/components/SeachBox.vue'
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import flatPickr from 'vue-flatpickr-component'
 import 'flatpickr/dist/flatpickr.css'
 import { Vietnamese } from 'flatpickr/dist/l10n/vn.js'
 import Breadcrums from '@/components/BreadcrumsNew.vue'
+import axios from 'axios'
+import { apiUri } from '@/constants/apiUri'
+import { useAuth } from 'vue-auth3'
+
+const auth = useAuth()
+
+const dataReport = ref<any>()
+const fetchReport = async () => {
+  try {
+    const res = await axios.get(`${apiUri}/dashboard/report`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    const { data } = res.data
+    dataReport.value = data
+  } catch (error) {
+    console.log('🚀 ~ fetchTicket ~ error:', error)
+  }
+}
 
 const ticket: any = [
-  {
-    icon: iconTicket1,
-    title: 'Tổng số ticket',
-    ticketList: [
-      {
-        title: 'Tổng số yêu cầu chưa xử lý',
-        status: 'normal',
-        count: '1'
-      },
-      {
-        title: 'Chờ xử lý',
-        status: 'pending',
-        count: '12'
-      },
-      {
-        title: 'Đang xử lý',
-        status: 'waiting',
-        count: '4'
-      },
-      {
-        title: 'Đã xử lý trong ngày',
-        status: 'done',
-        count: '66'
-      },
-      {
-        title: 'Đã từ chối trong ngày',
-        status: 'reject',
-        count: '8'
-      }
-    ]
-  },
-  {
-    icon: iconTicket2,
-    title: 'Nghỉ phép',
-    ticketList: [
-      {
-        title: 'Tổng số ngày nghỉ',
-        status: 'normal'
-      },
-      {
-        title: 'Số ngày nghỉ còn lại',
-        status: 'normal'
-      },
-      {
-        title: 'Số ngày nghỉ đã sử dụng',
-        status: 'normal'
-      }
-    ]
-  },
-  {
-    icon: iconTicket3,
-    title: 'Chấm công',
-    ticketList: [
-      {
-        title: 'Số lỗi chấm công trong tháng',
-        status: 'reject'
-      },
-      {
-        title: 'Đã giải trình',
-        status: 'normal'
-      },
-      {
-        title: 'Chưa giải trình',
-        status: 'reject'
-      },
-      {
-        title: 'Chờ phê duyệt',
-        status: 'reject'
-      }
-    ]
-  },
   {
     icon: iconTicket4,
     title: 'Nghỉ phép',
     ticketList: [
       {
-        title: 'Tổng số nhân viên',
+        title: computed(() => dataReport.value?.total?.name),
         status: 'normal',
-        count: '12'
+        count: computed(() => dataReport.value?.total?.count || '0')
       },
       {
-        title: 'Ban Điều Hành',
+        title: computed(() => dataReport.value?.[1]?.name),
         status: 'normal',
-        count: '4'
+        count: computed(() => dataReport.value?.[1]?.count || '0')
       },
       {
-        title: 'Phòng Sale Admin',
+        title: computed(() => dataReport.value?.[2]?.name),
         status: 'normal',
-        count: '22'
+        count: computed(() => dataReport.value?.[2]?.count || '0')
       },
       {
-        title: 'Ban Trợ Lý',
+        title: computed(() => dataReport.value?.[3]?.name),
         status: 'normal',
-        count: '1'
+        count: computed(() => dataReport.value?.[3]?.count || '0')
       },
       {
-        title: 'Phòng Pháp Chế',
+        title: computed(() => dataReport.value?.[4]?.name),
         status: 'normal',
-        count: '123'
+        count: computed(() => dataReport.value?.[4]?.count || '0')
+      },
+
+      {
+        title: computed(() => dataReport.value?.[14]?.name),
+        status: 'normal',
+        count: computed(() => dataReport.value?.[14]?.count || '0')
       },
       {
-        title: 'Ban Dự Án',
+        title: computed(() => dataReport.value?.[33]?.name),
         status: 'normal',
-        count: '12'
+        count: computed(() => dataReport.value?.[33]?.count || '0')
       },
       {
-        title: 'Phòng HCNS',
+        title: computed(() => dataReport.value?.[34]?.name),
         status: 'normal',
-        count: '12'
+        count: computed(() => dataReport.value?.[34]?.count || '0')
       },
+
       {
-        title: 'Phòng Marketing',
+        title: computed(() => dataReport.value?.[35]?.name),
         status: 'normal',
-        count: '12'
-      },
-      {
-        title: 'Phòng Tuyển Dụng',
-        status: 'normal',
-        count: '12'
+        count: computed(() => dataReport.value?.[35]?.count || '0')
       }
     ]
   },
@@ -144,7 +95,7 @@ const ticket: any = [
       {
         title: 'Tổng',
         status: 'reject',
-        count: '0/0'
+        count: computed(() => dataReport.value?.total?.count || '0')
       }
     ]
   }
@@ -167,6 +118,10 @@ const dateRange: any = reactive({
   dateFormat: 'd / m / Y',
   disableMobile: true
 })
+
+onMounted(() => {
+  fetchReport()
+})
 </script>
 
 <template>
@@ -177,7 +132,7 @@ const dateRange: any = reactive({
 
     <div class="mt-3"></div>
 
-    <div class="mb-3">
+    <!-- <div class="mb-3">
       <div class="grid grid-cols-12 gap-6">
         <div class="col-span-12 lg:col-span-6">
           <SeachBox>
@@ -219,7 +174,7 @@ const dateRange: any = reactive({
           </SeachBox>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="grid grid-cols-12 gap-6">
       <div
