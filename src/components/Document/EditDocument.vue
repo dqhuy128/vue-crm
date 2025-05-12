@@ -110,7 +110,7 @@
             </div>
           </div>
         </FileUpload>
-        <template v-if="FormSubmitEdit.link">
+        <template v-if="FormSubmitEdit.link && fileUploadPreview.length === 0">
           <ul>
             <li class="relative flex items-center pt-3">
               <p>
@@ -139,7 +139,7 @@
             </li>
           </ul>
         </template>
-        <template v-if="fileUploadPreview">
+        <template v-if="fileUploadPreview.length > 0">
           <ul>
             <li
               v-for="(list, index) in fileUploadPreview"
@@ -256,13 +256,13 @@ const FormSubmitEdit = ref({
   link: props.data?.link || null
 })
 function clearAndCloseModal() {
-  props.closeModal()
   fileUploadPreview.value = []
   FormSubmitEdit.value.name = null
   FormSubmitEdit.value.description = null
   FormSubmitEdit.value.docCate = null
   FormSubmitEdit.value.id = null
   FormSubmitEdit.value.link = null
+  props.closeModal()
 }
 function removeFilePreview() {
   FormSubmitEdit.value.link = null
@@ -277,8 +277,10 @@ const setUrlFromFiles = async (files: FileList | File) => {
     if (list.length === 0) return
     file = list[list.length - 1] // get the latest (last) file
   }
-  console.log('Run here')
-  removeFilePreview()
+
+  // Clear the existing link to avoid duplication
+  FormSubmitEdit.value.link = null
+
   const path = await readFileAsDataURL(file)
 
   // Replace previous file, only keep one
@@ -367,6 +369,8 @@ watch(
     FormSubmitEdit.value.docCate = props.data.type_id
     FormSubmitEdit.value.id = props.data.id
     FormSubmitEdit.value.link = props.data.link
+    // Clear any uploaded files when loading a new document
+    fileUploadPreview.value = []
   }
 )
 

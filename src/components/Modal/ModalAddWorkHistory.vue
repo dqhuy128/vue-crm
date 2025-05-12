@@ -19,6 +19,7 @@
             format="dd/MM/yyyy"
             :max-date="new Date()"
             @update:model-value="updateDates"
+            class="opacity-50 pointer-events-none"
           />
         </div>
       </div>
@@ -37,7 +38,8 @@
             name=""
             id=""
             placeholder="Nhập họ và tên"
-            class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+            class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75 opacity-50 pointer-events-none"
+            readonly
           />
         </div>
       </div>

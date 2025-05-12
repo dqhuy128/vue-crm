@@ -40,22 +40,9 @@ export function useDocument() {
       })
       .catch((err) => (error.value = err))
       .finally(() => (isLoading.value = false))
-    // loadingPromise.value = auth
-    //   .fetch({
-    //     method: 'get',
-    //     url: url,
-    //     credentials: 'include',
-    //     headers: {
-    //       Authorization: `Bearer ${token}`
-    //     }
-    //   })
-    //   .then((res) => res.data.json())
-    //   .then((json) => (data.value = json))
-    //   .catch((err) => (error.value = err))
-    //   .finally(() => (isLoading.value = false))
   }
   const fetchCategoryDocument = async () => {
-    if(categories.value.length > 0) return
+    if (categories.value.length > 0) return
     const response = await axios.get(
       `${apiUri}/categories/list?type=document`,
       {
