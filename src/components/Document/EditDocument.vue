@@ -257,14 +257,12 @@ const FormSubmitEdit = ref({
 })
 function clearAndCloseModal() {
   props.closeModal()
-  setTimeout(() => {
-    fileUploadPreview.value = []
-    FormSubmitEdit.value.name = null
-    FormSubmitEdit.value.description = null
-    FormSubmitEdit.value.docCate = null
-    FormSubmitEdit.value.id = null
-    FormSubmitEdit.value.link = null
-  }, 200)
+  fileUploadPreview.value = []
+  FormSubmitEdit.value.name = null
+  FormSubmitEdit.value.description = null
+  FormSubmitEdit.value.docCate = null
+  FormSubmitEdit.value.id = null
+  FormSubmitEdit.value.link = null
 }
 function removeFilePreview() {
   FormSubmitEdit.value.link = null

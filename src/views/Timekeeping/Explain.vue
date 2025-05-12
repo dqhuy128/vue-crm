@@ -222,15 +222,15 @@
                   <template
                     v-if="it.status === 'Chờ phê duyệt' || it.status === null"
                   >
-                    <div
-                      class="cell text-[10px] status status-gray status-body"
-                    >
+                    <div class="cell text-[10px] status status-red status-body">
                       Chờ phê duyệt
                     </div>
                   </template>
 
                   <template v-if="it.status === 'Đã từ chối'">
-                    <div class="cell text-[10px] status status-red status-body">
+                    <div
+                      class="cell text-[10px] status status-gray status-body"
+                    >
                       Không phê duyệt
                     </div>
                   </template>
