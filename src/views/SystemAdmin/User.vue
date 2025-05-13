@@ -10,7 +10,7 @@
         >
           <div class="flex flex-wrap gap-2 xxl:gap-4 grow">
             <div
-              class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <div class="relative">
                 <input
@@ -32,7 +32,7 @@
             </div>
 
             <div
-              class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <SelectRoot v-model="params.per_group_name">
                 <SelectTrigger
@@ -78,7 +78,7 @@
             </div>
 
             <div
-              class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <SelectRoot v-model="params.part_id">
                 <SelectTrigger
@@ -126,7 +126,7 @@
             </div>
 
             <div
-              class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <SelectRoot v-model="params.position_id">
                 <SelectTrigger

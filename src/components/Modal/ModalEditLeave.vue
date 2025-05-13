@@ -46,8 +46,18 @@
       <button
         type="submit"
         class="max-md:grow inline-block md:min-w-[175px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+        :class="{ 'opacity-75 pointer-events-none': onSubmitting }"
       >
-        Lưu
+        <div
+          class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]"
+          v-if="onSubmitting"
+        >
+          <Icon
+            icon="eos-icons:three-dots-loading"
+            class="w-12 h-full aspect-square"
+          />
+        </div>
+        <div v-else>Lưu</div>
       </button>
     </div>
   </form>
@@ -116,7 +126,9 @@ const paramsLeaveEdit = reactive<any | null>({
 })
 
 const postRequestEdit = ref<any | null>(null)
+const onSubmitting = ref(false)
 const submitEditLeave = async () => {
+  onSubmitting.value = true
   try {
     const formData = new FormData()
     formData.append('id', paramsLeaveEdit.id)
@@ -141,6 +153,8 @@ const submitEditLeave = async () => {
     console.log('🚀 ~ postAddLeave ~ res:', postRequestEdit.value)
   } catch (error) {
     console.log('🚀 ~ postAddLeave ~ error:', error)
+  } finally {
+    onSubmitting.value = false
   }
 }
 
