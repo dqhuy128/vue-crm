@@ -79,7 +79,7 @@
       </div>
       <div class="col-span-12">
         <FileUpload
-          :id="'modalEditxxxxxx'"
+          :key="'modal-edit'"
           @change="onFileUpdate"
           :accept="[
             'application/vnd.ms-excel',
@@ -346,7 +346,7 @@ const submit = async () => {
       postRequestEdit.value = res.data
       emit('post-request-edit', postRequestEdit.value)
       doFetch(
-        `${apiUri}/document/list?page=1&per_page=10`,
+        `${apiUri}/document/list?page=1&per_page=20`,
         auth.token() as string
       ).then(() => {
         tableMagic()
