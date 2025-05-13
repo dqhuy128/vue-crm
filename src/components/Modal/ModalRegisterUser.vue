@@ -119,7 +119,7 @@
           <div class="col-span-12 xl:col-span-4 md:col-span-6">
             <div class="block">
               <span
-                class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+                class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
               >
                 Ngày tháng năm sinh
               </span>
@@ -203,7 +203,7 @@
           <div class="col-span-12 xl:col-span-3 md:col-span-6">
             <div class="block">
               <span
-                class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+                class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
               >
                 CCCD
               </span>
@@ -222,7 +222,7 @@
           <div class="col-span-12 xl:col-span-3 md:col-span-6">
             <div class="block">
               <span
-                class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+                class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
               >
                 Ngày cấp
               </span>
@@ -244,7 +244,7 @@
           <div class="col-span-12 xl:col-span-3 md:col-span-6">
             <div class="block">
               <span
-                class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+                class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
               >
                 Nơi cấp
               </span>
@@ -263,7 +263,7 @@
           <div class="col-span-12 xl:col-span-3 md:col-span-6">
             <div class="block">
               <span
-                class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+                class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
               >
                 Quê quán
               </span>
@@ -282,7 +282,7 @@
           <div class="col-span-12 xl:col-span-3 md:col-span-6">
             <div class="block">
               <span
-                class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+                class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
               >
                 Bộ phận
               </span>
@@ -350,7 +350,7 @@
           <div class="col-span-12 xl:col-span-3 md:col-span-6">
             <div class="block">
               <span
-                class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+                class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
               >
                 Chức vụ
               </span>
@@ -418,7 +418,7 @@
           <div class="col-span-12 xl:col-span-3 md:col-span-6">
             <div class="block">
               <span
-                class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+                class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
               >
                 Địa điểm làm việc
               </span>
@@ -552,7 +552,7 @@
           <div class="col-span-12 xl:col-span-6">
             <div class="block">
               <span
-                class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+                class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
               >
                 Địa chỉ thường trú
               </span>
@@ -571,7 +571,7 @@
           <div class="col-span-12 xl:col-span-6">
             <div class="block">
               <span
-                class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+                class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
               >
                 Địa chỉ tạm trú
               </span>
@@ -590,7 +590,7 @@
           <div class="col-span-12 md:col-span-6">
             <div class="block">
               <span
-                class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
+                class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
               >
                 Hợp đồng làm việc
               </span>
@@ -632,14 +632,14 @@
               <span
                 class="block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
               >
-                Số ngày nghỉ còn lại
+                Số ngày nghỉ phép năm
               </span>
               <input
                 v-model="paramsUser.total_days_off"
                 type="text"
                 name=""
                 id=""
-                placeholder="Nhập số ngày nghỉ còn lại"
+                placeholder="Nhập số ngày nghỉ phép năm"
                 class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
               />
             </div>

@@ -1063,7 +1063,7 @@ watch(
 
 const handleSort = (column: any, index: any) => {
   // Determine which field to sort by based on index or column property
-  let field = 'name'
+  let field = 'code'
 
   // Map column index to appropriate field names
   if (index === 1) {
@@ -1074,16 +1074,13 @@ const handleSort = (column: any, index: any) => {
 
   // Toggle sort direction
   const currentSort = params.sort.split('|')
+  console.log('🚀 ~ handleSort ~ currentSort:', currentSort)
   const currentField = currentSort[0]
   const currentDirection = currentSort[1]
 
-  if (currentField === field) {
-    // If already sorting by this field, toggle direction
+  if (currentField === field)
     params.sort = `${field}|${currentDirection === 'asc' ? 'desc' : 'asc'}`
-  } else {
-    // If sorting by a new field, default to ascending
-    params.sort = `${field}|asc`
-  }
+  else params.sort = `${field}|asc`
 
   // Fetch data with new sort parameters
   fetchDataDocument()

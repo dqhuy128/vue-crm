@@ -167,7 +167,7 @@
       </div>
     </div>
 
-    <template v-if="checkPermission('Work', 'List')">
+    <template v-if="checkPermission('Work', 'Explanation')">
       <div class="flex flex-col h-full overflow-hidden">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="relative table-container">
@@ -186,9 +186,9 @@
                 </div>
               </div>
 
-              <template v-if="checkPermission('Work', 'Create')">
+              <!-- <template v-if="checkPermission('Work', 'Create')">
                 <div class="cell">Thao tác</div>
-              </template>
+              </template> -->
             </div>
 
             <template v-if="dataWorkExplain.doc?.items">
@@ -211,45 +211,87 @@
                     {{ it.work_date }}
                   </div>
 
-                  <template v-if="it.status === 'Đã phê duyệt'">
-                    <div
-                      class="cell text-[10px] status status-green status-body"
-                    >
-                      Đã phê duyệt
-                    </div>
-                  </template>
+                  <div class="cell">
+                    {{ it.check_in }}
+                  </div>
 
-                  <template
-                    v-if="it.status === 'Chờ phê duyệt' || it.status === null"
-                  >
-                    <div
-                      class="cell text-[10px] status status-gray status-body"
-                    >
-                      Chờ phê duyệt
-                    </div>
-                  </template>
+                  <div class="cell">
+                    {{ it.check_out }}
+                  </div>
 
-                  <template v-if="it.status === 'Đã từ chối'">
-                    <div class="cell text-[10px] status status-red status-body">
-                      Không phê duyệt
-                    </div>
-                  </template>
+                  <div class="relative" @click.stop="toggleDropdown(it.id)">
+                    <template v-if="it.status === 'Đã phê duyệt'">
+                      <div
+                        class="cell text-[10px] status status-green status-body"
+                      >
+                        Đã phê duyệt
+                      </div>
+                    </template>
+
+                    <template
+                      v-if="it.status === 'Chờ phê duyệt' || it.status === null"
+                    >
+                      <div
+                        class="cell text-[10px] status status-red status-body"
+                      >
+                        Chờ phê duyệt
+                      </div>
+                    </template>
+
+                    <template v-if="it.status === 'Đã từ chối'">
+                      <div
+                        class="cell text-[10px] status status-gray status-body"
+                      >
+                        Không phê duyệt
+                      </div>
+                    </template>
+
+                    <template v-if="checkPermission('Work', 'Status')">
+                      <div
+                        class="absolute left-0 right-0 w-full z-[1] opacity-0 invisible transition"
+                        :class="{
+                          'opacity-100 visible': activeDropdownId === it.id
+                        }"
+                      >
+                        <RadioGroupRoot
+                          v-model="radioStateSingle"
+                          class="flex flex-col overflow-hidden bg-white rounded-xl shadow-2xl border border-solid border-[#EDEDF6]"
+                          default-value="0"
+                        >
+                          <RadioGroupItem
+                            @click="handlePostApprove(it.id)"
+                            :id="`r1-${it.id}`"
+                            class="block outline-none cursor-pointer p-1.5 hover:bg-[#C4FFD0] border-b border-solid border-[#EDEDF6] text-center"
+                            value="1"
+                          >
+                            <label
+                              class="text-center text-[#464661] text-[10px] font-normal cursor-pointer"
+                              :for="`r1-${it.id}`"
+                            >
+                              Duyệt
+                            </label>
+                          </RadioGroupItem>
+                          <RadioGroupItem
+                            @click="handlePostApprove(it.id)"
+                            :id="`r2-${it.id}`"
+                            class="block outline-none cursor-pointer p-1.5 hover:bg-[#FFC4C4] text-center"
+                            value="2"
+                          >
+                            <label
+                              class="text-center text-[#464661] text-[10px] font-normal cursor-pointer"
+                              :for="`r2-${it.id}`"
+                            >
+                              Không duyệt
+                            </label>
+                          </RadioGroupItem>
+                        </RadioGroupRoot>
+                      </div>
+                    </template>
+                  </div>
 
                   <div class="cell">
                     {{ it.reason }}
                   </div>
-
-                  <template v-if="checkPermission('Work', 'Create')">
-                    <div class="cell">
-                      <button
-                        @click="handleUserExplain(it.id)"
-                        type="button"
-                        class="cursor-pointer cell-btn-edit shrink-0"
-                      >
-                        <img src="@/assets/images/action-edit-2.svg" alt="" />
-                      </button>
-                    </div>
-                  </template>
                 </div>
               </div>
             </template>
@@ -362,27 +404,6 @@
       </div>
     </template>
 
-    <Modal
-      @close="toggleModal('modalWorkExplain')"
-      :modalActive="modalActive.modalWorkExplain"
-      maxWidth="max-w-[670px]"
-    >
-      <div class="rounded-[24px] p-[52px_24px_36px] bg-white overflow-hidden">
-        <div class="mb-12 text-center max-xl:mb-6">
-          <h3 class="m-0 text-[#464661] text-[16px] font-bold uppercase">
-            Phê duyệt giải trình
-          </h3>
-        </div>
-
-        <ModalWorkExplain
-          :datatype="dataUserExplain"
-          :propFunction="fetchDataWorkExplain"
-          @post-request="getPostRequest"
-        >
-        </ModalWorkExplain>
-      </div>
-    </Modal>
-
     <ToastProvider>
       <ToastRoot
         v-model:open="toast.toastA"
@@ -440,6 +461,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import { vi } from 'date-fns/locale/vi'
 import { format } from 'date-fns'
 import { useWork } from '@/composables/work'
+import { RadioGroupItem, RadioGroupRoot } from 'radix-vue'
 import {
   ToastAction,
   ToastDescription,
@@ -507,6 +529,14 @@ const tbhead = reactive([
   },
   {
     title: 'Ngày làm việc',
+    hasSort: false
+  },
+  {
+    title: 'Giờ vào',
+    hasSort: false
+  },
+  {
+    title: 'Giờ ra',
     hasSort: false
   },
   // {
@@ -637,6 +667,48 @@ const handleUserExplain = async (id: string) => {
   }
 }
 
+const explainItem = ref<any | null>(null)
+const radioStateSingle = ref('0')
+const handlePostApprove = async (id: number) => {
+  if (!radioStateSingle.value) return
+
+  try {
+    await radioStateSingle.value
+    const formData = new FormData()
+    formData.append('id', id.toString())
+    formData.append('status', radioStateSingle.value)
+
+    const response = await axios
+      .post(`${apiUri}/work/status`, formData, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`
+        }
+      })
+      .then((res) => {
+        if (dataWorkExplain.doc && dataWorkExplain.doc.items) {
+          explainItem.value = dataWorkExplain.doc.items.find(
+            (item) => item.id === id
+          )
+          if (!explainItem.value) return
+
+          explainItem.value.status =
+            radioStateSingle.value === '1'
+              ? 'Đã phê duyệt'
+              : radioStateSingle.value === '2'
+                ? 'Đã từ chối'
+                : 'Chờ phê duyệt'
+        }
+
+        console.log('🚀 ~ handlePostApprove ~ res:', res.data.message)
+      })
+      .then(() => {
+        tableMagic()
+      })
+  } catch (error) {
+    console.log('🚀 ~ handlePostApprove ~ error:', error)
+  }
+}
+
 const { data, doFetch } = useWork()
 
 const dataWorkExplain = reactive({
@@ -655,6 +727,25 @@ const getPostRequest = (data: any) => {
   if (dataPostRequest.value) toast.toastA = true
   if (dataPostRequest.value.status === 1) toggleModal('modalWorkExplain')
 }
+
+const activeDropdownId = ref(null)
+const toggleDropdown = (id: any) => {
+  if (activeDropdownId.value === id) {
+    activeDropdownId.value = null
+  } else {
+    activeDropdownId.value = id
+  }
+}
+onMounted(() => {
+  document.addEventListener('click', () => {
+    activeDropdownId.value = null
+  })
+})
+onUnmounted(() => {
+  document.removeEventListener('click', () => {
+    activeDropdownId.value = null
+  })
+})
 
 const permissionStore = usePermissionStore()
 const { permissionList } = storeToRefs(permissionStore)

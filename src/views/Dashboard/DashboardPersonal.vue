@@ -76,6 +76,7 @@ const ticket: any = [
         count: computed(() => dataLeave.value?.total || '0')
       },
       {
+<<<<<<< HEAD
         title: 'Tổng số ngày nghỉ phép còn lại',
         status: 'normal',
         count: computed(() => String(dataLeave.value?.remain || '0'))
@@ -84,6 +85,16 @@ const ticket: any = [
         title: 'Tổng số ngày nghỉ phép đã dùng',
         status: 'normal',
         count: computed(() => dataLeave.value?.used || '0')
+=======
+        title: 'Tổng số ngày nghỉ phép đã dùng',
+        status: 'normal',
+        count: computed(() => dataLeave.value?.used || '0')
+      },
+      {
+        title: 'Tổng số ngày nghỉ phép còn lại',
+        status: 'normal',
+        count: computed(() => String(dataLeave.value?.remain || '0'))
+>>>>>>> origin/template
       }
     ]
   },

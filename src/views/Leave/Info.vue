@@ -213,7 +213,9 @@
                   </template>
 
                   <template v-if="it.status === 'Đã từ chối'">
-                    <div class="cell text-[10px] status status-red status-body">
+                    <div
+                      class="cell text-[10px] status status-gray status-body"
+                    >
                       Không phê duyệt
                     </div>
                   </template>

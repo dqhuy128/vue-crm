@@ -139,7 +139,7 @@
       <div
         class="hidden md:block flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
       >
-        Danh sách nghỉ phép
+        Phê duyệt nghỉ phép
       </div>
     </div>
 
@@ -148,7 +148,10 @@
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="relative table-container">
             <!-- Example column -->
-            <div id="tableRowHeader" class="justify-between table-row header">
+            <div
+              id="tableRowHeader"
+              class="justify-between table-row !py-2 !pr-5 header"
+            >
               <div class="cell" v-for="(column, index) in tbhead" :key="index">
                 {{ column.title }}
 
@@ -159,18 +162,18 @@
                 </div>
               </div>
 
-              <template v-if="checkPermission('Leave', 'Delete')">
+              <!-- <template v-if="checkPermission('Leave', 'Delete')">
                 <div class="cell pinned">
                   <div class="cell edit">Edit</div>
                 </div>
-              </template>
+              </template> -->
             </div>
 
             <!-- Example row -->
             <div id="tableRowBody" class="table-row body">
               <template v-if="dataLeave.doc">
                 <div
-                  class="justify-between table-item"
+                  class="justify-between table-item !pr-5 !py-1.5"
                   v-for="(it, index) in dataLeave.doc.items"
                   :key="index"
                 >
@@ -236,7 +239,7 @@
 
                       <template v-if="it.status == 'Đã từ chối'">
                         <div
-                          class="cell text-[10px] status status-red status-body"
+                          class="cell text-[10px] status status-gray status-body"
                         >
                           Không phê duyệt
                         </div>
@@ -251,13 +254,13 @@
                     >
                       <RadioGroupRoot
                         v-model="radioStateSingle"
-                        class="flex flex-col overflow-hidden bg-white rounded-xl"
+                        class="flex flex-col overflow-hidden bg-white rounded-xl shadow-2xl border border-solid border-[#EDEDF6]"
                         default-value="0"
                       >
                         <RadioGroupItem
                           @click="handleApproveLeave(it.id)"
                           :id="`r1-${it.id}`"
-                          class="block outline-none cursor-pointer p-1.5 hover:bg-[#C4FFD0]"
+                          class="block outline-none cursor-pointer p-1.5 hover:bg-[#C4FFD0] border-b border-solid border-[#EDEDF6]"
                           value="1"
                         >
                           <label
@@ -284,16 +287,9 @@
                     </div>
                   </div>
 
-                  <template v-if="checkPermission('Leave', 'Delete')">
+                  <!-- <template v-if="checkPermission('Leave', 'Delete')">
                     <div class="cell pinned pinned-body">
                       <div class="cell edit edit-body !ps-0">
-                        <!-- <button
-                        @click="handleEditLeave(it.id)"
-                        type="button"
-                        class="cursor-pointer cell-btn-edit shrink-0"
-                      >
-                        <img src="@/assets/images/action-edit-2.svg" alt="" />
-                      </button> -->
                         <button
                           @click="confirmDeleteLeave(it.id)"
                           type="button"
@@ -303,7 +299,7 @@
                         </button>
                       </div>
                     </div>
-                  </template>
+                  </template> -->
                 </div>
               </template>
             </div>
@@ -587,11 +583,11 @@ const tbhead = reactive([
   },
   {
     title: 'Ngày bắt đầu',
-    hasSort: true
+    hasSort: false
   },
   {
     title: 'Ngày kết thúc',
-    hasSort: true
+    hasSort: false
   },
   {
     title: 'Lý do nghỉ',
