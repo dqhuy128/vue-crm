@@ -6,7 +6,7 @@
       <div class="bg-white rounded-[24px] p-2.5 mb-5">
         <form
           @submit.prevent="handleSearchDocument"
-          class="flex flex-wrap items-stretch gap-2 xxl:gap-4"
+          class="flex flex-wrap gap-2 items-stretch xxl:gap-4"
         >
           <div class="flex flex-wrap gap-2 xxl:gap-4 grow">
             <div
@@ -23,7 +23,7 @@
                 <button
                   v-if="params.name"
                   type="button"
-                  class="absolute -translate-y-1/2 cursor-pointer top-1/2 right-3"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
                   @click="() => (params.name = '')"
                 >
                   <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
@@ -146,13 +146,13 @@
       </div>
     </template>
 
-    <div class="flex flex-wrap items-center gap-2 mb-3">
+    <div class="flex flex-wrap gap-2 items-center mb-3">
       <button
         @click="toggleBoxFilters = !toggleBoxFilters"
         type="button"
-        class="inline-block bg-white rounded-md w-9 h-9 md:hidden"
+        class="inline-block w-9 h-9 bg-white rounded-md md:hidden"
       >
-        <Icon icon="lsicon:filter-outline" class="w-full h-full p-1.5" />
+        <Icon icon="lsicon:filter-outline" class="p-1.5 w-full h-full" />
       </button>
 
       <div
@@ -162,7 +162,7 @@
       </div>
 
       <template v-if="checkPermission('Document', 'Create')">
-        <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
+        <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
           <button
             type="button"
             id="tableAdding"
@@ -181,11 +181,11 @@
     </div>
 
     <template v-if="checkPermission('Document', 'List')">
-      <div class="flex flex-col h-full overflow-hidden">
+      <div class="flex overflow-hidden flex-col h-full">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="relative table-container">
             <!-- Example column -->
-            <div id="tableRowHeader" class="justify-between table-row header">
+            <div id="tableRowHeader" class="table-row justify-between header">
               <div class="cell" v-for="(column, index) in tbhead" :key="index">
                 {{ column.title }}
 
@@ -234,7 +234,7 @@
                             <a
                               :href="item.link"
                               target="_blank"
-                              class="cursor-pointer cell-btn-view shrink-0"
+                              class="cursor-pointer cell-btn-view shrink-0 me-auto"
                             >
                               <img
                                 src="@/assets/images/action-edit-1.svg"
@@ -243,7 +243,10 @@
                             </a>
                           </template>
                           <template
-                            v-if="checkPermission('Document', 'Update')"
+                            v-if="
+                              checkPermission('Document', 'Update') &&
+                              checkEditId(item.user_id)
+                            "
                           >
                             <button
                               type="button"
@@ -281,7 +284,7 @@
         </div>
 
         <div
-          class="flex flex-wrap items-center gap-2 tb-pagination max-md:justify-center md:gap-4"
+          class="flex flex-wrap gap-2 items-center tb-pagination max-md:justify-center md:gap-4"
         >
           <div class="relative">
             <select
@@ -316,7 +319,7 @@
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+          <div class="flex flex-wrap gap-2 items-center md:ms-auto">
             <div class="text-[#464661] text-[14px] font-normal">
               <template
                 v-if="
@@ -465,7 +468,7 @@
         </div>
 
         <div
-          class="flex flex-wrap items-stretch justify-center gap-3 text-center mt-9 xl:gap-6"
+          class="flex flex-wrap gap-3 justify-center items-stretch mt-9 text-center xl:gap-6"
         >
           <button
             @click="toggleModal('modalStatusConfirm')"
@@ -489,7 +492,7 @@
       <ToastRoot
         v-model:open="toast.toastCreate"
         :duration="5000"
-        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+        class="flex flex-col gap-1.5 p-3 bg-white rounded-md shadow-2xl"
       >
         <ToastTitle class="font-medium text-[13px]">
           {{ dataPostRequest?.message }}
@@ -511,7 +514,7 @@
       <ToastRoot
         v-model:open="toast.toastUpdate"
         :duration="5000"
-        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+        class="flex flex-col gap-1.5 p-3 bg-white rounded-md shadow-2xl"
       >
         <ToastTitle class="font-medium text-[13px]">
           {{ dataPostRequestEdit?.message }}
@@ -662,6 +665,22 @@ const tbhead = reactive([
   }
 ])
 
+const userInfo = ref<any | null>(null)
+const fetchUserData = async () => {
+  try {
+    const res = await axios.get(`${apiUri}/user/info`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    const { data } = res.data
+    userInfo.value = data
+    console.log('🚀 ~ fetchUserData ~ userInfo:', userInfo.value)
+  } catch (error) {
+    console.log('🚀 ~ fetchUserData ~ error:', error)
+  }
+}
+
 const fetchDataDocument = () => {
   if (debounceTime.value.timeOut !== null) {
     clearTimeout(debounceTime.value.timeOut)
@@ -702,6 +721,15 @@ const dataDocument = reactive({
   doc: data
 })
 
+const valuesDataDocument = computed(() => {
+  return dataDocument.doc?.items
+    ? dataDocument.doc.items.map((item) => Object.values(item)[0])
+    : []
+})
+const checkEditId = (id: number) => {
+  return String(id) === String(userInfo.value.id)
+}
+
 const dataTotalPages = computed(() =>
   Math.ceil(
     Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page)
@@ -716,6 +744,7 @@ const confirmDeleteDocument = (id: number) => {
 const categoryDocument = reactive({
   data: categories.value || undefined
 })
+
 const handleDeleteDocument = async () => {
   if (!documentToDelete.value) return
 
@@ -788,6 +817,7 @@ const getPostRequestEdit = (data: any) => {
 
 onMounted(() => {
   if (auth.check()) {
+    fetchUserData()
     fetchDataDocument()
     fetchCategoryDocument()
   }
