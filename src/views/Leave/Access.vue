@@ -7,7 +7,7 @@
         <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchLeave">
           <div class="flex flex-wrap items-stretch gap-2 xxl:gap-4 grow">
             <div
-              class="flex-[0_0_calc(50%-8px)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <div class="relative">
                 <input
@@ -31,7 +31,7 @@
             </div>
 
             <div
-              class="flex-[0_0_calc(50%-8px)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <SelectRoot v-model="params.status">
                 <SelectTrigger
@@ -450,9 +450,19 @@
           <button
             @click="handleDeleteLeave"
             type="submit"
-            class="max-md:grow inline-block md:min-w-[130px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+            class="relative max-md:grow inline-block md:min-w-[130px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+            :class="{ 'opacity-75 pointer-events-none': onSubmitting }"
           >
-            Xác nhận
+            <div
+              class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]"
+              v-if="onSubmitting"
+            >
+              <Icon
+                icon="eos-icons:three-dots-loading"
+                class="w-12 h-full aspect-square"
+              />
+            </div>
+            <div v-else>Xác nhận</div>
           </button>
         </div>
       </div>
@@ -662,12 +672,15 @@ const handleSearchLeave = async () => {
 
 const leaveToDelete = ref<number | null>(null)
 const dataPostRequest = ref<any | null>(null)
+const onSubmitting = ref(false)
+
 const confirmDeleteLeave = (id: number) => {
   leaveToDelete.value = id
   toggleModal('modalStatusConfirm')
 }
 const handleDeleteLeave = async () => {
   try {
+    onSubmitting.value = true
     if (!leaveToDelete.value) return
 
     const formData = new FormData()
@@ -687,6 +700,8 @@ const handleDeleteLeave = async () => {
     console.log('🚀 ~ handleDeleteLeave ~ res:', res)
   } catch (error) {
     console.log('🚀 ~ handleDeleteLeave ~ error:', error)
+  } finally {
+    onSubmitting.value = false
   }
 }
 

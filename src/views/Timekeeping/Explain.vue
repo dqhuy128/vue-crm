@@ -10,7 +10,7 @@
         >
           <div class="flex flex-wrap items-stretch gap-2 grow">
             <div
-              class="flex-[0_0_calc((100%-8px)/2)] lg:flex-[0_0_calc((100%-16px)/3)] lg:w-[calc((100%-16px)/3)]"
+              class="flex-[0_0_calc(100%)] md:flex-[0_0_calc((100%-8px)/2)] lg:flex-[0_0_calc((100%-16px)/3)] lg:w-[calc((100%-16px)/3)]"
             >
               <div class="relative">
                 <input
@@ -34,7 +34,7 @@
             </div>
 
             <div
-              class="flex-[0_0_calc((100%-8px)/2)] lg:flex-[0_0_calc((100%-16px)/3)] lg:w-[calc((100%-16px)/3)]"
+              class="flex-[0_0_calc(100%)] md:flex-[0_0_calc((100%-8px)/2)] lg:flex-[0_0_calc((100%-16px)/3)] lg:w-[calc((100%-16px)/3)]"
             >
               <SelectRoot v-model="paramsWorkExplain.status">
                 <SelectTrigger
@@ -219,6 +219,10 @@
                     {{ it.check_out }}
                   </div>
 
+                  <div class="cell">
+                    {{ it.reason }}
+                  </div>
+
                   <div class="relative" @click.stop="toggleDropdown(it.id)">
                     <template v-if="it.status === 'Đã phê duyệt'">
                       <div
@@ -287,10 +291,6 @@
                         </RadioGroupRoot>
                       </div>
                     </template>
-                  </div>
-
-                  <div class="cell">
-                    {{ it.reason }}
                   </div>
                 </div>
               </div>
@@ -539,18 +539,18 @@ const tbhead = reactive([
     title: 'Giờ ra',
     hasSort: false
   },
+  {
+    title: 'Lý do',
+    hasSort: false
+  },
+  {
+    title: 'Trang thái',
+    hasSort: false
+  }
   // {
   //   title: 'Loại vi phạm',
   //   hasSort: false
   // },
-  {
-    title: 'Trang thái',
-    hasSort: false
-  },
-  {
-    title: 'Lý do',
-    hasSort: false
-  }
 ])
 
 interface typeparamsWorkExplain {

@@ -66,16 +66,36 @@
       <button
         type="button"
         @click="handlePostApprove(2)"
-        class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+        class="relative max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+        :class="{ 'opacity-75 pointer-events-none': onSubmitting }"
       >
-        Không duyệt
+        <div
+          class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]"
+          v-if="onSubmitting"
+        >
+          <Icon
+            icon="eos-icons:three-dots-loading"
+            class="w-12 h-full aspect-square"
+          />
+        </div>
+        <div v-else>Không duyệt</div>
       </button>
       <button
         type="button"
         @click="handlePostApprove(1)"
-        class="max-md:grow inline-block md:min-w-[175px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+        class="relative max-md:grow inline-block md:min-w-[175px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+        :class="{ 'opacity-75 pointer-events-none': onSubmitting }"
       >
-        Duyệt
+        <div
+          class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]"
+          v-if="onSubmitting"
+        >
+          <Icon
+            icon="eos-icons:three-dots-loading"
+            class="w-12 h-full aspect-square"
+          />
+        </div>
+        <div v-else>Duyệt</div>
       </button>
     </div>
   </form>
@@ -90,6 +110,7 @@ import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { vi } from 'date-fns/locale/vi'
 import { format } from 'date-fns'
+import { Icon } from '@iconify/vue'
 
 const auth = useAuth()
 const token = auth.token()
@@ -146,8 +167,11 @@ watch(dateUserExplain, () => {
   }
 })
 
+const onSubmitting = ref(false)
+
 const handlePostApprove = async (id: number) => {
   try {
+    onSubmitting.value = true
     const formData = new FormData()
     formData.append('id', paramsPostExplain.id)
     formData.append('status', id.toString())
@@ -163,6 +187,8 @@ const handlePostApprove = async (id: number) => {
     emit('post-request', res.data)
   } catch (error) {
     console.log('handlePostApprove ~ error', error)
+  } finally {
+    onSubmitting.value = false
   }
 }
 </script>
