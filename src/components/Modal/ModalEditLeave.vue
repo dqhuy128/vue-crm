@@ -17,7 +17,6 @@
           selectText="Chọn"
           range
           format="dd/MM/yyyy"
-          :min-date="new Date()"
           @update:model-value="updateDates"
         />
       </div>

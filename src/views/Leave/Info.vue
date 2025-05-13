@@ -109,7 +109,7 @@
         type="button"
         class="inline-block bg-white rounded-md w-9 h-9 md:hidden"
       >
-        <Icon icon="radix-icons:text-align-center" class="w-full h-full p-1" />
+        <Icon icon="lsicon:filter-outline" class="w-full h-full p-1.5" />
       </button>
       <div
         class="hidden md:block flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
@@ -207,6 +207,14 @@
                   >
                     <div class="cell text-[10px] status status-red status-body">
                       Chờ phê duyệt
+                    </div>
+                  </template>
+
+                  <template v-if="it.status === 'Đã từ chối'">
+                    <div
+                      class="cell text-[10px] status status-gray status-body"
+                    >
+                      Không phê duyệt
                     </div>
                   </template>
 
@@ -424,62 +432,6 @@
     </Modal>
 
     <Modal
-      @close="toggleModal('modalStatusAddLeave')"
-      :modalActive="modalActive.modalStatusAddLeave"
-      maxWidth="max-w-[512px]"
-    >
-      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
-        <div
-          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
-        >
-          Thông báo
-        </div>
-
-        <div class="mb-3 text-center">
-          <img
-            class="mx-auto"
-            src="@/assets/images/icon-park-outline_attention.svg"
-            alt=""
-          />
-        </div>
-
-        <div
-          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
-        >
-          {{ dataPostRequest?.message }}
-        </div>
-      </div>
-    </Modal>
-
-    <Modal
-      @close="toggleModal('modalStatusEditLeave')"
-      :modalActive="modalActive.modalStatusEditLeave"
-      maxWidth="max-w-[512px]"
-    >
-      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
-        <div
-          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
-        >
-          Thông báo
-        </div>
-
-        <div class="mb-3 text-center">
-          <img
-            class="mx-auto"
-            src="@/assets/images/icon-park-outline_attention.svg"
-            alt=""
-          />
-        </div>
-
-        <div
-          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
-        >
-          {{ dataPostRequestEdit?.message }}
-        </div>
-      </div>
-    </Modal>
-
-    <Modal
       @close="toggleModal('modalStatusConfirm')"
       :modalActive="modalActive.modalStatusConfirm"
       maxWidth="max-w-[512px]"
@@ -525,49 +477,103 @@
         </div>
       </div>
     </Modal>
+
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastCreate"
+        :duration="5000"
+        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+      >
+        <ToastTitle class="font-medium text-[13px]">
+          {{ dataPostRequest?.message }}
+        </ToastTitle>
+        <ToastDescription
+          class="font-normal text-[11px]"
+          v-if="dataPostRequest?.errors"
+        >
+          {{ dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]] }}
+        </ToastDescription>
+        <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
+      </ToastRoot>
+      <ToastViewport
+        class="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none"
+      />
+    </ToastProvider>
+
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastUpdate"
+        :duration="5000"
+        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+      >
+        <ToastTitle class="font-medium text-[13px]">
+          {{ dataPostRequestEdit?.message }}
+        </ToastTitle>
+        <ToastDescription
+          class="font-normal text-[11px]"
+          v-if="dataPostRequestEdit?.errors"
+        >
+          {{
+            dataPostRequestEdit?.errors[
+              Object.keys(dataPostRequestEdit?.errors)[0]
+            ]
+          }}
+        </ToastDescription>
+        <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
+      </ToastRoot>
+      <ToastViewport
+        class="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none"
+      />
+    </ToastProvider>
   </MainLayout>
 </template>
 
 <script lang="ts" setup>
+import Breadcrums from '@/components/BreadcrumsNew.vue'
+import ModalAddingLeave from '@/components/Modal/ModalAddingLeave.vue'
+import ModalEditLeave from '@/components/Modal/ModalEditLeave.vue'
+import Modal from '@/components/Modals.vue'
+import { useLeaveInfo } from '@/composables/leave-info'
+import { apiUri } from '@/constants/apiUri'
+import router from '@/router'
+import { usePermissionStore } from '@/store/permission'
+import { tableMagic } from '@/utils/main'
+import { Icon } from '@iconify/vue'
+import axios from 'axios'
+import { storeToRefs } from 'pinia'
+import {
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectItemText,
+  SelectPortal,
+  SelectRoot,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport,
+  ToastDescription,
+  ToastProvider,
+  ToastRoot,
+  ToastTitle,
+  ToastViewport
+} from 'radix-vue'
 import {
   computed,
-  onBeforeMount,
   onMounted,
   onUnmounted,
   reactive,
   ref,
   watch
 } from 'vue'
-import MainLayout from '../MainLayout.vue'
-import Modal from '@/components/Modals.vue'
-import {
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectItemIndicator,
-  SelectItemText,
-  SelectLabel,
-  SelectPortal,
-  SelectRoot,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-  SelectViewport
-} from 'radix-vue'
-import { Icon } from '@iconify/vue'
 import { useAuth } from 'vue-auth3'
-import axios from 'axios'
-import { useLeaveInfo } from '@/composables/leave-info'
-import { apiUri } from '@/constants/apiUri'
-import { tableMagic } from '@/utils/main'
-import ModalAddingLeave from '@/components/Modal/ModalAddingLeave.vue'
-import ModalEditLeave from '@/components/Modal/ModalEditLeave.vue'
-import { usePermissionStore } from '@/store/permission'
-import { storeToRefs } from 'pinia'
-import router from '@/router'
-import Breadcrums from '@/components/BreadcrumsNew.vue'
+import MainLayout from '../MainLayout.vue'
+
+const toast = reactive({
+  toastCreate: false,
+  toastUpdate: false
+})
 
 const auth = useAuth()
 
@@ -620,11 +626,11 @@ const tbhead = reactive([
   },
   {
     title: 'Ngày bắt đầu',
-    hasSort: true
+    hasSort: false
   },
   {
     title: 'Ngày kết thúc',
-    hasSort: true
+    hasSort: false
   },
   {
     title: 'Lý do nghỉ',
@@ -740,7 +746,7 @@ const handleDeleteLeave = async () => {
   }
 }
 
-const { data, doFetch, categories } = useLeaveInfo()
+const { data, doFetch } = useLeaveInfo()
 
 const dataLeave = reactive({
   doc: data
@@ -753,30 +759,23 @@ const dataTotalPages = computed(() =>
 )
 
 const dataPostRequest = ref<any | null>(null)
-
 const getPostRequest = (data: any) => {
   dataPostRequest.value = data
-  // console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
   if (dataPostRequest.value) {
-    toggleModal('modalStatusAddLeave')
-  }
-
-  if (dataPostRequest.value.status == 1) {
     toggleModal('modalAddLeave')
+    toast.toastCreate = true
   }
+  // if (dataPostRequest.value.status === 1) toggleModal('modalAddLeave')
 }
 
 const dataPostRequestEdit = ref<any | null>(null)
 const getPostRequestEdit = (data: any) => {
   dataPostRequestEdit.value = data
-  // console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
   if (dataPostRequestEdit.value) {
-    toggleModal('modalStatusEditLeave')
-  }
-
-  if (dataPostRequestEdit.value.status == 1) {
     toggleModal('modalEditLeave')
+    toast.toastUpdate = true
   }
+  // if (dataPostRequestEdit.value.status === 1) toggleModal('modalEditLeave')
 }
 
 const permissionStore = usePermissionStore()

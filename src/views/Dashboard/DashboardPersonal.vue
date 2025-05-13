@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import Buttons from '@/components/Buttons.vue'
-import MainLayout from '@/views/MainLayout.vue'
-import Ticket from '@/components/Ticket.vue'
 import iconTicket1 from '@/assets/images/ticket-icon-1.png'
 import iconTicket2 from '@/assets/images/ticket-icon-2.png'
 import iconTicket3 from '@/assets/images/ticket-icon-3.png'
 import Breadcrums from '@/components/BreadcrumsNew.vue'
-import { onMounted, ref, computed } from 'vue'
-import axios from 'axios'
+import Buttons from '@/components/Buttons.vue'
+import Ticket from '@/components/Ticket.vue'
 import { apiUri } from '@/constants/apiUri'
+import MainLayout from '@/views/MainLayout.vue'
+import axios from 'axios'
+import { computed, onMounted, ref } from 'vue'
 import { useAuth } from 'vue-auth3'
 
 const auth = useAuth()
@@ -39,27 +39,27 @@ const ticket: any = [
     sroute: 'SystemCategory',
     ticketList: [
       {
-        title: 'Tổng số yêu cầu chưa xử lý',
+        title: 'Tổng số ticket',
         status: 'normal',
         count: computed(() => dataTicket.value?.total || '0')
       },
       {
-        title: 'Chờ xử lý',
-        status: 'pending',
+        title: 'Tổng số ticket chờ xử lý',
+        status: 'normal',
         count: computed(() => dataTicket.value?.pending || '0')
       },
       {
-        title: 'Đang xử lý',
+        title: 'Tổng số ticket đang xử lý',
         status: 'waiting',
         count: computed(() => dataTicket.value?.processing || '0')
       },
       {
-        title: 'Đã xử lý trong ngày',
+        title: 'Tổng số ticket đã hoàn thành.',
         status: 'done',
         count: computed(() => dataTicket.value?.done || '0')
       },
       {
-        title: 'Đã từ chối trong ngày',
+        title: 'Tổng số ticket đã từ chối',
         status: 'reject',
         count: computed(() => dataTicket.value?.deny || '0')
       }
@@ -71,19 +71,19 @@ const ticket: any = [
     sroute: 'Info',
     ticketList: [
       {
-        title: 'Tổng số ngày nghỉ',
+        title: 'Tổng số ngày nghỉ phép',
         status: 'normal',
         count: computed(() => dataLeave.value?.total || '0')
       },
       {
-        title: 'Số ngày nghỉ còn lại',
-        status: 'normal',
-        count: computed(() => String(dataLeave.value?.remain || '0'))
-      },
-      {
-        title: 'Số ngày nghỉ đã sử dụng',
+        title: 'Tổng số ngày nghỉ phép đã dùng',
         status: 'normal',
         count: computed(() => dataLeave.value?.used || '0')
+      },
+      {
+        title: 'Tổng số ngày nghỉ phép còn lại',
+        status: 'normal',
+        count: computed(() => String(dataLeave.value?.remain || '0'))
       }
     ]
   },
@@ -93,24 +93,24 @@ const ticket: any = [
     sroute: 'History',
     ticketList: [
       {
-        title: 'Số lỗi chấm công trong tháng',
-        status: 'reject',
+        title: 'Tổng số chấm công đã giải trình',
+        status: 'normal',
         count: computed(() => dataWork.value?.total || '0')
       },
       {
-        title: 'Đã giải trình',
+        title: 'Tổng số giải trình được phê duyệt',
         status: 'normal',
         count: computed(() => dataWork.value?.accept || '0')
       },
       {
-        title: 'Chưa giải trình',
-        status: 'reject',
-        count: computed(() => dataWork.value?.deny || '0')
+        title: 'Tổng số giải trình chờ xử lý',
+        status: 'normal',
+        count: computed(() => dataWork.value?.pending || '0')
       },
       {
-        title: 'Chờ phê duyệt',
+        title: 'Tổng số giải trình bị từ chối',
         status: 'reject',
-        count: computed(() => dataWork.value?.pending || '0')
+        count: computed(() => dataWork.value?.deny || '0')
       }
     ]
   }

@@ -23,7 +23,7 @@
                 <button
                   v-if="params.name"
                   type="button"
-                  class="absolute -translate-y-1/2 cursor-pointer top-1/2 right-3"
+                  class="absolute -translate-y-1/2 cursor-pointer right-3 top-1/2"
                   @click="() => (params.name = '')"
                 >
                   <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
@@ -152,7 +152,7 @@
         type="button"
         class="inline-block bg-white rounded-md w-9 h-9 md:hidden"
       >
-        <Icon icon="radix-icons:text-align-center" class="w-full h-full p-1" />
+        <Icon icon="lsicon:filter-outline" class="p-1.5 w-full h-full" />
       </button>
 
       <div
@@ -230,26 +230,23 @@
                     <template v-if="permissionList">
                       <div class="cell pinned pinned-body">
                         <div class="justify-end cell edit edit-body">
-                          <template
-                            v-if="
-                              item.link &&
-                              item.link !== null &&
-                              item.link !== ''
-                            "
-                          >
-                            <router-link
-                              :to="item.link"
+                          <template v-if="item.link">
+                            <a
+                              :href="item.link"
                               target="_blank"
-                              class="cursor-pointer cell-btn-view shrink-0"
+                              class="cursor-pointer cell-btn-view shrink-0 me-auto"
                             >
                               <img
                                 src="@/assets/images/action-edit-1.svg"
                                 alt=""
                               />
-                            </router-link>
+                            </a>
                           </template>
                           <template
-                            v-if="checkPermission('Document', 'Update')"
+                            v-if="
+                              checkPermission('Document', 'Update') &&
+                              checkEditId(item.user_id)
+                            "
                           >
                             <button
                               type="button"
@@ -434,6 +431,7 @@
         </div>
 
         <EditDocument
+          :closeModal="() => toggleModal('modalEditDocument')"
           :propFunction="fetchDataDocument"
           :data="detailDocument"
           @post-request-edit="getPostRequestEdit"
@@ -442,62 +440,6 @@
       </div>
     </Modal>
     <!-- </template> -->
-
-    <Modal
-      @close="toggleModal('modalStatusAdd')"
-      :modalActive="modalActive.modalStatusAdd"
-      maxWidth="max-w-[512px]"
-    >
-      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
-        <div
-          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
-        >
-          Thông báo
-        </div>
-
-        <div class="mb-3 text-center">
-          <img
-            class="mx-auto"
-            src="@/assets/images/icon-park-outline_attention.svg"
-            alt=""
-          />
-        </div>
-
-        <div
-          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
-        >
-          {{ dataPostRequest?.message }}
-        </div>
-      </div>
-    </Modal>
-
-    <Modal
-      @close="toggleModal('modalStatusEdit')"
-      :modalActive="modalActive.modalStatusEdit"
-      maxWidth="max-w-[512px]"
-    >
-      <div class="rounded-[24px] p-[45px_54px] bg-white overflow-hidden">
-        <div
-          class="text-center text-[#464661] text-[16px] font-bold uppercase mb-3"
-        >
-          Thông báo
-        </div>
-
-        <div class="mb-3 text-center">
-          <img
-            class="mx-auto"
-            src="@/assets/images/icon-park-outline_attention.svg"
-            alt=""
-          />
-        </div>
-
-        <div
-          class="text-center mx-auto text-[#464661] text-[16px]/[26px] font-semibold underline mb-6"
-        >
-          {{ dataPostRequestEdit?.message }}
-        </div>
-      </div>
-    </Modal>
 
     <Modal
       @close="toggleModal('modalStatusConfirm')"
@@ -545,6 +487,54 @@
         </div>
       </div>
     </Modal>
+
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastCreate"
+        :duration="5000"
+        class="flex flex-col gap-1.5 p-3 bg-white rounded-md shadow-2xl"
+      >
+        <ToastTitle class="font-medium text-[13px]">
+          {{ dataPostRequest?.message }}
+        </ToastTitle>
+        <ToastDescription
+          class="font-normal text-[11px]"
+          v-if="dataPostRequest?.errors"
+        >
+          {{ dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]] }}
+        </ToastDescription>
+        <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
+      </ToastRoot>
+      <ToastViewport
+        class="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none"
+      />
+    </ToastProvider>
+
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastUpdate"
+        :duration="5000"
+        class="flex flex-col gap-1.5 p-3 bg-white rounded-md shadow-2xl"
+      >
+        <ToastTitle class="font-medium text-[13px]">
+          {{ dataPostRequestEdit?.message }}
+        </ToastTitle>
+        <ToastDescription
+          class="font-normal text-[11px]"
+          v-if="dataPostRequestEdit?.errors"
+        >
+          {{
+            dataPostRequestEdit?.errors[
+              Object.keys(dataPostRequestEdit?.errors)[0]
+            ]
+          }}
+        </ToastDescription>
+        <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
+      </ToastRoot>
+      <ToastViewport
+        class="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none"
+      />
+    </ToastProvider>
   </MainLayout>
 </template>
 
@@ -558,6 +548,7 @@ import { apiUri } from '@/constants/apiUri'
 import router from '@/router'
 import { usePermissionStore } from '@/store/permission'
 import { tableMagic } from '@/utils/main'
+import { Icon } from '@iconify/vue'
 import axios from 'axios'
 import { storeToRefs } from 'pinia'
 import {
@@ -571,12 +562,21 @@ import {
   SelectScrollUpButton,
   SelectTrigger,
   SelectValue,
-  SelectViewport
+  SelectViewport,
+  ToastDescription,
+  ToastProvider,
+  ToastRoot,
+  ToastTitle,
+  ToastViewport
 } from 'radix-vue'
-import { Icon } from '@iconify/vue'
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
 import MainLayout from '../MainLayout.vue'
+
+const toast = reactive({
+  toastCreate: false,
+  toastUpdate: false
+})
 
 const auth = useAuth()
 
@@ -662,6 +662,22 @@ const tbhead = reactive([
   }
 ])
 
+const userInfo = ref<any | null>(null)
+const fetchUserData = async () => {
+  try {
+    const res = await axios.get(`${apiUri}/user/info`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    const { data } = res.data
+    userInfo.value = data
+    console.log('🚀 ~ fetchUserData ~ userInfo:', userInfo.value)
+  } catch (error) {
+    console.log('🚀 ~ fetchUserData ~ error:', error)
+  }
+}
+
 const fetchDataDocument = () => {
   if (debounceTime.value.timeOut !== null) {
     clearTimeout(debounceTime.value.timeOut)
@@ -702,6 +718,15 @@ const dataDocument = reactive({
   doc: data
 })
 
+const valuesDataDocument = computed(() => {
+  return dataDocument.doc?.items
+    ? dataDocument.doc.items.map((item) => Object.values(item)[0])
+    : []
+})
+const checkEditId = (id: number) => {
+  return String(id) === String(userInfo.value.id)
+}
+
 const dataTotalPages = computed(() =>
   Math.ceil(
     Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page)
@@ -716,6 +741,7 @@ const confirmDeleteDocument = (id: number) => {
 const categoryDocument = reactive({
   data: categories.value || undefined
 })
+
 const handleDeleteDocument = async () => {
   if (!documentToDelete.value) return
 
@@ -769,28 +795,26 @@ function findCategoryName(typeId: string) {
 const dataPostRequest = ref<any | null>(null)
 const getPostRequest = (data: any) => {
   dataPostRequest.value = data
-  console.log('🚀 ~ getPostRequest ~ dataPostRequest:', dataPostRequest.value)
   if (dataPostRequest.value) {
-    toggleModal('modalStatusAdd')
     toggleModal('modalAddDocument')
+    toast.toastCreate = true
   }
+  // if (dataPostRequest.value.status === 1) toggleModal('modalAddLeave')
 }
 
 const dataPostRequestEdit = ref<any | null>(null)
 const getPostRequestEdit = (data: any) => {
   dataPostRequestEdit.value = data
-  console.log(
-    '🚀 ~ getPostRequestEdit ~ dataPostRequestEdit:',
-    dataPostRequestEdit.value
-  )
   if (dataPostRequestEdit.value) {
-    toggleModal('modalStatusEdit')
     toggleModal('modalEditDocument')
+    toast.toastUpdate = true
   }
+  // if (dataPostRequestEdit.value.status === 1) toggleModal('modalEditLeave')
 }
 
 onMounted(() => {
   if (auth.check()) {
+    fetchUserData()
     fetchDataDocument()
     fetchCategoryDocument()
   }

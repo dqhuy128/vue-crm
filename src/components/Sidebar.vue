@@ -38,7 +38,13 @@
         v-for="(item, id) in refDataSidebar"
         :key="id"
       >
-        <template v-if="permision && checkPermission(item.permissionName)">
+        <template
+          v-if="
+            permision &&
+            checkPermission(item.permissionName) &&
+            (!item.submenu || hasVisibleSubmenuItems(item))
+          "
+        >
           <div class="sidebar-menu-parent">
             <router-link :to="{ name: `${item.route}` }" class="parent-link">
               <img :src="item.icon" alt="" />
@@ -264,6 +270,12 @@ const checkPermission = (arrRole: any) => {
     return userData && userData.value?.per_group_name === 'Admin' ? true : false
   }
   return permissionList.value.includes(arrRole) ? true : false
+}
+
+// Function to check if a menu item has any visible submenu items
+const hasVisibleSubmenuItems = (item: dataSidebarItem) => {
+  if (!item.submenu) return true
+  return item.submenu.some((sub) => checkPermission(sub.permissionName))
 }
 
 onMounted(() => {

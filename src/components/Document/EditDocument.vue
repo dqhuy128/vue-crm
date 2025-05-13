@@ -110,11 +110,11 @@
             </div>
           </div>
         </FileUpload>
-        <template v-if="FormSubmitEdit.link">
+        <template v-if="FormSubmitEdit.link && fileUploadPreview.length === 0">
           <ul>
             <li class="relative flex items-center pt-3">
               <p>
-                {{ FormSubmitEdit.link }}
+                {{ getFilenameFromUrl(FormSubmitEdit.link) }}
               </p>
 
               <button
@@ -139,7 +139,7 @@
             </li>
           </ul>
         </template>
-        <template v-if="fileUploadPreview">
+        <template v-if="fileUploadPreview.length > 0">
           <ul>
             <li
               v-for="(list, index) in fileUploadPreview"
@@ -217,7 +217,7 @@ import axios from 'axios'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3'
 // import 'vue-multiselect/dist/vue-multiselect.min.css'
-import { capitalizeFirstLetter, tableMagic } from '@/utils/main'
+import { capitalizeFirstLetter } from '@/utils/main'
 import { Icon } from '@iconify/vue'
 import {
   SelectContent,
@@ -237,6 +237,7 @@ import FileUpload from '../FileUpload.vue'
 const props = defineProps<{
   data: any
   propFunction: Function
+  closeModal: Function
 }>()
 
 const emit = defineEmits(['post-request-edit'])
@@ -275,8 +276,10 @@ const setUrlFromFiles = async (files: FileList | File) => {
     if (list.length === 0) return
     file = list[list.length - 1] // get the latest (last) file
   }
-  console.log('Run here')
-  removeFilePreview()
+
+  // Clear the existing link to avoid duplication
+  FormSubmitEdit.value.link = null
+
   const path = await readFileAsDataURL(file)
 
   // Replace previous file, only keep one
@@ -365,8 +368,15 @@ watch(
     FormSubmitEdit.value.docCate = props.data.type_id
     FormSubmitEdit.value.id = props.data.id
     FormSubmitEdit.value.link = props.data.link
+    // Clear any uploaded files when loading a new document
+    fileUploadPreview.value = []
   }
 )
+
+function getFilenameFromUrl(url: string): string {
+  const parts = url.split('/')
+  return parts[parts.length - 1]
+}
 </script>
 
 <style lang="scss" scoped>

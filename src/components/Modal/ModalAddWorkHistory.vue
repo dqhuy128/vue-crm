@@ -1,10 +1,10 @@
 <template>
-  <form @submit.prevent="handleCreateCategory">
+  <form @submit.prevent="handlePostExplain">
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 md:col-span-6">
         <div class="block">
           <span
-            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+            class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
           >
             Ngày
           </span>
@@ -19,6 +19,7 @@
             format="dd/MM/yyyy"
             :max-date="new Date()"
             @update:model-value="updateDates"
+            class="opacity-50 pointer-events-none"
           />
         </div>
       </div>
@@ -26,18 +27,19 @@
       <div class="col-span-12 md:col-span-6">
         <div class="block">
           <span
-            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+            class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
           >
             Họ và tên
           </span>
 
           <input
-            v-model="paramsUserExplain.name"
+            v-model="paramsUserExplain.user_name"
             type="text"
             name=""
             id=""
             placeholder="Nhập họ và tên"
-            class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+            class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] py-1.5 px-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75 opacity-50 pointer-events-none"
+            readonly
           />
         </div>
       </div>
@@ -45,7 +47,7 @@
       <div class="col-span-12">
         <div class="block">
           <span
-            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
+            class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
           >
             Lý do
           </span>
@@ -75,14 +77,14 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, watch } from 'vue'
 import { apiUri } from '@/constants/apiUri'
-import { useAuth } from 'vue-auth3'
-import axios from 'axios'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
-import { vi } from 'date-fns/locale/vi'
+import axios from 'axios'
 import { format } from 'date-fns'
+import { vi } from 'date-fns/locale/vi'
+import { reactive, ref, watch } from 'vue'
+import { useAuth } from 'vue-auth3'
 
 const auth = useAuth()
 const token = auth.token()
@@ -97,19 +99,40 @@ const props = defineProps<{
 
 interface typeParamsUserExplain {
   user_id: string
+  user_name: string
   work_date: string
-  name: string
+  check_in: string
+  check_out: string
+  total_hours: string
   reason: string
 }
 const paramsUserExplain = reactive<typeParamsUserExplain>({
-  user_id: '',
-  work_date: '',
-  name: '',
-  reason: ''
+  user_id: props.datatype?.user_id || '',
+  user_name: props.datatype?.user_name || '',
+  work_date: props.datatype?.work_date || '',
+  check_in: props.datatype?.check_in || '',
+  check_out: props.datatype?.check_out || '',
+  total_hours: props.datatype?.total_hours || '',
+  reason: props.datatype?.reason || ''
 })
+watch(
+  () => props.datatype,
+  (newVal) => {
+    if (newVal) {
+      paramsUserExplain.user_id = newVal.user_id || ''
+      paramsUserExplain.user_name = newVal.user_name || ''
+      paramsUserExplain.work_date = newVal.work_date || ''
+      dateUserExplain.value = newVal.work_date || ''
+      paramsUserExplain.check_in = newVal.check_in || ''
+      paramsUserExplain.check_out = newVal.check_out || ''
+      paramsUserExplain.total_hours = newVal.total_hours || ''
+      paramsUserExplain.reason = newVal.reason || ''
+    }
+  },
+  { immediate: true, deep: true }
+)
 
 const dateUserExplain = ref<any | null>(new Date())
-paramsUserExplain.work_date = format(dateUserExplain.value, 'yyyy-MM-dd')
 const updateDates = () => {
   if (dateUserExplain.value) {
     paramsUserExplain.work_date = format(dateUserExplain.value, 'yyyy-MM-dd')
@@ -121,42 +144,26 @@ watch(dateUserExplain, () => {
   }
 })
 
-const paramsCreate = reactive({
-  type: '',
-  name: '',
-  description: ''
-})
-const postRequest = ref<any | null>(null)
-const handleCreateCategory = async () => {
-  if (session) {
+const handlePostExplain = async () => {
+  try {
     const formData = new FormData()
-    formData.append('name', paramsCreate.name)
-    formData.append('type', paramsCreate.type)
-    formData.append('description', paramsCreate.description)
+    formData.append('user_id', paramsUserExplain.user_id)
+    formData.append('work_date', paramsUserExplain.work_date)
+    formData.append('check_in', paramsUserExplain.check_in)
+    formData.append('check_out', paramsUserExplain.check_out)
+    formData.append('total_hours', paramsUserExplain.total_hours)
+    formData.append('reason', paramsUserExplain.reason)
 
-    const res = await axios
-      .post(`${apiUri}/categories/create`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then((res) => {
-        if (res.data.errors.input) {
-          const { message } = res.data
-          const { input } = res.data.errors
-          alert(message + '. ' + input)
-          return
-        }
-        paramsCreate.name = ''
-        paramsCreate.description = ''
-        postRequest.value = res.data
-        emit('post-request', postRequest.value)
-        props.propFunction()
-      })
-      .catch((err) => {
-        console.log('handleCreateCategory ~ err', err)
-      })
+    const res = await axios.post(`${apiUri}/work/create`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    emit('post-request', res.data)
+    if (res.data.errors) return
+    console.log('handlePostExplain ~ res', res.data)
+  } catch (error) {
+    console.log('handlePostExplain ~ error', error)
   }
 }
 </script>

@@ -222,7 +222,7 @@ onMounted(() => {
       </button>
 
       <div class="inline-flex items-center gap-3 md:gap-6 ms-auto">
-        <router-link
+        <!-- <router-link
           to=""
           class="relative inline-block bg-white rounded-[8px] p-2"
         >
@@ -250,7 +250,7 @@ onMounted(() => {
             class="absolute top-0 right-0 translate-x-[25%] translate-y-[-25%] inline-flex items-center justify-center rounded-[50%] bg-[#1B4DEA] w-4 h-4 text-white font-inter text-[10px] font-normal leading-normal"
             >2</span
           >
-        </router-link>
+        </router-link> -->
 
         <div class="tippy-user-login">
           <tippy tag="button" content-tag="div" content-class="content-wrapper">
