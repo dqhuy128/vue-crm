@@ -8,7 +8,7 @@
           class="flex flex-wrap gap-4"
           @submit.prevent="handleSearchWorkHistory"
         >
-          <div class="flex flex-wrap items-stretch gap-2 xxl:gap-4 grow">
+          <div class="flex flex-wrap gap-2 items-stretch xxl:gap-4 grow">
             <div
               class="flex-[0_0_calc(50%-8px)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
@@ -25,7 +25,7 @@
                 <button
                   v-if="paramsWorkHistory.name"
                   type="button"
-                  class="absolute -translate-y-1/2 cursor-pointer top-1/2 right-3"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
                   @click="() => (paramsWorkHistory.name = '')"
                 >
                   <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
@@ -88,13 +88,13 @@
       </div>
     </template>
 
-    <div class="flex flex-wrap items-center gap-2 mb-3">
+    <div class="flex flex-wrap gap-2 items-center mb-3">
       <button
         @click="toggleBoxFilters = !toggleBoxFilters"
         type="button"
-        class="inline-block bg-white rounded-md w-9 h-9 md:hidden"
+        class="inline-block w-9 h-9 bg-white rounded-md md:hidden"
       >
-        <Icon icon="lsicon:filter-outline" class="w-full h-full p-1.5" />
+        <Icon icon="lsicon:filter-outline" class="p-1.5 w-full h-full" />
       </button>
       <div
         class="hidden md:block flex-[1] max-md:text-[16px] text-[#464661] font-inter text-[20px] font-bold leading-normal"
@@ -104,8 +104,8 @@
     </div>
 
     <template v-if="checkPermission('Work', 'List')">
-      <div class="flex flex-col h-full overflow-hidden">
-        <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
+      <div class="flex overflow-hidden flex-col h-full">
+        <div id="tableMagic" class="table-magic styleTableMagic !mb-0">
           <div class="relative table-container">
             <!-- Example column -->
             <div
@@ -217,7 +217,7 @@
       <ToastRoot
         v-model:open="toast.toastA"
         :duration="5000"
-        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+        class="flex flex-col gap-1.5 p-3 bg-white rounded-md shadow-2xl"
       >
         <ToastTitle class="font-medium text-[13px]">
           {{ dataPostRequest?.message }}
