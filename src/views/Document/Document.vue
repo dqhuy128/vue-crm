@@ -816,7 +816,7 @@ onMounted(() => {
   if (auth.check()) {
     fetchUserData()
     fetchDataDocument()
-    fetchCategoryDocument()
+    categories.value.length === 0 && fetchCategoryDocument()
   }
   console.log(dataDocument, 'dataDocument')
 })
