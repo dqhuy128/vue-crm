@@ -6,7 +6,7 @@
       <div class="bg-white rounded-[24px] p-2.5 mb-5">
         <form
           @submit.prevent="handleSearchDocument"
-          class="flex flex-wrap gap-2 items-stretch xxl:gap-4"
+          class="flex flex-wrap items-stretch gap-2 xxl:gap-4"
         >
           <div class="flex flex-wrap gap-2 xxl:gap-4 grow">
             <div
@@ -23,7 +23,7 @@
                 <button
                   v-if="params.name"
                   type="button"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                  class="absolute -translate-y-1/2 cursor-pointer right-3 top-1/2"
                   @click="() => (params.name = '')"
                 >
                   <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
@@ -146,11 +146,11 @@
       </div>
     </template>
 
-    <div class="flex flex-wrap gap-2 items-center mb-3">
+    <div class="flex flex-wrap items-center gap-2 mb-3">
       <button
         @click="toggleBoxFilters = !toggleBoxFilters"
         type="button"
-        class="inline-block w-9 h-9 bg-white rounded-md md:hidden"
+        class="inline-block bg-white rounded-md w-9 h-9 md:hidden"
       >
         <Icon icon="lsicon:filter-outline" class="p-1.5 w-full h-full" />
       </button>
@@ -162,7 +162,7 @@
       </div>
 
       <template v-if="checkPermission('Document', 'Create')">
-        <div class="inline-flex flex-wrap gap-4 items-center ms-auto">
+        <div class="inline-flex flex-wrap items-center gap-4 ms-auto">
           <button
             type="button"
             id="tableAdding"
@@ -181,11 +181,11 @@
     </div>
 
     <template v-if="checkPermission('Document', 'List')">
-      <div class="flex overflow-hidden flex-col h-full">
+      <div class="flex flex-col h-full overflow-hidden">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="relative table-container">
             <!-- Example column -->
-            <div id="tableRowHeader" class="table-row justify-between header">
+            <div id="tableRowHeader" class="justify-between table-row header">
               <div class="cell" v-for="(column, index) in tbhead" :key="index">
                 {{ column.title }}
 
@@ -284,7 +284,7 @@
         </div>
 
         <div
-          class="flex flex-wrap gap-2 items-center tb-pagination max-md:justify-center md:gap-4"
+          class="flex flex-wrap items-center gap-2 tb-pagination max-md:justify-center md:gap-4"
         >
           <div class="relative">
             <select
@@ -319,7 +319,7 @@
             </div>
           </div>
 
-          <div class="flex flex-wrap gap-2 items-center md:ms-auto">
+          <div class="flex flex-wrap items-center gap-2 md:ms-auto">
             <div class="text-[#464661] text-[14px] font-normal">
               <template
                 v-if="
@@ -468,7 +468,7 @@
         </div>
 
         <div
-          class="flex flex-wrap gap-3 justify-center items-stretch mt-9 text-center xl:gap-6"
+          class="flex flex-wrap items-stretch justify-center gap-3 text-center mt-9 xl:gap-6"
         >
           <button
             @click="toggleModal('modalStatusConfirm')"
@@ -564,7 +564,15 @@ import {
   SelectViewport
 } from 'radix-vue'
 import { Icon } from '@iconify/vue'
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  watch
+} from 'vue'
 import { useAuth } from 'vue-auth3'
 import MainLayout from '../MainLayout.vue'
 import {
@@ -585,29 +593,46 @@ const auth = useAuth()
 
 const toggleBoxFilters = ref(false)
 const screenWidth = ref(window.innerWidth)
-// Check if screen width is at least 768px and set toggleBoxFilters
-const checkScreenWidth = () => {
-  toggleBoxFilters.value = screenWidth.value >= 768
+const isInputActive = ref(false)
+let resizeTimer: any
+// Chỉ cập nhật toggleBoxFilters khi không có input đang focus
+const updateLayout = () => {
+  screenWidth.value = window.innerWidth
+  if (!isInputActive.value) {
+    toggleBoxFilters.value = screenWidth.value >= 768
+  }
 }
-// Initial check
-checkScreenWidth()
+// Xử lý sự kiện khi input được focus/blur
+const trackInputState = (event: any) => {
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+    isInputActive.value = event.type === 'focus'
+  }
+}
 // Add event listener for window resize
 onMounted(() => {
+  // Khởi tạo giá trị ban đầu
+  updateLayout()
+
+  // Theo dõi resize với debounce
   window.addEventListener('resize', () => {
-    screenWidth.value = window.innerWidth
-    checkScreenWidth()
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(updateLayout, 100)
   })
+
+  // Sử dụng event capturing để theo dõi tất cả input
+  document.addEventListener('focus', trackInputState, true)
+  document.addEventListener('blur', trackInputState, true)
 })
-// Remove event listener when component is unmounted
-onUnmounted(() => {
-  window.removeEventListener('resize', () => {
-    screenWidth.value = window.innerWidth
-    checkScreenWidth()
-  })
+
+onBeforeUnmount(() => {
+  document.removeEventListener('focus', trackInputState, true)
+  document.removeEventListener('blur', trackInputState, true)
+  window.removeEventListener('resize', updateLayout)
+  clearTimeout(resizeTimer)
 })
 // Watch for screenWidth changes
 watch(screenWidth, () => {
-  checkScreenWidth()
+  updateLayout()
 })
 
 const params = reactive({

@@ -10,7 +10,7 @@
         >
           <div class="flex flex-wrap gap-2 xxl:gap-4 grow">
             <div
-              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_100%] max-md:w-full max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <div class="relative">
                 <input
@@ -687,7 +687,15 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, watch, reactive, ref, onUnmounted } from 'vue'
+import {
+  computed,
+  onMounted,
+  watch,
+  reactive,
+  ref,
+  onUnmounted,
+  onBeforeUnmount
+} from 'vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
 import ModalRegisterUser from '@/components/Modal/ModalRegisterUser.vue'
@@ -734,29 +742,46 @@ const toast = reactive({
 
 const toggleBoxFilters = ref(false)
 const screenWidth = ref(window.innerWidth)
-// Check if screen width is at least 768px and set toggleBoxFilters
-const checkScreenWidth = () => {
-  toggleBoxFilters.value = screenWidth.value >= 768
+const isInputActive = ref(false)
+let resizeTimer: any
+// Chỉ cập nhật toggleBoxFilters khi không có input đang focus
+const updateLayout = () => {
+  screenWidth.value = window.innerWidth
+  if (!isInputActive.value) {
+    toggleBoxFilters.value = screenWidth.value >= 768
+  }
 }
-// Initial check
-checkScreenWidth()
+// Xử lý sự kiện khi input được focus/blur
+const trackInputState = (event: any) => {
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+    isInputActive.value = event.type === 'focus'
+  }
+}
 // Add event listener for window resize
 onMounted(() => {
+  // Khởi tạo giá trị ban đầu
+  updateLayout()
+
+  // Theo dõi resize với debounce
   window.addEventListener('resize', () => {
-    screenWidth.value = window.innerWidth
-    checkScreenWidth()
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(updateLayout, 100)
   })
+
+  // Sử dụng event capturing để theo dõi tất cả input
+  document.addEventListener('focus', trackInputState, true)
+  document.addEventListener('blur', trackInputState, true)
 })
-// Remove event listener when component is unmounted
-onUnmounted(() => {
-  window.removeEventListener('resize', () => {
-    screenWidth.value = window.innerWidth
-    checkScreenWidth()
-  })
+
+onBeforeUnmount(() => {
+  document.removeEventListener('focus', trackInputState, true)
+  document.removeEventListener('blur', trackInputState, true)
+  window.removeEventListener('resize', updateLayout)
+  clearTimeout(resizeTimer)
 })
 // Watch for screenWidth changes
 watch(screenWidth, () => {
-  checkScreenWidth()
+  updateLayout()
 })
 
 interface recordModal {

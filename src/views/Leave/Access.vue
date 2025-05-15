@@ -7,7 +7,7 @@
         <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchLeave">
           <div class="flex flex-wrap items-stretch gap-2 xxl:gap-4 grow">
             <div
-              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc((100%-16px)/2)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <div class="relative">
                 <input
@@ -31,7 +31,7 @@
             </div>
 
             <div
-              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc((100%-16px)/2)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <SelectRoot v-model="params.status">
                 <SelectTrigger
@@ -65,7 +65,7 @@
                           <SelectItemText> Tất cả trạng thái </SelectItemText>
                         </SelectItem>
 
-                        <template v-for="item in 2" :key="item">
+                        <template v-for="item in 3" :key="item">
                           <SelectItem
                             class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
                             :value="String(item - 1)"
@@ -75,6 +75,9 @@
                             </SelectItemText>
                             <SelectItemText v-if="item === 2">
                               Đã phê duyệt
+                            </SelectItemText>
+                            <SelectItemText v-if="item === 3">
+                              Không phê duyệt
                             </SelectItemText>
                           </SelectItem>
                         </template>
@@ -231,7 +234,7 @@
 
                       <template v-if="it.status == 'Chờ phê duyệt'">
                         <div
-                          class="cell text-[10px] status status-gray status-body"
+                          class="cell text-[10px] status status-red status-body"
                         >
                           Chờ phê duyệt
                         </div>
@@ -493,7 +496,15 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import {
+  computed,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  watch,
+  onBeforeUnmount
+} from 'vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
 import { RadioGroupItem, RadioGroupRoot } from 'radix-vue'
@@ -539,29 +550,46 @@ const auth = useAuth()
 
 const toggleBoxFilters = ref(false)
 const screenWidth = ref(window.innerWidth)
-// Check if screen width is at least 768px and set toggleBoxFilters
-const checkScreenWidth = () => {
-  toggleBoxFilters.value = screenWidth.value >= 768
+const isInputActive = ref(false)
+let resizeTimer: any
+// Chỉ cập nhật toggleBoxFilters khi không có input đang focus
+const updateLayout = () => {
+  screenWidth.value = window.innerWidth
+  if (!isInputActive.value) {
+    toggleBoxFilters.value = screenWidth.value >= 768
+  }
 }
-// Initial check
-checkScreenWidth()
+// Xử lý sự kiện khi input được focus/blur
+const trackInputState = (event: any) => {
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+    isInputActive.value = event.type === 'focus'
+  }
+}
 // Add event listener for window resize
 onMounted(() => {
+  // Khởi tạo giá trị ban đầu
+  updateLayout()
+
+  // Theo dõi resize với debounce
   window.addEventListener('resize', () => {
-    screenWidth.value = window.innerWidth
-    checkScreenWidth()
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(updateLayout, 100)
   })
+
+  // Sử dụng event capturing để theo dõi tất cả input
+  document.addEventListener('focus', trackInputState, true)
+  document.addEventListener('blur', trackInputState, true)
 })
-// Remove event listener when component is unmounted
-onUnmounted(() => {
-  window.removeEventListener('resize', () => {
-    screenWidth.value = window.innerWidth
-    checkScreenWidth()
-  })
+
+onBeforeUnmount(() => {
+  document.removeEventListener('focus', trackInputState, true)
+  document.removeEventListener('blur', trackInputState, true)
+  window.removeEventListener('resize', updateLayout)
+  clearTimeout(resizeTimer)
 })
 // Watch for screenWidth changes
 watch(screenWidth, () => {
-  checkScreenWidth()
+  updateLayout()
 })
 
 interface recordModal {

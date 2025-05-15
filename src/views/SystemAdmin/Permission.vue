@@ -217,7 +217,14 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import {
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  watch,
+  onBeforeUnmount
+} from 'vue'
 import { Icon } from '@iconify/vue'
 import MainLayout from '../MainLayout.vue'
 import Modal from '@/components/Modals.vue'
@@ -248,29 +255,46 @@ const auth = useAuth()
 
 const toggleBoxFilters = ref(false)
 const screenWidth = ref(window.innerWidth)
-// Check if screen width is at least 768px and set toggleBoxFilters
-const checkScreenWidth = () => {
-  toggleBoxFilters.value = screenWidth.value >= 768
+const isInputActive = ref(false)
+let resizeTimer: any
+// Chỉ cập nhật toggleBoxFilters khi không có input đang focus
+const updateLayout = () => {
+  screenWidth.value = window.innerWidth
+  if (!isInputActive.value) {
+    toggleBoxFilters.value = screenWidth.value >= 768
+  }
 }
-// Initial check
-checkScreenWidth()
+// Xử lý sự kiện khi input được focus/blur
+const trackInputState = (event: any) => {
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+    isInputActive.value = event.type === 'focus'
+  }
+}
 // Add event listener for window resize
 onMounted(() => {
+  // Khởi tạo giá trị ban đầu
+  updateLayout()
+
+  // Theo dõi resize với debounce
   window.addEventListener('resize', () => {
-    screenWidth.value = window.innerWidth
-    checkScreenWidth()
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(updateLayout, 100)
   })
+
+  // Sử dụng event capturing để theo dõi tất cả input
+  document.addEventListener('focus', trackInputState, true)
+  document.addEventListener('blur', trackInputState, true)
 })
-// Remove event listener when component is unmounted
-onUnmounted(() => {
-  window.removeEventListener('resize', () => {
-    screenWidth.value = window.innerWidth
-    checkScreenWidth()
-  })
+
+onBeforeUnmount(() => {
+  document.removeEventListener('focus', trackInputState, true)
+  document.removeEventListener('blur', trackInputState, true)
+  window.removeEventListener('resize', updateLayout)
+  clearTimeout(resizeTimer)
 })
 // Watch for screenWidth changes
 watch(screenWidth, () => {
-  checkScreenWidth()
+  updateLayout()
 })
 
 interface recordModal {

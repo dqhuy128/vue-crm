@@ -8,9 +8,9 @@
           class="flex flex-wrap gap-4"
           @submit.prevent="handleSearchWorkHistory"
         >
-          <div class="flex flex-wrap gap-2 items-stretch xxl:gap-4 grow">
+          <div class="flex flex-wrap items-stretch gap-2 xxl:gap-4 grow">
             <div
-              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc((100%-16px)/2)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <div class="relative">
                 <input
@@ -25,7 +25,7 @@
                 <button
                   v-if="paramsWorkHistory.name"
                   type="button"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                  class="absolute -translate-y-1/2 cursor-pointer right-3 top-1/2"
                   @click="() => (paramsWorkHistory.name = '')"
                 >
                   <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
@@ -34,7 +34,7 @@
             </div>
 
             <div
-              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc((100%-16px)/2)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <VueDatePicker
                 class="work-history-datepicker"
@@ -88,11 +88,11 @@
       </div>
     </template>
 
-    <div class="flex flex-wrap gap-2 items-center mb-3">
+    <div class="flex flex-wrap items-center gap-2 mb-3">
       <button
         @click="toggleBoxFilters = !toggleBoxFilters"
         type="button"
-        class="inline-block w-9 h-9 bg-white rounded-md md:hidden"
+        class="inline-block bg-white rounded-md w-9 h-9 md:hidden"
       >
         <Icon icon="lsicon:filter-outline" class="p-1.5 w-full h-full" />
       </button>
@@ -104,7 +104,7 @@
     </div>
 
     <template v-if="checkPermission('Work', 'List')">
-      <div class="flex overflow-hidden flex-col h-full">
+      <div class="flex flex-col h-full overflow-hidden">
         <div id="tableMagic" class="table-magic styleTableMagic !mb-0">
           <div class="relative table-container">
             <!-- Example column -->
@@ -240,7 +240,15 @@
 <script lang="ts" setup>
 import MainLayout from '@/views/MainLayout.vue'
 import Breadcrums from '@/components/BreadcrumsNew.vue'
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import {
+  computed,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  watch,
+  onBeforeUnmount
+} from 'vue'
 import Modal from '@/components/Modals.vue'
 import { Icon } from '@iconify/vue'
 import { useAuth } from 'vue-auth3'
@@ -273,29 +281,46 @@ const auth = useAuth()
 
 const toggleBoxFilters = ref(false)
 const screenWidth = ref(window.innerWidth)
-// Check if screen width is at least 768px and set toggleBoxFilters
-const checkScreenWidth = () => {
-  toggleBoxFilters.value = screenWidth.value >= 768
+const isInputActive = ref(false)
+let resizeTimer: any
+// Chỉ cập nhật toggleBoxFilters khi không có input đang focus
+const updateLayout = () => {
+  screenWidth.value = window.innerWidth
+  if (!isInputActive.value) {
+    toggleBoxFilters.value = screenWidth.value >= 768
+  }
 }
-// Initial check
-checkScreenWidth()
+// Xử lý sự kiện khi input được focus/blur
+const trackInputState = (event: any) => {
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+    isInputActive.value = event.type === 'focus'
+  }
+}
 // Add event listener for window resize
 onMounted(() => {
+  // Khởi tạo giá trị ban đầu
+  updateLayout()
+
+  // Theo dõi resize với debounce
   window.addEventListener('resize', () => {
-    screenWidth.value = window.innerWidth
-    checkScreenWidth()
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(updateLayout, 100)
   })
+
+  // Sử dụng event capturing để theo dõi tất cả input
+  document.addEventListener('focus', trackInputState, true)
+  document.addEventListener('blur', trackInputState, true)
 })
-// Remove event listener when component is unmounted
-onUnmounted(() => {
-  window.removeEventListener('resize', () => {
-    screenWidth.value = window.innerWidth
-    checkScreenWidth()
-  })
+
+onBeforeUnmount(() => {
+  document.removeEventListener('focus', trackInputState, true)
+  document.removeEventListener('blur', trackInputState, true)
+  window.removeEventListener('resize', updateLayout)
+  clearTimeout(resizeTimer)
 })
 // Watch for screenWidth changes
 watch(screenWidth, () => {
-  checkScreenWidth()
+  updateLayout()
 })
 
 interface recordModal {
@@ -351,7 +376,7 @@ const paramsWorkHistory = reactive<typeParamsWorkHistory>({
 })
 
 const datepicker = ref<any | null>(null)
-const startDate = new Date(new Date().setDate(new Date().getDate() - 30))
+const startDate = new Date(new Date().setDate(1))
 const endDate = new Date()
 datepicker.value = [startDate, endDate]
 paramsWorkHistory.begin_date = format(startDate, 'yyyy-MM-dd')
