@@ -10,7 +10,7 @@
         >
           <div class="flex flex-wrap gap-2 xxl:gap-4 grow">
             <div
-              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc((100%-16px)/2)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <div class="relative">
                 <input
@@ -32,7 +32,7 @@
             </div>
 
             <div
-              class="flex-[0_0_calc(25%-12px)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
+              class="flex-[0_0_calc((100%-16px)/2)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
               <SelectRoot v-model="params.type_id">
                 <SelectTrigger
@@ -492,7 +492,12 @@
       <ToastRoot
         v-model:open="toast.toastCreate"
         :duration="5000"
-        class="flex flex-col gap-1.5 p-3 bg-white rounded-md shadow-2xl"
+        class="flex flex-col gap-1.5 rounded-md shadow-2xl p-3"
+        :class="{
+          'bg-[#ffd0d0]':
+            dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]],
+          'bg-[#c4ffd0]': dataPostRequest?.status === 1
+        }"
       >
         <ToastTitle class="font-medium text-[13px]">
           {{ dataPostRequest?.message }}
@@ -514,7 +519,14 @@
       <ToastRoot
         v-model:open="toast.toastUpdate"
         :duration="5000"
-        class="flex flex-col gap-1.5 p-3 bg-white rounded-md shadow-2xl"
+        class="flex flex-col gap-1.5 rounded-md shadow-2xl p-3"
+        :class="{
+          'bg-[#ffd0d0]':
+            dataPostRequestEdit?.errors[
+              Object.keys(dataPostRequestEdit?.errors)[0]
+            ],
+          'bg-[#c4ffd0]': dataPostRequestEdit?.status === 1
+        }"
       >
         <ToastTitle class="font-medium text-[13px]">
           {{ dataPostRequestEdit?.message }}

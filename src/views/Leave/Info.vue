@@ -485,18 +485,24 @@
       <ToastRoot
         v-model:open="toast.toastCreate"
         :duration="5000"
-        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+        class="flex flex-col gap-1.5 rounded-md shadow-2xl p-3"
+        :class="{
+          'bg-[#ffd0d0]':
+            dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]],
+          'bg-[#c4ffd0]': dataPostRequest?.status === 1
+        }"
       >
         <ToastTitle class="font-medium text-[13px]">
           {{ dataPostRequest?.message }}
         </ToastTitle>
         <ToastDescription
           class="font-normal text-[11px]"
-          v-if="dataPostRequest?.errors"
+          v-if="
+            dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]]
+          "
         >
           {{ dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]] }}
         </ToastDescription>
-        <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
       </ToastRoot>
       <ToastViewport
         class="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none"
@@ -507,7 +513,14 @@
       <ToastRoot
         v-model:open="toast.toastUpdate"
         :duration="5000"
-        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+        class="flex flex-col gap-1.5 rounded-md shadow-2xl p-3"
+        :class="{
+          'bg-[#ffd0d0]':
+            dataPostRequestEdit?.errors[
+              Object.keys(dataPostRequestEdit?.errors)[0]
+            ],
+          'bg-[#c4ffd0]': dataPostRequestEdit?.status === 1
+        }"
       >
         <ToastTitle class="font-medium text-[13px]">
           {{ dataPostRequestEdit?.message }}
@@ -522,7 +535,6 @@
             ]
           }}
         </ToastDescription>
-        <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
       </ToastRoot>
       <ToastViewport
         class="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none"

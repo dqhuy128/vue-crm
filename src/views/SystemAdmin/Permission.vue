@@ -196,7 +196,12 @@
       <ToastRoot
         v-model:open="toast.toastCreate"
         :duration="5000"
-        class="flex flex-col gap-1.5 bg-white rounded-md shadow-2xl p-3"
+        class="flex flex-col gap-1.5 rounded-md shadow-2xl p-3"
+        :class="{
+          'bg-[#ffd0d0]':
+            dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]],
+          'bg-[#c4ffd0]': dataPostRequest?.status === 1
+        }"
       >
         <ToastTitle class="font-medium text-[13px]">
           {{ dataPostRequest?.message }}
