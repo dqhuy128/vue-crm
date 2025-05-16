@@ -69,7 +69,7 @@
                           </SelectItemText>
                         </SelectItem>
                         <SelectItem
-                          v-for="(item, index) in categoryDocument.data"
+                          v-for="(item, index) in dataTypeDocument.data"
                           :key="index"
                           class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
                           :value="item.id"
@@ -403,6 +403,7 @@
 
         <CreateDocument
           :propFunction="fetchDataDocument"
+          :propData="dataTypeDocument.data"
           @post-request="getPostRequest"
         >
           <button
@@ -434,6 +435,7 @@
           :closeModal="() => toggleModal('modalEditDocument')"
           :propFunction="fetchDataDocument"
           :data="detailDocument"
+          :propData="dataTypeDocument.data"
           @post-request-edit="getPostRequestEdit"
         >
         </EditDocument>
@@ -718,6 +720,28 @@ const fetchUserData = async () => {
   }
 }
 
+const dataTypeDocument = reactive<{
+  data: any[]
+}>({
+  data: []
+})
+const fetchTypeDocument = async () => {
+  try {
+    const res = await axios.get(`${apiUri}/categories/list?type=document`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`
+      }
+    })
+    const { items } = res.data.data
+    dataTypeDocument.data = Object.keys(items || {}).map((key) => {
+      return items[key][0]
+    })
+    // console.log('🚀 ~ fetchTypeDocument ~ data:', dataTypeDocument.data)
+  } catch (error) {
+    console.log('🚀 ~ fetchTypeDocument ~ error:', error)
+  }
+}
+
 const fetchDataDocument = () => {
   if (debounceTime.value.timeOut !== null) {
     clearTimeout(debounceTime.value.timeOut)
@@ -752,17 +776,17 @@ const handleSearchDocument = async () => {
   fetchDataDocument()
 }
 
-const { data, doFetch, fetchCategoryDocument, categories } = useDocument()
+const {
+  data,
+  doFetch
+  // fetchCategoryDocument,
+  // categories
+} = useDocument()
 
 const dataDocument = reactive({
   doc: data
 })
 
-const valuesDataDocument = computed(() => {
-  return dataDocument.doc?.items
-    ? dataDocument.doc.items.map((item) => Object.values(item)[0])
-    : []
-})
 const checkEditId = (id: number) => {
   return String(id) === String(userInfo.value.id)
 }
@@ -779,8 +803,17 @@ const confirmDeleteDocument = (id: number) => {
   documentToDelete.value = id.toString()
 }
 const categoryDocument = reactive({
-  data: categories.value || undefined
+  data: computed(() =>
+    Object.keys(dataDocument.doc?.items || {}).map((key: any) => {
+      return dataDocument.doc?.items[key][0]
+    })
+  )
 })
+
+function findCategoryName(typeId: string) {
+  const category = dataTypeDocument.data.find((item) => item.id === typeId)
+  return category ? category.name : ''
+}
 
 const handleDeleteDocument = async () => {
   if (!documentToDelete.value) return
@@ -827,11 +860,6 @@ const handleEditDocument = async (id: any) => {
     })
 }
 
-function findCategoryName(typeId: string) {
-  const category = categoryDocument.data.find((item) => item.id === typeId)
-  return category ? category.name : ''
-}
-
 const dataPostRequest = ref<any | null>(null)
 const getPostRequest = (data: any) => {
   dataPostRequest.value = data
@@ -856,7 +884,7 @@ onMounted(() => {
   if (auth.check()) {
     fetchUserData()
     fetchDataDocument()
-    fetchCategoryDocument()
+    fetchTypeDocument()
   }
   console.log(dataDocument, 'dataDocument')
 })

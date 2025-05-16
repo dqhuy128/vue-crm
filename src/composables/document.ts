@@ -34,7 +34,6 @@ export function useDocument() {
       })
       .then((res) => res.data)
       .then((json) => {
-        console.log(json, ' jsonssss')
         data.value = json.data
         return json.data
       })

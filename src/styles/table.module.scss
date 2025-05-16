@@ -148,6 +148,14 @@
           }
         }
       }
+
+      &.pinned-body {
+        min-height: 34px;
+
+        @media (min-width: 768px) {
+          min-height: 38px;
+        }
+      }
     }
 
     &.edit {

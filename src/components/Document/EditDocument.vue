@@ -36,7 +36,7 @@
                 <SelectViewport>
                   <SelectGroup>
                     <SelectItem
-                      v-for="(item, index) in categoryDocument.data"
+                      v-for="(item, index) in propData"
                       :key="index"
                       class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
                       :value="item.id"
@@ -248,6 +248,7 @@ const props = defineProps<{
   data: any
   propFunction: Function
   closeModal: Function
+  propData: any[]
 }>()
 
 const emit = defineEmits(['post-request-edit'])
@@ -325,12 +326,6 @@ function clearFilePreview() {
 
 const auth = useAuth()
 
-const { doFetch, fetchCategoryDocument, categories } = useDocument()
-
-const categoryDocument = reactive({
-  data: categories.value || undefined
-})
-
 const postRequestEdit = ref<any | null>(null)
 const onSubmitting = ref(false)
 const submit = async () => {
@@ -371,13 +366,6 @@ const submit = async () => {
     })
 }
 
-onMounted(() => {
-  auth.load().then(() => {
-    if (auth.check() && categories.value.length === 0) {
-      fetchCategoryDocument()
-    }
-  })
-})
 watch(
   () => props.data,
   () => {
