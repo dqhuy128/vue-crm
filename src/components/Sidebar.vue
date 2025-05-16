@@ -41,7 +41,7 @@
         <template
           v-if="
             permision &&
-            checkPermission(item.permissionName) &&
+            checkPermission(item.permissionName, item.permissionRole) &&
             (!item.submenu || hasVisibleSubmenuItems(item))
           "
         >
@@ -74,7 +74,12 @@
           </div>
           <ul class="sidebar-menu-sub" v-show="isDropdownOpen(id)">
             <li v-for="(sub, idx) in item.submenu" :key="idx">
-              <template v-if="permision && checkPermission(sub.permissionName)">
+              <template
+                v-if="
+                  permision &&
+                  checkPermission(sub.permissionName, sub.permissionRole)
+                "
+              >
                 <router-link :to="{ name: `${sub.route}` }" class="sub-link">
                   <img :src="sub.icon" alt="" />
                   {{ sub.title }}
@@ -114,6 +119,7 @@ interface dataSidebarItem {
   submenu?: dataSubmenu[]
   route?: string
   permissionName?: string
+  permissionRole?: string
 }
 
 interface dataSubmenu {
@@ -121,6 +127,7 @@ interface dataSubmenu {
   title: string
   route?: string
   permissionName?: string
+  permissionRole?: string
 }
 
 const refDataSidebar = ref<dataSidebarItem[]>([
@@ -176,13 +183,15 @@ const refDataSidebar = ref<dataSidebarItem[]>([
         icon: TableUserScan,
         title: 'Thông tin nghỉ phép',
         route: 'Info',
-        permissionName: 'Leave'
+        permissionName: 'Leave',
+        permissionRole: 'List'
       },
       {
         icon: TickCircle,
         title: 'Phê duyệt nghỉ phép',
         route: 'Access',
-        permissionName: 'Leave'
+        permissionName: 'Leave',
+        permissionRole: 'Approval'
       }
     ]
   },
@@ -197,13 +206,15 @@ const refDataSidebar = ref<dataSidebarItem[]>([
         icon: FluentHistory,
         title: 'Lịch sử chấm công',
         route: 'History',
-        permissionName: 'Work'
+        permissionName: 'Work',
+        permissionRole: 'List'
       },
       {
         icon: EditNote,
         title: 'Giải trình chấm công',
         route: 'Explain',
-        permissionName: 'Work'
+        permissionName: 'Work',
+        permissionRole: 'Explanation'
       }
     ]
   }
@@ -257,25 +268,44 @@ watch(
 const permissionData = usePermissionStore()
 const { permision, permissionList, userData } = storeToRefs(permissionData)
 // console.log(permissionList.value, 'permission change state')
-const checkPermission = (arrRole: any) => {
+const checkPermission = (arrRole: any, permissionRole?: string) => {
+  // First check if permissions are loaded
   if (!permision || !permision.value) {
     const token = auth.token()
     token && permissionData.fetchUserData(token)
     return false
   }
+
+  // Special cases
   if (arrRole === 'all') {
     return true
   }
   if (arrRole === 'Admin') {
     return userData && userData.value?.per_group_name === 'Admin' ? true : false
   }
-  return permissionList.value.includes(arrRole) ? true : false
+
+  // Check if the permission name exists
+  const hasPermissionName = permissionList.value.includes(arrRole)
+
+  // If no permissionRole is provided, just check the permission name
+  if (!permissionRole) {
+    return hasPermissionName
+  }
+
+  // If permissionRole is provided, check if it's in the array of roles for this permission
+  if (hasPermissionName && permision.value[arrRole]) {
+    return permision.value[arrRole].includes(permissionRole)
+  }
+
+  return false
 }
 
 // Function to check if a menu item has any visible submenu items
 const hasVisibleSubmenuItems = (item: dataSidebarItem) => {
   if (!item.submenu) return true
-  return item.submenu.some((sub) => checkPermission(sub.permissionName))
+  return item.submenu.some((sub) =>
+    checkPermission(sub.permissionName, sub.permissionRole)
+  )
 }
 
 onMounted(() => {

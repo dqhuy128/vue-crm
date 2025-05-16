@@ -260,7 +260,10 @@
                             </button>
                           </template>
                           <template
-                            v-if="checkPermission('Document', 'Delete')"
+                            v-if="
+                              checkPermission('Document', 'Delete') &&
+                              checkEditId(item.user_id)
+                            "
                           >
                             <button
                               type="button"
