@@ -154,11 +154,11 @@
                     </div>
 
                     <div class="cell">
-                      {{ it?.check_out }}
+                      {{ it?.check_in }}
                     </div>
 
                     <div class="cell">
-                      {{ it?.check_in }}
+                      {{ it?.check_out }}
                     </div>
 
                     <div class="cell">
