@@ -110,7 +110,7 @@
             <!-- Example column -->
             <div
               id="tableRowHeader"
-              class="justify-between table-row !px-5 !py-2 header"
+              class="justify-between table-row !ps-5 header"
             >
               <div class="cell" v-for="(column, index) in tbhead" :key="index">
                 {{ column.title }}
@@ -123,7 +123,7 @@
               </div>
 
               <template v-if="checkPermission('Work', 'Create')">
-                <div class="cell">Giải trình</div>
+                <div class="cell pinned !py-4.5 !pe-2.5">Giải trình</div>
               </template>
             </div>
 
@@ -134,7 +134,7 @@
                   :key="index"
                 >
                   <div
-                    class="justify-between table-item !px-5 !py-1"
+                    class="justify-between table-item !ps-5"
                     v-for="(it, itIndex) in item.values"
                     :key="itIndex"
                   >
@@ -166,7 +166,9 @@
                     </div>
 
                     <template v-if="checkPermission('Work', 'Create')">
-                      <div class="cell">
+                      <div
+                        class="justify-center cell pinned pinned-body !pe-2.5"
+                      >
                         <button
                           @click="handleUserExplain(it.user_id, it.work_date)"
                           type="button"
@@ -217,7 +219,7 @@
       <ToastRoot
         v-model:open="toast.toastA"
         :duration="5000"
-        class="flex flex-col gap-1.5 p-3 bg-white rounded-md shadow-2xl"
+        class="flex flex-col gap-1.5 p-3 rounded-md shadow-2xl"
         :class="{
           'bg-[#ffd0d0]':
             dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]],
@@ -229,7 +231,9 @@
         </ToastTitle>
         <ToastDescription
           class="font-normal text-[11px]"
-          v-if="dataPostRequest?.errors"
+          v-if="
+            dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]]
+          "
         >
           {{ dataPostRequest?.errors[Object.keys(dataPostRequest?.errors)[0]] }}
         </ToastDescription>

@@ -791,7 +791,11 @@ const dataDocument = reactive({
 })
 
 const checkEditId = (id: number) => {
-  return String(id) === String(userInfo.value.id)
+  // Check if the user is an admin or the document creator
+  return (
+    userInfo.value?.role === 'admin' ||
+    String(id) === String(userInfo.value?.id)
+  )
 }
 
 const dataTotalPages = computed(() =>
@@ -889,7 +893,6 @@ onMounted(() => {
     fetchDataDocument()
     fetchTypeDocument()
   }
-  console.log(dataDocument, 'dataDocument')
 })
 
 const permissionStore = usePermissionStore()

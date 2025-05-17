@@ -174,7 +174,7 @@
             <!-- Example column -->
             <div
               id="tableRowHeader"
-              class="justify-between table-row !px-5 !py-2 header"
+              class="justify-between table-row !ps-5 header"
             >
               <div class="cell" v-for="(column, index) in tbhead" :key="index">
                 {{ column.title }}
@@ -186,15 +186,15 @@
                 </div>
               </div>
 
-              <!-- <template v-if="checkPermission('Work', 'Create')">
-                <div class="cell">Thao tác</div>
-              </template> -->
+              <template v-if="checkPermission('Work', 'Create')">
+                <div class="cell pinned !py-4.5 !pe-2.5">Trạng thái</div>
+              </template>
             </div>
 
             <template v-if="dataWorkExplain.doc?.items">
               <div id="tableRowBody" class="table-row body">
                 <div
-                  class="justify-between table-item !px-5 !py-1"
+                  class="justify-between table-item"
                   v-for="(it, index) in dataWorkExplain.doc.items"
                   :key="index"
                 >
@@ -223,74 +223,77 @@
                     {{ it.reason }}
                   </div>
 
-                  <div class="relative" @click.stop="toggleDropdown(it.id)">
-                    <template v-if="it.status === 'Đã phê duyệt'">
-                      <div
-                        class="cell text-[10px] status status-green status-body"
-                      >
-                        Đã phê duyệt
-                      </div>
-                    </template>
-
-                    <template
-                      v-if="it.status === 'Chờ phê duyệt' || it.status === null"
+                  <div class="cell pinned pinned-body !pr-2.5">
+                    <div
+                      class="relative w-full"
+                      @click.stop="toggleDropdown(it.id)"
                     >
-                      <div
-                        class="cell text-[10px] status status-red status-body"
-                      >
-                        Chờ phê duyệt
-                      </div>
-                    </template>
-
-                    <template v-if="it.status === 'Đã từ chối'">
-                      <div
-                        class="cell text-[10px] status status-gray status-body"
-                      >
-                        Không phê duyệt
-                      </div>
-                    </template>
-
-                    <template v-if="checkPermission('Work', 'Status')">
-                      <div
-                        class="absolute left-0 right-0 w-full z-[1] opacity-0 invisible transition"
-                        :class="{
-                          'opacity-100 visible': activeDropdownId === it.id
-                        }"
-                      >
-                        <RadioGroupRoot
-                          v-model="radioStateSingle"
-                          class="flex flex-col overflow-hidden bg-white rounded-xl shadow-2xl border border-solid border-[#EDEDF6]"
-                          default-value="0"
+                      <template v-if="it.status == 'Đã phê duyệt'">
+                        <div
+                          class="w-full text-[13px] status status-green status-body"
                         >
-                          <RadioGroupItem
-                            @click="handlePostApprove(it.id)"
-                            :id="`r1-${it.id}`"
-                            class="block outline-none cursor-pointer p-1.5 hover:bg-[#C4FFD0] border-b border-solid border-[#EDEDF6] text-center"
-                            value="1"
+                          Đã phê duyệt
+                        </div>
+                      </template>
+
+                      <template v-if="it.status == 'Chờ phê duyệt'">
+                        <div
+                          class="w-full text-[13px] status status-red status-body"
+                        >
+                          Chờ phê duyệt
+                        </div>
+                      </template>
+
+                      <template v-if="it.status == 'Đã từ chối'">
+                        <div
+                          class="w-full text-[13px] status status-gray status-body"
+                        >
+                          Không phê duyệt
+                        </div>
+                      </template>
+
+                      <template v-if="checkPermission('Work', 'Status')">
+                        <div
+                          class="absolute left-0 right-0 w-full z-[12] opacity-0 invisible transition"
+                          :class="{
+                            'opacity-100 visible': activeDropdownId === it.id
+                          }"
+                        >
+                          <RadioGroupRoot
+                            v-model="radioStateSingle"
+                            class="flex flex-col overflow-hidden bg-white rounded-xl shadow-2xl border border-solid border-[#EDEDF6]"
+                            default-value="0"
                           >
-                            <label
-                              class="text-center text-[#464661] text-[10px] font-normal cursor-pointer"
-                              :for="`r1-${it.id}`"
+                            <RadioGroupItem
+                              @click="handlePostApprove(it.id)"
+                              :id="`r1-${it.id}`"
+                              class="block outline-none cursor-pointer p-1.5 hover:bg-[#C4FFD0] border-b border-solid border-[#EDEDF6] text-center"
+                              value="1"
                             >
-                              Duyệt
-                            </label>
-                          </RadioGroupItem>
-                          <RadioGroupItem
-                            @click="handlePostApprove(it.id)"
-                            :id="`r2-${it.id}`"
-                            class="block outline-none cursor-pointer p-1.5 hover:bg-[#FFC4C4] text-center"
-                            value="2"
-                          >
-                            <label
-                              class="text-center text-[#464661] text-[10px] font-normal cursor-pointer"
-                              :for="`r2-${it.id}`"
+                              <label
+                                class="text-center text-[#464661] text-[10px] font-normal cursor-pointer"
+                                :for="`r1-${it.id}`"
+                              >
+                                Duyệt
+                              </label>
+                            </RadioGroupItem>
+                            <RadioGroupItem
+                              @click="handlePostApprove(it.id)"
+                              :id="`r2-${it.id}`"
+                              class="block outline-none cursor-pointer p-1.5 hover:bg-[#FFC4C4] text-center"
+                              value="2"
                             >
-                              Không duyệt
-                            </label>
-                          </RadioGroupItem>
-                        </RadioGroupRoot>
-                      </div>
-                    </template>
+                              <label
+                                class="text-center text-[#464661] text-[10px] font-normal cursor-pointer"
+                                :for="`r2-${it.id}`"
+                              >
+                                Không duyệt
+                              </label>
+                            </RadioGroupItem>
+                          </RadioGroupRoot>
+                        </div>
+                      </template>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -572,15 +575,7 @@ const tbhead = reactive([
   {
     title: 'Lý do',
     hasSort: false
-  },
-  {
-    title: 'Trang thái',
-    hasSort: false
   }
-  // {
-  //   title: 'Loại vi phạm',
-  //   hasSort: false
-  // },
 ])
 
 interface typeparamsWorkExplain {

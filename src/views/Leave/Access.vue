@@ -151,10 +151,7 @@
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="relative table-container">
             <!-- Example column -->
-            <div
-              id="tableRowHeader"
-              class="justify-between table-row !py-2 !pr-5 header"
-            >
+            <div id="tableRowHeader" class="justify-between table-row header">
               <div class="cell" v-for="(column, index) in tbhead" :key="index">
                 {{ column.title }}
 
@@ -165,18 +162,16 @@
                 </div>
               </div>
 
-              <!-- <template v-if="checkPermission('Leave', 'Delete')">
-                <div class="cell pinned">
-                  <div class="cell edit">Edit</div>
-                </div>
-              </template> -->
+              <div class="cell pinned !pr-2.5">
+                <div class="cell status">Trạng thái</div>
+              </div>
             </div>
 
             <!-- Example row -->
             <div id="tableRowBody" class="table-row body">
               <template v-if="dataLeave.doc">
                 <div
-                  class="justify-between table-item !pr-5 !py-1.5"
+                  class="justify-between table-item"
                   v-for="(it, index) in dataLeave.doc.items"
                   :key="index"
                 >
@@ -222,71 +217,76 @@
                     </template>
                   </div>
 
-                  <div class="relative" @click.stop="toggleDropdown(it.id)">
-                    <template v-if="checkPermission('Leave', 'Approval')">
-                      <template v-if="it.status == 'Đã phê duyệt'">
-                        <div
-                          class="cell text-[10px] status status-green status-body"
-                        >
-                          Đã phê duyệt
-                        </div>
-                      </template>
-
-                      <template v-if="it.status == 'Chờ phê duyệt'">
-                        <div
-                          class="cell text-[10px] status status-red status-body"
-                        >
-                          Chờ phê duyệt
-                        </div>
-                      </template>
-
-                      <template v-if="it.status == 'Đã từ chối'">
-                        <div
-                          class="cell text-[10px] status status-gray status-body"
-                        >
-                          Không phê duyệt
-                        </div>
-                      </template>
-                    </template>
-
+                  <div class="cell pinned pinned-body !pr-2.5">
                     <div
-                      class="absolute left-0 right-0 w-full z-[1] opacity-0 invisible transition"
-                      :class="{
-                        'opacity-100 visible': activeDropdownId === it.id
-                      }"
+                      class="relative w-full"
+                      @click.stop="toggleDropdown(it.id)"
                     >
-                      <RadioGroupRoot
-                        v-model="radioStateSingle"
-                        class="flex flex-col overflow-hidden bg-white rounded-xl shadow-2xl border border-solid border-[#EDEDF6]"
-                        default-value="0"
+                      <template v-if="checkPermission('Leave', 'Approval')">
+                        <template v-if="it.status == 'Đã phê duyệt'">
+                          <div
+                            class="block w-full text-[13px] status status-green status-body"
+                          >
+                            Đã phê duyệt
+                          </div>
+                        </template>
+
+                        <template v-if="it.status == 'Chờ phê duyệt'">
+                          <div
+                            class="block w-full text-[13px] status status-red status-body"
+                          >
+                            Chờ phê duyệt
+                          </div>
+                        </template>
+
+                        <template v-if="it.status == 'Đã từ chối'">
+                          <div
+                            class="block w-full text-[13px] status status-gray status-body"
+                          >
+                            Không phê duyệt
+                          </div>
+                        </template>
+                      </template>
+
+                      <div
+                        class="absolute left-0 right-0 w-full z-[12] opacity-0 invisible transition"
+                        :class="{
+                          'opacity-100 visible': activeDropdownId === it.id
+                        }"
                       >
-                        <RadioGroupItem
-                          @click="handleApproveLeave(it.id)"
-                          :id="`r1-${it.id}`"
-                          class="block outline-none cursor-pointer p-1.5 hover:bg-[#C4FFD0] border-b border-solid border-[#EDEDF6]"
-                          value="1"
+                        <RadioGroupRoot
+                          v-model="radioStateSingle"
+                          class="flex flex-col overflow-hidden bg-white rounded-xl shadow-2xl border border-solid border-[#EDEDF6]"
+                          default-value="0"
                         >
-                          <label
-                            class="text-center text-[#464661] text-[10px] font-normal cursor-pointer"
-                            :for="`r1-${it.id}`"
+                          <RadioGroupItem
+                            @click="handleApproveLeave(it.id)"
+                            :id="`r1-${it.id}`"
+                            class="block outline-none cursor-pointer p-1.5 hover:bg-[#C4FFD0] border-b border-solid border-[#EDEDF6]"
+                            value="1"
                           >
-                            Duyệt
-                          </label>
-                        </RadioGroupItem>
-                        <RadioGroupItem
-                          @click="handleApproveLeave(it.id)"
-                          :id="`r2-${it.id}`"
-                          class="block outline-none cursor-pointer p-1.5 hover:bg-[#FFC4C4]"
-                          value="2"
-                        >
-                          <label
-                            class="text-center text-[#464661] text-[10px] font-normal cursor-pointer"
-                            :for="`r2-${it.id}`"
+                            <label
+                              class="text-center text-[#464661] text-[10px] font-normal cursor-pointer"
+                              :for="`r1-${it.id}`"
+                            >
+                              Duyệt
+                            </label>
+                          </RadioGroupItem>
+                          <RadioGroupItem
+                            @click="handleApproveLeave(it.id)"
+                            :id="`r2-${it.id}`"
+                            class="block outline-none cursor-pointer p-1.5 hover:bg-[#FFC4C4]"
+                            value="2"
                           >
-                            Không duyệt
-                          </label>
-                        </RadioGroupItem>
-                      </RadioGroupRoot>
+                            <label
+                              class="text-center text-[#464661] text-[10px] font-normal cursor-pointer"
+                              :for="`r2-${it.id}`"
+                            >
+                              Không duyệt
+                            </label>
+                          </RadioGroupItem>
+                        </RadioGroupRoot>
+                      </div>
                     </div>
                   </div>
 
@@ -633,10 +633,6 @@ const tbhead = reactive([
   },
   {
     title: 'Buổi',
-    hasSort: false
-  },
-  {
-    title: 'Trạng thái',
     hasSort: false
   }
 ])
