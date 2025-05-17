@@ -294,7 +294,7 @@
                 </div>
               </div>
               <div class="cell pinned">
-                <div class="cell status" v-if="screenWidth > 768">
+                <div class="cell status !ps-0" v-if="screenWidth > 768">
                   Trạng thái
                 </div>
                 <div class="cell edit">Edit</div>
