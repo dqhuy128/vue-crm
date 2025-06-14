@@ -12,7 +12,7 @@
             <div
               class="flex-[0_0_calc((100%-16px)/2)] max-md:flex-[0_0_calc(100%)] max-md:w-[calc(100%)] max-lg:flex-[0_0_calc(50%-4px)] max-lg:w-[calc(50%-4px)]"
             >
-              <div class="relative">
+              <!-- <div class="relative">
                 <input
                   v-model="paramsWorkHistory.name"
                   type="text"
@@ -30,7 +30,64 @@
                 >
                   <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
                 </button>
-              </div>
+              </div> -->
+
+              <SelectRoot v-model="paramsWorkHistory.name">
+                <SelectTrigger
+                  class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] h-full focus:outline-none text-[#000] data-[placeholder]:text-[#909090]"
+                >
+                  <SelectValue
+                    class="text-ellipsis whitespace-nowrap w-[90%] overflow-hidden grow font-inter text-[15px] max-md:text-[14px] font-normal leading-normal text-start"
+                    placeholder="Tên nhân viên"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <SelectItem
+                          class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                          value="all"
+                        >
+                          <SelectItemText> Tất cả nhân viên </SelectItemText>
+                        </SelectItem>
+
+                        <template
+                          v-for="(item, index) in uniqueEmployeeList"
+                          :key="item.user_id"
+                        >
+                          <SelectItem
+                            class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item.user_name)"
+                          >
+                            <SelectItemText>
+                              {{ item.user_name }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
             </div>
 
             <div
@@ -247,6 +304,19 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectItemText,
+  SelectPortal,
+  SelectRoot,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport
+} from 'radix-vue'
 import MainLayout from '@/views/MainLayout.vue'
 import Breadcrums from '@/components/BreadcrumsNew.vue'
 import {
@@ -487,7 +557,6 @@ const dataWorkHistoryList = computed(() => {
   if (!dataWorkHistory.doc?.items) return []
 
   return Object.entries(dataWorkHistory.doc.items).map(([key, values]) => ({
-    key: key,
     values: Object.values(values) as WorkHistoryItem[]
   }))
 })
@@ -518,10 +587,49 @@ watch(permissionList, () => {
   }
 })
 
+watch(
+  () => paramsWorkHistory.name,
+  () => {
+    // console.log('🚀 ~ watch ~ paramsWorkHistory.name:', paramsWorkHistory.name)
+    if (paramsWorkHistory.name) fetchDataWorkHistory()
+  }
+)
+
 onMounted(() => {
   if (auth.check()) {
     fetchDataWorkHistory()
   }
+})
+
+// Thêm computed property mới để lấy danh sách nhân viên không trùng lặp
+const uniqueEmployeeList = computed(() => {
+  if (!dataWorkHistory.doc?.items) return []
+
+  const allEmployees: any[] = []
+
+  // Lấy tất cả nhân viên từ dataWorkHistoryList
+  Object.entries(dataWorkHistory.doc.items).forEach(([key, values]) => {
+    ;(Object.values(values) as WorkHistoryItem[]).forEach(
+      (item: WorkHistoryItem) => {
+        allEmployees.push({
+          user_id: item.user_id,
+          user_name: item.user_name
+        })
+      }
+    )
+  })
+
+  // Sử dụng Set để loại bỏ trùng lặp dựa trên user_name
+  const uniqueNames = new Set()
+  const uniqueEmployees = allEmployees.filter((employee) => {
+    if (!uniqueNames.has(employee.user_name)) {
+      uniqueNames.add(employee.user_name)
+      return true
+    }
+    return false
+  })
+
+  return uniqueEmployees
 })
 </script>
 
