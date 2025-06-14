@@ -65,15 +65,15 @@
                         </SelectItem>
 
                         <template
-                          v-for="(item, index) in uniqueEmployeeList"
+                          v-for="(item, index) in dataUserMCC.items"
                           :key="item.user_id"
                         >
                           <SelectItem
                             class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
-                            :value="String(item.user_name)"
+                            :value="String(item)"
                           >
                             <SelectItemText>
-                              {{ item.user_name }}
+                              {{ item }}
                             </SelectItemText>
                           </SelectItem>
                         </template>
@@ -500,6 +500,20 @@ const fetchDataWorkHistory = () => {
   }, 300)
 }
 
+const dataUserMCC = reactive({
+  items: []
+})
+const fetchDataUserMCC = async () => {
+  const res = await axios.get(`${apiUri}/work/usermcc`, {
+    headers: {
+      Authorization: `Bearer ${auth.token()}`,
+      'Content-Type': 'application/json'
+    }
+  })
+  const { items } = res.data.data
+  dataUserMCC.items = Object.values(items)
+}
+
 const handleSearchWorkHistory = async () => {
   try {
     const formData = new FormData()
@@ -587,49 +601,11 @@ watch(permissionList, () => {
   }
 })
 
-watch(
-  () => paramsWorkHistory.name,
-  () => {
-    // console.log('🚀 ~ watch ~ paramsWorkHistory.name:', paramsWorkHistory.name)
-    if (paramsWorkHistory.name) fetchDataWorkHistory()
-  }
-)
-
 onMounted(() => {
   if (auth.check()) {
     fetchDataWorkHistory()
+    fetchDataUserMCC()
   }
-})
-
-// Thêm computed property mới để lấy danh sách nhân viên không trùng lặp
-const uniqueEmployeeList = computed(() => {
-  if (!dataWorkHistory.doc?.items) return []
-
-  const allEmployees: any[] = []
-
-  // Lấy tất cả nhân viên từ dataWorkHistoryList
-  Object.entries(dataWorkHistory.doc.items).forEach(([key, values]) => {
-    ;(Object.values(values) as WorkHistoryItem[]).forEach(
-      (item: WorkHistoryItem) => {
-        allEmployees.push({
-          user_id: item.user_id,
-          user_name: item.user_name
-        })
-      }
-    )
-  })
-
-  // Sử dụng Set để loại bỏ trùng lặp dựa trên user_name
-  const uniqueNames = new Set()
-  const uniqueEmployees = allEmployees.filter((employee) => {
-    if (!uniqueNames.has(employee.user_name)) {
-      uniqueNames.add(employee.user_name)
-      return true
-    }
-    return false
-  })
-
-  return uniqueEmployees
 })
 </script>
 
