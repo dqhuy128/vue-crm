@@ -1,224 +1,9 @@
-<template>
-  <div
-    class="tree-component w-full border min-h-[120px] border-solid border-[#EDEDF6] bg-white rounded-[8px] text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
-  >
-    <TreeNode
-      v-for="node in treeData"
-      :key="node.id"
-      :node="node"
-      :selectedItems="selectedItems"
-      @toggle-select="toggleSelect"
-      @toggle-expand="toggleExpand"
-    />
-  </div>
-
-  <template v-if="isLoadingUpdate">
-    <div
-      id="isLoadingTree"
-      class="absolute w-full inset-0 !h-full z-100 bg-[#ffffffbf]"
-    >
-      <div class="animate-loading">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="size-6"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-          />
-        </svg>
-      </div>
-    </div>
-  </template>
-</template>
-
 <script lang="ts" setup>
 import { ref, reactive, onMounted, watch, nextTick } from 'vue'
 import TreeNode from '@/components/TreeNode.vue'
 import axios from 'axios'
 import { apiUri } from '@/constants/apiUri'
 import { useAuth } from 'vue-auth3'
-
-// Sample tree data structure matching the image
-const treeData = reactive([
-  {
-    id: 'User',
-    label: 'Quản lý người dùng',
-    expanded: true,
-    children: [
-      {
-        id: 'User.List',
-        label: 'Danh sách người dùng',
-        children: []
-      },
-      {
-        id: 'User.Create',
-        label: 'Thêm mới người dùng',
-        children: []
-      },
-      {
-        id: 'User.Update',
-        label: 'Cập nhật người dùng',
-        children: []
-      },
-      {
-        id: 'User.Delete',
-        label: 'Xóa người dùng',
-        children: []
-      },
-      {
-        id: 'User.Import',
-        label: 'Tải lên danh sách người dùng',
-        children: []
-      },
-      {
-        id: 'User.Export',
-        label: 'Xuất ra danh sách người dùng',
-        children: []
-      }
-    ]
-  },
-  {
-    id: 'Permission',
-    label: 'Quản lý phân quyền',
-    expanded: true,
-    children: [
-      {
-        id: 'Permission.List',
-        label: 'Danh sách nhóm quyền',
-        children: []
-      },
-      {
-        id: 'Permission.Update',
-        label: 'Cập nhật nhóm quyền',
-        children: []
-      }
-    ]
-  },
-  {
-    id: 'Categories',
-    label: 'Quản lý danh mục',
-    expanded: true,
-    children: [
-      {
-        id: 'Categories.List',
-        label: 'Danh sách danh mục',
-        children: []
-      },
-      {
-        id: 'Categories.Create',
-        label: 'Thêm mới danh mục',
-        children: []
-      },
-      {
-        id: 'Categories.Update',
-        label: 'Cập nhật danh mục',
-        children: []
-      },
-      {
-        id: 'Categories.Delete',
-        label: 'Xóa danh mục',
-        children: []
-      }
-    ]
-  },
-  {
-    id: 'Document',
-    label: 'Quản lý tài liệu',
-    expanded: true,
-    children: [
-      {
-        id: 'Document.List',
-        label: 'Danh sách tài liệu',
-        children: []
-      },
-      {
-        id: 'Document.Create',
-        label: 'Thêm mới tài liệu',
-        children: []
-      },
-      {
-        id: 'Document.Update',
-        label: 'Cập nhật tài liệu',
-        children: []
-      },
-      {
-        id: 'Document.Delete',
-        label: 'Xóa tài liệu',
-        children: []
-      }
-    ]
-  },
-  {
-    id: 'Leave',
-    label: 'Quản lý nghỉ phép',
-    expanded: true,
-    children: [
-      {
-        id: 'Leave.Approval',
-        label: 'Danh sách phê duyệt nghỉ phép',
-        children: []
-      },
-      {
-        id: 'Leave.Status',
-        label: 'Phê duyệt nghỉ phép',
-        children: []
-      },
-      {
-        id: 'Leave.List',
-        label: 'Danh sách nghỉ phép',
-        children: []
-      },
-      {
-        id: 'Leave.Create',
-        label: 'Thêm mới nghỉ phép',
-        children: []
-      },
-      {
-        id: 'Leave.Update',
-        label: 'Cập nhật nghỉ phép',
-        children: []
-      },
-      {
-        id: 'Leave.Delete',
-        label: 'Xóa nghỉ phép',
-        children: []
-      }
-    ]
-  },
-  {
-    id: 'Work',
-    label: 'Quản lý chấm công',
-    expanded: true,
-    children: [
-      {
-        id: 'Work.List',
-        label: 'Lịch sử chấm công',
-        children: []
-      },
-      {
-        id: 'Work.Create',
-        label: 'Thêm mới giải trình chấm công',
-        children: []
-      },
-      {
-        id: 'Work.Explanation',
-        label: 'Danh sách giải trình chấm công',
-        children: []
-      },
-      {
-        id: 'Work.Status',
-        label: 'Phê duyệt giải trình chấm công',
-        children: []
-      }
-    ]
-  }
-])
 
 const auth = useAuth()
 const props = defineProps({
@@ -241,6 +26,145 @@ const dataTypePermission = reactive<typePermission>({
 })
 const isLoadingUpdate = ref(false)
 const isErrorUpdate = ref(false)
+
+// Sample tree data structure matching the image
+// const treeData = reactive({
+//   Categories: {
+//     name: 'Quản lý danh mục hệ thống',
+//     action: {
+//       Create: 'Thêm mới danh mục',
+//       Delete: 'Xóa danh mục',
+//       List: 'Danh sách danh mục',
+//       Staff: 'Danh sách khối - phòng ban',
+//       Update: 'Cập nhật danh mục'
+//     }
+//   },
+//   Contract: {
+//     name: 'Quản lý hợp đồng',
+//     action: {
+//       Create: 'Thêm mới hợp đồng',
+//       Delete: 'Xoá hợp đồng',
+//       List: 'Danh sách hợp đồng',
+//       Terminate: 'Thanh lý hợp đồng',
+//       Update: 'Cập nhật hợp đồng'
+//     }
+//   },
+//   Document: {
+//     name: 'Quản lý tài liệu',
+//     action: {
+//       Create: 'Thêm mới tại liệu',
+//       Delete: 'Xóa tài liệu',
+//       List: 'Danh sách tài liệu',
+//       Update: 'Cập nhật tài liệu'
+//     }
+//   },
+//   Leave: {
+//     name: 'Quản lý nghỉ phép',
+//     action: {
+//       Create: 'Thêm mới nghỉ phép',
+//       Delete: 'Xóa nghỉ phép',
+//       HumanStatus: 'HCNS phê duyệt',
+//       List: 'Danh sách nghỉ phép',
+//       ManagerStatus: 'QLTT phê duyệt',
+//       Update: 'Cập nhật nghỉ phép'
+//     }
+//   },
+//   Orvertime: {
+//     name: 'Quản lý tăng ca',
+//     action: {
+//       Create: 'Thêm mới tăng ca',
+//       Delete: 'Xoá tăng ca',
+//       HumanStatus: 'HCNS phê duyệt',
+//       List: 'Danh sách tăng ca',
+//       ManagerStatus: 'QLTT phê duyệt',
+//       Update: 'Cập nhật tăng ca'
+//     }
+//   },
+//   Permission: {
+//     name: 'Quản lý phân quyền',
+//     action: {
+//       Create: 'Thêm mới quyền',
+//       List: 'Danh sách nhóm quyền',
+//       Update: 'Cập nhật quyền'
+//     }
+//   },
+//   User: {
+//     name: 'Quản lý người dùng',
+//     action: {
+//       Create: 'Thêm mới người dùng',
+//       Delete: 'Xóa người dùng',
+//       Export: 'Xuất ra danh sách người dùng',
+//       Import: 'Tải lên danh sách người dùng',
+//       List: 'Danh sách người dùng',
+//       Update: 'Cập nhật người dùng'
+//     }
+//   },
+//   Work: {
+//     name: 'Quản lý chấm công',
+//     action: {
+//       Create: 'Thêm mới giải trình chấm công',
+//       Explanation: 'Danh sách giải trình chấm công',
+//       HumanStatus: 'HCNS duyệt',
+//       List: 'Lịch sử chấm công',
+//       ManagerStatus: 'QLTT duyệt',
+//       Update: 'Cập nhật giải trình công'
+//     }
+//   }
+// })
+
+const treeData = ref<Record<string, any>>({})
+const treeArray = ref<any[]>([])
+
+const fetchPermissionList = async () => {
+  try {
+    isLoadingUpdate.value = true
+    const { data } = await axios.post(
+      `${apiUri}/permission/listPermission`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`
+        }
+      }
+    )
+    const { data: dataPermission } = data
+    treeData.value = dataPermission
+    rebuildTreeArray()
+  } catch (error) {
+    console.log(error)
+  } finally {
+    isLoadingUpdate.value = false
+  }
+}
+
+const rebuildTreeArray = () => {
+  treeArray.value = Object.entries(treeData.value || {}).map(
+    ([groupKey, groupValue]: [string, any]) => {
+      const children = Object.entries(groupValue.action || {}).map(
+        ([actionKey, actionLabel]) => {
+          return {
+            id: `${groupKey}.${actionKey}`,
+            label: actionLabel,
+            children: []
+          }
+        }
+      )
+
+      return {
+        id: groupKey,
+        label: groupValue.name,
+        expanded: true,
+        children
+      }
+    }
+  )
+  // After building the tree, sync selected items if permissions already loaded
+  updateSelectedItems()
+}
+
+fetchPermissionList()
+
 const updatePermission = async (dataTypePermission: typePermission) => {
   isLoadingUpdate.value = true
   try {
@@ -376,7 +300,7 @@ const updateSelectedItems = () => {
   selectedItems.clear()
 
   // Process each top-level node
-  treeData.forEach((node: any) => {
+  treeArray.value.forEach((node: any) => {
     findAndAddPermissions(node, permissionsArray.value)
   })
 }
@@ -409,6 +333,45 @@ onMounted(() => {
   updateSelectedItems()
 })
 </script>
+
+<template>
+  <div
+    class="tree-component w-full border min-h-[120px] border-solid border-[#EDEDF6] bg-white rounded-[8px] text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
+  >
+    <TreeNode
+      v-for="node in treeArray"
+      :key="node.id"
+      :node="node"
+      :selectedItems="selectedItems"
+      @toggle-select="toggleSelect"
+      @toggle-expand="toggleExpand"
+    />
+  </div>
+
+  <template v-if="isLoadingUpdate">
+    <div
+      id="isLoadingTree"
+      class="absolute w-full inset-0 !h-full z-100 bg-[#ffffffbf]"
+    >
+      <div class="animate-loading">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="size-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+          />
+        </svg>
+      </div>
+    </div>
+  </template>
+</template>
 
 <style lang="scss" scoped>
 .tree-component {
