@@ -11,11 +11,12 @@ import { apiUri } from '@/constants/apiUri';
 const auth = useAuth();
 const token = auth.token();
 const session = auth.check();
-const emit = defineEmits(['post-request']);
+const emit = defineEmits(['post-request-edit']);
 const props = defineProps();
 const postRequest = ref(null);
 const onSubmitting = ref(false);
 const paramsOvertime = reactive({
+    id: '',
     date: '',
     begin_time: '',
     finish_time: '',
@@ -59,6 +60,24 @@ const timeStringToMinutes = (value) => {
         return undefined;
     return obj.hours * 60 + obj.minutes;
 };
+const formatToHHmm = (value) => {
+    if (value === undefined || value === null)
+        return '';
+    const raw = value.toString().trim();
+    // Accept: HH:mm or HH:mm:ss; return first 5 chars when pattern matches
+    const match = raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+    if (match) {
+        const h = match[1].padStart(2, '0');
+        const m = match[2];
+        return `${h}:${m}`;
+    }
+    // Fallback: attempt to split and take first two parts
+    const parts = raw.split(':');
+    if (parts.length >= 2) {
+        return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+    }
+    return raw;
+};
 const beginTimeObj = computed(() => parseTimeStringToObj(paramsOvertime.begin_time));
 const finishTimeObj = computed(() => parseTimeStringToObj(paramsOvertime.finish_time));
 // Keep finish_time >= begin_time
@@ -69,16 +88,18 @@ watch(() => [paramsOvertime.begin_time, paramsOvertime.finish_time], ([begin, fi
         paramsOvertime.finish_time = begin;
     }
 });
-const handleCreateOvertime = async () => {
+const handleUpdateOvertime = async () => {
     onSubmitting.value = true;
     if (session) {
         const formData = new FormData();
+        if (paramsOvertime.id)
+            formData.append('id', paramsOvertime.id);
         formData.append('reason', paramsOvertime.reason);
         formData.append('date', paramsOvertime.date);
         formData.append('begin_time', paramsOvertime.begin_time);
         formData.append('finish_time', paramsOvertime.finish_time);
         const res = await axios
-            .post(`${apiUri}/orvertime/create`, formData, {
+            .post(`${apiUri}/orvertime/update`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 Authorization: `Bearer ${token}`,
@@ -91,21 +112,42 @@ const handleCreateOvertime = async () => {
                 alert(message + '. ' + input);
                 return;
             }
-            paramsOvertime.reason = '';
-            paramsOvertime.begin_time = '';
-            paramsOvertime.finish_time = '';
             postRequest.value = res.data;
-            emit('post-request', postRequest.value);
+            emit('post-request-edit', postRequest.value);
             props.propFunction();
         })
             .catch((err) => {
-            console.log('handleCreateCategory ~ err', err);
+            console.log('handleUpdateOvertime ~ err', err);
         })
             .finally(() => {
             onSubmitting.value = false;
         });
     }
 };
+// Sync incoming data from parent (similar to ModalCategoryUpdate behavior)
+watch(() => props.datatype, (newVal) => {
+    if (!newVal || !newVal.data)
+        return;
+    const { id, date, begin_time, finish_time, reason } = newVal.data;
+    paramsOvertime.id = id?.toString?.() ?? String(id ?? '');
+    paramsOvertime.date = date?.toString?.() ?? String(date ?? '');
+    paramsOvertime.begin_time = formatToHHmm(begin_time);
+    paramsOvertime.finish_time = formatToHHmm(finish_time);
+    paramsOvertime.reason = reason?.toString?.() ?? String(reason ?? '');
+    // Initialize datepicker value using provided date
+    try {
+        if (paramsOvertime.date) {
+            const parts = paramsOvertime.date.split('-').map((n) => Number(n));
+            // yyyy-MM-dd → new Date(y, m-1, d)
+            if (parts.length === 3) {
+                datepicker.value = new Date(parts[0], parts[1] - 1, parts[2]);
+            }
+        }
+    }
+    catch (e) {
+        // noop if parsing fails
+    }
+});
 debugger; /* PartiallyEnd: #3632/scriptSetup.vue */
 const __VLS_ctx = {};
 let __VLS_components;
@@ -119,7 +161,7 @@ let __VLS_directives;
 // CSS variable injection 
 // CSS variable injection end 
 __VLS_asFunctionalElement(__VLS_intrinsicElements.form, __VLS_intrinsicElements.form)({
-    ...{ onSubmit: (__VLS_ctx.handleCreateOvertime) },
+    ...{ onSubmit: (__VLS_ctx.handleUpdateOvertime) },
 });
 __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
     ...{ class: "grid grid-cols-12 gap-6" },
@@ -410,7 +452,7 @@ const __VLS_self = (await import('vue')).defineComponent({
             updateDates: updateDates,
             beginTimeObj: beginTimeObj,
             finishTimeObj: finishTimeObj,
-            handleCreateOvertime: handleCreateOvertime,
+            handleUpdateOvertime: handleUpdateOvertime,
         };
     },
     emits: {},
@@ -425,4 +467,4 @@ const __VLS_component = (await import('vue')).defineComponent({
 });
 export default {};
 ; /* PartiallyEnd: #4569/main.vue */
-//# sourceMappingURL=ModalAddOvertime.vue.js.map
+//# sourceMappingURL=ModalUpdateOvertime.vue.js.map

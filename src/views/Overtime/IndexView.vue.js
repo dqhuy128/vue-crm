@@ -8,7 +8,7 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useAuth } from 'vue-auth3';
 import Breadcrums from '@/components/BreadcrumsNew.vue';
 import ModalAddOvertime from '@/components/Modal/ModalAddOvertime.vue';
-import ModalCategoryUpdate from '@/components/Modal/ModalCategoryUpdate.vue';
+import ModalUpdateOvertime from '@/components/Modal/ModalUpdateOvertime.vue';
 import Modal from '@/components/Modals.vue';
 import { useSystemManager } from '@/composables/system-manager';
 import { apiUri } from '@/constants/apiUri';
@@ -19,6 +19,7 @@ import MainLayout from '../MainLayout.vue';
 const toast = reactive({
     toastCreate: false,
     toastUpdate: false,
+    toastDelete: false,
 });
 const toggleBoxFilters = ref(false);
 const screenWidth = ref(window.innerWidth);
@@ -130,18 +131,18 @@ const handlePageChange = (pageNum) => {
     paginate.page = pageNum;
     fetchDataOvertime();
 };
-const categoryToDelete = ref(null);
-const confirmDeleteCategory = (id) => {
+const overtimeToDelete = ref(null);
+const confirmDeleteOvertime = (id) => {
     toggleModal('modalStatusConfirm');
-    categoryToDelete.value = id.toString();
+    overtimeToDelete.value = id.toString();
 };
-const handleDeleteCategory = async () => {
-    if (!categoryToDelete.value)
+const handleDeleteOvertime = async () => {
+    if (!overtimeToDelete.value)
         return;
     try {
         const formData = new FormData();
-        formData.append('id', categoryToDelete.value);
-        const response = await axios.post(`${apiUri}/categories/delete`, formData, {
+        formData.append('id', overtimeToDelete.value);
+        const response = await axios.post(`${apiUri}/orvertime/delete`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 Authorization: `Bearer ${auth.token()}`,
@@ -149,16 +150,18 @@ const handleDeleteCategory = async () => {
         });
         toggleModal('modalStatusConfirm');
         fetchDataOvertime();
+        dataPostRequestDelete.value = response.data;
+        toast.toastDelete = true;
         // console.log('🚀 ~ handleDeleteCategory ~ response:', response)
     }
     catch (error) {
-        console.log('🚀 ~ handleDeleteCategory ~ error:', error);
+        console.log('🚀 ~ handleDeleteOvertime ~ error:', error);
     }
 };
 const dataDetailCategory = ref(null);
 const getDetailCategory = async (id) => {
     try {
-        const response = await axios.get(`${apiUri}/categories/detail?id=${id}`, {
+        const response = await axios.get(`${apiUri}/orvertime/detail?id=${id}`, {
             headers: {
                 Authorization: `Bearer ${auth.token()}`,
             },
@@ -186,6 +189,43 @@ const getPostRequestEdit = (data) => {
         toast.toastUpdate = true;
     }
     // if (dataPostRequestEdit.value.status === 1) toggleModal('modalEditLeave')
+};
+const dataPostRequestDelete = ref(null);
+const handleManagerApprove = async (id, status) => {
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('status', status);
+    const res = await axios
+        .post(`${apiUri}/orvertime/managerStatus`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${auth.token()}`,
+        },
+    })
+        .then((res) => {
+        console.log('handleManagerApprove ~ res', res);
+    })
+        .catch((err) => {
+        console.log('handleManagerApprove ~ err', err);
+    });
+};
+const handleHumanApprove = async (id, status) => {
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('status', status);
+    const res = await axios
+        .post(`${apiUri}/orvertime/humanStatus`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${auth.token()}`,
+        },
+    })
+        .then((res) => {
+        console.log('handleHumanApprove ~ res', res);
+    })
+        .catch((err) => {
+        console.log('handleHumanApprove ~ err', err);
+    });
 };
 const { data, doFetch } = useSystemManager();
 const dataOvertime = reactive({
@@ -327,13 +367,13 @@ const __VLS_9 = __VLS_8({
 __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
     ...{ class: "font-inter hidden flex-[1] text-[20px] leading-normal font-bold text-[#464661] max-md:text-[16px] md:block" },
 });
-if (__VLS_ctx.checkPermission('Categories', 'Create')) {
+if (__VLS_ctx.checkPermission('Orvertime', 'Create')) {
     __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
         ...{ class: "ms-auto inline-flex flex-wrap items-center gap-4" },
     });
     __VLS_asFunctionalElement(__VLS_intrinsicElements.button, __VLS_intrinsicElements.button)({
         ...{ onClick: (...[$event]) => {
-                if (!(__VLS_ctx.checkPermission('Categories', 'Create')))
+                if (!(__VLS_ctx.checkPermission('Orvertime', 'Create')))
                     return;
                 __VLS_ctx.toggleModal('modalAddCateManager');
             } },
@@ -389,12 +429,14 @@ if (__VLS_ctx.checkPermission('Orvertime', 'List')) {
     __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
         ...{ class: "cell" },
     });
-    __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
-        ...{ class: "cell pinned" },
-    });
-    __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
-        ...{ class: "cell edit" },
-    });
+    if (__VLS_ctx.checkPermission('Orvertime', 'Update') || __VLS_ctx.checkPermission('Orvertime', 'Delete')) {
+        __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+            ...{ class: "cell pinned !p-0" },
+        });
+        __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+            ...{ class: "cell edit !ps-2" },
+        });
+    }
     __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
         id: "tableRowBody",
         ...{ class: "body table-row" },
@@ -483,72 +525,78 @@ if (__VLS_ctx.checkPermission('Orvertime', 'List')) {
                 defaultValue: "0",
             }, ...__VLS_functionalComponentArgsRest(__VLS_12));
             __VLS_14.slots.default;
-            const __VLS_15 = {}.RadioGroupItem;
-            /** @type {[typeof __VLS_components.RadioGroupItem, typeof __VLS_components.RadioGroupItem, ]} */ ;
-            // @ts-ignore
-            const __VLS_16 = __VLS_asFunctionalComponent(__VLS_15, new __VLS_15({
-                ...{ 'onClick': {} },
-                id: (`r1-${it.id}`),
-                ...{ class: "block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]" },
-                value: "1",
-            }));
-            const __VLS_17 = __VLS_16({
-                ...{ 'onClick': {} },
-                id: (`r1-${it.id}`),
-                ...{ class: "block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]" },
-                value: "1",
-            }, ...__VLS_functionalComponentArgsRest(__VLS_16));
-            let __VLS_19;
-            let __VLS_20;
-            let __VLS_21;
-            const __VLS_22 = {
-                onClick: (...[$event]) => {
-                    if (!(__VLS_ctx.checkPermission('Orvertime', 'List')))
-                        return;
-                    if (!(__VLS_ctx.dataOvertime.doc))
-                        return;
-                    __VLS_ctx.handleApproveLeave(it.id);
-                }
-            };
-            __VLS_18.slots.default;
-            __VLS_asFunctionalElement(__VLS_intrinsicElements.label, __VLS_intrinsicElements.label)({
-                ...{ class: "cursor-pointer text-center text-[10px] font-normal text-[#464661]" },
-                for: (`r1-${it.id}`),
-            });
-            var __VLS_18;
-            const __VLS_23 = {}.RadioGroupItem;
-            /** @type {[typeof __VLS_components.RadioGroupItem, typeof __VLS_components.RadioGroupItem, ]} */ ;
-            // @ts-ignore
-            const __VLS_24 = __VLS_asFunctionalComponent(__VLS_23, new __VLS_23({
-                ...{ 'onClick': {} },
-                id: (`r2-${it.id}`),
-                ...{ class: "block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]" },
-                value: "2",
-            }));
-            const __VLS_25 = __VLS_24({
-                ...{ 'onClick': {} },
-                id: (`r2-${it.id}`),
-                ...{ class: "block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]" },
-                value: "2",
-            }, ...__VLS_functionalComponentArgsRest(__VLS_24));
-            let __VLS_27;
-            let __VLS_28;
-            let __VLS_29;
-            const __VLS_30 = {
-                onClick: (...[$event]) => {
-                    if (!(__VLS_ctx.checkPermission('Orvertime', 'List')))
-                        return;
-                    if (!(__VLS_ctx.dataOvertime.doc))
-                        return;
-                    __VLS_ctx.handleApproveLeave(it.id);
-                }
-            };
-            __VLS_26.slots.default;
-            __VLS_asFunctionalElement(__VLS_intrinsicElements.label, __VLS_intrinsicElements.label)({
-                ...{ class: "cursor-pointer text-center text-[10px] font-normal text-[#464661]" },
-                for: (`r2-${it.id}`),
-            });
-            var __VLS_26;
+            if (__VLS_ctx.checkPermission('Orvertime', 'ManagerStatus')) {
+                const __VLS_15 = {}.RadioGroupItem;
+                /** @type {[typeof __VLS_components.RadioGroupItem, typeof __VLS_components.RadioGroupItem, ]} */ ;
+                // @ts-ignore
+                const __VLS_16 = __VLS_asFunctionalComponent(__VLS_15, new __VLS_15({
+                    ...{ 'onClick': {} },
+                    id: (`r1-${it.id}`),
+                    ...{ class: "block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]" },
+                    value: "1",
+                }));
+                const __VLS_17 = __VLS_16({
+                    ...{ 'onClick': {} },
+                    id: (`r1-${it.id}`),
+                    ...{ class: "block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]" },
+                    value: "1",
+                }, ...__VLS_functionalComponentArgsRest(__VLS_16));
+                let __VLS_19;
+                let __VLS_20;
+                let __VLS_21;
+                const __VLS_22 = {
+                    onClick: (...[$event]) => {
+                        if (!(__VLS_ctx.checkPermission('Orvertime', 'List')))
+                            return;
+                        if (!(__VLS_ctx.dataOvertime.doc))
+                            return;
+                        if (!(__VLS_ctx.checkPermission('Orvertime', 'ManagerStatus')))
+                            return;
+                        __VLS_ctx.handleManagerApprove(it.id, '1');
+                    }
+                };
+                __VLS_18.slots.default;
+                __VLS_asFunctionalElement(__VLS_intrinsicElements.label, __VLS_intrinsicElements.label)({
+                    ...{ class: "cursor-pointer text-center text-[10px] font-normal text-[#464661]" },
+                    for: (`r1-${it.id}`),
+                });
+                var __VLS_18;
+                const __VLS_23 = {}.RadioGroupItem;
+                /** @type {[typeof __VLS_components.RadioGroupItem, typeof __VLS_components.RadioGroupItem, ]} */ ;
+                // @ts-ignore
+                const __VLS_24 = __VLS_asFunctionalComponent(__VLS_23, new __VLS_23({
+                    ...{ 'onClick': {} },
+                    id: (`r2-${it.id}`),
+                    ...{ class: "block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]" },
+                    value: "2",
+                }));
+                const __VLS_25 = __VLS_24({
+                    ...{ 'onClick': {} },
+                    id: (`r2-${it.id}`),
+                    ...{ class: "block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]" },
+                    value: "2",
+                }, ...__VLS_functionalComponentArgsRest(__VLS_24));
+                let __VLS_27;
+                let __VLS_28;
+                let __VLS_29;
+                const __VLS_30 = {
+                    onClick: (...[$event]) => {
+                        if (!(__VLS_ctx.checkPermission('Orvertime', 'List')))
+                            return;
+                        if (!(__VLS_ctx.dataOvertime.doc))
+                            return;
+                        if (!(__VLS_ctx.checkPermission('Orvertime', 'ManagerStatus')))
+                            return;
+                        __VLS_ctx.handleManagerApprove(it.id, '2');
+                    }
+                };
+                __VLS_26.slots.default;
+                __VLS_asFunctionalElement(__VLS_intrinsicElements.label, __VLS_intrinsicElements.label)({
+                    ...{ class: "cursor-pointer text-center text-[10px] font-normal text-[#464661]" },
+                    for: (`r2-${it.id}`),
+                });
+                var __VLS_26;
+            }
             var __VLS_14;
             __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
                 ...{ class: "cell" },
@@ -598,72 +646,78 @@ if (__VLS_ctx.checkPermission('Orvertime', 'List')) {
                 defaultValue: "0",
             }, ...__VLS_functionalComponentArgsRest(__VLS_32));
             __VLS_34.slots.default;
-            const __VLS_35 = {}.RadioGroupItem;
-            /** @type {[typeof __VLS_components.RadioGroupItem, typeof __VLS_components.RadioGroupItem, ]} */ ;
-            // @ts-ignore
-            const __VLS_36 = __VLS_asFunctionalComponent(__VLS_35, new __VLS_35({
-                ...{ 'onClick': {} },
-                id: (`r1-${it.id}`),
-                ...{ class: "block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]" },
-                value: "1",
-            }));
-            const __VLS_37 = __VLS_36({
-                ...{ 'onClick': {} },
-                id: (`r1-${it.id}`),
-                ...{ class: "block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]" },
-                value: "1",
-            }, ...__VLS_functionalComponentArgsRest(__VLS_36));
-            let __VLS_39;
-            let __VLS_40;
-            let __VLS_41;
-            const __VLS_42 = {
-                onClick: (...[$event]) => {
-                    if (!(__VLS_ctx.checkPermission('Orvertime', 'List')))
-                        return;
-                    if (!(__VLS_ctx.dataOvertime.doc))
-                        return;
-                    __VLS_ctx.handleApproveLeave(it.id);
-                }
-            };
-            __VLS_38.slots.default;
-            __VLS_asFunctionalElement(__VLS_intrinsicElements.label, __VLS_intrinsicElements.label)({
-                ...{ class: "cursor-pointer text-center text-[10px] font-normal text-[#464661]" },
-                for: (`r1-${it.id}`),
-            });
-            var __VLS_38;
-            const __VLS_43 = {}.RadioGroupItem;
-            /** @type {[typeof __VLS_components.RadioGroupItem, typeof __VLS_components.RadioGroupItem, ]} */ ;
-            // @ts-ignore
-            const __VLS_44 = __VLS_asFunctionalComponent(__VLS_43, new __VLS_43({
-                ...{ 'onClick': {} },
-                id: (`r2-${it.id}`),
-                ...{ class: "block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]" },
-                value: "2",
-            }));
-            const __VLS_45 = __VLS_44({
-                ...{ 'onClick': {} },
-                id: (`r2-${it.id}`),
-                ...{ class: "block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]" },
-                value: "2",
-            }, ...__VLS_functionalComponentArgsRest(__VLS_44));
-            let __VLS_47;
-            let __VLS_48;
-            let __VLS_49;
-            const __VLS_50 = {
-                onClick: (...[$event]) => {
-                    if (!(__VLS_ctx.checkPermission('Orvertime', 'List')))
-                        return;
-                    if (!(__VLS_ctx.dataOvertime.doc))
-                        return;
-                    __VLS_ctx.handleApproveLeave(it.id);
-                }
-            };
-            __VLS_46.slots.default;
-            __VLS_asFunctionalElement(__VLS_intrinsicElements.label, __VLS_intrinsicElements.label)({
-                ...{ class: "cursor-pointer text-center text-[10px] font-normal text-[#464661]" },
-                for: (`r2-${it.id}`),
-            });
-            var __VLS_46;
+            if (__VLS_ctx.checkPermission('Orvertime', 'HumanStatus')) {
+                const __VLS_35 = {}.RadioGroupItem;
+                /** @type {[typeof __VLS_components.RadioGroupItem, typeof __VLS_components.RadioGroupItem, ]} */ ;
+                // @ts-ignore
+                const __VLS_36 = __VLS_asFunctionalComponent(__VLS_35, new __VLS_35({
+                    ...{ 'onClick': {} },
+                    id: (`r1-${it.id}`),
+                    ...{ class: "block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]" },
+                    value: "1",
+                }));
+                const __VLS_37 = __VLS_36({
+                    ...{ 'onClick': {} },
+                    id: (`r1-${it.id}`),
+                    ...{ class: "block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]" },
+                    value: "1",
+                }, ...__VLS_functionalComponentArgsRest(__VLS_36));
+                let __VLS_39;
+                let __VLS_40;
+                let __VLS_41;
+                const __VLS_42 = {
+                    onClick: (...[$event]) => {
+                        if (!(__VLS_ctx.checkPermission('Orvertime', 'List')))
+                            return;
+                        if (!(__VLS_ctx.dataOvertime.doc))
+                            return;
+                        if (!(__VLS_ctx.checkPermission('Orvertime', 'HumanStatus')))
+                            return;
+                        __VLS_ctx.handleHumanApprove(it.id, '1');
+                    }
+                };
+                __VLS_38.slots.default;
+                __VLS_asFunctionalElement(__VLS_intrinsicElements.label, __VLS_intrinsicElements.label)({
+                    ...{ class: "cursor-pointer text-center text-[10px] font-normal text-[#464661]" },
+                    for: (`r1-${it.id}`),
+                });
+                var __VLS_38;
+                const __VLS_43 = {}.RadioGroupItem;
+                /** @type {[typeof __VLS_components.RadioGroupItem, typeof __VLS_components.RadioGroupItem, ]} */ ;
+                // @ts-ignore
+                const __VLS_44 = __VLS_asFunctionalComponent(__VLS_43, new __VLS_43({
+                    ...{ 'onClick': {} },
+                    id: (`r2-${it.id}`),
+                    ...{ class: "block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]" },
+                    value: "2",
+                }));
+                const __VLS_45 = __VLS_44({
+                    ...{ 'onClick': {} },
+                    id: (`r2-${it.id}`),
+                    ...{ class: "block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]" },
+                    value: "2",
+                }, ...__VLS_functionalComponentArgsRest(__VLS_44));
+                let __VLS_47;
+                let __VLS_48;
+                let __VLS_49;
+                const __VLS_50 = {
+                    onClick: (...[$event]) => {
+                        if (!(__VLS_ctx.checkPermission('Orvertime', 'List')))
+                            return;
+                        if (!(__VLS_ctx.dataOvertime.doc))
+                            return;
+                        if (!(__VLS_ctx.checkPermission('Orvertime', 'HumanStatus')))
+                            return;
+                        __VLS_ctx.handleHumanApprove(it.id, '2');
+                    }
+                };
+                __VLS_46.slots.default;
+                __VLS_asFunctionalElement(__VLS_intrinsicElements.label, __VLS_intrinsicElements.label)({
+                    ...{ class: "cursor-pointer text-center text-[10px] font-normal text-[#464661]" },
+                    for: (`r2-${it.id}`),
+                });
+                var __VLS_46;
+            }
             var __VLS_34;
             __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
                 ...{ class: "cell" },
@@ -671,14 +725,14 @@ if (__VLS_ctx.checkPermission('Orvertime', 'List')) {
             __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
                 ...{ class: "cell edit edit-body" },
             });
-            if (__VLS_ctx.checkPermission('Categories', 'Update')) {
+            if (__VLS_ctx.checkPermission('Orvertime', 'Update')) {
                 __VLS_asFunctionalElement(__VLS_intrinsicElements.button, __VLS_intrinsicElements.button)({
                     ...{ onClick: (...[$event]) => {
                             if (!(__VLS_ctx.checkPermission('Orvertime', 'List')))
                                 return;
                             if (!(__VLS_ctx.dataOvertime.doc))
                                 return;
-                            if (!(__VLS_ctx.checkPermission('Categories', 'Update')))
+                            if (!(__VLS_ctx.checkPermission('Orvertime', 'Update')))
                                 return;
                             __VLS_ctx.getDetailCategory(it.id);
                         } },
@@ -690,16 +744,16 @@ if (__VLS_ctx.checkPermission('Orvertime', 'List')) {
                     alt: "",
                 });
             }
-            if (__VLS_ctx.checkPermission('Categories', 'Delete')) {
+            if (__VLS_ctx.checkPermission('Orvertime', 'Delete')) {
                 __VLS_asFunctionalElement(__VLS_intrinsicElements.button, __VLS_intrinsicElements.button)({
                     ...{ onClick: (...[$event]) => {
                             if (!(__VLS_ctx.checkPermission('Orvertime', 'List')))
                                 return;
                             if (!(__VLS_ctx.dataOvertime.doc))
                                 return;
-                            if (!(__VLS_ctx.checkPermission('Categories', 'Delete')))
+                            if (!(__VLS_ctx.checkPermission('Orvertime', 'Delete')))
                                 return;
-                            __VLS_ctx.confirmDeleteCategory(it.id);
+                            __VLS_ctx.confirmDeleteOvertime(it.id);
                         } },
                     type: "button",
                     ...{ class: "cell-btn-delete shrink-0 cursor-pointer" },
@@ -903,9 +957,9 @@ __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.d
 __VLS_asFunctionalElement(__VLS_intrinsicElements.h3, __VLS_intrinsicElements.h3)({
     ...{ class: "m-0 text-[16px] font-bold text-[#464661] uppercase" },
 });
-/** @type {[typeof ModalCategoryUpdate, typeof ModalCategoryUpdate, ]} */ ;
+/** @type {[typeof ModalUpdateOvertime, typeof ModalUpdateOvertime, ]} */ ;
 // @ts-ignore
-const __VLS_72 = __VLS_asFunctionalComponent(ModalCategoryUpdate, new ModalCategoryUpdate({
+const __VLS_72 = __VLS_asFunctionalComponent(ModalUpdateOvertime, new ModalUpdateOvertime({
     ...{ 'onPostRequestEdit': {} },
     datatype: (__VLS_ctx.dataDetailCategory),
     propFunction: (__VLS_ctx.fetchDataOvertime),
@@ -980,7 +1034,7 @@ __VLS_asFunctionalElement(__VLS_intrinsicElements.button, __VLS_intrinsicElement
     ...{ class: "hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2 text-center text-[16px] leading-normal font-bold text-[#464661] uppercase transition hover:transition max-md:grow md:min-w-[130px]" },
 });
 __VLS_asFunctionalElement(__VLS_intrinsicElements.button, __VLS_intrinsicElements.button)({
-    ...{ onClick: (__VLS_ctx.handleDeleteCategory) },
+    ...{ onClick: (__VLS_ctx.handleDeleteOvertime) },
     type: "submit",
     ...{ class: "border-main bg-main hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid p-2 text-center text-[16px] leading-normal font-bold text-white uppercase transition hover:transition max-md:grow md:min-w-[130px]" },
 });
@@ -1115,6 +1169,71 @@ const __VLS_124 = __VLS_123({
     ...{ class: "fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]" },
 }, ...__VLS_functionalComponentArgsRest(__VLS_123));
 var __VLS_109;
+const __VLS_126 = {}.ToastProvider;
+/** @type {[typeof __VLS_components.ToastProvider, typeof __VLS_components.ToastProvider, ]} */ ;
+// @ts-ignore
+const __VLS_127 = __VLS_asFunctionalComponent(__VLS_126, new __VLS_126({}));
+const __VLS_128 = __VLS_127({}, ...__VLS_functionalComponentArgsRest(__VLS_127));
+__VLS_129.slots.default;
+const __VLS_130 = {}.ToastRoot;
+/** @type {[typeof __VLS_components.ToastRoot, typeof __VLS_components.ToastRoot, ]} */ ;
+// @ts-ignore
+const __VLS_131 = __VLS_asFunctionalComponent(__VLS_130, new __VLS_130({
+    open: (__VLS_ctx.toast.toastDelete),
+    duration: (5000),
+    ...{ class: "flex flex-col gap-1.5 rounded-md p-3 shadow-2xl" },
+    ...{ class: ({
+            'bg-[#ffd0d0]': __VLS_ctx.dataPostRequestDelete?.errors[Object.keys(__VLS_ctx.dataPostRequestDelete?.errors)[0]],
+            'bg-[#c4ffd0]': __VLS_ctx.dataPostRequestDelete?.status === 1,
+        }) },
+}));
+const __VLS_132 = __VLS_131({
+    open: (__VLS_ctx.toast.toastDelete),
+    duration: (5000),
+    ...{ class: "flex flex-col gap-1.5 rounded-md p-3 shadow-2xl" },
+    ...{ class: ({
+            'bg-[#ffd0d0]': __VLS_ctx.dataPostRequestDelete?.errors[Object.keys(__VLS_ctx.dataPostRequestDelete?.errors)[0]],
+            'bg-[#c4ffd0]': __VLS_ctx.dataPostRequestDelete?.status === 1,
+        }) },
+}, ...__VLS_functionalComponentArgsRest(__VLS_131));
+__VLS_133.slots.default;
+const __VLS_134 = {}.ToastTitle;
+/** @type {[typeof __VLS_components.ToastTitle, typeof __VLS_components.ToastTitle, ]} */ ;
+// @ts-ignore
+const __VLS_135 = __VLS_asFunctionalComponent(__VLS_134, new __VLS_134({
+    ...{ class: "text-[13px] font-medium" },
+}));
+const __VLS_136 = __VLS_135({
+    ...{ class: "text-[13px] font-medium" },
+}, ...__VLS_functionalComponentArgsRest(__VLS_135));
+__VLS_137.slots.default;
+(__VLS_ctx.dataPostRequestDelete?.message);
+var __VLS_137;
+if (__VLS_ctx.dataPostRequestDelete.errors) {
+    const __VLS_138 = {}.ToastDescription;
+    /** @type {[typeof __VLS_components.ToastDescription, typeof __VLS_components.ToastDescription, ]} */ ;
+    // @ts-ignore
+    const __VLS_139 = __VLS_asFunctionalComponent(__VLS_138, new __VLS_138({
+        ...{ class: "text-[11px] font-normal" },
+    }));
+    const __VLS_140 = __VLS_139({
+        ...{ class: "text-[11px] font-normal" },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_139));
+    __VLS_141.slots.default;
+    (__VLS_ctx.dataPostRequestDelete?.errors[Object.keys(__VLS_ctx.dataPostRequestDelete?.errors)[0]]);
+    var __VLS_141;
+}
+var __VLS_133;
+const __VLS_142 = {}.ToastViewport;
+/** @type {[typeof __VLS_components.ToastViewport, ]} */ ;
+// @ts-ignore
+const __VLS_143 = __VLS_asFunctionalComponent(__VLS_142, new __VLS_142({
+    ...{ class: "fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]" },
+}));
+const __VLS_144 = __VLS_143({
+    ...{ class: "fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]" },
+}, ...__VLS_functionalComponentArgsRest(__VLS_143));
+var __VLS_129;
 var __VLS_2;
 /** @type {__VLS_StyleScopedClasses['mb-3']} */ ;
 /** @type {__VLS_StyleScopedClasses['flex']} */ ;
@@ -1181,8 +1300,10 @@ var __VLS_2;
 /** @type {__VLS_StyleScopedClasses['cell']} */ ;
 /** @type {__VLS_StyleScopedClasses['cell']} */ ;
 /** @type {__VLS_StyleScopedClasses['pinned']} */ ;
+/** @type {__VLS_StyleScopedClasses['!p-0']} */ ;
 /** @type {__VLS_StyleScopedClasses['cell']} */ ;
 /** @type {__VLS_StyleScopedClasses['edit']} */ ;
+/** @type {__VLS_StyleScopedClasses['!ps-2']} */ ;
 /** @type {__VLS_StyleScopedClasses['body']} */ ;
 /** @type {__VLS_StyleScopedClasses['table-row']} */ ;
 /** @type {__VLS_StyleScopedClasses['table-item']} */ ;
@@ -1570,6 +1691,32 @@ var __VLS_2;
 /** @type {__VLS_StyleScopedClasses['p-[var(--viewport-padding)]']} */ ;
 /** @type {__VLS_StyleScopedClasses['outline-none']} */ ;
 /** @type {__VLS_StyleScopedClasses['[--viewport-padding:_25px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['flex']} */ ;
+/** @type {__VLS_StyleScopedClasses['flex-col']} */ ;
+/** @type {__VLS_StyleScopedClasses['gap-1.5']} */ ;
+/** @type {__VLS_StyleScopedClasses['rounded-md']} */ ;
+/** @type {__VLS_StyleScopedClasses['p-3']} */ ;
+/** @type {__VLS_StyleScopedClasses['shadow-2xl']} */ ;
+/** @type {__VLS_StyleScopedClasses['bg-[#ffd0d0]']} */ ;
+/** @type {__VLS_StyleScopedClasses['bg-[#c4ffd0]']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[13px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-medium']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[11px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-normal']} */ ;
+/** @type {__VLS_StyleScopedClasses['fixed']} */ ;
+/** @type {__VLS_StyleScopedClasses['right-0']} */ ;
+/** @type {__VLS_StyleScopedClasses['bottom-0']} */ ;
+/** @type {__VLS_StyleScopedClasses['z-[2147483647]']} */ ;
+/** @type {__VLS_StyleScopedClasses['m-0']} */ ;
+/** @type {__VLS_StyleScopedClasses['flex']} */ ;
+/** @type {__VLS_StyleScopedClasses['w-[390px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['max-w-[100vw]']} */ ;
+/** @type {__VLS_StyleScopedClasses['list-none']} */ ;
+/** @type {__VLS_StyleScopedClasses['flex-col']} */ ;
+/** @type {__VLS_StyleScopedClasses['gap-[10px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['p-[var(--viewport-padding)]']} */ ;
+/** @type {__VLS_StyleScopedClasses['outline-none']} */ ;
+/** @type {__VLS_StyleScopedClasses['[--viewport-padding:_25px]']} */ ;
 var __VLS_dollars;
 const __VLS_self = (await import('vue')).defineComponent({
     setup() {
@@ -1584,7 +1731,7 @@ const __VLS_self = (await import('vue')).defineComponent({
             RadioGroupRoot: RadioGroupRoot,
             Breadcrums: Breadcrums,
             ModalAddOvertime: ModalAddOvertime,
-            ModalCategoryUpdate: ModalCategoryUpdate,
+            ModalUpdateOvertime: ModalUpdateOvertime,
             Modal: Modal,
             MainLayout: MainLayout,
             toast: toast,
@@ -1595,14 +1742,17 @@ const __VLS_self = (await import('vue')).defineComponent({
             paginate: paginate,
             fetchDataOvertime: fetchDataOvertime,
             handlePageChange: handlePageChange,
-            confirmDeleteCategory: confirmDeleteCategory,
-            handleDeleteCategory: handleDeleteCategory,
+            confirmDeleteOvertime: confirmDeleteOvertime,
+            handleDeleteOvertime: handleDeleteOvertime,
             dataDetailCategory: dataDetailCategory,
             getDetailCategory: getDetailCategory,
             dataPostRequest: dataPostRequest,
             getPostRequest: getPostRequest,
             dataPostRequestEdit: dataPostRequestEdit,
             getPostRequestEdit: getPostRequestEdit,
+            dataPostRequestDelete: dataPostRequestDelete,
+            handleManagerApprove: handleManagerApprove,
+            handleHumanApprove: handleHumanApprove,
             dataOvertime: dataOvertime,
             selectData: selectData,
             dataTotalPages: dataTotalPages,
@@ -1611,7 +1761,6 @@ const __VLS_self = (await import('vue')).defineComponent({
             activeDropdownHuman: activeDropdownHuman,
             toggleDropdownHuman: toggleDropdownHuman,
             radioStateSingle: radioStateSingle,
-            handleApproveLeave: handleApproveLeave,
             checkPermission: checkPermission,
         };
     },
