@@ -3,32 +3,30 @@
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 md:col-span-6">
         <div class="block">
-          <span
-            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-          >
+          <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
             Loại tài liệu
           </span>
 
           <SelectRoot v-model="FormSubmitEdit.docCate">
             <SelectTrigger
-              class="flex flex-wrap items-center w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] data-[placeholder]:text-[#909090]"
+              class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[#000] data-[placeholder]:text-[#909090]"
               aria-label="Customise options"
             >
               <SelectValue
-                class="grow text-start font-inter text-[16px] font-normal leading-normal"
+                class="font-inter grow text-start text-[16px] leading-normal font-normal"
                 placeholder="Chọn loại tài liệu"
               />
-              <Icon icon="radix-icons:chevron-down" class="w-3.5 h-3.5" />
+              <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
             </SelectTrigger>
 
             <SelectPortal>
               <SelectContent
-                class="SelectContent rounded-lg bg-[#FAFAFA] overflow-hidden will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100]"
+                class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
                 position="popper"
                 :side-offset="5"
               >
                 <SelectScrollUpButton
-                  class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                  class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
                 >
                   <Icon icon="radix-icons:chevron-up" />
                 </SelectScrollUpButton>
@@ -38,7 +36,7 @@
                     <SelectItem
                       v-for="(item, index) in propData"
                       :key="index"
-                      class="text-[#464661] text-[16px] font-normal leading-normal p-[6px_12px] data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:hover:cursor-pointer"
+                      class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
                       :value="item.id"
                     >
                       <SelectItemText>
@@ -49,7 +47,7 @@
                 </SelectViewport>
 
                 <SelectScrollDownButton
-                  class="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default"
+                  class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
                 >
                   <Icon icon="radix-icons:chevron-down" />
                 </SelectScrollDownButton>
@@ -61,41 +59,33 @@
 
       <div class="col-span-12 md:col-span-6">
         <div class="block">
-          <span
-            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-          >
+          <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
             Tên tài liệu
           </span>
 
           <input
+            id=""
+            v-model="FormSubmitEdit.name"
             type="text"
             name=""
-            id=""
             placeholder="Trợ lý"
-            class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
-            v-model="FormSubmitEdit.name"
+            class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
           />
         </div>
       </div>
       <div class="col-span-12">
         <FileUpload
           :key="'modal-edit'"
-          @change="onFileUpdate"
           :accept="[
             'application/vnd.ms-excel',
             'text/csv',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           ]"
+          @change="onFileUpdate"
         >
           <div>
             <div class="file-upload">
-              <svg
-                width="42"
-                height="42"
-                viewBox="0 0 42 42"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M10.2183 17.7371C6.36563 18.6532 3.5 22.1174 3.5 26.25C3.5 31.0826 7.41738 35 12.25 35C13.0786 35 13.881 34.8845 14.6414 34.6693M31.5481 17.7371C35.4008 18.6532 38.2655 22.1174 38.2655 26.25C38.2655 31.0826 34.3481 35 29.5155 35C28.6869 35 27.8845 34.8845 27.125 34.6693M31.5 17.5C31.5 11.7014 26.7986 7 21 7C15.2014 7 10.5 11.7014 10.5 17.5M14.9319 24.3959L21 18.3085L27.2405 24.5M21 33.25V21.4042"
                   stroke="#013878"
@@ -117,10 +107,7 @@
                 {{ getFilenameFromUrl(FormSubmitEdit.link) }}
               </p>
 
-              <button
-                @click="removeFilePreview"
-                class="bg-red-500 rounded-sm cursor-pointer ms-2"
-              >
+              <button class="ms-2 cursor-pointer rounded-sm bg-red-500" @click="removeFilePreview">
                 <svg
                   data-v-d642cc0b=""
                   xmlns="http://www.w3.org/2000/svg"
@@ -141,18 +128,12 @@
         </template>
         <template v-if="fileUploadPreview.length > 0">
           <ul>
-            <li
-              v-for="(list, index) in fileUploadPreview"
-              class="relative flex items-center pt-3"
-            >
+            <li v-for="(list, index) in fileUploadPreview" class="relative flex items-center pt-3">
               <p>
                 {{ list.name }}
               </p>
 
-              <button
-                @click="clearFilePreview"
-                class="bg-red-500 rounded-sm cursor-pointer ms-2"
-              >
+              <button class="ms-2 cursor-pointer rounded-sm bg-red-500" @click="clearFilePreview">
                 <svg
                   data-v-d642cc0b=""
                   xmlns="http://www.w3.org/2000/svg"
@@ -174,45 +155,33 @@
       </div>
       <div class="col-span-12">
         <div class="block">
-          <span
-            class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-          >
-            Mô tả
-          </span>
+          <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]"> Mô tả </span>
           <textarea
-            name=""
             id=""
             v-model="FormSubmitEdit.description"
+            name=""
             placeholder="Nhập mô tả"
-            class="min-h-[120px] w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+            class="font-inter focus:border-main min-h-[120px] w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
           ></textarea>
         </div>
       </div>
     </div>
 
-    <div
-      class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
-    >
+    <div class="mt-9 flex flex-wrap items-stretch justify-center gap-4 text-center xl:gap-6">
       <button
-        @click="clearAndCloseModal"
         type="button"
-        class="max-md:grow inline-block md:min-w-[175px] border border-solid border-[#EDEDF6] bg-white text-[#464661] text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+        class="hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2 text-center text-[16px] leading-normal font-bold text-[#464661] uppercase transition hover:transition max-md:grow md:min-w-[175px]"
+        @click="clearAndCloseModal"
       >
         Hủy
       </button>
       <button
         type="submit"
-        class="relative max-md:grow inline-block md:min-w-[175px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition"
-        :class="{ 'opacity-75 pointer-events-none': onSubmitting }"
+        class="border-main bg-main hover:shadow-hoverinset relative inline-block cursor-pointer rounded-[8px] border border-solid p-2 text-center text-[16px] leading-normal font-bold text-white uppercase transition hover:transition max-md:grow md:min-w-[175px]"
+        :class="{ 'pointer-events-none opacity-75': onSubmitting }"
       >
-        <div
-          class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]"
-          v-if="onSubmitting"
-        >
-          <Icon
-            icon="eos-icons:three-dots-loading"
-            class="w-12 h-full aspect-square"
-          />
+        <div v-if="onSubmitting" class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
+          <Icon icon="eos-icons:three-dots-loading" class="aspect-square h-full w-12" />
         </div>
         <div v-else>Lưu</div>
       </button>
@@ -221,194 +190,195 @@
 </template>
 
 <script lang="ts" setup>
-import { useDocument } from '@/composables/document'
-import { apiUri } from '@/constants/apiUri'
-import axios from 'axios'
-import { onMounted, reactive, ref, watch } from 'vue'
-import { useAuth } from 'vue-auth3'
-// import 'vue-multiselect/dist/vue-multiselect.min.css'
-import { capitalizeFirstLetter, tableMagic } from '@/utils/main'
-import { Icon } from '@iconify/vue'
-import {
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectItemText,
-  SelectPortal,
-  SelectRoot,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
-  SelectTrigger,
-  SelectValue,
-  SelectViewport
-} from 'radix-vue'
-import FileUpload from '../FileUpload.vue'
+  import { Icon } from '@iconify/vue'
+  import axios from 'axios'
+  import {
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectItemText,
+    SelectPortal,
+    SelectRoot,
+    SelectScrollDownButton,
+    SelectScrollUpButton,
+    SelectTrigger,
+    SelectValue,
+    SelectViewport,
+  } from 'radix-vue'
+  import { ref, watch } from 'vue'
+  import { useAuth } from 'vue-auth3'
 
-const props = defineProps<{
-  data: any
-  propFunction: Function
-  closeModal: Function
-  propData: any[]
-}>()
+  import { apiUri } from '@/constants/apiUri'
+  // import 'vue-multiselect/dist/vue-multiselect.min.css'
+  import { capitalizeFirstLetter } from '@/utils/main'
 
-const emit = defineEmits(['post-request-edit'])
+  import FileUpload from '../FileUpload.vue'
 
-type previewFiles = {
-  name: string
-  path: string
-  file: File
-}
-const fileUploadPreview = ref<previewFiles[]>([])
-const FormSubmitEdit = ref({
-  name: props.data?.name || null,
-  description: props.data?.description || null,
-  docCate: props.data?.type_id || null,
-  id: props.data?.id || null,
-  link: props.data?.link || null
-})
-function clearAndCloseModal() {
-  props.closeModal()
-  setTimeout(() => {
-    fileUploadPreview.value = []
-    FormSubmitEdit.value.name = null
-    FormSubmitEdit.value.description = null
-    FormSubmitEdit.value.docCate = null
-    FormSubmitEdit.value.id = null
-    FormSubmitEdit.value.link = null
-  }, 200)
-}
-function removeFilePreview() {
-  FormSubmitEdit.value.link = null
-}
-const setUrlFromFiles = async (files: FileList | File) => {
-  let file: File
+  const props = defineProps<{
+    data: any
+    propFunction: Function
+    closeModal: Function
+    propData: any[]
+  }>()
 
-  if (files instanceof File) {
-    file = files
-  } else {
-    const list = Array.from(files)
-    if (list.length === 0) return
-    file = list[list.length - 1] // get the latest (last) file
+  const emit = defineEmits(['post-request-edit'])
+
+  type previewFiles = {
+    name: string
+    path: string
+    file: File
   }
-
-  // Clear the existing link to avoid duplication
-  FormSubmitEdit.value.link = null
-
-  const path = await readFileAsDataURL(file)
-
-  // Replace previous file, only keep one
-  fileUploadPreview.value = [
-    {
-      file,
-      name: file.name,
-      path
-    }
-  ]
-}
-function readFileAsDataURL(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = reject
-    reader.readAsDataURL(file)
+  const fileUploadPreview = ref<previewFiles[]>([])
+  const FormSubmitEdit = ref({
+    name: props.data?.name || null,
+    description: props.data?.description || null,
+    docCate: props.data?.type_id || null,
+    id: props.data?.id || null,
+    link: props.data?.link || null,
   })
-}
-function onFileUpdate(files: FileList | File) {
-  // console.log(files, 'onFileUpdate')
-  setUrlFromFiles(files)
-}
-function clearFilePreview() {
-  fileUploadPreview.value = []
-  if (fileUploadPreview.value) {
-    fileUploadPreview.value = [] // reset input
+  function clearAndCloseModal() {
+    props.closeModal()
+    setTimeout(() => {
+      fileUploadPreview.value = []
+      FormSubmitEdit.value.name = null
+      FormSubmitEdit.value.description = null
+      FormSubmitEdit.value.docCate = null
+      FormSubmitEdit.value.id = null
+      FormSubmitEdit.value.link = null
+    }, 200)
   }
-}
-
-const auth = useAuth()
-
-const postRequestEdit = ref<any | null>(null)
-const onSubmitting = ref(false)
-const submit = async () => {
-  onSubmitting.value = true
-  const formData = new FormData()
-  formData.append('name', FormSubmitEdit.value.name || '')
-  formData.append('id', FormSubmitEdit.value.id || '')
-  formData.append('type_id', FormSubmitEdit.value.docCate || '')
-  formData.append('description', FormSubmitEdit.value.description)
-  if (fileUploadPreview.value.length > 0) {
-    fileUploadPreview.value.forEach((item) => {
-      formData.append('file', item.file)
-    })
-  } else {
-    formData.append('file', '')
+  function removeFilePreview() {
+    FormSubmitEdit.value.link = null
   }
+  const setUrlFromFiles = async (files: FileList | File) => {
+    let file: File
 
-  const response = await axios
-    .post(`${apiUri}/document/update`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${auth.token()}`
-      }
-    })
-    .then(function (res) {
-      // successful response flow
-      //   fileUploadPreview.value = []
-      FormSubmitEdit.value.docCate = ''
-      postRequestEdit.value = res.data
-      emit('post-request-edit', postRequestEdit.value)
-      props.propFunction()
-    })
-    .catch(function (error) {
-      console.log(error, 'error /document/update')
-    })
-    .finally(() => {
-      onSubmitting.value = false
-    })
-}
+    if (files instanceof File) {
+      file = files
+    } else {
+      const list = Array.from(files)
+      if (list.length === 0) return
+      file = list[list.length - 1] // get the latest (last) file
+    }
 
-watch(
-  () => props.data,
-  () => {
-    FormSubmitEdit.value.name = props.data.name
-    FormSubmitEdit.value.description = props.data.description
-    FormSubmitEdit.value.docCate = props.data.type_id
-    FormSubmitEdit.value.id = props.data.id
-    FormSubmitEdit.value.link = props.data.link
-    // Clear any uploaded files when loading a new document
+    // Clear the existing link to avoid duplication
+    FormSubmitEdit.value.link = null
+
+    const path = await readFileAsDataURL(file)
+
+    // Replace previous file, only keep one
+    fileUploadPreview.value = [
+      {
+        file,
+        name: file.name,
+        path,
+      },
+    ]
+  }
+  function readFileAsDataURL(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
+  function onFileUpdate(files: FileList | File) {
+    // console.log(files, 'onFileUpdate')
+    setUrlFromFiles(files)
+  }
+  function clearFilePreview() {
     fileUploadPreview.value = []
+    if (fileUploadPreview.value) {
+      fileUploadPreview.value = [] // reset input
+    }
   }
-)
 
-function getFilenameFromUrl(url: string): string {
-  const parts = url.split('/')
-  return parts[parts.length - 1]
-}
+  const auth = useAuth()
+
+  const postRequestEdit = ref<any | null>(null)
+  const onSubmitting = ref(false)
+  const submit = async () => {
+    onSubmitting.value = true
+    const formData = new FormData()
+    formData.append('name', FormSubmitEdit.value.name || '')
+    formData.append('id', FormSubmitEdit.value.id || '')
+    formData.append('type_id', FormSubmitEdit.value.docCate || '')
+    formData.append('description', FormSubmitEdit.value.description)
+    if (fileUploadPreview.value.length > 0) {
+      fileUploadPreview.value.forEach((item) => {
+        formData.append('file', item.file)
+      })
+    } else {
+      formData.append('file', '')
+    }
+
+    const response = await axios
+      .post(`${apiUri}/document/update`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      .then(function (res) {
+        // successful response flow
+        //   fileUploadPreview.value = []
+        FormSubmitEdit.value.docCate = ''
+        postRequestEdit.value = res.data
+        emit('post-request-edit', postRequestEdit.value)
+        props.propFunction()
+      })
+      .catch(function (error) {
+        console.log(error, 'error /document/update')
+      })
+      .finally(() => {
+        onSubmitting.value = false
+      })
+  }
+
+  watch(
+    () => props.data,
+    () => {
+      FormSubmitEdit.value.name = props.data.name
+      FormSubmitEdit.value.description = props.data.description
+      FormSubmitEdit.value.docCate = props.data.type_id
+      FormSubmitEdit.value.id = props.data.id
+      FormSubmitEdit.value.link = props.data.link
+      // Clear any uploaded files when loading a new document
+      fileUploadPreview.value = []
+    }
+  )
+
+  function getFilenameFromUrl(url: string): string {
+    const parts = url.split('/')
+    return parts[parts.length - 1]
+  }
 </script>
 
 <style lang="scss" scoped>
-.file-upload {
-  width: 100%;
-  min-width: 100%;
-  min-height: 240px;
-  border: 1px dashed #464661;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #fbfbfb;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  color: #464661;
-  gap: 12px;
-}
-.file-upload-txt {
-  font-weight: 600;
-}
-.file-upload-link {
-  color: #1b4dea;
-  text-decoration: underline;
-}
+  .file-upload {
+    width: 100%;
+    min-width: 100%;
+    min-height: 240px;
+    border: 1px dashed #464661;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #fbfbfb;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #464661;
+    gap: 12px;
+  }
+  .file-upload-txt {
+    font-weight: 600;
+  }
+  .file-upload-link {
+    color: #1b4dea;
+    text-decoration: underline;
+  }
 </style>

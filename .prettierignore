@@ -1,0 +1,15 @@
+# Build outputs
+/dist
+
+# Generated JS and maps from Vue SFCs
+src/**/*.vue.js
+src/**/*.vue.js.map
+
+# Source maps
+src/**/*.map
+
+# Assets
+src/assets/**
+
+# Misc
+node_modules

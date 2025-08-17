@@ -1,0 +1,329 @@
+/// <reference types="../../../node_modules/.vue-global-types/vue_3.5_0_0_0.d.ts" />
+import '@vuepic/vue-datepicker/dist/main.css';
+import { Icon } from '@iconify/vue';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import axios from 'axios';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale/vi';
+import { reactive, ref, watch } from 'vue';
+import { useAuth } from 'vue-auth3';
+import { apiUri } from '@/constants/apiUri';
+const auth = useAuth();
+const token = auth.token();
+const session = auth.check();
+const emit = defineEmits(['post-request']);
+const props = defineProps();
+const paramsUserExplain = reactive({
+    user_id: props.datatype?.user_id || '',
+    user_name: props.datatype?.user_name || '',
+    work_date: props.datatype?.work_date || '',
+    check_in: props.datatype?.check_in || '',
+    check_out: props.datatype?.check_out || '',
+    total_hours: props.datatype?.total_hours || '',
+    reason: props.datatype?.reason || '',
+});
+watch(() => props.datatype, (newVal) => {
+    if (newVal) {
+        paramsUserExplain.user_id = newVal.user_id || '';
+        paramsUserExplain.user_name = newVal.user_name || '';
+        paramsUserExplain.work_date = newVal.work_date || '';
+        dateUserExplain.value = newVal.work_date || '';
+        paramsUserExplain.check_in = newVal.check_in || '';
+        paramsUserExplain.check_out = newVal.check_out || '';
+        paramsUserExplain.total_hours = newVal.total_hours || '';
+        paramsUserExplain.reason = newVal.reason || '';
+    }
+}, { immediate: true, deep: true });
+const dateUserExplain = ref(new Date());
+const updateDates = () => {
+    if (dateUserExplain.value) {
+        paramsUserExplain.work_date = format(dateUserExplain.value, 'yyyy-MM-dd');
+    }
+};
+watch(dateUserExplain, () => {
+    if (auth.check()) {
+        updateDates();
+    }
+});
+const onSubmitting = ref(false);
+const handlePostExplain = async () => {
+    try {
+        onSubmitting.value = true;
+        const formData = new FormData();
+        formData.append('user_id', paramsUserExplain.user_id);
+        formData.append('work_date', paramsUserExplain.work_date);
+        formData.append('check_in', paramsUserExplain.check_in);
+        formData.append('check_out', paramsUserExplain.check_out);
+        formData.append('total_hours', paramsUserExplain.total_hours);
+        formData.append('reason', paramsUserExplain.reason);
+        const res = await axios.post(`${apiUri}/work/create`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        emit('post-request', res.data);
+        if (res.data.errors)
+            return;
+        console.log('handlePostExplain ~ res', res.data);
+    }
+    catch (error) {
+        console.log('handlePostExplain ~ error', error);
+    }
+    finally {
+        onSubmitting.value = false;
+    }
+};
+debugger; /* PartiallyEnd: #3632/scriptSetup.vue */
+const __VLS_ctx = {};
+let __VLS_components;
+let __VLS_directives;
+// CSS variable injection 
+// CSS variable injection end 
+__VLS_asFunctionalElement(__VLS_intrinsicElements.form, __VLS_intrinsicElements.form)({
+    ...{ onSubmit: (__VLS_ctx.handlePostExplain) },
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+    ...{ class: "grid grid-cols-12 gap-6" },
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+    ...{ class: "col-span-12 md:col-span-6" },
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+    ...{ class: "block" },
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({
+    ...{ class: "font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]" },
+});
+const __VLS_0 = {}.VueDatePicker;
+/** @type {[typeof __VLS_components.VueDatePicker, ]} */ ;
+// @ts-ignore
+const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+    ...{ 'onUpdate:modelValue': {} },
+    modelValue: (__VLS_ctx.dateUserExplain),
+    enableTimePicker: (false),
+    locale: "vi",
+    formatLocale: (__VLS_ctx.vi),
+    cancelText: "Huỷ",
+    selectText: "Chọn",
+    format: "dd/MM/yyyy",
+    maxDate: (new Date()),
+    ...{ class: "pointer-events-none opacity-50" },
+}));
+const __VLS_2 = __VLS_1({
+    ...{ 'onUpdate:modelValue': {} },
+    modelValue: (__VLS_ctx.dateUserExplain),
+    enableTimePicker: (false),
+    locale: "vi",
+    formatLocale: (__VLS_ctx.vi),
+    cancelText: "Huỷ",
+    selectText: "Chọn",
+    format: "dd/MM/yyyy",
+    maxDate: (new Date()),
+    ...{ class: "pointer-events-none opacity-50" },
+}, ...__VLS_functionalComponentArgsRest(__VLS_1));
+let __VLS_4;
+let __VLS_5;
+let __VLS_6;
+const __VLS_7 = {
+    'onUpdate:modelValue': (__VLS_ctx.updateDates)
+};
+var __VLS_3;
+__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+    ...{ class: "col-span-12 md:col-span-6" },
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+    ...{ class: "block" },
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({
+    ...{ class: "font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]" },
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.input)({
+    id: "",
+    value: (__VLS_ctx.paramsUserExplain.user_name),
+    type: "text",
+    name: "",
+    placeholder: "Nhập họ và tên",
+    ...{ class: "font-inter focus:border-main pointer-events-none w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[16px] leading-normal font-normal text-[#000] opacity-50 placeholder:text-[#909090] placeholder:italic placeholder:opacity-75" },
+    readonly: true,
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+    ...{ class: "col-span-12" },
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+    ...{ class: "block" },
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({
+    ...{ class: "font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]" },
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.textarea, __VLS_intrinsicElements.textarea)({
+    id: "",
+    value: (__VLS_ctx.paramsUserExplain.reason),
+    name: "",
+    placeholder: "Nhập lý do",
+    ...{ class: "font-inter focus:border-main min-h-[120px] w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:opacity-75" },
+});
+__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+    ...{ class: "mt-9 flex flex-wrap items-stretch justify-center gap-4 text-center xl:gap-6" },
+});
+var __VLS_8 = {};
+__VLS_asFunctionalElement(__VLS_intrinsicElements.button, __VLS_intrinsicElements.button)({
+    type: "submit",
+    ...{ class: "border-main bg-main hover:shadow-hoverinset inset-sha relative inline-block cursor-pointer rounded-[8px] border border-solid p-2 text-center text-[16px] leading-normal font-bold text-white uppercase transition hover:transition max-md:grow md:min-w-[175px]" },
+    ...{ class: ({ 'pointer-events-none opacity-75': __VLS_ctx.onSubmitting }) },
+});
+if (__VLS_ctx.onSubmitting) {
+    __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+        ...{ class: "absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]" },
+    });
+    const __VLS_10 = {}.Icon;
+    /** @type {[typeof __VLS_components.Icon, ]} */ ;
+    // @ts-ignore
+    const __VLS_11 = __VLS_asFunctionalComponent(__VLS_10, new __VLS_10({
+        icon: "eos-icons:three-dots-loading",
+        ...{ class: "aspect-square h-full w-12" },
+    }));
+    const __VLS_12 = __VLS_11({
+        icon: "eos-icons:three-dots-loading",
+        ...{ class: "aspect-square h-full w-12" },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_11));
+}
+else {
+    __VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({});
+}
+/** @type {__VLS_StyleScopedClasses['grid']} */ ;
+/** @type {__VLS_StyleScopedClasses['grid-cols-12']} */ ;
+/** @type {__VLS_StyleScopedClasses['gap-6']} */ ;
+/** @type {__VLS_StyleScopedClasses['col-span-12']} */ ;
+/** @type {__VLS_StyleScopedClasses['md:col-span-6']} */ ;
+/** @type {__VLS_StyleScopedClasses['block']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-inter']} */ ;
+/** @type {__VLS_StyleScopedClasses['mb-3']} */ ;
+/** @type {__VLS_StyleScopedClasses['block']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[16px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['leading-normal']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-semibold']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[#464661]']} */ ;
+/** @type {__VLS_StyleScopedClasses['pointer-events-none']} */ ;
+/** @type {__VLS_StyleScopedClasses['opacity-50']} */ ;
+/** @type {__VLS_StyleScopedClasses['col-span-12']} */ ;
+/** @type {__VLS_StyleScopedClasses['md:col-span-6']} */ ;
+/** @type {__VLS_StyleScopedClasses['block']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-inter']} */ ;
+/** @type {__VLS_StyleScopedClasses['mb-3']} */ ;
+/** @type {__VLS_StyleScopedClasses['block']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[16px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['leading-normal']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-semibold']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[#464661]']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-inter']} */ ;
+/** @type {__VLS_StyleScopedClasses['focus:border-main']} */ ;
+/** @type {__VLS_StyleScopedClasses['pointer-events-none']} */ ;
+/** @type {__VLS_StyleScopedClasses['w-full']} */ ;
+/** @type {__VLS_StyleScopedClasses['rounded-[8px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['border']} */ ;
+/** @type {__VLS_StyleScopedClasses['border-solid']} */ ;
+/** @type {__VLS_StyleScopedClasses['border-[#EDEDF6]']} */ ;
+/** @type {__VLS_StyleScopedClasses['bg-white']} */ ;
+/** @type {__VLS_StyleScopedClasses['px-2.5']} */ ;
+/** @type {__VLS_StyleScopedClasses['py-1.5']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[16px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['leading-normal']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-normal']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[#000]']} */ ;
+/** @type {__VLS_StyleScopedClasses['opacity-50']} */ ;
+/** @type {__VLS_StyleScopedClasses['placeholder:text-[#909090]']} */ ;
+/** @type {__VLS_StyleScopedClasses['placeholder:italic']} */ ;
+/** @type {__VLS_StyleScopedClasses['placeholder:opacity-75']} */ ;
+/** @type {__VLS_StyleScopedClasses['col-span-12']} */ ;
+/** @type {__VLS_StyleScopedClasses['block']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-inter']} */ ;
+/** @type {__VLS_StyleScopedClasses['mb-3']} */ ;
+/** @type {__VLS_StyleScopedClasses['block']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[16px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['leading-normal']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-semibold']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[#464661]']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-inter']} */ ;
+/** @type {__VLS_StyleScopedClasses['focus:border-main']} */ ;
+/** @type {__VLS_StyleScopedClasses['min-h-[120px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['w-full']} */ ;
+/** @type {__VLS_StyleScopedClasses['rounded-[8px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['border']} */ ;
+/** @type {__VLS_StyleScopedClasses['border-solid']} */ ;
+/** @type {__VLS_StyleScopedClasses['border-[#EDEDF6]']} */ ;
+/** @type {__VLS_StyleScopedClasses['bg-white']} */ ;
+/** @type {__VLS_StyleScopedClasses['p-2.5']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[16px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['leading-normal']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-normal']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[#000]']} */ ;
+/** @type {__VLS_StyleScopedClasses['placeholder:text-[#909090]']} */ ;
+/** @type {__VLS_StyleScopedClasses['placeholder:opacity-75']} */ ;
+/** @type {__VLS_StyleScopedClasses['mt-9']} */ ;
+/** @type {__VLS_StyleScopedClasses['flex']} */ ;
+/** @type {__VLS_StyleScopedClasses['flex-wrap']} */ ;
+/** @type {__VLS_StyleScopedClasses['items-stretch']} */ ;
+/** @type {__VLS_StyleScopedClasses['justify-center']} */ ;
+/** @type {__VLS_StyleScopedClasses['gap-4']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-center']} */ ;
+/** @type {__VLS_StyleScopedClasses['xl:gap-6']} */ ;
+/** @type {__VLS_StyleScopedClasses['border-main']} */ ;
+/** @type {__VLS_StyleScopedClasses['bg-main']} */ ;
+/** @type {__VLS_StyleScopedClasses['hover:shadow-hoverinset']} */ ;
+/** @type {__VLS_StyleScopedClasses['inset-sha']} */ ;
+/** @type {__VLS_StyleScopedClasses['relative']} */ ;
+/** @type {__VLS_StyleScopedClasses['inline-block']} */ ;
+/** @type {__VLS_StyleScopedClasses['cursor-pointer']} */ ;
+/** @type {__VLS_StyleScopedClasses['rounded-[8px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['border']} */ ;
+/** @type {__VLS_StyleScopedClasses['border-solid']} */ ;
+/** @type {__VLS_StyleScopedClasses['p-2']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-center']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-[16px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['leading-normal']} */ ;
+/** @type {__VLS_StyleScopedClasses['font-bold']} */ ;
+/** @type {__VLS_StyleScopedClasses['text-white']} */ ;
+/** @type {__VLS_StyleScopedClasses['uppercase']} */ ;
+/** @type {__VLS_StyleScopedClasses['transition']} */ ;
+/** @type {__VLS_StyleScopedClasses['hover:transition']} */ ;
+/** @type {__VLS_StyleScopedClasses['max-md:grow']} */ ;
+/** @type {__VLS_StyleScopedClasses['md:min-w-[175px]']} */ ;
+/** @type {__VLS_StyleScopedClasses['pointer-events-none']} */ ;
+/** @type {__VLS_StyleScopedClasses['opacity-75']} */ ;
+/** @type {__VLS_StyleScopedClasses['absolute']} */ ;
+/** @type {__VLS_StyleScopedClasses['top-1/2']} */ ;
+/** @type {__VLS_StyleScopedClasses['left-1/2']} */ ;
+/** @type {__VLS_StyleScopedClasses['translate-x-[-50%]']} */ ;
+/** @type {__VLS_StyleScopedClasses['translate-y-[-50%]']} */ ;
+/** @type {__VLS_StyleScopedClasses['aspect-square']} */ ;
+/** @type {__VLS_StyleScopedClasses['h-full']} */ ;
+/** @type {__VLS_StyleScopedClasses['w-12']} */ ;
+// @ts-ignore
+var __VLS_9 = __VLS_8;
+var __VLS_dollars;
+const __VLS_self = (await import('vue')).defineComponent({
+    setup() {
+        return {
+            Icon: Icon,
+            VueDatePicker: VueDatePicker,
+            vi: vi,
+            paramsUserExplain: paramsUserExplain,
+            dateUserExplain: dateUserExplain,
+            updateDates: updateDates,
+            onSubmitting: onSubmitting,
+            handlePostExplain: handlePostExplain,
+        };
+    },
+    emits: {},
+    __typeProps: {},
+});
+const __VLS_component = (await import('vue')).defineComponent({
+    setup() {
+        return {};
+    },
+    emits: {},
+    __typeProps: {},
+});
+export default {};
+; /* PartiallyEnd: #4569/main.vue */
+//# sourceMappingURL=ModalAddWorkHistory.vue.js.map

@@ -10,13 +10,12 @@ export const apiClient = axios.create({
   headers: {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers':
-      'Origin, Content-Type, X-Auth-Token, Authorization,Access-Control-Max-Age',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token, Authorization,Access-Control-Max-Age',
     'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Max-Age': 86400,
     'Content-Type': 'application/json',
-    Accept: 'application/json'
-  }
+    Accept: 'application/json',
+  },
 })
 
 apiClient.interceptors.request.use(

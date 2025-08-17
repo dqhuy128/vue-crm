@@ -37,118 +37,125 @@ function onChangeFile(e: Event) {
 </script> -->
 
 <script setup lang="ts">
-import { computed, inject, onMounted, ref, Ref } from 'vue'
-type MimeTypes =
-  | 'application/vnd.ms-excel'
-  | 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  | 'text/csv' 
-//   | 'application/vnd.openxmlformats-officedocument.spreadsheetml.template'
-//   | 'application/vnd.ms-excel.sheet.macroEnabled.12'
-//   | 'application/vnd.ms-excel.addin.macroEnabled.12'
-//   | 'application/vnd.ms-excel.template.macroEnabled.12'
+  import { computed, inject, onMounted, Ref, ref } from 'vue'
+  type MimeTypes =
+    | 'application/vnd.ms-excel'
+    | 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    | 'text/csv'
+  //   | 'application/vnd.openxmlformats-officedocument.spreadsheetml.template'
+  //   | 'application/vnd.ms-excel.sheet.macroEnabled.12'
+  //   | 'application/vnd.ms-excel.addin.macroEnabled.12'
+  //   | 'application/vnd.ms-excel.template.macroEnabled.12'
 
-export interface Props {
-  accept?: MimeTypes | MimeTypes[]
-  multiple?: boolean
-  id?: string | number
-}
-
-const injectedOptions = inject('VFileDropOptions', {
-  accept: undefined,
-  multiple: undefined,
-  id: undefined,
-}) as Props
-const { accept: injectedAccept, multiple: injectedMultiple, id: injectedId } = injectedOptions
-
-const props = withDefaults(defineProps<Props>(), {
-  accept: () => [],
-  multiple: false,
-  id: undefined,
-})
-
-const emit = defineEmits<{
-  (event: 'change', files: FileList | File): void
-}>()
-
-const accept = computed(() => {
-  if (injectedAccept) {
-    return injectedAccept
-  }
-  return props.accept
-})
-
-const multiple = computed(() => {
-  if (injectedMultiple) {
-    return injectedMultiple
-  }
-  return props.multiple
-})
-
-const files = ref() as Ref<FileList | File[]>
-
-const returnFiles = computed(() => {
-  if (multiple.value) {
-    return files.value as FileList
-  }
-  return files.value[0] as File
-})
-
-function emitChange() {
-  emit('change', returnFiles.value)
-}
-
-const acceptInputMimeTypes = computed(() => {
-  if (!accept.value.length) {
-    return ''
-  }
-  if (typeof accept.value === 'string') {
-    return accept.value
-  }
-  return accept.value.join(',')
-})
-
-function checkIfTypeMimeIsAllowedOnDrop(file: File) {
-  const fileType = <MimeTypes>file.type
-  if (!accept.value.length) {
-    return true
-  }
-  if (typeof accept.value === 'string') {
-    return fileType === accept.value
-  }
-  return accept.value.includes(fileType)
-}
-
-function onFileChange(event: Event) {
-  const eventTarget = event.target as HTMLInputElement
-  if (!eventTarget.files) {
-    return
-  }
-  files.value = eventTarget.files
-  emitChange()
-}
-
-function onFileDrop(event: DragEvent) {
-  event.preventDefault()
-  if (!event.dataTransfer) {
-    return
+  export interface Props {
+    accept?: MimeTypes | MimeTypes[]
+    multiple?: boolean
+    id?: string | number
   }
 
-  files.value = []
+  const injectedOptions = inject('VFileDropOptions', {
+    accept: undefined,
+    multiple: undefined,
+    id: undefined,
+  }) as Props
+  const { accept: injectedAccept, multiple: injectedMultiple, id: injectedId } = injectedOptions
 
-  if (
-    !multiple.value &&
-    (event.dataTransfer?.items?.length > 1 ||
-      event?.dataTransfer?.files?.length > 1)
-  ) {
-    console.warn(
-      "Only one file is allowed. Please add the 'multiple' prop on the component to allow multiple files."
-    )
+  const props = withDefaults(defineProps<Props>(), {
+    accept: () => [],
+    multiple: false,
+    id: undefined,
+  })
+
+  const emit = defineEmits<{
+    (event: 'change', files: FileList | File): void
+  }>()
+
+  const accept = computed(() => {
+    if (injectedAccept) {
+      return injectedAccept
+    }
+    return props.accept
+  })
+
+  const multiple = computed(() => {
+    if (injectedMultiple) {
+      return injectedMultiple
+    }
+    return props.multiple
+  })
+
+  const files = ref() as Ref<FileList | File[]>
+
+  const returnFiles = computed(() => {
+    if (multiple.value) {
+      return files.value as FileList
+    }
+    return files.value[0] as File
+  })
+
+  function emitChange() {
+    emit('change', returnFiles.value)
   }
 
-  if (event.dataTransfer.items) {
-    for (const item of [...event.dataTransfer.items]) {
-      if (item.kind === 'file') {
-        const file = item.getAsFile()
+  const acceptInputMimeTypes = computed(() => {
+    if (!accept.value.length) {
+      return ''
+    }
+    if (typeof accept.value === 'string') {
+      return accept.value
+    }
+    return accept.value.join(',')
+  })
+
+  function checkIfTypeMimeIsAllowedOnDrop(file: File) {
+    const fileType = <MimeTypes>file.type
+    if (!accept.value.length) {
+      return true
+    }
+    if (typeof accept.value === 'string') {
+      return fileType === accept.value
+    }
+    return accept.value.includes(fileType)
+  }
+
+  function onFileChange(event: Event) {
+    const eventTarget = event.target as HTMLInputElement
+    if (!eventTarget.files) {
+      return
+    }
+    files.value = eventTarget.files
+    emitChange()
+  }
+
+  function onFileDrop(event: DragEvent) {
+    event.preventDefault()
+    if (!event.dataTransfer) {
+      return
+    }
+
+    files.value = []
+
+    if (!multiple.value && (event.dataTransfer?.items?.length > 1 || event?.dataTransfer?.files?.length > 1)) {
+      console.warn("Only one file is allowed. Please add the 'multiple' prop on the component to allow multiple files.")
+    }
+
+    if (event.dataTransfer.items) {
+      for (const item of [...event.dataTransfer.items]) {
+        if (item.kind === 'file') {
+          const file = item.getAsFile()
+          if (file && !checkIfTypeMimeIsAllowedOnDrop(file)) {
+            console.error(
+              `The file ${file.name} is not allowed. Please add the '${file.type}' mime type to the 'accept' prop on the component.`
+            )
+            return
+          }
+          if (file) {
+            files.value.push(file)
+          }
+        }
+      }
+    } else {
+      for (const file of [...event.dataTransfer.files]) {
         if (file && !checkIfTypeMimeIsAllowedOnDrop(file)) {
           console.error(
             `The file ${file.name} is not allowed. Please add the '${file.type}' mime type to the 'accept' prop on the component.`
@@ -160,69 +167,56 @@ function onFileDrop(event: DragEvent) {
         }
       }
     }
-  } else {
-    for (const file of [...event.dataTransfer.files]) {
-      if (file && !checkIfTypeMimeIsAllowedOnDrop(file)) {
-        console.error(
-          `The file ${file.name} is not allowed. Please add the '${file.type}' mime type to the 'accept' prop on the component.`
-        )
-        return
-      }
-      if (file) {
-        files.value.push(file)
-      }
-    }
+    emitChange()
   }
-  emitChange()
-}
 
-function onDragover(event: DragEvent) {
-  event.preventDefault()
-}
-// unmount then clear the files
-onMounted(() => {
-  console.log('Run Mounted FileUpload');
-})
+  function onDragover(event: DragEvent) {
+    event.preventDefault()
+  }
+  // unmount then clear the files
+  onMounted(() => {
+    console.log('Run Mounted FileUpload')
+  })
 </script>
 
 <template>
   <div class="file-upload__container">
     <input
-      class="file-upload__input"
-      @change="onFileChange"
-      type="file"
       :id="'upload-file' + (props.id ? `-${props.id}` : '')"
+      class="file-upload__input"
+      type="file"
       :accept="acceptInputMimeTypes"
       :multiple="multiple"
+      @change="onFileChange"
     />
     <div>
       <slot></slot>
     </div>
     <label
-      @drop="onFileDrop"
-      @dragover="onDragover"
       class="file-upload__label"
       :htmlFor="'upload-file' + (props.id ? `-${props.id}` : '')"
+      @drop="onFileDrop"
+      @dragover="onDragover"
     ></label>
   </div>
 </template>
 
 <style scoped>
-.file-upload__container {
-  position: relative;
-  /* width: max-content;
+  .file-upload__container {
+    position: relative;
+    /* width: max-content;
   height: max-content; */
-}
-.file-upload__label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-}
+  }
+  .file-upload__label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
 
-.file-upload__input {
-  display: none;
-}
+  .file-upload__input {
+    display: none;
+  }
 </style>

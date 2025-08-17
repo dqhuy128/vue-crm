@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import Navbar from '../components/Navbar.vue'
-import Sidebar from '../components/Sidebar.vue'
-import { calculateMainLayout, toggleSidebar } from '@/utils/main'
+  import { onMounted } from 'vue'
 
-onMounted(() => {
-  calculateMainLayout()
-  toggleSidebar()
-})
+  import { calculateMainLayout, toggleSidebar } from '@/utils/main'
+
+  import Navbar from '../components/Navbar.vue'
+  import Sidebar from '../components/Sidebar.vue'
+
+  onMounted(() => {
+    calculateMainLayout()
+    toggleSidebar()
+  })
 </script>
 
 <template>
-  <div class="bg-[#E9F0F4] min-h-[100vh] flex flex-col">
+  <div class="flex min-h-[100vh] flex-col bg-[#E9F0F4]">
     <Sidebar />
 
-    <div id="MainLayout" class="block px-6 main-layout py-7">
+    <div id="MainLayout" class="main-layout block px-6 py-7">
       <div class="flex flex-col lg:h-[calc(100vh-75px)]">
         <Navbar />
         <slot />

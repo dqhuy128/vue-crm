@@ -1,8 +1,9 @@
-import { apiUri } from '@/constants/apiUri'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAuth } from 'vue-auth3'
+
+import { apiUri } from '@/constants/apiUri'
 
 interface PermissionType {
   // name: string
@@ -24,9 +25,9 @@ interface UserInfoProps {
 }
 export const usePermissionStore = defineStore('permission', () => {
   const permision = ref<PermissionType | null>(null)
-  const permissionList = ref<String[]>([])
+  const permissionList = ref<string[]>([])
   const userData = ref<UserInfoProps | null>(null)
-  const permissionListData = ref<String[]>([])
+  const permissionListData = ref<string[]>([])
 
   async function fetchPermission(token: string) {
     if (permision.value) return
@@ -34,13 +35,15 @@ export const usePermissionStore = defineStore('permission', () => {
       const response = await axios.get(`${apiUri}/user/permission`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       })
 
       const dataPermit = response.data.data
       permision.value = dataPermit
+      console.log('🚀 ~ fetchPermission ~ permision.value:', permision.value)
       permissionList.value = Object.keys(dataPermit)
+      console.log('🚀 ~ fetchPermission ~ permissionList.value:', permissionList.value)
     } catch (error) {
       console.error('Error fetching permision:', error)
     }
@@ -50,11 +53,12 @@ export const usePermissionStore = defineStore('permission', () => {
     try {
       const response = await axios.get(`${apiUri}/permission/list`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
 
       const { data } = response.data
+      console.log('🚀 ~ fetchPermissionList ~ data:', data)
       permissionListData.value = data
     } catch (error) {
       console.error('Error fetching permision:', error)
@@ -81,8 +85,8 @@ export const usePermissionStore = defineStore('permission', () => {
         url: `${apiUri}/user/info`,
         credentials: 'include',
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
 
       const { data } = response.data
@@ -93,7 +97,7 @@ export const usePermissionStore = defineStore('permission', () => {
         await auth
           .logout({
             makeRequest: false,
-            redirect: '/login'
+            redirect: '/login',
           })
           .then(() => {
             userData.value = null
@@ -142,6 +146,6 @@ export const usePermissionStore = defineStore('permission', () => {
     $reset,
     fetchUserData,
     permissionList,
-    userData
+    userData,
   }
 })

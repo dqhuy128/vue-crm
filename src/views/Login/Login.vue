@@ -1,185 +1,162 @@
 <script setup lang="ts">
-import { apiUri } from '@/constants/apiUri'
-import { calcBgBefore } from '@/lib/index'
-import { usePermissionStore } from '@/store/permission'
-import { onMounted, reactive, ref } from 'vue'
-import { useAuth } from 'vue-auth3'
-import { useRouter } from 'vue-router'
-const permissionStore = usePermissionStore()
-const isPasswordVisible = ref(false)
-// Function to toggle the password visibility
-const togglePasswordVisibility = () => {
-  isPasswordVisible.value = !isPasswordVisible.value
-}
+  import { onMounted, reactive, ref } from 'vue'
+  import { useAuth } from 'vue-auth3'
+  import { useRouter } from 'vue-router'
 
-const router = useRouter()
-const auth = useAuth()
+  import { apiUri } from '@/constants/apiUri'
+  import { calcBgBefore } from '@/lib/index'
+  import { usePermissionStore } from '@/store/permission'
+  const permissionStore = usePermissionStore()
+  const isPasswordVisible = ref(false)
+  // Function to toggle the password visibility
+  const togglePasswordVisibility = () => {
+    isPasswordVisible.value = !isPasswordVisible.value
+  }
 
-const form = reactive({
-  username: '0328910709',
-  password: '123456'
-})
+  const router = useRouter()
+  const auth = useAuth()
 
-const error = ref<string | null>(null)
+  const form = reactive({
+    username: '0328910709',
+    password: '123456',
+  })
 
-const handleLogin = async () => {
-  error.value = null
+  const error = ref<string | null>(null)
 
-  try {
-    const formData = new FormData()
-    formData.append('username', form.username)
-    formData.append('password', form.password)
+  const handleLogin = async () => {
+    error.value = null
 
-    const res = await auth.login({
-      method: 'POST',
-      url: `${apiUri}/user/login`,
-      data: formData,
-      headers: { 'Content-Type': 'multipart/form-data' },
-      staySignedIn: true,
-      fetchUser: true
-    })
+    try {
+      const formData = new FormData()
+      formData.append('username', form.username)
+      formData.append('password', form.password)
 
-    console.log(res.data)
+      const res = await auth.login({
+        method: 'POST',
+        url: `${apiUri}/user/login`,
+        data: formData,
+        headers: { 'Content-Type': 'multipart/form-data' },
+        staySignedIn: true,
+        fetchUser: true,
+      })
 
-    const { status } = res.data
-    if (status == 0) {
-      //  dang nhap ko thanh cong
-      error.value = 'Đăng nhập thất bại'
-      if (res.data.errors && res.data.errors.login) {
-        error.value = res.data.errors.login
+      console.log(res.data)
+
+      const { status } = res.data
+      if (status == 0) {
+        //  dang nhap ko thanh cong
+        error.value = 'Đăng nhập thất bại'
+        if (res.data.errors && res.data.errors.login) {
+          error.value = res.data.errors.login
+        }
+        return
+      } else {
+        const { access_token, per_group_name } = res.data.data
+        console.log('Access token received:', !!access_token)
+        auth.token(null, access_token)
+        // permissionStore.setUserPermission(per_group_name)
+        permissionStore.fetchPermission(access_token)
+        router.push({ name: 'Personal' })
       }
-      return
-    } else {
-      const { access_token, per_group_name } = res.data.data
-      console.log('Access token received:', !!access_token)
-      auth.token(null, access_token)
-      // permissionStore.setUserPermission(per_group_name)
-      permissionStore.fetchPermission(access_token)
-      router.push({ name: 'Personal' })
-    }
-  } catch (err: any) {
-    console.error('Chi tiết lỗi:', err)
-    if (err.response?.status === 401) {
-      await auth
-        .logout({
-          makeRequest: false,
-          redirect: '/login'
-        })
-        .then(() => {
-          permissionStore.$reset()
-        })
+    } catch (err: any) {
+      console.error('Chi tiết lỗi:', err)
+      if (err.response?.status === 401) {
+        await auth
+          .logout({
+            makeRequest: false,
+            redirect: '/login',
+          })
+          .then(() => {
+            permissionStore.$reset()
+          })
+      }
     }
   }
-}
 
-onMounted(() => {
-  calcBgBefore()
-})
+  onMounted(() => {
+    calcBgBefore()
+  })
 </script>
 
 <template>
   <section
-    class="relative flex flex-col items-center justify-center w-full h-[100vh] bg-[#E9F0F4] after:content-[] after:w-full after:h-full after:absolute after:right-0 after:bottom-0 after:bg-[url(./assets/images/svg-login.svg)] after:bg-no-repeat after:bg-right-bottom after:bg-auto after:pointer-events-none"
+    class="after:content-[] relative flex h-[100vh] w-full flex-col items-center justify-center bg-[#E9F0F4] after:pointer-events-none after:absolute after:right-0 after:bottom-0 after:h-full after:w-full after:bg-[url(./assets/images/svg-login.svg)] after:bg-auto after:bg-right-bottom after:bg-no-repeat"
   >
     <div
       id="rectangleLogin"
-      class="max-md:hidden fixed left-0 top-0 bottom-0 h-[100vh] bg-white pointer-events-none"
+      class="pointer-events-none fixed top-0 bottom-0 left-0 h-[100vh] bg-white max-md:hidden"
     ></div>
     <div class="mx-[15px] w-[calc(100%-30px)]">
       <div
         id="formLoginIndex"
-        class="relative z-[1] max-w-[865px] max-h-[616px] h-full w-full m-auto rounded-[24px] shadow-[15px_21px_33px_0px_rgba(0,0,0,0.15)] overflow-hidden"
+        class="relative z-[1] m-auto h-full max-h-[616px] w-full max-w-[865px] overflow-hidden rounded-[24px] shadow-[15px_21px_33px_0px_rgba(0,0,0,0.15)]"
       >
-        <div class="flex flex-row flex-wrap h-full">
-          <div id="formLoginStart" class="md:w-[31%] w-full bg-[#E9F0F4]">
-            <div class="md:py-[60px] p-4 md:px-[25px] flex flex-col h-full">
-              <div
-                class="md:max-w-[161px] max-w-[110px] w-full mx-auto md:mb-[45px]"
-              >
-                <img
-                  src="@/assets/images/logo-login.png"
-                  class="object-scale-down h-auto max-w-full"
-                  alt=""
-                />
+        <div class="flex h-full flex-row flex-wrap">
+          <div id="formLoginStart" class="w-full bg-[#E9F0F4] md:w-[31%]">
+            <div class="flex h-full flex-col p-4 md:px-[25px] md:py-[60px]">
+              <div class="mx-auto w-full max-w-[110px] md:mb-[45px] md:max-w-[161px]">
+                <img src="@/assets/images/logo-login.png" class="h-auto max-w-full object-scale-down" alt="" />
               </div>
 
               <div
-                class="text-main font-inter text-[20px]/[33px] font-bold uppercase text-end lg:pe-[25px] mb-8 hidden md:block"
+                class="text-main font-inter mb-8 hidden text-end text-[20px]/[33px] font-bold uppercase md:block lg:pe-[25px]"
               >
                 hệ thống <br />
                 crm skygroup
               </div>
 
-              <div class="hidden w-full mx-auto mt-auto md:block">
-                <img
-                  src="@/assets/images/login-frame.svg"
-                  class="object-scale-down h-auto max-w-full"
-                  alt=""
-                />
+              <div class="mx-auto mt-auto hidden w-full md:block">
+                <img src="@/assets/images/login-frame.svg" class="h-auto max-w-full object-scale-down" alt="" />
               </div>
             </div>
           </div>
 
-          <div class="md:w-[69%] w-full bg-white">
-            <div
-              class="max-w-[430px] mx-auto flex flex-col items-center justify-center h-full max-md:p-4"
-            >
-              <div
-                class="text-main font-inter text-[16px] font-bold uppercase leading-normal text-center mb-[50px]"
-              >
+          <div class="w-full bg-white md:w-[69%]">
+            <div class="mx-auto flex h-full max-w-[430px] flex-col items-center justify-center max-md:p-4">
+              <div class="text-main font-inter mb-[50px] text-center text-[16px] leading-normal font-bold uppercase">
                 đăng nhập
               </div>
 
               <form class="block w-full" @submit.prevent="handleLogin">
-                <div class="block mb-4">
-                  <span
-                    class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
-                  >
+                <div class="mb-4 block">
+                  <span class="required font-inter mb-3 block text-[16px] leading-normal font-bold text-[#464661]">
                     Tên đăng nhập
                   </span>
                   <input
+                    id="username"
                     v-model="form.username"
                     type="text"
                     name="username"
-                    id="username"
                     placeholder="Nhập tên đăng nhập"
-                    class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+                    class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
                   />
                 </div>
 
-                <div class="block mb-3">
-                  <span
-                    class="required block text-[#464661] font-inter text-[16px] font-bold leading-normal mb-3"
-                  >
+                <div class="mb-3 block">
+                  <span class="required font-inter mb-3 block text-[16px] leading-normal font-bold text-[#464661]">
                     Mật khẩu
                   </span>
                   <div class="relative">
                     <input
-                      :type="isPasswordVisible ? 'text' : 'password'"
-                      v-model="form.password"
-                      name="password"
                       id="password"
+                      v-model="form.password"
+                      :type="isPasswordVisible ? 'text' : 'password'"
+                      name="password"
                       placeholder="Nhập mật khẩu"
-                      class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+                      class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
                     />
 
                     <button
-                      @click="togglePasswordVisibility"
                       type="button"
-                      class="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
+                      class="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer"
+                      @click="togglePasswordVisibility"
                     >
                       <template v-if="isPasswordVisible">
-                        <img
-                          src="@/assets/images/clarity_eye-show-solid.svg"
-                          alt=""
-                        />
+                        <img src="@/assets/images/clarity_eye-show-solid.svg" alt="" />
                       </template>
 
                       <template v-else>
-                        <img
-                          src="@/assets/images/clarity_eye-hide-solid.svg"
-                          alt=""
-                        />
+                        <img src="@/assets/images/clarity_eye-hide-solid.svg" alt="" />
                       </template>
                     </button>
                   </div>
@@ -189,10 +166,10 @@ onMounted(() => {
                   {{ error }}
                 </p>
 
-                <div class="block text-end xl:mb-[70px] mb-[30px]">
+                <div class="mb-[30px] block text-end xl:mb-[70px]">
                   <router-link
                     :to="{ name: 'ResetPass' }"
-                    class="inline-block text-[#909090] font-inter text-[16px] font-bold leading-normal hover:text-main transition"
+                    class="font-inter hover:text-main inline-block text-[16px] leading-normal font-bold text-[#909090] transition"
                   >
                     Lấy lại mật khẩu
                   </router-link>
@@ -201,7 +178,7 @@ onMounted(() => {
                 <div class="block">
                   <button
                     type="submit"
-                    class="block w-full bg-main !text-white text-[16px] font-bold leading-normal !uppercase text-center p-2.5 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
+                    class="bg-main hover:shadow-hoverinset inset-sha block w-full cursor-pointer rounded-[8px] p-2.5 text-center text-[16px] leading-normal font-bold !text-white !uppercase transition hover:transition"
                   >
                     đăng nhập
                   </button>

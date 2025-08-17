@@ -1,7 +1,7 @@
-import { apiClient } from '@/plugins/axios'
-import { useAuth } from 'vue-auth3'
-import { ref } from 'vue'
 import axios from 'axios'
+import { ref } from 'vue'
+import { useAuth } from 'vue-auth3'
+
 import { apiUri } from '@/constants/apiUri'
 
 interface DocumentType {
@@ -30,8 +30,8 @@ export function useSystemUser() {
 
       const response = await axios.get(`${apiUri}/categories/type`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
 
       const { data } = response
@@ -47,8 +47,8 @@ export function useSystemUser() {
         url: url,
         credentials: 'include',
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((res) => res.data)
       .then((json) => {
@@ -61,20 +61,17 @@ export function useSystemUser() {
   }
 
   const fetchCategoryDocument = async () => {
-    const response = await axios.get(
-      `${apiUri}/categories/list?type=document`,
-      {
-        headers: {
-          Authorization: `Bearer ${auth.token()}`
-        }
-      }
-    )
+    const response = await axios.get(`${apiUri}/categories/list?type=document`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`,
+      },
+    })
     const { data } = response.data
     data.items.map((item: any) => {
       item.map((subItem: any) => {
         categories.value.push({
           id: subItem.id,
-          name: subItem.name
+          name: subItem.name,
         })
       })
     })
@@ -89,6 +86,6 @@ export function useSystemUser() {
     isLoading,
     doFetch,
     fetchCategoryDocument,
-    categories
+    categories,
   }
 }
