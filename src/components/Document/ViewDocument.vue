@@ -3,66 +3,52 @@
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 md:col-span-6">
         <div class="block">
-          <span
-            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-          >
+          <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
             Loại tài liệu *
           </span>
           <select
-           
-            class="border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-[10px_12px] text-[#909090] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal w-full"
+            class="font-inter w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-[10px_12px] text-[16px] leading-normal font-normal text-[#909090] max-md:text-[14px]"
           >
-            <template
-              v-for="(item, index) in categoryDocument.data"
-              :key="index"
-            >
+            <template v-for="(item, index) in categoryDocument.data" :key="index">
               <option :value="item.id" :selected="item.id === props.data?.type_id">
                 {{ item.name }}
               </option>
             </template>
-          </select> 
+          </select>
         </div>
       </div>
 
       <div class="col-span-12 md:col-span-6">
         <div class="block">
-          <span
-            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-          >
+          <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
             Tên tài liệu *
           </span>
 
           <input
+            id=""
             type="text"
             name=""
-            id=""
             placeholder="Trợ lý"
-            class="w-full border border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:italic placeholder:text-[#909090] placeholder:opacity-75"
+            class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
             :value="props.data?.name"
           />
         </div>
       </div>
       <div class="col-span-12">
         <div class="block">
-          <span
-            class="block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-          >
-            Mô tả
-          </span>
+          <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]"> Mô tả </span>
           <textarea
-            name=""
             id=""
-             :value="props.data?.description"
+            name=""
+            :value="props.data?.description"
             placeholder="Nhập mô tả"
-            class="w-full border min-h-[120px] border-solid border-[#161616] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
+            class="font-inter focus:border-main min-h-[120px] w-full rounded-[8px] border border-solid border-[#161616] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:opacity-75"
           ></textarea>
         </div>
       </div>
     </div>
 
-    <div
-      class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
-    >
+    <div class="mt-9 flex flex-wrap items-stretch justify-center gap-4 text-center xl:gap-6">
       <slot></slot>
       <!-- <button
         type="submit"
@@ -75,61 +61,62 @@
 </template>
 
 <script lang="ts" setup>
-import { useDocument } from '@/composables/document';
-import { reactive, ref } from 'vue';
-import { useAuth } from 'vue-auth3';
-// import 'vue-multiselect/dist/vue-multiselect.min.css'
-const props = defineProps<{
-  closeModal: () => void
-  data: any
-}>()
-const FormSubmit = ref({
-  name: props.data?.name || null,
-  description: props.data?.description || null,
-  docCate: props.data?.type_id || null,
-  id: props.data?.id || null
-})
-const auth = useAuth()
+  import { reactive, ref } from 'vue'
+  import { useAuth } from 'vue-auth3'
 
-const { doFetch, fetchCategoryDocument, categories } = useDocument()
+  import { useDocument } from '@/composables/document'
+  // import 'vue-multiselect/dist/vue-multiselect.min.css'
+  const props = defineProps<{
+    closeModal: () => void
+    data: any
+  }>()
+  const FormSubmit = ref({
+    name: props.data?.name || null,
+    description: props.data?.description || null,
+    docCate: props.data?.type_id || null,
+    id: props.data?.id || null,
+  })
+  const auth = useAuth()
 
-const categoryDocument = reactive({
-  data: categories.value || undefined
-})
-// onMounted(() => {
+  const { doFetch, fetchCategoryDocument, categories } = useDocument()
 
-//   auth.load().then(() => {
-//     if (auth.check() && categories.value.length === 0) {
-//       fetchCategoryDocument()
-//     }
-//   })
-// })
+  const categoryDocument = reactive({
+    data: categories.value || undefined,
+  })
+  // onMounted(() => {
+
+  //   auth.load().then(() => {
+  //     if (auth.check() && categories.value.length === 0) {
+  //       fetchCategoryDocument()
+  //     }
+  //   })
+  // })
 </script>
 
 <style lang="scss" scoped>
-.file-upload {
-  width: 100%;
-  min-width: 100%;
-  min-height: 240px;
-  border: 1px dashed #464661;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #fbfbfb;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  color: #464661;
-  gap: 12px;
-}
-.file-upload-txt {
-  font-weight: 600;
-}
-.file-upload-link {
-  color: #1b4dea;
-  text-decoration: underline;
-}
+  .file-upload {
+    width: 100%;
+    min-width: 100%;
+    min-height: 240px;
+    border: 1px dashed #464661;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #fbfbfb;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #464661;
+    gap: 12px;
+  }
+  .file-upload-txt {
+    font-weight: 600;
+  }
+  .file-upload-link {
+    color: #1b4dea;
+    text-decoration: underline;
+  }
 </style>

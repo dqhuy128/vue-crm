@@ -1,7 +1,7 @@
-import { apiClient } from '@/plugins/axios'
-import { useAuth } from 'vue-auth3'
-import { ref } from 'vue'
 import axios from 'axios'
+import { ref } from 'vue'
+import { useAuth } from 'vue-auth3'
+
 import { apiUri } from '@/constants/apiUri'
 
 interface LeaveType {
@@ -30,8 +30,8 @@ export function useLeaveInfo() {
 
       const response = await axios.get(`${apiUri}/categories/type`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
 
       const { data } = response
@@ -47,8 +47,8 @@ export function useLeaveInfo() {
         url: url,
         credentials: 'include',
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((res) => res.data)
       .then((json) => {
@@ -68,6 +68,6 @@ export function useLeaveInfo() {
     loadingPromise,
     isLoading,
     doFetch,
-    categories
+    categories,
   }
 }

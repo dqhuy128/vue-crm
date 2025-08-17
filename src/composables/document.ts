@@ -1,7 +1,8 @@
-import { apiUri } from '@/constants/apiUri'
 import axios from 'axios'
 import { ref } from 'vue'
 import { useAuth } from 'vue-auth3'
+
+import { apiUri } from '@/constants/apiUri'
 
 interface DocumentType {
   items: any[]
@@ -29,8 +30,8 @@ export function useDocument() {
         url: url,
         credentials: 'include',
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((res) => res.data)
       .then((json) => {
@@ -42,20 +43,17 @@ export function useDocument() {
   }
   const fetchCategoryDocument = async () => {
     if (categories.value.length > 0) return
-    const response = await axios.get(
-      `${apiUri}/categories/list?type=document`,
-      {
-        headers: {
-          Authorization: `Bearer ${auth.token()}`
-        }
-      }
-    )
+    const response = await axios.get(`${apiUri}/categories/list?type=document`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`,
+      },
+    })
     const { data } = response.data
     data.items.map((item: any) => {
       item.map((subItem: any) => {
         categories.value.push({
           id: subItem.id,
-          name: subItem.name
+          name: subItem.name,
         })
       })
     })
@@ -66,19 +64,19 @@ export function useDocument() {
     formData.append('id', id)
     const response = await axios.post(`${apiUri}/document/delete`, formData, {
       headers: {
-        Authorization: `Bearer ${auth.token()}`
-      }
+        Authorization: `Bearer ${auth.token()}`,
+      },
     })
   }
   const fetchDetailDocument = async (id: string) => {
     const response = await axios
       .get(`${apiUri}/document/detail`, {
         headers: {
-          Authorization: `Bearer ${auth.token()}`
+          Authorization: `Bearer ${auth.token()}`,
         },
         params: {
-          id: id
-        }
+          id: id,
+        },
       })
       .then((res) => res.data)
       .catch((err) => (error.value = err))
@@ -94,6 +92,6 @@ export function useDocument() {
     fetchCategoryDocument,
     categories,
     deleteDocument,
-    fetchDetailDocument
+    fetchDetailDocument,
   }
 }

@@ -2,9 +2,7 @@
   <form @submit.prevent="postAddLeave">
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12">
-        <span
-          class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-        >
+        <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
           Ngày nghỉ
         </span>
         <!-- multi-calendars -->
@@ -13,8 +11,8 @@
           :enable-time-picker="false"
           locale="vi"
           :format-locale="vi"
-          cancelText="Huỷ"
-          selectText="Chọn"
+          cancel-text="Huỷ"
+          select-text="Chọn"
           range
           format="dd/MM/yyyy"
           :min-date="new Date()"
@@ -23,39 +21,29 @@
 
       <div class="col-span-12">
         <div class="block">
-          <span
-            class="required block text-[#464661] font-inter text-[16px] font-semibold leading-normal mb-3"
-          >
+          <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
             Lý do
           </span>
           <textarea
+            id=""
             v-model="paramsLeave.reason"
             name=""
-            id=""
             placeholder="Nhập mô tả"
-            class="w-full border min-h-[120px] border-solid border-[#EDEDF6] bg-white rounded-[8px] p-2.5 text-[#000] font-inter text-[16px] font-normal leading-normal focus:border-main placeholder:text-[#909090] placeholder:opacity-75"
+            class="font-inter focus:border-main min-h-[120px] w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:opacity-75"
           ></textarea>
         </div>
       </div>
     </div>
 
-    <div
-      class="flex flex-wrap items-stretch justify-center gap-4 text-center mt-9 xl:gap-6"
-    >
+    <div class="mt-9 flex flex-wrap items-stretch justify-center gap-4 text-center xl:gap-6">
       <slot />
       <button
         type="submit"
-        class="max-md:grow inline-block md:min-w-[175px] border border-solid border-main bg-main text-white text-[16px] font-bold leading-normal uppercase text-center p-2 rounded-[8px] cursor-pointer hover:shadow-hoverinset hover:transition transition inset-sha"
-        :class="{ 'opacity-75 pointer-events-none': onSubmitting }"
+        class="border-main bg-main hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid p-2 text-center text-[16px] leading-normal font-bold text-white uppercase transition hover:transition max-md:grow md:min-w-[175px]"
+        :class="{ 'pointer-events-none opacity-75': onSubmitting }"
       >
-        <div
-          class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]"
-          v-if="onSubmitting"
-        >
-          <Icon
-            icon="eos-icons:three-dots-loading"
-            class="w-12 h-full aspect-square"
-          />
+        <div v-if="onSubmitting" class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
+          <Icon icon="eos-icons:three-dots-loading" class="aspect-square h-full w-12" />
         </div>
         <div v-else>Lưu</div>
       </button>
@@ -64,90 +52,86 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
-import { apiUri } from '@/constants/apiUri'
-import { useAuth } from 'vue-auth3'
-import { tableMagic } from '@/utils/main'
-import axios from 'axios'
-import { useLeaveInfo } from '@/composables/leave-info'
-import VueDatePicker from '@vuepic/vue-datepicker'
-import '@vuepic/vue-datepicker/dist/main.css'
-import { vi } from 'date-fns/locale/vi'
-import { format } from 'date-fns'
+  import '@vuepic/vue-datepicker/dist/main.css'
 
-const auth = useAuth()
+  import VueDatePicker from '@vuepic/vue-datepicker'
+  import axios from 'axios'
+  import { format } from 'date-fns'
+  import { vi } from 'date-fns/locale/vi'
+  import { onMounted, reactive, ref, watch } from 'vue'
+  import { useAuth } from 'vue-auth3'
 
-const emit = defineEmits(['post-request'])
+  import { apiUri } from '@/constants/apiUri'
 
-const props = defineProps<{
-  datatype: any
-  propFunction: Function
-}>()
+  const auth = useAuth()
 
-const datepicker = ref<any | null>(null)
-const initDates = () => {
-  const startDate = new Date(new Date().setDate(new Date().getDate() + 1))
-  const endDate = new Date(new Date().setDate(startDate.getDate() + 1))
-  datepicker.value = [startDate, endDate]
-}
-const updateDates = () => {
-  if (
-    datepicker.value &&
-    Array.isArray(datepicker.value) &&
-    datepicker.value.length === 2
-  ) {
-    paramsLeave.begin_date = format(datepicker.value[0], 'yyyy/MM/dd')
-    paramsLeave.finish_date = format(datepicker.value[1], 'yyyy/MM/dd')
+  const emit = defineEmits(['post-request'])
+
+  const props = defineProps<{
+    datatype: any
+    propFunction: Function
+  }>()
+
+  const datepicker = ref<any | null>(null)
+  const initDates = () => {
+    const startDate = new Date(new Date().setDate(new Date().getDate() + 1))
+    const endDate = new Date(new Date().setDate(startDate.getDate() + 1))
+    datepicker.value = [startDate, endDate]
   }
-}
-watch(datepicker, () => {
-  if (auth.check()) {
-    updateDates()
+  const updateDates = () => {
+    if (datepicker.value && Array.isArray(datepicker.value) && datepicker.value.length === 2) {
+      paramsLeave.begin_date = format(datepicker.value[0], 'yyyy/MM/dd')
+      paramsLeave.finish_date = format(datepicker.value[1], 'yyyy/MM/dd')
+    }
   }
-})
+  watch(datepicker, () => {
+    if (auth.check()) {
+      updateDates()
+    }
+  })
 
-const paramsLeave = reactive<any | null>({
-  begin_date: null,
-  finish_date: null,
-  reason: null
-})
+  const paramsLeave = reactive<any | null>({
+    begin_date: null,
+    finish_date: null,
+    reason: null,
+  })
 
-const postRequest = ref<any | null>(null)
-const onSubmitting = ref(false)
-const postAddLeave = async () => {
-  onSubmitting.value = true
-  try {
-    const formData = new FormData()
-    formData.append('begin_date', paramsLeave.begin_date)
-    formData.append('finish_date', paramsLeave.finish_date)
-    formData.append('reason', paramsLeave.reason)
+  const postRequest = ref<any | null>(null)
+  const onSubmitting = ref(false)
+  const postAddLeave = async () => {
+    onSubmitting.value = true
+    try {
+      const formData = new FormData()
+      formData.append('begin_date', paramsLeave.begin_date)
+      formData.append('finish_date', paramsLeave.finish_date)
+      formData.append('reason', paramsLeave.reason)
 
-    const res = await axios.post(`${apiUri}/leave/create`, formData, {
-      headers: {
-        Authorization: `Bearer ${auth.token()}`
-      }
-    })
-    paramsLeave.reason = null
-    paramsLeave.begin_date = null
-    paramsLeave.finish_date = null
-    initDates()
-    props.propFunction()
-    postRequest.value = res.data
-    emit('post-request', postRequest.value)
-    // console.log('🚀 ~ postAddLeave ~ res:', postRequest.value)
-  } catch (error) {
-    console.log('🚀 ~ postAddLeave ~ error:', error)
-  } finally {
-    onSubmitting.value = false
+      const res = await axios.post(`${apiUri}/leave/create`, formData, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      paramsLeave.reason = null
+      paramsLeave.begin_date = null
+      paramsLeave.finish_date = null
+      initDates()
+      props.propFunction()
+      postRequest.value = res.data
+      emit('post-request', postRequest.value)
+      // console.log('🚀 ~ postAddLeave ~ res:', postRequest.value)
+    } catch (error) {
+      console.log('🚀 ~ postAddLeave ~ error:', error)
+    } finally {
+      onSubmitting.value = false
+    }
   }
-}
 
-onMounted(() => {
-  if (auth.check()) {
-    initDates()
-    updateDates()
-  }
-})
+  onMounted(() => {
+    if (auth.check()) {
+      initDates()
+      updateDates()
+    }
+  })
 </script>
 
 <style lang="scss"></style>

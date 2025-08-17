@@ -1,8 +1,7 @@
-import { reactive, Ref, ref, useTemplateRef } from 'vue'
-import { apiUri } from '@/constants/apiUri'
-import { useAuth } from 'vue-auth3'
-import { apiClient } from '@/plugins/axios'
 import axios from 'axios'
+import { reactive, Ref } from 'vue'
+
+import { apiUri } from '@/constants/apiUri'
 
 interface typesImage {
   src: any
@@ -11,7 +10,7 @@ interface typesImage {
 
 export const image = reactive<typesImage>({
   src: null,
-  type: null
+  type: null,
 })
 
 // This function is used to detect the actual image type,
@@ -74,12 +73,7 @@ export const destroyCropper = (self: any) => {
   image.src = null
 }
 
-export const postServer = (
-  self: any,
-  authCheck: any,
-  authToken: any,
-  blobUrlRef: Ref<string>
-) => {
+export const postServer = (self: any, authCheck: any, authToken: any, blobUrlRef: Ref<string>) => {
   if (!self || !self.$refs || !self.$refs.cropper) {
     console.error('Cropper reference is missing or invalid')
     return
@@ -95,8 +89,8 @@ export const postServer = (
       const response = await axios.post(`${apiUri}/user/uploadavatar`, form, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${authToken}`
-        }
+          Authorization: `Bearer ${authToken}`,
+        },
       })
 
       const { message } = response.data

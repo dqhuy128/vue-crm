@@ -29,7 +29,8 @@
 
 .dp__cell_inner {
   font-size: 12px;
-  height: 25px;
+  height: 25px !important;
+  width: 25px !important;
 }
 
 .dp--year-select,

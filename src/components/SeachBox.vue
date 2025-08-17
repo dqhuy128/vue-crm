@@ -1,21 +1,15 @@
 <script lang="ts" setup></script>
 
 <template>
-  <div class="search-box-cpn bg-white rounded-[24px] overflow-hidden p-2.5">
+  <div class="search-box-cpn overflow-hidden rounded-[24px] bg-white p-2.5">
     <form action="" class="flex flex-wrap items-stretch gap-3 md:gap-6">
       <slot />
 
       <button
         type="submit"
-        class="inline-flex items-center justify-center gap-2 max-md:w-full bg-[#013878] rounded-[24px] p-[8px_16px] text-white font-inter text=[16px] max-md:text-[14px] font-bold leading-normal hover:shadow-hoverinset transition cursor-pointer"
+        class="font-inter text=[16px] hover:shadow-hoverinset inline-flex cursor-pointer items-center justify-center gap-2 rounded-[24px] bg-[#013878] p-[8px_16px] leading-normal font-bold text-white transition max-md:w-full max-md:text-[14px]"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path
             d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
             stroke="white"

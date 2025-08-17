@@ -12,7 +12,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "lib": ["esnext", "dom"],
+    "lib": ["esnext", "dom", "dom.iterable"],
     "skipLibCheck": true,
     "types": ["vite/client", "vue"],
     "baseUrl": ".",
@@ -20,16 +20,7 @@
       "@/*": ["src/*"]
     }
   },
-  "include": [
-    "src/**/*",
-    "src/**/*.vue",
-    "src/**/*.d.ts",
-    "src/vue-shims.d.ts"
-  ],
+  "include": ["src/**/*", "src/**/*.vue", "src/**/*.d.ts", "src/vue-shims.d.ts"],
   "exclude": ["node_modules"],
-  "types": [
-    "vite/client",
-    "vue/ref-macros",
-    "@volar/vue-language-core/types"
-  ]
+  "types": ["vite/client", "vue/ref-macros", "@volar/vue-language-core/types"]
 }

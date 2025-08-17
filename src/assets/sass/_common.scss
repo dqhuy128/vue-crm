@@ -6,7 +6,7 @@ body {
   position: relative;
 
   &::after {
-    content: "*";
+    content: '*';
     display: inline-block;
     color: red;
   }
