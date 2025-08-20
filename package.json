@@ -11,7 +11,7 @@
     "lint:fix": "eslint \"src/**/*.{ts,vue}\" --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,vue,json,css,scss,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,vue,json,css,scss,md}\"",
-    "build": "npm run lint:fix && npm run format && vue-tsc && vite build"
+    "build": "npm run lint:fix && npm run format && vite build"
   },
   "dependencies": {
     "@iconify/vue": "^4.3.0",

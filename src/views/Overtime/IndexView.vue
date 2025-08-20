@@ -431,6 +431,9 @@
                   <div class="cell edit !ps-2">Edit</div>
                 </div>
               </template>
+              <template v-else>
+                <div class="cell"></div>
+              </template>
             </div>
 
             <div id="tableRowBody" class="body table-row">
@@ -572,29 +575,34 @@
                     </div>
                   </div>
 
-                  <div class="cell">
-                    <div class="cell edit edit-body">
-                      <template v-if="checkPermission('Orvertime', 'Update')">
-                        <button
-                          type="button"
-                          class="cell-btn-edit shrink-0 cursor-pointer"
-                          @click="getDetailCategory(it.id)"
-                        >
-                          <img src="@/assets/images/action-edit-2.svg" alt="" />
-                        </button>
-                      </template>
+                  <template v-if="checkPermission('Orvertime', 'Update') || checkPermission('Orvertime', 'Delete')">
+                    <div class="cell">
+                      <div class="cell edit edit-body">
+                        <template v-if="checkPermission('Orvertime', 'Update')">
+                          <button
+                            type="button"
+                            class="cell-btn-edit shrink-0 cursor-pointer"
+                            @click="getDetailCategory(it.id)"
+                          >
+                            <img src="@/assets/images/action-edit-2.svg" alt="" />
+                          </button>
+                        </template>
 
-                      <template v-if="checkPermission('Orvertime', 'Delete')">
-                        <button
-                          type="button"
-                          class="cell-btn-delete shrink-0 cursor-pointer"
-                          @click="confirmDeleteOvertime(it.id)"
-                        >
-                          <img src="@/assets/images/action-edit-3.svg" alt="" />
-                        </button>
-                      </template>
+                        <template v-if="checkPermission('Orvertime', 'Delete')">
+                          <button
+                            type="button"
+                            class="cell-btn-delete shrink-0 cursor-pointer"
+                            @click="confirmDeleteOvertime(it.id)"
+                          >
+                            <img src="@/assets/images/action-edit-3.svg" alt="" />
+                          </button>
+                        </template>
+                      </div>
                     </div>
-                  </div>
+                  </template>
+                  <template v-else>
+                    <div class="cell"></div>
+                  </template>
                 </div>
               </template>
             </div>
