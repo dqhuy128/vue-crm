@@ -426,14 +426,9 @@
               <div class="cell">Quản lý duyệt</div>
               <div class="cell">HCNS duyệt</div>
 
-              <template v-if="checkPermission('Orvertime', 'Update') || checkPermission('Orvertime', 'Delete')">
-                <div class="cell pinned !p-0">
-                  <div class="cell edit !ps-2">Edit</div>
-                </div>
-              </template>
-              <template v-else>
-                <div class="cell"></div>
-              </template>
+              <div class="cell pinned !p-0 !shadow-none">
+                <div class="cell edit !ps-2">Edit</div>
+              </div>
             </div>
 
             <div id="tableRowBody" class="body table-row">
@@ -575,10 +570,10 @@
                     </div>
                   </div>
 
-                  <template v-if="checkPermission('Orvertime', 'Update') || checkPermission('Orvertime', 'Delete')">
+                  <template v-if="it.action?.length > 0">
                     <div class="cell">
-                      <div class="cell edit edit-body">
-                        <template v-if="checkPermission('Orvertime', 'Update')">
+                      <div class="cell edit !bg-transparent !shadow-none">
+                        <template v-if="it.action?.[0]?.includes('edit')">
                           <button
                             type="button"
                             class="cell-btn-edit shrink-0 cursor-pointer"
@@ -588,7 +583,7 @@
                           </button>
                         </template>
 
-                        <template v-if="checkPermission('Orvertime', 'Delete')">
+                        <template v-if="it.action?.[0]?.includes('delete')">
                           <button
                             type="button"
                             class="cell-btn-delete shrink-0 cursor-pointer"
