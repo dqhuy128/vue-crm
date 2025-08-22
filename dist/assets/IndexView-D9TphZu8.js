@@ -1,0 +1,1 @@
+import{x as n,r as t,b as r,e as a,d as o}from"./index-CCQAbJcJ.js";const c=n({__name:"IndexView",setup(s){return t([]),(l,e)=>(o(),r("div",null,e[0]||(e[0]=[a("h1",null,"Contract",-1)])))}});export{c as default};
