@@ -46,7 +46,7 @@
       <div class="form-actions">
         <button type="button" class="btn btn-cancel" @click="handleCancel">XOÁ</button>
         <button type="submit" class="btn btn-save" :disabled="isSubmitting || !isFormValid">
-          {{ isSubmitting ? 'ĐANG LƯU...' : 'LƯU' }}
+          {{ isSubmitting ? 'ĐANG LƯU...' : isEditMode ? 'CẬP NHẬT' : 'LƯU' }}
         </button>
       </div>
     </form>
@@ -108,18 +108,13 @@
   // Emits
   const emit = defineEmits(['submit', 'cancel'])
 
-  const paramsPayload = reactive({
-    type: 'staff',
-    name: '',
-    description: '',
-    parent_id: '',
-  })
-
   // Reactive data
   const formData = reactive({
+    id: props.editData?.id || '',
     name: props.editData?.name || '',
-    parentId: props.editData?.parentId || null,
+    parentId: props.editData?.parent_id || null,
     description: props.editData?.description || '',
+    type: 'staff',
   })
 
   const errors = reactive({
@@ -131,6 +126,11 @@
   // Computed
   const isFormValid = computed(() => {
     return formData.name.trim().length > 0 && !errors.name
+  })
+
+  // Edit mode derived from presence of id
+  const isEditMode = computed(() => {
+    return Boolean(props.editData && (props.editData.id || formData.id))
   })
 
   // Optional: build parent options from departmentTree if provided
@@ -154,45 +154,22 @@
     return props.parentOptions
   })
 
-  // Keep paramsPayload.parent_id in sync with selected parentId
-  watch(
-    () => formData.parentId,
-    (val) => {
-      paramsPayload.parent_id = val
-    },
-    { immediate: true }
-  )
-
-  watch(
-    () => formData.name,
-    (val) => {
-      paramsPayload.name = val
-    },
-    { immediate: true }
-  )
-
-  watch(
-    () => formData.description,
-    (val) => {
-      paramsPayload.description = val
-    },
-    { immediate: true }
-  )
-
   // Sync form when editData changes so clicking "Sửa" trên node khác sẽ cập nhật ngay
   watch(
     () => props.editData,
     (val) => {
       if (val) {
         Object.assign(formData, {
+          id: val.id || '',
           name: val.name || '',
-          parentId: val.parentId ?? null,
+          parentId: val.parent_id || '',
           description: val.description || '',
         })
       } else {
         Object.assign(formData, {
+          id: '',
           name: '',
-          parentId: null,
+          parentId: '',
           description: '',
         })
       }
@@ -201,7 +178,7 @@
         errors[key] = null
       })
     },
-    { immediate: true }
+    { immediate: true, deep: true }
   )
 
   // Validation rules
@@ -261,7 +238,7 @@
   }
 
   const handleParentChange = (option) => {
-    paramsPayload.parent_id = option?.value ?? null
+    formData.parentId = option?.value ?? null
   }
 
   const handleSubmit = async () => {
@@ -272,10 +249,10 @@
     isSubmitting.value = true
 
     try {
-      await emit('submit', paramsPayload)
+      await emit('submit', formData)
 
       // Reset form if not in edit mode
-      if (!props.editData) {
+      if (!isEditMode.value) {
         resetForm()
       }
     } catch (error) {
@@ -289,9 +266,10 @@
     if (props.editData) {
       // Reset to original data
       Object.assign(formData, {
-        name: props.editData.name || '',
-        parentId: props.editData.parentId || null,
-        description: props.editData.description || '',
+        id: '',
+        name: '',
+        parentId: '',
+        description: '',
       })
     } else {
       resetForm()
@@ -308,7 +286,7 @@
   const resetForm = () => {
     Object.assign(formData, {
       name: '',
-      parentId: null,
+      parentId: '',
       description: '',
     })
   }

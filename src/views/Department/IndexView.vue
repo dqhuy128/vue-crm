@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import axios from 'axios'
-  import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+  import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
 
   import Breadcrums from '@/components/BreadcrumsNew.vue'
@@ -83,23 +83,58 @@
 
   // Department Management Methods
   const handleAddDepartment = () => {
-    editingDepartment.value = null
+    // editingDepartment.value = null
+    // Object.assign(paramsDetailDepartment, { id: '', name: '', description: '', parent_id: null })
   }
 
-  const handleEditDepartment = (department: any) => {
-    editingDepartment.value = department
+  const paramsDetailDepartment = reactive({
+    id: '',
+    name: '',
+    description: '',
+    parent_id: '',
+    type: 'staff',
+  })
+  const getDetailDepartment = async (nodeId: string) => {
+    try {
+      const { data } = await axios.get(`${apiUri}/categories/detail?id=${nodeId}`, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      const { id, name, description, parent_id } = data.data
+      Object.assign(paramsDetailDepartment, { id, name, description, parent_id })
+    } catch (error) {
+      console.error('Error fetching department:', error)
+    }
   }
 
   const handleFormSubmit = async (_formData: any) => {
     try {
-      const { status } = await axios.post(`${apiUri}/categories/create`, _formData, {
+      const formData = new FormData()
+      // Determine mode by presence of id
+      const isUpdate = Boolean(_formData?.id)
+
+      if (_formData?.id) formData.append('id', _formData.id)
+      if (_formData?.type) formData.append('type', _formData.type)
+      if (_formData?.name) formData.append('name', _formData.name)
+      if (_formData?.description) formData.append('description', _formData.description)
+      if (_formData?.parentId !== undefined && _formData?.parentId !== null && _formData?.parentId !== '') {
+        formData.append('parent_id', _formData.parentId)
+      }
+
+      const url = isUpdate ? `${apiUri}/categories/update` : `${apiUri}/categories/create`
+
+      const { status } = await axios.post(url, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${auth.token()}`,
         },
       })
       if (status === 200) {
-        fetchDepartmentTree()
+        await fetchDepartmentTree()
+        // Clear edit state and reset form to create mode
+        Object.assign(paramsDetailDepartment, { id: '', name: '', description: '', parent_id: '' })
         editingDepartment.value = null
       }
     } catch (error) {
@@ -113,6 +148,24 @@
 
   const handleNodeToggle = (_nodeId: string) => {
     // console.log('Node toggled:', nodeId)
+  }
+
+  const handleDeleteDepartment = async (id: string) => {
+    try {
+      const formData = new FormData()
+      formData.append('id', id)
+      const { status } = await axios.post(`${apiUri}/categories/delete`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      if (status === 200) {
+        await fetchDepartmentTree()
+      }
+    } catch (error) {
+      console.error('Error deleting department:', error)
+    }
   }
 
   onMounted(() => {
@@ -138,15 +191,16 @@
           <TreeDepartment
             :data="departmentTree"
             @add-department="handleAddDepartment"
-            @edit-department="handleEditDepartment"
+            @edit-department="getDetailDepartment"
             @node-toggle="handleNodeToggle"
+            @delete-department="handleDeleteDepartment"
           />
         </div>
 
         <!-- Right Panel - Form -->
         <div class="right-panel">
           <DepartmentForm
-            :edit-data="editingDepartment"
+            :edit-data="paramsDetailDepartment"
             :department-tree="departmentTree"
             :parent-options="parentOptions"
             @submit="handleFormSubmit"
