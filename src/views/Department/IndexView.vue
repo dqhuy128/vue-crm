@@ -92,20 +92,18 @@
 
   const handleFormSubmit = async (_formData: any) => {
     try {
-      // TODO: Implement API call to save department
-      // console.log('Saving department:', formData)
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // After save, keep form visible and reset editing state if needed
-      editingDepartment.value = null
-
-      // TODO: Refresh department tree data
-      alert('Lưu thành công!')
+      const { status } = await axios.post(`${apiUri}/categories/create`, _formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      if (status === 200) {
+        fetchDepartmentTree()
+        editingDepartment.value = null
+      }
     } catch (error) {
       console.error('Error saving department:', error)
-      alert('Có lỗi xảy ra khi lưu!')
     }
   }
 

@@ -354,7 +354,7 @@
                       </div>
                     </template>
 
-                    <div class="cell edit edit-body ms-auto justify-end">
+                    <div class="cell edit edit-body">
                       <template v-if="checkPermission('User', 'Update')">
                         <button
                           type="button"
@@ -1015,7 +1015,7 @@
     align-items: center;
     justify-content: center;
     color: #464661;
-
+    font-size: 10px !important;
     font-style: normal;
     font-weight: 400;
     line-height: 1;
@@ -1024,7 +1024,7 @@
 
     @media (max-width: 767px) {
       padding: 6px !important;
-      font-size: 10px !important;
+
       padding-left: 0 !important;
     }
 

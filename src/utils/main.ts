@@ -94,34 +94,109 @@ export const tableMagic = () => {
   const table = document.getElementById('tableMagic')
 
   if (table) {
-    const headerCells = document.querySelectorAll('.header .cell')
-    const bodyRows = document.querySelectorAll('.table-item')
-    const allRows = [document.querySelector('.header'), ...bodyRows]
+    const header: any = table.querySelector('.header')
+    if (!header) return
 
-    // Tính toán độ rộng tối đa của từng cột
-    const columnWidths = Array.from(headerCells).map((cell) => cell.scrollWidth)
+    const headerCells: any = header.querySelectorAll('.cell:not(.pinned)')
+    const bodyRows: any = table.querySelectorAll('.table-item')
+    const _pinnedHeaderCell: any = header.querySelector('.cell.pinned')
 
-    allRows.forEach((row: any) => {
-      const cells = row.querySelectorAll('.cell')
-      cells.forEach((cell: any, index: any) => {
-        const contentWidth = cell.scrollWidth
-        if (contentWidth > columnWidths[index]) {
-          columnWidths[index] = contentWidth
-        }
-      })
+    const columnCount = headerCells.length
+    if (!columnCount) return
+
+    // Reset tất cả flex styles trước khi tính toán
+    const allCells = table.querySelectorAll('.cell:not(.pinned)')
+    allCells.forEach((cell: any) => {
+      cell.style.flex = ''
+      cell.style.minWidth = ''
+      cell.style.width = ''
     })
 
-    // Áp dụng độ rộng cho tất cả các cột
-    allRows.forEach((row: any) => {
-      const cells = row.querySelectorAll('.cell')
-      cells.forEach((cell: any, index: any) => {
-        cell.style.flex = `0 0 ${columnWidths[index]}px`
-        cell.style.minWidth = `${columnWidths[index]}px`
+    // Đợi browser re-render
+    setTimeout(() => {
+      // Lấy độ rộng tự nhiên của từng cột header
+      const columnWidths = Array.from(headerCells).map((cell: any) => {
+        const computedStyle = window.getComputedStyle(cell)
+        const paddingLeft = parseFloat(computedStyle.paddingLeft || '0')
+        const paddingRight = parseFloat(computedStyle.paddingRight || '0')
+        const contentWidth = cell.scrollWidth - paddingLeft - paddingRight
+        return Math.max(contentWidth, 80) // Minimum width 80px
       })
-    })
+
+      // So sánh và lấy độ rộng lớn nhất giữa header và tất cả body cells cho từng cột
+      Array.from(bodyRows).forEach((row: any) => {
+        const cells: any = row.querySelectorAll('.cell:not(.pinned)')
+        cells.forEach((cell: any, index: number) => {
+          if (index < columnWidths.length) {
+            const computedStyle = window.getComputedStyle(cell)
+            const paddingLeft = parseFloat(computedStyle.paddingLeft || '0')
+            const paddingRight = parseFloat(computedStyle.paddingRight || '0')
+            const contentWidth = cell.scrollWidth - paddingLeft - paddingRight
+            const width = Math.max(contentWidth, 80)
+            columnWidths[index] = Math.max(columnWidths[index], width)
+          }
+        })
+      })
+
+      // Áp dụng cho header
+      headerCells.forEach((cell: any, index: number) => {
+        const width = columnWidths[index]
+        cell.style.flex = `0 0 ${width}px`
+        cell.style.minWidth = `${width}px`
+        // cell.style.maxWidth = `${width}px`
+      })
+
+      // Áp dụng cho body rows
+      Array.from(bodyRows).forEach((row: any) => {
+        const cells: any = row.querySelectorAll('.cell:not(.pinned)')
+        cells.forEach((cell: any, index: number) => {
+          if (index < columnWidths.length) {
+            const width = columnWidths[index]
+            cell.style.flex = `0 0 ${width}px`
+            cell.style.minWidth = `${width}px`
+            // cell.style.maxWidth = `${width}px`
+          }
+        })
+      })
+
+      // Tính và cố định độ rộng cho cột pinned (Edit/Thao tác), đồng thời chừa khoảng trống bên phải
+      // if (pinnedHeaderCell) {
+      //   const pinnedRect = pinnedHeaderCell.getBoundingClientRect()
+      //   const pinnedWidth = Math.max(0, Math.round(pinnedRect.width))
+
+      //   // Set width for all pinned cells (header + body)
+      //   const pinnedCells = table.querySelectorAll('.cell.pinned')
+      //   pinnedCells.forEach((cell: any) => {
+      //     cell.style.flex = `0 0 ${pinnedWidth}px`
+      //     cell.style.minWidth = `${pinnedWidth}px`
+      //     cell.style.maxWidth = `${pinnedWidth}px`
+      //   })
+
+      //   // Add right padding so content doesn't go under the sticky pinned column
+      //   const padRight = pinnedWidth - 60 // smaller buffer for shadow/padding
+      //   ;(header as HTMLElement).style.paddingRight = `${padRight}px`
+      //   Array.from(bodyRows).forEach((row: any) => {
+      //     ;(row as HTMLElement).style.paddingRight = `${padRight}px`
+      //   })
+      // }
+    }, 10)
   }
 }
 
 export const capitalizeFirstLetter = (str: any) => {
   return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+// Format a numeric string with thousands separators (e.g., 50000000 -> 50,000,000)
+export const formatNumber = (value: string | number): string => {
+  if (value === undefined || value === null) return ''
+  const numeric = String(value).replace(/[^\d]/g, '')
+  if (!numeric) return ''
+  return numeric.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+
+// Remove all non-digit characters from a formatted number string
+export const unformatNumber = (value: string | number): string => {
+  if (value === undefined || value === null) return ''
+  return String(value).replace(/[^\d]/g, '')
 }

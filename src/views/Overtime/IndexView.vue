@@ -236,7 +236,7 @@
         },
       })
       .then((res) => {
-        console.log('handleManagerApprove ~ res', res)
+        fetchDataOvertime()
       })
       .catch((err) => {
         console.log('handleManagerApprove ~ err', err)
@@ -256,7 +256,7 @@
         },
       })
       .then((res) => {
-        console.log('handleHumanApprove ~ res', res)
+        fetchDataOvertime()
       })
       .catch((err) => {
         console.log('handleHumanApprove ~ err', err)
@@ -477,7 +477,7 @@
                           class="flex flex-col overflow-hidden rounded-xl border border-solid border-[#EDEDF6] bg-white shadow-2xl"
                           default-value="0"
                         >
-                          <template v-if="checkPermission('Orvertime', 'ManagerStatus')">
+                          <template v-if="it.manager_approved">
                             <RadioGroupItem
                               :id="`r1-${it.id}`"
                               class="block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]"
@@ -537,7 +537,7 @@
                           class="flex flex-col overflow-hidden rounded-xl border border-solid border-[#EDEDF6] bg-white shadow-2xl"
                           default-value="0"
                         >
-                          <template v-if="checkPermission('Orvertime', 'HumanStatus')">
+                          <template v-if="it.human_approved">
                             <RadioGroupItem
                               :id="`r1-${it.id}`"
                               class="block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]"

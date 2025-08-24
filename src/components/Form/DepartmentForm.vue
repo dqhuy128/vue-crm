@@ -108,6 +108,13 @@
   // Emits
   const emit = defineEmits(['submit', 'cancel'])
 
+  const paramsPayload = reactive({
+    type: 'staff',
+    name: '',
+    description: '',
+    parent_id: '',
+  })
+
   // Reactive data
   const formData = reactive({
     name: props.editData?.name || '',
@@ -146,6 +153,31 @@
     }
     return props.parentOptions
   })
+
+  // Keep paramsPayload.parent_id in sync with selected parentId
+  watch(
+    () => formData.parentId,
+    (val) => {
+      paramsPayload.parent_id = val
+    },
+    { immediate: true }
+  )
+
+  watch(
+    () => formData.name,
+    (val) => {
+      paramsPayload.name = val
+    },
+    { immediate: true }
+  )
+
+  watch(
+    () => formData.description,
+    (val) => {
+      paramsPayload.description = val
+    },
+    { immediate: true }
+  )
 
   // Sync form when editData changes so clicking "Sửa" trên node khác sẽ cập nhật ngay
   watch(
@@ -228,9 +260,8 @@
     }
   }
 
-  const handleParentChange = (_option) => {
-    // Handle parent category selection
-    // console.log('Parent changed:', option)
+  const handleParentChange = (option) => {
+    paramsPayload.parent_id = option?.value ?? null
   }
 
   const handleSubmit = async () => {
@@ -241,12 +272,7 @@
     isSubmitting.value = true
 
     try {
-      const submitData = {
-        ...formData,
-        id: props.editData?.id || null,
-      }
-
-      await emit('submit', submitData)
+      await emit('submit', paramsPayload)
 
       // Reset form if not in edit mode
       if (!props.editData) {
