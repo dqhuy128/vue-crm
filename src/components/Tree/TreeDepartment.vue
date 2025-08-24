@@ -22,6 +22,7 @@
           :level="0"
           @edit="handleEdit"
           @toggle="handleToggle"
+          @delete="handleDelete"
         />
       </div>
     </div>
@@ -42,7 +43,7 @@
   })
 
   // Emits
-  const emit = defineEmits(['add-department', 'edit-department', 'node-toggle'])
+  const emit = defineEmits(['add-department', 'edit-department', 'node-toggle', 'delete-department'])
 
   // Reactive tree data derived from props.data
   const treeData = ref([])
@@ -108,8 +109,8 @@
   )
 
   // Methods
-  const handleEdit = (node) => {
-    emit('edit-department', node)
+  const handleEdit = (id) => {
+    emit('edit-department', id)
   }
 
   const handleToggle = (nodeId) => {
@@ -130,6 +131,10 @@
       }
     }
     return false
+  }
+
+  const handleDelete = (id) => {
+    emit('delete-department', id)
   }
 </script>
 

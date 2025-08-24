@@ -30,6 +30,9 @@
         <button class="edit-btn" @click="handleEdit">
           <span>Sửa</span>
         </button>
+        <button class="delete-btn" @click="handleDelete">
+          <span>Xóa</span>
+        </button>
       </div>
     </div>
 
@@ -42,6 +45,7 @@
         :level="level + 1"
         @edit="$emit('edit', $event)"
         @toggle="$emit('toggle', $event)"
+        @delete="$emit('delete', $event)"
       />
     </div>
   </div>
@@ -63,7 +67,7 @@
   })
 
   // Emits
-  const emit = defineEmits(['edit', 'toggle'])
+  const emit = defineEmits(['edit', 'toggle', 'delete'])
 
   // Computed
   const hasChildren = computed(() => {
@@ -76,7 +80,11 @@
   }
 
   const handleEdit = () => {
-    emit('edit', props.node)
+    emit('edit', props.node.id)
+  }
+
+  const handleDelete = () => {
+    emit('delete', props.node.id)
   }
 </script>
 
@@ -217,6 +225,25 @@
 
   .edit-btn:hover {
     background: #16a5d8;
+    transform: translateY(-1px);
+  }
+
+  .delete-btn {
+    background: rgb(255, 105, 105);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 1px 7px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 12px;
+    flex-shrink: 0;
+  }
+
+  .delete-btn:hover {
+    background: red;
     transform: translateY(-1px);
   }
 
