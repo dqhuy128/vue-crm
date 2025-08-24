@@ -266,9 +266,10 @@
     if (props.editData) {
       // Reset to original data
       Object.assign(formData, {
-        name: props.editData.name || '',
-        parentId: props.editData.parent_id || '',
-        description: props.editData.description || '',
+        id: '',
+        name: '',
+        parentId: '',
+        description: '',
       })
     } else {
       resetForm()

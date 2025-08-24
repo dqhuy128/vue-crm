@@ -47,6 +47,7 @@
 
   // Reactive tree data derived from props.data
   const treeData = ref([])
+  const expandedIds = ref(new Set())
 
   // Helpers to safely access different back-end shapes
   const pick = (obj, keys) => {
@@ -82,28 +83,28 @@
     return String(name ?? code ?? pick(item, ['id', '_id', 'key']) ?? 'Unnamed')
   }
 
-  const toNode = (item, pathIndex = '0') => {
+  const toNode = (item, pathIndex = '0', expandedIdSet) => {
     const id = String(pick(item, ['id', '_id', 'key', 'value', 'code', 'categoryCode']) ?? `${pathIndex}`)
     const children = resolveChildren(item)
     return {
       id,
       name: formatLabel(item),
-      // Start collapsed by default; user will expand manually
-      expanded: false,
-      children: (children || []).map((child, idx) => toNode(child, `${pathIndex}-${idx}`)),
+      // Preserve expanded state if previously expanded
+      expanded: expandedIdSet?.has(id) || false,
+      children: (children || []).map((child, idx) => toNode(child, `${pathIndex}-${idx}`, expandedIdSet)),
     }
   }
 
-  const mapTree = (input) => {
+  const mapTree = (input, expandedIdSet) => {
     if (!Array.isArray(input)) return []
-    return input.map((item, idx) => toNode(item, String(idx)))
+    return input.map((item, idx) => toNode(item, String(idx), expandedIdSet))
   }
 
   // Sync incoming data
   watch(
     () => _props.data,
     (val) => {
-      treeData.value = mapTree(val || [])
+      treeData.value = mapTree(val || [], expandedIds.value)
     },
     { immediate: true, deep: true }
   )
@@ -111,6 +112,10 @@
   // Methods
   const handleEdit = (id) => {
     emit('edit-department', id)
+  }
+
+  const handleDelete = (id) => {
+    emit('delete-department', id)
   }
 
   const handleToggle = (nodeId) => {
@@ -122,6 +127,11 @@
     for (let node of nodes) {
       if (node.id === targetId) {
         node.expanded = !node.expanded
+        if (node.expanded) {
+          expandedIds.value.add(node.id)
+        } else {
+          expandedIds.value.delete(node.id)
+        }
         return true
       }
       if (node.children && node.children.length > 0) {
@@ -131,10 +141,6 @@
       }
     }
     return false
-  }
-
-  const handleDelete = (id) => {
-    emit('delete-department', id)
   }
 </script>
 
