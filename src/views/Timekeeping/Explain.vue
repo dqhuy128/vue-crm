@@ -193,10 +193,10 @@
 
                   <div class="cell">
                     <button
+                      v-if="it.image"
                       type="button"
                       class="cell-btn-edit shrink-0 cursor-pointer"
                       @click="openPreview(it.image)"
-                      v-if="it.image"
                     >
                       <img src="@/assets/images/action-edit-1.svg" alt="" />
                     </button>
@@ -500,14 +500,14 @@
   import { useAuth } from 'vue-auth3'
 
   import Breadcrums from '@/components/BreadcrumsNew.vue'
+  import ModalWorkExplain from '@/components/Modal/ModalWorkExplain.vue'
+  import Modal from '@/components/Modals.vue'
   import { useWork } from '@/composables/work'
   import { apiUri } from '@/constants/apiUri'
   import router from '@/router'
   import { usePermissionStore } from '@/store/permission'
   import { tableMagic } from '@/utils/main'
   import MainLayout from '@/views/MainLayout.vue'
-  import Modal from '@/components/Modals.vue'
-  import ModalWorkExplain from '@/components/Modal/ModalWorkExplain.vue'
 
   const toast = reactive({
     toastA: false,

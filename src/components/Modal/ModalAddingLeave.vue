@@ -185,6 +185,12 @@
 
 <script lang="ts" setup>
   import '@vuepic/vue-datepicker/dist/main.css'
+
+  import { Icon } from '@iconify/vue'
+  import VueDatePicker from '@vuepic/vue-datepicker'
+  import axios from 'axios'
+  import { format } from 'date-fns'
+  import { vi } from 'date-fns/locale/vi'
   import {
     SelectContent,
     SelectGroup,
@@ -198,11 +204,6 @@
     SelectValue,
     SelectViewport,
   } from 'radix-vue'
-  import { Icon } from '@iconify/vue'
-  import VueDatePicker from '@vuepic/vue-datepicker'
-  import axios from 'axios'
-  import { format } from 'date-fns'
-  import { vi } from 'date-fns/locale/vi'
   import { computed, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
 
@@ -346,6 +347,7 @@
       const d = format(value, 'dd/MM/yyyy')
       return `Thời gian nghỉ: Từ ngày ${d} đến hết ngày ${d}`
     }
+    return ''
   })
 
   const postRequest = ref<any | null>(null)

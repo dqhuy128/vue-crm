@@ -141,8 +141,8 @@
   import { computed, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
 
-  import { apiUri } from '@/constants/apiUri'
   import Modal from '@/components/Modals.vue'
+  import { apiUri } from '@/constants/apiUri'
 
   const auth = useAuth()
   const token = auth.token()
