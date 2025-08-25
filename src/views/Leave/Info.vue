@@ -109,12 +109,12 @@
           <button
             id="tableAdding"
             type="button"
-            class="hover:shadow-hoverinset inline-flex cursor-pointer items-end justify-center gap-2 rounded-[24px] bg-[#1b4dea] p-[7px_12px] transition max-md:flex-auto max-md:items-center max-md:gap-1"
+            class="hover:shadow-hoverinset inline-flex cursor-pointer items-end justify-center gap-2 rounded-[24px] bg-[#1b4dea] p-[7px_12px] transition max-md:flex-auto max-md:items-center max-md:gap-1 md:min-w-[168px]"
             @click="toggleModal('modalAddLeave')"
           >
-            <img src="@/assets/images/si_add-fill.svg" alt="" />
+            <!-- <img src="@/assets/images/si_add-fill.svg" alt="" /> -->
             <span class="font-inter text-[16px] leading-normal font-bold text-white max-md:text-[14px]">
-              Xin nghỉ
+              Xin nghỉ phép
             </span>
           </button>
         </div>
@@ -137,7 +137,7 @@
                 </div>
               </div>
               <div class="cell pinned">
-                <div class="cell edit">Edit</div>
+                <div class="cell edit">Thao tác</div>
               </div>
             </div>
 
@@ -152,44 +152,157 @@
                   </div>
 
                   <div class="cell">
-                    <template v-if="it.begin_date">
-                      {{ it.begin_date }}
-                    </template>
+                    {{ it.code }}
                   </div>
 
                   <div class="cell">
-                    <template v-if="it.finish_date">
-                      {{ it.finish_date }}
-                    </template>
+                    {{ it.name }}
                   </div>
 
                   <div class="cell">
-                    <template v-if="it.reason && String(it.reason) !== 'null'">
-                      {{ it.reason }}
-                    </template>
+                    {{ it.begin_date }}
                   </div>
 
                   <div class="cell">
-                    <template v-if="it.total_date">
-                      {{ it.total_date }}
-                    </template>
+                    {{ it.finish_date }}
                   </div>
 
-                  <template v-if="it.status === 'Đã phê duyệt'">
-                    <div class="cell status status-green status-body text-[10px]">Đã phê duyệt</div>
-                  </template>
+                  <div class="cell">
+                    {{ it.reason }}
+                  </div>
 
-                  <template v-if="it.status === 'Chờ phê duyệt' || it.status === null">
-                    <div class="cell status status-red status-body text-[10px]">Chờ phê duyệt</div>
-                  </template>
+                  <div class="cell">
+                    <template v-if="it.type_text === LeaveTypeOptions.REGIME"> Có </template>
+                    <template v-else> Không </template>
+                  </div>
 
-                  <template v-if="it.status === 'Đã từ chối'">
-                    <div class="cell status status-gray status-body text-[10px]">Không phê duyệt</div>
-                  </template>
+                  <div class="cell">
+                    {{ it.type_text }}
+                  </div>
+
+                  <div class="cell">
+                    <div class="relative w-full" @click.stop="toggleDropdownManager(it.id)">
+                      <!-- <template v-if="checkPermission('Overtime', 'Approval')"> -->
+                      <template v-if="it.manager_status_text == 'Đã phê duyệt'">
+                        <div class="status status-green status-body block w-full text-[13px]">Đã phê duyệt</div>
+                      </template>
+
+                      <template v-if="it.manager_status_text == 'Chờ phê duyệt'">
+                        <div class="status status-red status-body block w-full text-[13px]">Chờ phê duyệt</div>
+                      </template>
+
+                      <template v-if="it.manager_status_text == 'Đã từ chối'">
+                        <div class="status status-gray status-body block w-full text-[13px]">Không phê duyệt</div>
+                      </template>
+                      <!-- </template> -->
+
+                      <div
+                        class="invisible absolute right-0 left-0 z-[12] w-full opacity-0 transition"
+                        :class="{
+                          'visible opacity-100': activeDropdownManager === it.id,
+                        }"
+                      >
+                        <RadioGroupRoot
+                          v-model="radioStateSingle"
+                          class="flex flex-col overflow-hidden rounded-xl border border-solid border-[#EDEDF6] bg-white shadow-2xl"
+                          default-value="0"
+                        >
+                          <template v-if="it.manager_approved">
+                            <RadioGroupItem
+                              :id="`r1-${it.id}`"
+                              class="block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]"
+                              value="1"
+                              @click="handleManagerApprove(it.id, '1')"
+                            >
+                              <label
+                                class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
+                                :for="`r1-${it.id}`"
+                              >
+                                Duyệt
+                              </label>
+                            </RadioGroupItem>
+                            <RadioGroupItem
+                              :id="`r2-${it.id}`"
+                              class="block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]"
+                              value="2"
+                              @click="handleManagerApprove(it.id, '2')"
+                            >
+                              <label
+                                class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
+                                :for="`r2-${it.id}`"
+                              >
+                                Không duyệt
+                              </label>
+                            </RadioGroupItem>
+                          </template>
+                        </RadioGroupRoot>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="cell">
+                    <div class="relative w-full" @click.stop="toggleDropdownHuman(it.id)">
+                      <!-- <template v-if="checkPermission('Overtime', 'Approval')"> -->
+                      <template v-if="it.human_status_text == 'Đã phê duyệt'">
+                        <div class="status status-green status-body block w-full text-[13px]">Đã phê duyệt</div>
+                      </template>
+
+                      <template v-if="it.human_status_text == 'Chờ phê duyệt'">
+                        <div class="status status-red status-body block w-full text-[13px]">Chờ phê duyệt</div>
+                      </template>
+
+                      <template v-if="it.human_status_text == 'Đã từ chối'">
+                        <div class="status status-gray status-body block w-full text-[13px]">Không phê duyệt</div>
+                      </template>
+                      <!-- </template> -->
+
+                      <div
+                        class="invisible absolute right-0 left-0 z-[12] w-full opacity-0 transition"
+                        :class="{
+                          'visible opacity-100': activeDropdownHuman === it.id,
+                        }"
+                      >
+                        <RadioGroupRoot
+                          v-model="radioStateSingle"
+                          class="flex flex-col overflow-hidden rounded-xl border border-solid border-[#EDEDF6] bg-white shadow-2xl"
+                          default-value="0"
+                        >
+                          <template v-if="it.human_approved">
+                            <RadioGroupItem
+                              :id="`r1-${it.id}`"
+                              class="block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]"
+                              value="1"
+                              @click="handleHumanApprove(it.id, '1')"
+                            >
+                              <label
+                                class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
+                                :for="`r1-${it.id}`"
+                              >
+                                Duyệt
+                              </label>
+                            </RadioGroupItem>
+                            <RadioGroupItem
+                              :id="`r2-${it.id}`"
+                              class="block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]"
+                              value="2"
+                              @click="handleHumanApprove(it.id, '2')"
+                            >
+                              <label
+                                class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
+                                :for="`r2-${it.id}`"
+                              >
+                                Không duyệt
+                              </label>
+                            </RadioGroupItem>
+                          </template>
+                        </RadioGroupRoot>
+                      </div>
+                    </div>
+                  </div>
 
                   <div class="cell pinned pinned-body">
                     <div class="cell edit edit-body">
-                      <template v-if="checkPermission('Leave', 'Update')">
+                      <template v-if="it.action.includes('edit')">
                         <button
                           type="button"
                           class="cell-btn-edit shrink-0 cursor-pointer"
@@ -199,7 +312,7 @@
                         </button>
                       </template>
 
-                      <template v-if="checkPermission('Leave', 'Delete')">
+                      <template v-if="it.action.includes('delete')">
                         <button
                           type="button"
                           class="cell-btn-delete shrink-0 cursor-pointer"
@@ -213,32 +326,10 @@
                 </div>
               </template>
             </div>
-
-            <!-- <div
-                      id="isLoadingTable"
-                      class="absolute w-full inset-0 !h-full z-100 bg-[#ffffffbf]"
-                    >
-                      <div class="animate-loading-table">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="size-6"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                          />
-                        </svg>
-                      </div>
-                      <div class="block">Đang tải dữ liệu</div>
-                    </div> -->
           </div>
         </div>
 
+        <!-- PAGINATION -->
         <div class="tb-pagination flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4">
           <div class="relative">
             <select
@@ -432,6 +523,28 @@
         class="fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]"
       />
     </ToastProvider>
+
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastDelete"
+        :duration="5000"
+        class="flex flex-col gap-1.5 rounded-md p-3 shadow-2xl"
+        :class="{
+          'bg-[#ffd0d0]': firstDeleteError,
+          'bg-[#c4ffd0]': dataPostRequestDelete?.status === 1,
+        }"
+      >
+        <ToastTitle class="text-[13px] font-medium">
+          {{ dataPostRequestDelete?.message }}
+        </ToastTitle>
+        <ToastDescription v-if="firstDeleteError" class="text-[11px] font-normal">
+          {{ firstDeleteError }}
+        </ToastDescription>
+      </ToastRoot>
+      <ToastViewport
+        class="fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]"
+      />
+    </ToastProvider>
   </MainLayout>
 </template>
 
@@ -452,6 +565,7 @@
     SelectValue,
     SelectViewport,
   } from 'radix-vue'
+  import { RadioGroupItem, RadioGroupRoot } from 'radix-vue'
   import { ToastDescription, ToastProvider, ToastRoot, ToastTitle, ToastViewport } from 'radix-vue'
   import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
@@ -467,10 +581,12 @@
   import { tableMagic } from '@/utils/main'
 
   import MainLayout from '../MainLayout.vue'
+  import { LeaveTypeOptions } from './types'
 
   const toast = reactive({
     toastCreate: false,
     toastUpdate: false,
+    toastDelete: false,
   })
 
   const auth = useAuth()
@@ -540,6 +656,14 @@
       hasSort: false,
     },
     {
+      title: 'Mã NV',
+      hasSort: false,
+    },
+    {
+      title: 'Họ và tên',
+      hasSort: false,
+    },
+    {
       title: 'Ngày bắt đầu',
       hasSort: false,
     },
@@ -552,11 +676,19 @@
       hasSort: false,
     },
     {
+      title: 'Chế độ',
+      hasSort: false,
+    },
+    {
       title: 'Buổi',
       hasSort: false,
     },
     {
-      title: 'Trạng thái',
+      title: 'Quản lý duyệt',
+      hasSort: false,
+    },
+    {
+      title: 'HCNS duyệt',
       hasSort: false,
     },
   ])
@@ -577,6 +709,26 @@
     counter: 0,
   })
 
+  const normalizeActionsOnItems = () => {
+    if (!dataLeave.doc?.items) return
+    dataLeave.doc.items = dataLeave.doc.items.map((item: any) => {
+      const src = item?.action
+      let normalized: string[] = []
+      if (Array.isArray(src)) {
+        normalized = src
+          .flatMap((s: any) => String(s).split(','))
+          .map((t: string) => t.trim())
+          .filter(Boolean)
+      } else if (typeof src === 'string') {
+        normalized = src
+          .split(',')
+          .map((t: string) => t.trim())
+          .filter(Boolean)
+      }
+      return { ...item, action: normalized }
+    })
+  }
+
   const fetchDataLeave = () => {
     if (debounceTime.value.timeOut !== null) {
       clearTimeout(debounceTime.value.timeOut)
@@ -594,6 +746,7 @@
         auth.token() as string
       ).then(() => {
         // console.log('🚀 ~ fetchDataLeave ~ res:', res)
+        normalizeActionsOnItems()
         tableMagic()
       })
     }, 300)
@@ -620,22 +773,32 @@
   const dataEditLeave = ref<any | null>(null)
   const handleEditLeave = async (id: number) => {
     try {
-      const res = await axios.get(`${apiUri}/leave/detail?id=${id}`, {
+      const { data } = await axios.get(`${apiUri}/leave/detail?id=${id}`, {
         headers: {
           Authorization: `Bearer ${auth.token()}`,
         },
       })
-      dataEditLeave.value = res.data
+
+      const { data: dataRes } = data
+      dataEditLeave.value = dataRes
       toggleModal('modalEditLeave')
-      // console.log(
-      //   '🚀 ~ handleEditLeave ~ dataEditLeave.value:',
-      //   dataEditLeave.value
-      // )
+      // console.log('🚀 ~ handleEditLeave ~ dataEditLeave.value:', dataEditLeave.value)
     } catch (error) {
       console.log('🚀 ~ handleEditLeave ~ error:', error)
     }
   }
 
+  const dataPostRequestDelete = ref<any | null>({
+    message: '',
+    status: 0,
+  })
+  const firstDeleteError = computed(() => {
+    const err = dataPostRequestDelete.value?.errors
+    if (!err || typeof err !== 'object') return ''
+    const keys = Object.keys(err)
+    if (keys.length === 0) return ''
+    return err[keys[0]]
+  })
   const leaveToDelete = ref<number | null>(null)
   const confirmDeleteLeave = (id: number) => {
     leaveToDelete.value = id
@@ -653,12 +816,111 @@
           Authorization: `Bearer ${auth.token()}`,
         },
       })
-      fetchDataLeave()
+      dataPostRequestDelete.value = res.data
+      toast.toastDelete = true
       toggleModal('modalStatusConfirm')
-      console.log('🚀 ~ handleDeleteLeave ~ res:', res)
+      fetchDataLeave()
+      // console.log('🚀 ~ handleDeleteLeave ~ res:', res)
     } catch (error) {
       console.log('🚀 ~ handleDeleteLeave ~ error:', error)
     }
+  }
+
+  const radioStateSingle = ref('0')
+  const handlePostApprove = async (id: number) => {
+    if (!radioStateSingle.value) return
+
+    try {
+      await radioStateSingle.value
+      const formData = new FormData()
+      formData.append('id', id.toString())
+      formData.append('status', radioStateSingle.value)
+
+      const response = await axios
+        .post(`${apiUri}/leave/status`, formData, {
+          headers: {
+            Authorization: `Bearer ${auth.token()}`,
+          },
+        })
+        .then((res) => {
+          if (dataLeave.doc && dataLeave.doc.items) {
+            const leaveItem = dataLeave.doc.items.find((item) => item.id === id)
+            if (!leaveItem) return
+
+            leaveItem.status =
+              radioStateSingle.value === '1'
+                ? 'Đã phê duyệt'
+                : radioStateSingle.value === '2'
+                  ? 'Đã từ chối'
+                  : 'Chờ phê duyệt'
+          }
+
+          console.log('🚀 ~ handlePostApprove ~ res:', res.data.message)
+        })
+        .then(() => {
+          tableMagic()
+        })
+    } catch (error) {
+      console.log('🚀 ~ handlePostApprove ~ error:', error)
+    }
+  }
+
+  const activeDropdownManager = ref(null)
+  const toggleDropdownManager = (id: any) => {
+    if (activeDropdownManager.value === id) {
+      activeDropdownManager.value = null
+    } else {
+      activeDropdownManager.value = id
+    }
+  }
+
+  const activeDropdownHuman = ref(null)
+  const toggleDropdownHuman = (id: any) => {
+    if (activeDropdownHuman.value === id) {
+      activeDropdownHuman.value = null
+    } else {
+      activeDropdownHuman.value = id
+    }
+  }
+
+  const handleManagerApprove = async (id: string, status: string) => {
+    const formData = new FormData()
+    formData.append('id', id)
+    formData.append('status', status)
+
+    const res = await axios
+      .post(`${apiUri}/leave/managerStatus`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      .then((res) => {
+        fetchDataLeave()
+      })
+      .catch((err) => {
+        console.log('handleManagerApprove ~ err', err)
+      })
+  }
+
+  const handleHumanApprove = async (id: string, status: string) => {
+    const formData = new FormData()
+    formData.append('id', id)
+    formData.append('status', status)
+
+    const res = await axios
+      .post(`${apiUri}/leave/humanStatus`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      .then((res) => {
+        fetchDataLeave()
+      })
+      .catch((err) => {
+        console.log('handleHumanApprove ~ err', err)
+      })
   }
 
   const { data, doFetch } = useLeaveInfo()

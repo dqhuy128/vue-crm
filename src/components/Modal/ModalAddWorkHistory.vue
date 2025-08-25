@@ -157,6 +157,7 @@
 
   interface typeParamsUserExplain {
     id: string
+    timekeeping_id: string
     user_id: string
     user_code: string
     name: string
@@ -168,6 +169,7 @@
   }
   const paramsUserExplain = reactive<typeParamsUserExplain>({
     id: props.datatype?.id || '',
+    timekeeping_id: props.datatype?.timekeeping_id || '',
     user_id: props.datatype?.user_id || '',
     user_code: props.datatype?.user_code || '',
     name: props.datatype?.name || '',
@@ -183,6 +185,7 @@
       console.log('🚀 ~ ModalAddWorkHistory.vue ~ newVal:', newVal)
       if (newVal) {
         paramsUserExplain.id = newVal.id || ''
+        paramsUserExplain.timekeeping_id = newVal.timekeeping_id || ''
         paramsUserExplain.user_id = newVal.user_id || ''
         paramsUserExplain.user_code = newVal.user_code || ''
         paramsUserExplain.name = newVal.name || ''
@@ -234,15 +237,15 @@
     try {
       onSubmitting.value = true
       const formData = new FormData()
-      formData.append('id', paramsUserExplain.id)
-      // formData.append('work_date', paramsUserExplain.work_date)
+      formData.append('timekeeping_id', paramsUserExplain.timekeeping_id)
       formData.append('reason', paramsUserExplain.reason)
+      formData.append('work_date', paramsUserExplain.work_date)
       const fileToUpload = selectedFile.value
       if (fileToUpload) {
         formData.append('file', fileToUpload)
       }
 
-      const res = await axios.post(`${apiUri}/work/update`, formData, {
+      const res = await axios.post(`${apiUri}/work/create`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,

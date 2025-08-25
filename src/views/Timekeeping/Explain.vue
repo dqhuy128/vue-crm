@@ -203,10 +203,15 @@
                   </div>
 
                   <div class="cell">
-                    <!-- @click="handleUserExplain(it?.user_id || '', it?.work_date || '')" -->
-                    <button type="button" class="cell-btn-edit shrink-0 cursor-pointer">
-                      <img src="@/assets/images/action-edit-2.svg" alt="" />
-                    </button>
+                    <template v-if="it?.action.includes('edit')">
+                      <button
+                        type="button"
+                        class="cell-btn-edit shrink-0 cursor-pointer"
+                        @click="handleUserExplain(it.id)"
+                      >
+                        <img src="@/assets/images/action-edit-2.svg" alt="" />
+                      </button>
+                    </template>
                   </div>
 
                   <div class="cell">
@@ -416,6 +421,32 @@
       </div>
     </Modal>
 
+    <Modal
+      :modal-active="modalActive.modalWorkExplain"
+      max-width="max-w-[670px]"
+      @close="toggleModal('modalWorkExplain')"
+    >
+      <div class="overflow-hidden rounded-[24px] bg-white p-[52px_24px_36px]">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[16px] font-bold text-[#464661] uppercase">Lý do</h3>
+        </div>
+
+        <ModalWorkExplain
+          :datatype="dataUserExplain"
+          :prop-function="fetchDataWorkExplain"
+          @post-request="getPostRequest"
+        >
+          <button
+            type="button"
+            class="hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2 text-center text-[16px] leading-normal font-bold text-[#464661] uppercase transition hover:transition max-md:grow md:min-w-[175px]"
+            @click="toggleModal('modalWorkExplain')"
+          >
+            Hủy
+          </button>
+        </ModalWorkExplain>
+      </div>
+    </Modal>
+
     <ToastProvider>
       <ToastRoot
         v-model:open="toast.toastA"
@@ -476,6 +507,7 @@
   import { tableMagic } from '@/utils/main'
   import MainLayout from '@/views/MainLayout.vue'
   import Modal from '@/components/Modals.vue'
+  import ModalWorkExplain from '@/components/Modal/ModalWorkExplain.vue'
 
   const toast = reactive({
     toastA: false,
@@ -631,6 +663,26 @@
     counter: 0,
   })
 
+  const normalizeActionsOnItems = () => {
+    if (!dataWorkExplain.doc?.items) return
+    dataWorkExplain.doc.items = dataWorkExplain.doc.items.map((item: any) => {
+      const src = item?.action
+      let normalized: string[] = []
+      if (Array.isArray(src)) {
+        normalized = src
+          .flatMap((s: any) => String(s).split(','))
+          .map((t: string) => t.trim())
+          .filter(Boolean)
+      } else if (typeof src === 'string') {
+        normalized = src
+          .split(',')
+          .map((t: string) => t.trim())
+          .filter(Boolean)
+      }
+      return { ...item, action: normalized }
+    })
+  }
+
   const fetchDataWorkExplain = () => {
     if (debounceTime.value.timeOut !== null) {
       clearTimeout(debounceTime.value.timeOut)
@@ -648,6 +700,7 @@
         auth.token() as string
       ).then(() => {
         // console.log('🚀 ~ fetchDataWorkExplain ~ res:', res)
+        normalizeActionsOnItems()
         tableMagic()
       })
     }, 300)
@@ -682,8 +735,7 @@
   const dataUserExplain = ref<any | null>(null)
   const handleUserExplain = async (id: string) => {
     try {
-      dataUserExplain.value = dataWorkExplain.doc?.items?.find((item) => item.id === id)
-      console.log('🚀 ~ handleUserExplain ~ dataUserExplain.value:', dataUserExplain.value)
+      dataUserExplain.value = await dataWorkExplain.doc?.items?.find((item) => item.id === id)
       toggleModal('modalWorkExplain')
     } catch (error) {
       console.log('🚀 ~ handleUserExplain ~ error:', error)

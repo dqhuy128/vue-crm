@@ -143,7 +143,7 @@ export const tableMagic = () => {
         const width = columnWidths[index]
         cell.style.flex = `0 0 ${width}px`
         cell.style.minWidth = `${width}px`
-        cell.style.maxWidth = `${width}px`
+        // cell.style.maxWidth = `${width}px`
       })
 
       // Áp dụng cho body rows
@@ -154,7 +154,7 @@ export const tableMagic = () => {
             const width = columnWidths[index]
             cell.style.flex = `0 0 ${width}px`
             cell.style.minWidth = `${width}px`
-            cell.style.maxWidth = `${width}px`
+            // cell.style.maxWidth = `${width}px`
           }
         })
       })

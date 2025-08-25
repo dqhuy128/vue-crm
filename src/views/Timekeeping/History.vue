@@ -596,7 +596,7 @@
   const dataUserExplain = ref<any | null>(null)
   const handleUserExplain = async (id: string, date: string) => {
     try {
-      dataUserExplain.value = dataWorkHistory.doc?.items?.[Number(id)]?.[date]
+      dataUserExplain.value = await dataWorkHistory.doc?.items?.[Number(id)]?.[date]
       console.log('🚀 ~ handleUserExplain ~ dataUserExplain.value:', dataUserExplain.value)
       toggleModal('modalAddWorkHistory')
     } catch (error) {
