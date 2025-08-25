@@ -31,10 +31,12 @@
     "vue": "^3.5.13",
     "vue-advanced-cropper": "^2.8.9",
     "vue-auth3": "^1.1.0",
+    "vue-eslint-parser": "^10.2.0",
     "vue-flatpickr-component": "^11.0.5",
     "vue-multiselect": "^3.2.0",
     "vue-router": "^4.5.0",
-    "vue-tippy": "^6.6.0"
+    "vue-tippy": "^6.6.0",
+    "yup": "^1.7.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",

@@ -142,7 +142,7 @@
       <div
         class="font-inter hidden flex-[1] text-[20px] leading-normal font-bold text-[#464661] max-md:text-[16px] md:block"
       >
-        Thông tin chấm công
+        Giải trình chấm công
       </div>
     </div>
 
@@ -151,7 +151,7 @@
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="table-container relative">
             <!-- Example column -->
-            <div id="tableRowHeader" class="header table-row justify-between !ps-5">
+            <div id="tableRowHeader" class="header table-row justify-between !px-5">
               <div v-for="(column, index) in tbhead" :key="index" class="cell">
                 {{ column.title }}
 
@@ -161,18 +161,22 @@
                   </button>
                 </div>
               </div>
-
-              <template v-if="checkPermission('Work', 'Create')">
-                <div class="cell pinned !py-4.5 !pe-2.5">Trạng thái</div>
-              </template>
             </div>
 
             <template v-if="dataWorkExplain.doc?.items">
               <div id="tableRowBody" class="body table-row">
-                <div v-for="(it, index) in dataWorkExplain.doc.items" :key="index" class="table-item justify-between">
+                <div
+                  v-for="(it, index) in dataWorkExplain.doc.items"
+                  :key="index"
+                  class="table-item justify-between !px-5"
+                >
                   <div class="cell">
                     <template v-if="index < 9"> 0{{ index + 1 }} </template>
                     <template v-else>{{ index + 1 }}</template>
+                  </div>
+
+                  <div class="cell">
+                    {{ it.code }}
                   </div>
 
                   <div class="cell">
@@ -180,52 +184,69 @@
                   </div>
 
                   <div class="cell">
-                    {{ it.work_date }}
-                  </div>
-
-                  <div class="cell">
-                    {{ it.check_in }}
-                  </div>
-
-                  <div class="cell">
-                    {{ it.check_out }}
+                    {{ it.created_at }}
                   </div>
 
                   <div class="cell">
                     {{ it.reason }}
                   </div>
 
-                  <div class="cell pinned pinned-body !pr-2.5">
-                    <div class="relative w-full" @click.stop="toggleDropdown(it.id)">
-                      <template v-if="it.status == 'Đã phê duyệt'">
-                        <div class="status status-green status-body w-full text-[13px]">Đã phê duyệt</div>
+                  <div class="cell">
+                    <button
+                      v-if="it.image"
+                      type="button"
+                      class="cell-btn-edit shrink-0 cursor-pointer"
+                      @click="openPreview(it.image)"
+                    >
+                      <img src="@/assets/images/action-edit-1.svg" alt="" />
+                    </button>
+                  </div>
+
+                  <div class="cell">
+                    <template v-if="it?.action.includes('edit')">
+                      <button
+                        type="button"
+                        class="cell-btn-edit shrink-0 cursor-pointer"
+                        @click="handleUserExplain(it.id)"
+                      >
+                        <img src="@/assets/images/action-edit-2.svg" alt="" />
+                      </button>
+                    </template>
+                  </div>
+
+                  <div class="cell">
+                    <div class="relative w-full" @click.stop="toggleDropdownManager(it.id)">
+                      <!-- <template v-if="checkPermission('Overtime', 'Approval')"> -->
+                      <template v-if="it.manager_status_text == 'Đã phê duyệt'">
+                        <div class="status status-green status-body block w-full text-[13px]">Đã phê duyệt</div>
                       </template>
 
-                      <template v-if="it.status == 'Chờ phê duyệt'">
-                        <div class="status status-red status-body w-full text-[13px]">Chờ phê duyệt</div>
+                      <template v-if="it.manager_status_text == 'Chờ phê duyệt'">
+                        <div class="status status-red status-body block w-full text-[13px]">Chờ phê duyệt</div>
                       </template>
 
-                      <template v-if="it.status == 'Đã từ chối'">
-                        <div class="status status-gray status-body w-full text-[13px]">Không phê duyệt</div>
+                      <template v-if="it.manager_status_text == 'Đã từ chối'">
+                        <div class="status status-gray status-body block w-full text-[13px]">Không phê duyệt</div>
                       </template>
+                      <!-- </template> -->
 
-                      <template v-if="checkPermission('Work', 'Status')">
-                        <div
-                          class="invisible absolute right-0 left-0 z-[12] w-full opacity-0 transition"
-                          :class="{
-                            'visible opacity-100': activeDropdownId === it.id,
-                          }"
+                      <div
+                        class="invisible absolute right-0 left-0 z-[12] w-full opacity-0 transition"
+                        :class="{
+                          'visible opacity-100': activeDropdownManager === it.id,
+                        }"
+                      >
+                        <RadioGroupRoot
+                          v-model="radioStateSingle"
+                          class="flex flex-col overflow-hidden rounded-xl border border-solid border-[#EDEDF6] bg-white shadow-2xl"
+                          default-value="0"
                         >
-                          <RadioGroupRoot
-                            v-model="radioStateSingle"
-                            class="flex flex-col overflow-hidden rounded-xl border border-solid border-[#EDEDF6] bg-white shadow-2xl"
-                            default-value="0"
-                          >
+                          <template v-if="it.manager_approved">
                             <RadioGroupItem
                               :id="`r1-${it.id}`"
-                              class="block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 text-center outline-none hover:bg-[#C4FFD0]"
+                              class="block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]"
                               value="1"
-                              @click="handlePostApprove(it.id)"
+                              @click="handleManagerApprove(it.id, '1')"
                             >
                               <label
                                 class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
@@ -236,9 +257,9 @@
                             </RadioGroupItem>
                             <RadioGroupItem
                               :id="`r2-${it.id}`"
-                              class="block cursor-pointer p-1.5 text-center outline-none hover:bg-[#FFC4C4]"
+                              class="block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]"
                               value="2"
-                              @click="handlePostApprove(it.id)"
+                              @click="handleManagerApprove(it.id, '2')"
                             >
                               <label
                                 class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
@@ -247,9 +268,69 @@
                                 Không duyệt
                               </label>
                             </RadioGroupItem>
-                          </RadioGroupRoot>
-                        </div>
+                          </template>
+                        </RadioGroupRoot>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="cell">
+                    <div class="relative w-full" @click.stop="toggleDropdownHuman(it.id)">
+                      <!-- <template v-if="checkPermission('Overtime', 'Approval')"> -->
+                      <template v-if="it.human_status_text == 'Đã phê duyệt'">
+                        <div class="status status-green status-body block w-full text-[13px]">Đã phê duyệt</div>
                       </template>
+
+                      <template v-if="it.human_status_text == 'Chờ phê duyệt'">
+                        <div class="status status-red status-body block w-full text-[13px]">Chờ phê duyệt</div>
+                      </template>
+
+                      <template v-if="it.human_status_text == 'Đã từ chối'">
+                        <div class="status status-gray status-body block w-full text-[13px]">Không phê duyệt</div>
+                      </template>
+                      <!-- </template> -->
+
+                      <div
+                        class="invisible absolute right-0 left-0 z-[12] w-full opacity-0 transition"
+                        :class="{
+                          'visible opacity-100': activeDropdownHuman === it.id,
+                        }"
+                      >
+                        <RadioGroupRoot
+                          v-model="radioStateSingle"
+                          class="flex flex-col overflow-hidden rounded-xl border border-solid border-[#EDEDF6] bg-white shadow-2xl"
+                          default-value="0"
+                        >
+                          <template v-if="it.human_approved">
+                            <RadioGroupItem
+                              :id="`r1-${it.id}`"
+                              class="block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]"
+                              value="1"
+                              @click="handleHumanApprove(it.id, '1')"
+                            >
+                              <label
+                                class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
+                                :for="`r1-${it.id}`"
+                              >
+                                Duyệt
+                              </label>
+                            </RadioGroupItem>
+                            <RadioGroupItem
+                              :id="`r2-${it.id}`"
+                              class="block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]"
+                              value="2"
+                              @click="handleHumanApprove(it.id, '2')"
+                            >
+                              <label
+                                class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
+                                :for="`r2-${it.id}`"
+                              >
+                                Không duyệt
+                              </label>
+                            </RadioGroupItem>
+                          </template>
+                        </RadioGroupRoot>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -258,6 +339,7 @@
           </div>
         </div>
 
+        <!-- PAGINATION -->
         <div class="tb-pagination flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4">
           <div class="relative">
             <select
@@ -333,6 +415,38 @@
       </div>
     </template>
 
+    <Modal :modal-active="modalPreviewActive" max-width="max-w-[1024px]" @close="modalPreviewActive = false">
+      <div class="overflow-hidden rounded-[24px] bg-white p-4">
+        <img v-if="previewUrl" :src="previewUrl" alt="preview" class="mx-auto max-h-[80vh] w-auto object-contain" />
+      </div>
+    </Modal>
+
+    <Modal
+      :modal-active="modalActive.modalWorkExplain"
+      max-width="max-w-[670px]"
+      @close="toggleModal('modalWorkExplain')"
+    >
+      <div class="overflow-hidden rounded-[24px] bg-white p-[52px_24px_36px]">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[16px] font-bold text-[#464661] uppercase">Lý do</h3>
+        </div>
+
+        <ModalWorkExplain
+          :datatype="dataUserExplain"
+          :prop-function="fetchDataWorkExplain"
+          @post-request="getPostRequest"
+        >
+          <button
+            type="button"
+            class="hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2 text-center text-[16px] leading-normal font-bold text-[#464661] uppercase transition hover:transition max-md:grow md:min-w-[175px]"
+            @click="toggleModal('modalWorkExplain')"
+          >
+            Hủy
+          </button>
+        </ModalWorkExplain>
+      </div>
+    </Modal>
+
     <ToastProvider>
       <ToastRoot
         v-model:open="toast.toastA"
@@ -386,6 +500,8 @@
   import { useAuth } from 'vue-auth3'
 
   import Breadcrums from '@/components/BreadcrumsNew.vue'
+  import ModalWorkExplain from '@/components/Modal/ModalWorkExplain.vue'
+  import Modal from '@/components/Modals.vue'
   import { useWork } from '@/composables/work'
   import { apiUri } from '@/constants/apiUri'
   import router from '@/router'
@@ -416,6 +532,7 @@
       isInputActive.value = event.type === 'focus'
     }
   }
+
   // Add event listener for window resize
   onMounted(() => {
     // Khởi tạo giá trị ban đầu
@@ -463,23 +580,35 @@
       hasSort: false,
     },
     {
+      title: 'Mã NV',
+      hasSort: false,
+    },
+    {
       title: 'Họ và tên',
       hasSort: false,
     },
     {
-      title: 'Ngày làm việc',
-      hasSort: false,
-    },
-    {
-      title: 'Giờ vào',
-      hasSort: false,
-    },
-    {
-      title: 'Giờ ra',
+      title: 'Ngày giải trình',
       hasSort: false,
     },
     {
       title: 'Lý do',
+      hasSort: false,
+    },
+    {
+      title: 'Hình ảnh',
+      hasSort: false,
+    },
+    {
+      title: 'Giải trình',
+      hasSort: false,
+    },
+    {
+      title: 'Quản lý duyệt',
+      hasSort: false,
+    },
+    {
+      title: 'HCNS duyệt',
       hasSort: false,
     },
   ])
@@ -534,6 +663,26 @@
     counter: 0,
   })
 
+  const normalizeActionsOnItems = () => {
+    if (!dataWorkExplain.doc?.items) return
+    dataWorkExplain.doc.items = dataWorkExplain.doc.items.map((item: any) => {
+      const src = item?.action
+      let normalized: string[] = []
+      if (Array.isArray(src)) {
+        normalized = src
+          .flatMap((s: any) => String(s).split(','))
+          .map((t: string) => t.trim())
+          .filter(Boolean)
+      } else if (typeof src === 'string') {
+        normalized = src
+          .split(',')
+          .map((t: string) => t.trim())
+          .filter(Boolean)
+      }
+      return { ...item, action: normalized }
+    })
+  }
+
   const fetchDataWorkExplain = () => {
     if (debounceTime.value.timeOut !== null) {
       clearTimeout(debounceTime.value.timeOut)
@@ -551,6 +700,7 @@
         auth.token() as string
       ).then(() => {
         // console.log('🚀 ~ fetchDataWorkExplain ~ res:', res)
+        normalizeActionsOnItems()
         tableMagic()
       })
     }, 300)
@@ -585,12 +735,69 @@
   const dataUserExplain = ref<any | null>(null)
   const handleUserExplain = async (id: string) => {
     try {
-      dataUserExplain.value = dataWorkExplain.doc?.items?.find((item) => item.id === id)
-      console.log('🚀 ~ handleUserExplain ~ dataUserExplain.value:', dataUserExplain.value)
+      dataUserExplain.value = await dataWorkExplain.doc?.items?.find((item) => item.id === id)
       toggleModal('modalWorkExplain')
     } catch (error) {
       console.log('🚀 ~ handleUserExplain ~ error:', error)
     }
+  }
+
+  const activeDropdownManager = ref(null)
+  const toggleDropdownManager = (id: any) => {
+    if (activeDropdownManager.value === id) {
+      activeDropdownManager.value = null
+    } else {
+      activeDropdownManager.value = id
+    }
+  }
+
+  const activeDropdownHuman = ref(null)
+  const toggleDropdownHuman = (id: any) => {
+    if (activeDropdownHuman.value === id) {
+      activeDropdownHuman.value = null
+    } else {
+      activeDropdownHuman.value = id
+    }
+  }
+
+  const handleManagerApprove = async (id: string, status: string) => {
+    const formData = new FormData()
+    formData.append('id', id)
+    formData.append('status', status)
+
+    const res = await axios
+      .post(`${apiUri}/work/managerStatus`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      .then((res) => {
+        fetchDataWorkExplain()
+      })
+      .catch((err) => {
+        console.log('handleManagerApprove ~ err', err)
+      })
+  }
+
+  const handleHumanApprove = async (id: string, status: string) => {
+    const formData = new FormData()
+    formData.append('id', id)
+    formData.append('status', status)
+
+    const res = await axios
+      .post(`${apiUri}/work/humanStatus`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      .then((res) => {
+        fetchDataWorkExplain()
+      })
+      .catch((err) => {
+        console.log('handleHumanApprove ~ err', err)
+      })
   }
 
   const explainItem = ref<any | null>(null)
@@ -704,6 +911,14 @@
       fetchDataWorkExplain()
     }
   })
+
+  // Image preview modal state and handler
+  const previewUrl = ref<string>('')
+  const modalPreviewActive = ref(false)
+  const openPreview = (url?: string) => {
+    previewUrl.value = url || ''
+    if (previewUrl.value) modalPreviewActive.value = true
+  }
 </script>
 
 <style lang="scss">

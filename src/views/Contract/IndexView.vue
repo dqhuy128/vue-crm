@@ -136,7 +136,7 @@
                 </div>
               </div>
               <template v-if="checkPermission('Contract', 'Update') || checkPermission('Contract', 'Delete')">
-                <div class="cell pinned !pe-4">
+                <div class="cell pinned">
                   <div class="cell edit">Thao tác</div>
                 </div>
               </template>
@@ -208,8 +208,8 @@
                     </div>
 
                     <template v-if="checkPermission('Contract', 'Update') || checkPermission('Contract', 'Delete')">
-                      <div class="cell pinned pinned-body !pe-4">
-                        <div class="cell edit edit-body">
+                      <div class="cell pinned pinned-body">
+                        <div class="cell edit edit-body !pe-6">
                           <template v-if="checkPermission('Contract', 'Update')">
                             <button
                               type="button"

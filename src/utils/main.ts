@@ -97,7 +97,7 @@ export const tableMagic = () => {
     const header: any = table.querySelector('.header')
     if (!header) return
 
-    const headerCells: any = header.querySelectorAll('.cell:not(.pinned)')
+    const headerCells: any = header.querySelectorAll('.cell')
     const bodyRows: any = table.querySelectorAll('.table-item')
     const _pinnedHeaderCell: any = header.querySelector('.cell.pinned')
 
@@ -105,7 +105,7 @@ export const tableMagic = () => {
     if (!columnCount) return
 
     // Reset tất cả flex styles trước khi tính toán
-    const allCells = table.querySelectorAll('.cell:not(.pinned)')
+    const allCells = table.querySelectorAll('.cell')
     allCells.forEach((cell: any) => {
       cell.style.flex = ''
       cell.style.minWidth = ''
@@ -125,7 +125,7 @@ export const tableMagic = () => {
 
       // So sánh và lấy độ rộng lớn nhất giữa header và tất cả body cells cho từng cột
       Array.from(bodyRows).forEach((row: any) => {
-        const cells: any = row.querySelectorAll('.cell:not(.pinned)')
+        const cells: any = row.querySelectorAll('.cell')
         cells.forEach((cell: any, index: number) => {
           if (index < columnWidths.length) {
             const computedStyle = window.getComputedStyle(cell)
@@ -148,7 +148,7 @@ export const tableMagic = () => {
 
       // Áp dụng cho body rows
       Array.from(bodyRows).forEach((row: any) => {
-        const cells: any = row.querySelectorAll('.cell:not(.pinned)')
+        const cells: any = row.querySelectorAll('.cell')
         cells.forEach((cell: any, index: number) => {
           if (index < columnWidths.length) {
             const width = columnWidths[index]
@@ -158,27 +158,6 @@ export const tableMagic = () => {
           }
         })
       })
-
-      // Tính và cố định độ rộng cho cột pinned (Edit/Thao tác), đồng thời chừa khoảng trống bên phải
-      // if (pinnedHeaderCell) {
-      //   const pinnedRect = pinnedHeaderCell.getBoundingClientRect()
-      //   const pinnedWidth = Math.max(0, Math.round(pinnedRect.width))
-
-      //   // Set width for all pinned cells (header + body)
-      //   const pinnedCells = table.querySelectorAll('.cell.pinned')
-      //   pinnedCells.forEach((cell: any) => {
-      //     cell.style.flex = `0 0 ${pinnedWidth}px`
-      //     cell.style.minWidth = `${pinnedWidth}px`
-      //     cell.style.maxWidth = `${pinnedWidth}px`
-      //   })
-
-      //   // Add right padding so content doesn't go under the sticky pinned column
-      //   const padRight = pinnedWidth - 60 // smaller buffer for shadow/padding
-      //   ;(header as HTMLElement).style.paddingRight = `${padRight}px`
-      //   Array.from(bodyRows).forEach((row: any) => {
-      //     ;(row as HTMLElement).style.paddingRight = `${padRight}px`
-      //   })
-      // }
     }, 10)
   }
 }
