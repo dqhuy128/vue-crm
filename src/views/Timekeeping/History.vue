@@ -160,24 +160,26 @@
                 </div>
               </div>
 
-              <template v-if="checkPermission('Work', 'Create')">
-                <div class="cell pinned !py-4.5 !pe-2.5">Giải trình</div>
-              </template>
+              <div class="cell pinned !py-4.5 !pe-2.5">Giải trình</div>
             </div>
 
             <template v-if="dataWorkHistoryList">
               <div id="tableRowBody" class="body table-row">
                 <template v-for="(item, index) in dataWorkHistoryList" :key="index">
                   <div v-for="(it, itIndex) in item.values" :key="itIndex" class="table-item justify-between !ps-5">
-                    <!-- <div class="cell">
+                    <div class="cell">
                       <template v-if="index < 9"> 0{{ index + 1 }} </template>
                       <template v-else>{{ index + 1 }}</template>
-                    </div> -->
+                    </div>
 
-                    <div class="cell">{{ index + 1 }}</div>
+                    <!-- <div class="cell">{{ index + 1 }}</div> -->
 
                     <div class="cell">
-                      {{ it?.user_name }}
+                      {{ it?.user_code }}
+                    </div>
+
+                    <div class="cell">
+                      {{ it?.name }}
                     </div>
 
                     <div class="cell">
@@ -193,20 +195,24 @@
                     </div>
 
                     <div class="cell">
-                      {{ it?.total_hours }}
+                      {{ it?.status }}
                     </div>
 
-                    <template v-if="checkPermission('Work', 'Create')">
-                      <div class="cell pinned pinned-body justify-center !pe-2.5">
+                    <div class="cell">
+                      {{ it?.total }}
+                    </div>
+
+                    <div class="cell pinned pinned-body justify-center !pe-2.5">
+                      <template v-if="it?.explanation">
                         <button
                           type="button"
                           class="cell-btn-edit shrink-0 cursor-pointer"
-                          @click="handleUserExplain(it.user_id, it.work_date)"
+                          @click="handleUserExplain(it?.user_id || '', it?.work_date || '')"
                         >
                           <img src="@/assets/images/action-edit-2.svg" alt="" />
                         </button>
-                      </div>
-                    </template>
+                      </template>
+                    </div>
                   </div>
                 </template>
               </div>
@@ -214,6 +220,7 @@
           </div>
         </div>
 
+        <!-- PAGINATION -->
         <div class="tb-pagination flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4">
           <div class="relative">
             <select
@@ -450,6 +457,10 @@
       hasSort: false,
     },
     {
+      title: 'Mã NV',
+      hasSort: false,
+    },
+    {
       title: 'Họ và tên',
       hasSort: false,
     },
@@ -466,7 +477,11 @@
       hasSort: false,
     },
     {
-      title: 'Giờ làm việc',
+      title: 'Trạng thái',
+      hasSort: false,
+    },
+    {
+      title: 'Công ngày',
       hasSort: false,
     },
   ])
@@ -596,17 +611,16 @@
   })
 
   interface WorkHistoryItem {
-    user_id: string
-    user_name: string
-    work_date: string
-    check_out: string
-    check_in: string
-    total_hours: string
-    finish_date?: string
-    reason?: string
-    total_date?: string
-    status?: string
-    id: string
+    id?: string
+    user_id?: string
+    name?: string
+    user_code?: string
+    work_date?: string
+    check_in?: string | null
+    check_out?: string | null
+    total?: string
+    status?: null | string
+    explanation?: boolean
   }
 
   const dataWorkHistoryList = computed(() => {

@@ -3,19 +3,18 @@
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 md:col-span-6">
         <div class="block">
-          <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]"> Ngày </span>
+          <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]"
+            >Mã nhân viên
+          </span>
 
-          <VueDatePicker
-            v-model="dateUserExplain"
-            :enable-time-picker="false"
-            locale="vi"
-            :format-locale="vi"
-            cancel-text="Huỷ"
-            select-text="Chọn"
-            format="dd/MM/yyyy"
-            :max-date="new Date()"
-            class="pointer-events-none opacity-50"
-            @update:model-value="updateDates"
+          <input
+            id=""
+            v-model="paramsUserExplain.user_code"
+            type="text"
+            name=""
+            placeholder="Nhập mã nhân viên"
+            class="font-inter focus:border-main pointer-events-none w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
+            readonly
           />
         </div>
       </div>
@@ -26,13 +25,72 @@
 
           <input
             id=""
-            v-model="paramsUserExplain.user_name"
+            v-model="paramsUserExplain.name"
             type="text"
             name=""
             placeholder="Nhập họ và tên"
-            class="font-inter focus:border-main pointer-events-none w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[16px] leading-normal font-normal text-[#000] opacity-50 placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
+            class="font-inter focus:border-main pointer-events-none w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
             readonly
           />
+        </div>
+      </div>
+
+      <div class="col-span-12 md:col-span-6">
+        <div class="block">
+          <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
+            Ngày giải trình
+          </span>
+
+          <VueDatePicker
+            v-model="dateUserExplain"
+            :enable-time-picker="false"
+            locale="vi"
+            :format-locale="vi"
+            cancel-text="Huỷ"
+            select-text="Chọn"
+            format="dd/MM/yyyy"
+            input-class-name="font-inter focus:border-main pointer-events-none w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
+            :max-date="new Date()"
+            class="pointer-events-none"
+            @update:model-value="updateDates"
+          />
+        </div>
+      </div>
+
+      <div class="col-span-12 md:col-span-6">
+        <div class="block">
+          <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
+            Hình ảnh kèm theo
+          </span>
+
+          <div class="flex items-center gap-3">
+            <div class="relative grow">
+              <input
+                type="text"
+                :value="fileInputText"
+                placeholder="Đính kèm hình ảnh"
+                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
+                readonly
+              />
+              <button
+                type="button"
+                class="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer"
+                @click="triggerFileInput"
+              >
+                <Icon icon="material-symbols:upload" class="h-5.5 w-5.5 text-[#464661]" />
+              </button>
+              <input ref="fileInputRef" type="file" accept="image/*" class="hidden" @change="handleFileChange" />
+            </div>
+
+            <button
+              type="button"
+              class="inline-flex h-[38px] w-[38px] items-center justify-center rounded-[8px] bg-[#1B4DEA]"
+              :class="{ 'pointer-events-none opacity-60': !previewUrl }"
+              @click="openPreview"
+            >
+              <Icon icon="iconamoon:eye-bold" class="h-5 w-5 text-white" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -64,6 +122,12 @@
       </button>
     </div>
   </form>
+
+  <Modal :modal-active="modalPreviewActive" max-width="max-w-[1024px]" @close="modalPreviewActive = false">
+    <div class="overflow-hidden rounded-[24px] bg-white p-4">
+      <img v-if="previewUrl" :src="previewUrl" alt="preview" class="mx-auto max-h-[80vh] w-auto object-contain" />
+    </div>
+  </Modal>
 </template>
 
 <script lang="ts" setup>
@@ -74,10 +138,11 @@
   import axios from 'axios'
   import { format } from 'date-fns'
   import { vi } from 'date-fns/locale/vi'
-  import { reactive, ref, watch } from 'vue'
+  import { computed, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
 
   import { apiUri } from '@/constants/apiUri'
+  import Modal from '@/components/Modals.vue'
 
   const auth = useAuth()
   const token = auth.token()
@@ -91,8 +156,10 @@
   }>()
 
   interface typeParamsUserExplain {
+    id: string
     user_id: string
-    user_name: string
+    user_code: string
+    name: string
     work_date: string
     check_in: string
     check_out: string
@@ -100,8 +167,10 @@
     reason: string
   }
   const paramsUserExplain = reactive<typeParamsUserExplain>({
+    id: props.datatype?.id || '',
     user_id: props.datatype?.user_id || '',
-    user_name: props.datatype?.user_name || '',
+    user_code: props.datatype?.user_code || '',
+    name: props.datatype?.name || '',
     work_date: props.datatype?.work_date || '',
     check_in: props.datatype?.check_in || '',
     check_out: props.datatype?.check_out || '',
@@ -111,9 +180,12 @@
   watch(
     () => props.datatype,
     (newVal) => {
+      console.log('🚀 ~ ModalAddWorkHistory.vue ~ newVal:', newVal)
       if (newVal) {
+        paramsUserExplain.id = newVal.id || ''
         paramsUserExplain.user_id = newVal.user_id || ''
-        paramsUserExplain.user_name = newVal.user_name || ''
+        paramsUserExplain.user_code = newVal.user_code || ''
+        paramsUserExplain.name = newVal.name || ''
         paramsUserExplain.work_date = newVal.work_date || ''
         dateUserExplain.value = newVal.work_date || ''
         paramsUserExplain.check_in = newVal.check_in || ''
@@ -139,19 +211,40 @@
 
   const onSubmitting = ref(false)
 
+  // Image upload/preview
+  const fileInputRef = ref<HTMLInputElement | null>(null)
+  const selectedFile = ref<File | null>(null)
+  const previewUrl = ref<string>('')
+  const modalPreviewActive = ref(false)
+
+  const triggerFileInput = () => fileInputRef.value?.click()
+  const handleFileChange = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    const file = target.files && target.files[0]
+    selectedFile.value = file || null
+    if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+    previewUrl.value = file ? URL.createObjectURL(file) : ''
+  }
+  const openPreview = () => {
+    if (previewUrl.value) modalPreviewActive.value = true
+  }
+  const fileInputText = computed(() => selectedFile.value?.name || '')
+
   const handlePostExplain = async () => {
     try {
       onSubmitting.value = true
       const formData = new FormData()
-      formData.append('user_id', paramsUserExplain.user_id)
-      formData.append('work_date', paramsUserExplain.work_date)
-      formData.append('check_in', paramsUserExplain.check_in)
-      formData.append('check_out', paramsUserExplain.check_out)
-      formData.append('total_hours', paramsUserExplain.total_hours)
+      formData.append('id', paramsUserExplain.id)
+      // formData.append('work_date', paramsUserExplain.work_date)
       formData.append('reason', paramsUserExplain.reason)
+      const fileToUpload = selectedFile.value
+      if (fileToUpload) {
+        formData.append('file', fileToUpload)
+      }
 
-      const res = await axios.post(`${apiUri}/work/create`, formData, {
+      const res = await axios.post(`${apiUri}/work/update`, formData, {
         headers: {
+          'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
         },
       })
