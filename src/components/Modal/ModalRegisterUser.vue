@@ -1,132 +1,697 @@
 <template>
   <Modal :modal-active="props.modal" max-width="max-w-[865px]" @close="() => emit('toggle-modal')">
-    <div class="overflow-hidden rounded-[24px] bg-white p-1.5">
-      <div class="mt-8 mb-7 text-center">
-        <h3 class="m-0 text-[16px] font-bold text-[#464661] uppercase">thêm mới người dùng</h3>
+    <form class="mx-auto w-full max-w-[864px] rounded-3xl bg-white py-11" @submit.prevent="onSubmitRegister">
+      <div class="mb-6 text-center text-[16px] font-bold text-[#464661] uppercase">thêm mới người dùng</div>
+
+      <!-- Thông tin cá nhân -->
+      <div class="bg-[#f8fcff] p-5 xl:px-12">
+        <div class="mb-3 text-[16px] font-semibold text-[#013878] uppercase">Thông tin cá nhân</div>
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]"
+              >Họ và tên <span class="text-[#e61b1b]">*</span></label
+            >
+            <input
+              v-model="name"
+              v-bind="nameAttrs"
+              placeholder="Nhập họ và tên"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+            <span v-if="errors.name" class="mt-1 text-xs text-red-500">{{ errors.name }}</span>
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]"
+              >Ngày tháng năm sinh <span class="text-[#e61b1b]">*</span></label
+            >
+            <VueDatePicker
+              v-model="pickerDOB"
+              :enable-time="false"
+              :format="'dd/MM/yyyy'"
+              locale="vi"
+              input-class-name="h-[38px] w-full rounded-lg border border-[#ededf6] px-3 focus:outline-none bg-white"
+            />
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]"
+              >Giới tính <span class="text-[#e61b1b]">*</span></label
+            >
+            <SelectRoot v-model="genderModel">
+              <SelectTrigger
+                class="font-inter flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] data-[placeholder]:text-[#909090] max-md:text-[14px]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                  placeholder="Nam"
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              </SelectTrigger>
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        value="male"
+                      >
+                        <SelectItemText>Nam</SelectItemText>
+                      </SelectItem>
+                      <SelectItem
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        value="female"
+                      >
+                        <SelectItemText>Nữ</SelectItemText>
+                      </SelectItem>
+                      <SelectItem
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        value="other"
+                      >
+                        <SelectItemText>Khác</SelectItemText>
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectViewport>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-3">
+            <label class="text-[14px] font-semibold text-[#464661]"
+              >Số điện thoại <span class="text-[#e61b1b]">*</span></label
+            >
+            <input
+              v-model="phone"
+              v-bind="phoneAttrs"
+              placeholder="Nhập số điện thoại"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+            <span v-if="errors.phone" class="mt-1 text-xs text-red-500">{{ errors.phone }}</span>
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-3">
+            <label class="text-[14px] font-semibold text-[#464661]">Email <span class="text-[#e61b1b]">*</span></label>
+            <input
+              v-model="email"
+              v-bind="emailAttrs"
+              placeholder="Nhập Email"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+            <span v-if="errors.email" class="mt-1 text-xs text-red-500">{{ errors.email }}</span>
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-3">
+            <label class="text-[14px] font-semibold text-[#464661]">STK NCB</label>
+            <input
+              v-model="paramsUser.bank_ncb_nunber"
+              placeholder="Nhập STK"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-3">
+            <label class="text-[14px] font-semibold text-[#464661]">Tình trạng hôn nhân</label>
+            <SelectRoot v-model="maritalStatusModel">
+              <SelectTrigger
+                class="font-inter flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] data-[placeholder]:text-[#909090] max-md:text-[14px]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                  placeholder="Chọn tình trạng ..."
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              </SelectTrigger>
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        value="SINGLE"
+                      >
+                        <SelectItemText>Độc thân</SelectItemText>
+                      </SelectItem>
+                      <SelectItem
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        value="MARRIED"
+                      >
+                        <SelectItemText>Đã kết hôn</SelectItemText>
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectViewport>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
+        </div>
       </div>
-      <!-- <div class="bg-[#fafafa] rounded-[18px_18px_0_0] p-5 pt-8">
-        <div
-          class="relative max-w-[112px] max-h-[112px] w-full h-full mx-auto mb-4"
-        >
-          <div
-            class="w-full h-full max-w-full bg-[#E9F0F4] rounded-[24px] overflow-hidden"
-          >
-            <img
-              src="@/assets/images/si_user-fill.svg"
-              class="object-cover w-full h-full"
-              alt=""
+
+      <!-- Thông tin cư trú -->
+      <div class="bg-white p-5 xl:px-12">
+        <div class="mb-3 text-[16px] font-semibold text-[#013878] uppercase">Thông tin cư trú</div>
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]"
+              >Số CCCD <span class="text-[#e61b1b]">*</span></label
+            >
+            <input
+              v-model="identification"
+              v-bind="identificationAttrs"
+              placeholder="Nhập số CCCD"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+            <span v-if="errors.identification" class="mt-1 text-xs text-red-500">{{ errors.identification }}</span>
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Ngày cấp</label>
+            <VueDatePicker
+              v-model="pickerDateissue"
+              :enable-time="false"
+              :format="'dd/MM/yyyy'"
+              locale="vi"
+              input-class-name="h-[38px] w-full rounded-lg border border-[#ededf6] px-3 focus:outline-none bg-white"
+            />
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Nơi cấp</label>
+            <input
+              v-model="paramsUser.place_of_issue"
+              placeholder="Nhập nơi cấp"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+          </div>
+          <div class="col-span-12 md:col-span-6">
+            <label class="text-[14px] font-semibold text-[#464661]"
+              >Địa chỉ thường trú <span class="text-[#e61b1b]">*</span></label
+            >
+            <input
+              v-model="permanent_address"
+              v-bind="permanent_addressAttrs"
+              placeholder="Nhập địa chỉ thường trú"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+            <span v-if="errors.permanent_address" class="mt-1 text-xs text-red-500">{{
+              errors.permanent_address
+            }}</span>
+          </div>
+          <div class="col-span-12 md:col-span-6">
+            <label class="text-[14px] font-semibold text-[#464661]"
+              >Địa chỉ tạm trú <span class="text-[#e61b1b]">*</span></label
+            >
+            <input
+              v-model="residence_address"
+              v-bind="residence_addressAttrs"
+              placeholder="Nhập địa chỉ tạm trú"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+            <span v-if="errors.residence_address" class="mt-1 text-xs text-red-500">{{
+              errors.residence_address
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Liên hệ khẩn cấp -->
+      <div class="bg-[#f8fcff] p-5 xl:px-12">
+        <div class="mb-3 text-[16px] font-semibold text-[#013878] uppercase">Liên hệ khẩn cấp</div>
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-12 md:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Họ và tên người thân</label>
+            <input
+              v-model="paramsUser.refer_name"
+              placeholder="Nhập họ và tên"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+          </div>
+          <div class="col-span-12 md:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Mối quan hệ</label>
+            <input
+              v-model="paramsUser.refer_relationship"
+              placeholder="Nhập mối quan hệ"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+          </div>
+          <div class="col-span-12 md:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">SĐT người thân</label>
+            <input
+              v-model="paramsUser.refer_phone"
+              placeholder="Nhập số điện thoại"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Thông tin công việc -->
+      <div class="bg-white p-5 xl:px-12">
+        <div class="mb-3 text-[16px] font-semibold text-[#013878] uppercase">Thông tin công việc</div>
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Ngày tháng vào làm việc</label>
+            <VueDatePicker
+              v-model="pickerWorkingDay"
+              :enable-time="false"
+              :format="'dd/MM/yyyy'"
+              locale="vi"
+              input-class-name="h-[38px] w-full rounded-lg border border-[#ededf6] px-3 focus:outline-none bg-white"
+            />
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Ngày lên chính thức</label>
+            <VueDatePicker
+              v-model="pickerOfficialDay"
+              :enable-time="false"
+              :format="'dd/MM/yyyy'"
+              locale="vi"
+              input-class-name="h-[38px] w-full rounded-lg border border-[#ededf6] px-3 focus:outline-none bg-white"
+            />
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Kiểu nhân viên</label>
+            <SelectRoot v-model="employeeTypeModel">
+              <SelectTrigger
+                class="inline-flex h-[38px] w-full items-center justify-between rounded-lg border border-[#ededf6] px-3"
+              >
+                <SelectValue placeholder="Chọn kiểu nhân viên" />
+              </SelectTrigger>
+              <SelectPortal>
+                <SelectContent
+                  class="z-[1000] mt-1 max-h-60 w-[--radix-select-trigger-width] overflow-auto rounded-md border border-[#ededf6] bg-white shadow"
+                >
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem value="probation" class="cursor-pointer px-3 py-2 hover:bg-gray-100"
+                        ><SelectItemText>Thử việc</SelectItemText></SelectItem
+                      >
+                      <SelectItem value="official" class="cursor-pointer px-3 py-2 hover:bg-gray-100"
+                        ><SelectItemText>Chính thức</SelectItemText></SelectItem
+                      >
+                      <SelectItem value="part_time" class="cursor-pointer px-3 py-2 hover:bg-gray-100"
+                        ><SelectItemText>Part-time</SelectItemText></SelectItem
+                      >
+                    </SelectGroup>
+                  </SelectViewport>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
+
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]"
+              >Mã nhân viên <span class="text-[#e61b1b]">*</span></label
+            >
+            <input
+              v-model="code"
+              v-bind="codeAttrs"
+              placeholder="Nhập mã nhân viên"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+            <span v-if="errors.code" class="mt-1 text-xs text-red-500">{{ errors.code }}</span>
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Mã Pincode</label>
+            <input
+              v-model="paramsUser.pincode"
+              placeholder="Nhập mã Pincode"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
+            />
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Chức vụ</label>
+            <SelectRoot v-model="positionType.id">
+              <SelectTrigger
+                class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                  placeholder="Chọn chức vụ"
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              </SelectTrigger>
+
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectScrollUpButton
+                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                  >
+                    <Icon icon="radix-icons:chevron-up" />
+                  </SelectScrollUpButton>
+
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        value="all"
+                      >
+                        <SelectItemText> Chọn chức vụ </SelectItemText>
+                      </SelectItem>
+
+                      <template v-for="(items, key) in positionData" :key="String(key)">
+                        <SelectItem
+                          v-for="(item, _) in items"
+                          :key="item.id"
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.id)"
+                        >
+                          <SelectItemText>
+                            {{ item.name }}
+                          </SelectItemText>
+                        </SelectItem>
+                      </template>
+                    </SelectGroup>
+                  </SelectViewport>
+
+                  <SelectScrollDownButton
+                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                  >
+                    <Icon icon="radix-icons:chevron-down" />
+                  </SelectScrollDownButton>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
+
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Chức danh</label>
+            <input
+              v-model="paramsUser.title"
+              placeholder="Nhập chức danh"
+              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
             />
           </div>
 
-          <div class="absolute bottom-0 right-0 z-10">
-            <img src="@/assets/images/ic-camera.svg" alt="" />
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Khối <span class="text-[#e61b1b]">*</span></label>
+            <SelectRoot v-model="staff_id">
+              <SelectTrigger
+                class="font-inter flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] data-[placeholder]:text-[#909090] max-md:text-[14px]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                  placeholder="Chọn khối"
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              </SelectTrigger>
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        value="all"
+                      >
+                        <SelectItemText> Chọn khối </SelectItemText>
+                      </SelectItem>
+                      <template v-for="item in departmentTree" :key="item.id">
+                        <SelectItem
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.id)"
+                        >
+                          <SelectItemText>{{ item.name }}</SelectItemText>
+                        </SelectItem>
+                      </template>
+                    </SelectGroup>
+                  </SelectViewport>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+            <span v-if="errors.staff_id" class="mt-1 text-xs text-red-500">{{ errors.staff_id }}</span>
+          </div>
+
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]"
+              >Phòng ban <span class="text-[#e61b1b]">*</span></label
+            >
+            <SelectRoot v-model="room_id">
+              <SelectTrigger
+                class="font-inter flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] data-[placeholder]:text-[#909090] max-md:text-[14px]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                  placeholder="Chọn phòng ban"
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              </SelectTrigger>
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectScrollUpButton
+                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                  >
+                    <Icon icon="radix-icons:chevron-up" />
+                  </SelectScrollUpButton>
+
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        value="all"
+                      >
+                        <SelectItemText> Chọn phòng ban </SelectItemText>
+                      </SelectItem>
+
+                      <template v-for="(items, key) in departmentChildrenOptions" :key="String(key)">
+                        <SelectItem
+                          v-if="items && items.id"
+                          :key="items.id"
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          :value="String(items.id)"
+                        >
+                          <SelectItemText>{{ items.name }}</SelectItemText>
+                        </SelectItem>
+                      </template>
+                    </SelectGroup>
+                  </SelectViewport>
+
+                  <SelectScrollDownButton
+                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                  >
+                    <Icon icon="radix-icons:chevron-down" />
+                  </SelectScrollDownButton>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+            <span v-if="errors.room_id" class="mt-1 text-xs text-red-500">{{ errors.room_id }}</span>
+          </div>
+
+          <div class="col-span-12 md:col-span-6 xl:col-span-3">
+            <label class="text-[14px] font-semibold text-[#464661]"
+              >Bộ phận <span class="text-[#e61b1b]">*</span></label
+            >
+            <SelectRoot v-model="paramsUser.room_id">
+              <SelectTrigger
+                class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                  placeholder="Chọn bộ phận"
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              </SelectTrigger>
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectScrollUpButton
+                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                  >
+                    <Icon icon="radix-icons:chevron-up" />
+                  </SelectScrollUpButton>
+
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        value="all"
+                      >
+                        <SelectItemText> Chọn bộ phận </SelectItemText>
+                      </SelectItem>
+
+                      <template v-for="(items, key) in staffData" :key="String(key)">
+                        <SelectItem
+                          v-for="(item, _) in items"
+                          :key="item.id"
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.id)"
+                        >
+                          <SelectItemText>
+                            {{ item.name }}
+                          </SelectItemText>
+                        </SelectItem>
+                      </template>
+                    </SelectGroup>
+                  </SelectViewport>
+
+                  <SelectScrollDownButton
+                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                  >
+                    <Icon icon="radix-icons:chevron-down" />
+                  </SelectScrollDownButton>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
+
+          <div class="col-span-12 md:col-span-6 xl:col-span-3">
+            <label class="text-[14px] font-semibold text-[#464661]">Quản lý trực tiếp</label>
+            <SelectRoot v-model="leaderType.id">
+              <SelectTrigger
+                class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                  placeholder="Chọn quản lý"
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              </SelectTrigger>
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectScrollUpButton
+                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                  >
+                    <Icon icon="radix-icons:chevron-up" />
+                  </SelectScrollUpButton>
+
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        value="all"
+                      >
+                        <SelectItemText> Chọn quản lý </SelectItemText>
+                      </SelectItem>
+
+                      <template v-for="(items, key) in leaderData" :key="String(key)">
+                        <SelectItem
+                          v-for="(item, _) in items"
+                          :key="item.id"
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.id)"
+                        >
+                          <SelectItemText>
+                            {{ item.name }}
+                          </SelectItemText>
+                        </SelectItem>
+                      </template>
+                    </SelectGroup>
+                  </SelectViewport>
+
+                  <SelectScrollDownButton
+                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                  >
+                    <Icon icon="radix-icons:chevron-down" />
+                  </SelectScrollDownButton>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
+
+          <div class="col-span-12 md:col-span-6 xl:col-span-3">
+            <label class="text-[14px] font-semibold text-[#464661]"
+              >Văn phòng làm việc <span class="text-[#e61b1b]">*</span></label
+            >
+            <SelectRoot v-model="regionType.id">
+              <SelectTrigger
+                class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                  placeholder="Chọn địa điểm"
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              </SelectTrigger>
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectScrollUpButton
+                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                  >
+                    <Icon icon="radix-icons:chevron-up" />
+                  </SelectScrollUpButton>
+
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        value="all"
+                      >
+                        <SelectItemText> Chọn địa điểm </SelectItemText>
+                      </SelectItem>
+
+                      <SelectItem
+                        v-for="(item, _) in regionData"
+                        :key="item.id"
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        :value="String(item.id)"
+                      >
+                        <SelectItemText>
+                          {{ item.name }}
+                        </SelectItemText>
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectViewport>
+
+                  <SelectScrollDownButton
+                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                  >
+                    <Icon icon="radix-icons:chevron-down" />
+                  </SelectScrollDownButton>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
+          </div>
+
+          <div class="col-span-12 md:col-span-6 xl:col-span-3">
+            <div class="flex h-full flex-col justify-end">
+              <button type="button" class="h-[38px] rounded-lg bg-[#1b4dea] px-4 text-white">RESET MẬT KHẨU</button>
+            </div>
           </div>
         </div>
-      </div> -->
+      </div>
 
-      <!-- sform register -->
-      <form class="mx-auto w-full p-[24px_16px] lg:p-[24px_48px]" @submit.prevent="onSubmitRegister()">
-        <div class="grid grid-cols-12 gap-6">
-          <div class="col-span-12 md:col-span-6 xl:col-span-4">
-            <div class="block">
-              <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Mã nhân viên
-              </span>
-              <input
-                v-bind="codeAttrs"
-                id=""
-                v-model="code"
-                type="text"
-                name=""
-                placeholder="Nhập mã nhân viên"
-                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
-              />
-              <div class="mt-1 text-sm text-red-500">{{ errors.code }}</div>
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-4">
-            <div class="block">
-              <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Họ và tên
-              </span>
-              <input
-                v-bind="nameAttrs"
-                id=""
-                v-model="name"
-                type="text"
-                name=""
-                placeholder="Nhập họ tên"
-                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
-              />
-              <div class="mt-1 text-sm text-red-500">{{ errors.name }}</div>
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-4">
-            <div class="block">
-              <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Số điện thoại
-              </span>
-              <input
-                v-bind="phoneAttrs"
-                id=""
-                v-model="phone"
-                type="text"
-                name=""
-                placeholder="Nhập số điện thoại"
-                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
-              />
-              <div class="mt-1 text-sm text-red-500">{{ errors.phone }}</div>
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-4">
-            <div class="block">
-              <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Email
-              </span>
-              <input
-                v-bind="emailAttrs"
-                id=""
-                v-model="email"
-                type="text"
-                name=""
-                placeholder="Nhập email"
-                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
-              />
-              <div class="mt-1 text-sm text-red-500">{{ errors.email }}</div>
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-4">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Ngày tháng năm sinh
-              </span>
-
-              <VueDatePicker
-                v-model="pickerDOB"
-                :enable-time-picker="false"
-                locale="vi"
-                :format-locale="vi"
-                cancel-text="Huỷ"
-                select-text="Chọn"
-                format="dd/MM/yyyy"
-                :max-date="new Date()"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-4">
+      <!-- Nhóm người dùng -->
+      <div class="bg-[#f8fcff] p-5 xl:px-12">
+        <div class="mb-3 text-[16px] font-semibold text-[#013878] uppercase">Phân quyền</div>
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-12 md:col-span-6">
             <div class="block">
               <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
                 Nhóm người dùng
               </span>
 
-              <SelectRoot v-model="group_user" v-bind="guAttrs">
+              <SelectRoot v-model="group_user">
                 <SelectTrigger
-                  class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
+                  class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
                   aria-label="Customise options"
                 >
                   <SelectValue
@@ -157,7 +722,6 @@
                           :value="String(item.name)"
                         >
                           <SelectItemText>
-                            <!-- {{ capitalizeFirstLetter(item) }} -->
                             {{ item.description }}
                           </SelectItemText>
                         </SelectItem>
@@ -178,560 +742,32 @@
               </div>
             </div>
           </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]"> CCCD </span>
-
-              <input
-                id=""
-                v-model="paramsUser.identification"
-                type="text"
-                name=""
-                placeholder="Nhập số CCCD"
-                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Ngày cấp
-              </span>
-
-              <VueDatePicker
-                v-model="pickerDateissue"
-                :enable-time-picker="false"
-                locale="vi"
-                :format-locale="vi"
-                cancel-text="Huỷ"
-                select-text="Chọn"
-                format="dd-MM-yyyy"
-                :max-date="new Date()"
-                @update:model-value="updateDates"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Nơi cấp
-              </span>
-
-              <input
-                id=""
-                v-model="paramsUser.place_of_issue"
-                type="text"
-                name=""
-                placeholder="Nhập nơi cấp"
-                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Quê quán
-              </span>
-
-              <input
-                id=""
-                v-model="paramsUser.original_place"
-                type="text"
-                name=""
-                placeholder="Nhập địa chỉ"
-                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Bộ phận
-              </span>
-
-              <SelectRoot v-model="staffType.id">
-                <SelectTrigger
-                  class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
-                  aria-label="Customise options"
-                >
-                  <SelectValue
-                    class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
-                    placeholder="Chọn bộ phận"
-                  />
-                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-                </SelectTrigger>
-
-                <SelectPortal>
-                  <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
-                    position="popper"
-                    :side-offset="5"
-                  >
-                    <SelectScrollUpButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-up" />
-                    </SelectScrollUpButton>
-
-                    <SelectViewport>
-                      <SelectGroup>
-                        <SelectItem
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          value="all"
-                        >
-                          <SelectItemText> Chọn bộ phận </SelectItemText>
-                        </SelectItem>
-
-                        <template v-for="(items, key) in staffData">
-                          <SelectItem
-                            v-for="(item, _) in items"
-                            :key="item.id"
-                            class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                            :value="String(item.id)"
-                          >
-                            <SelectItemText>
-                              <!-- {{ capitalizeFirstLetter(item) }} -->
-                              {{ item.name }}
-                            </SelectItemText>
-                          </SelectItem>
-                        </template>
-                      </SelectGroup>
-                    </SelectViewport>
-
-                    <SelectScrollDownButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-down" />
-                    </SelectScrollDownButton>
-                  </SelectContent>
-                </SelectPortal>
-              </SelectRoot>
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Chức vụ
-              </span>
-
-              <SelectRoot v-model="positionType.id">
-                <SelectTrigger
-                  class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
-                  aria-label="Customise options"
-                >
-                  <SelectValue
-                    class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
-                    placeholder="Chọn chức vụ"
-                  />
-                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-                </SelectTrigger>
-
-                <SelectPortal>
-                  <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
-                    position="popper"
-                    :side-offset="5"
-                  >
-                    <SelectScrollUpButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-up" />
-                    </SelectScrollUpButton>
-
-                    <SelectViewport>
-                      <SelectGroup>
-                        <SelectItem
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          value="all"
-                        >
-                          <SelectItemText> Chọn chức vụ </SelectItemText>
-                        </SelectItem>
-
-                        <template v-for="(items, key) in positionData">
-                          <SelectItem
-                            v-for="(item, _) in items"
-                            :key="item.id"
-                            class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                            :value="String(item.id)"
-                          >
-                            <SelectItemText>
-                              <!-- {{ capitalizeFirstLetter(item) }} -->
-                              {{ item.name }}
-                            </SelectItemText>
-                          </SelectItem>
-                        </template>
-                      </SelectGroup>
-                    </SelectViewport>
-
-                    <SelectScrollDownButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-down" />
-                    </SelectScrollDownButton>
-                  </SelectContent>
-                </SelectPortal>
-              </SelectRoot>
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Địa điểm làm việc
-              </span>
-
-              <SelectRoot v-model="regionType.id">
-                <SelectTrigger
-                  class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
-                  aria-label="Customise options"
-                >
-                  <SelectValue
-                    class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
-                    placeholder="Chọn địa điểm"
-                  />
-                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-                </SelectTrigger>
-
-                <SelectPortal>
-                  <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
-                    position="popper"
-                    :side-offset="5"
-                  >
-                    <SelectScrollUpButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-up" />
-                    </SelectScrollUpButton>
-
-                    <SelectViewport>
-                      <SelectGroup>
-                        <SelectItem
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          value="all"
-                        >
-                          <SelectItemText> Chọn địa điểm </SelectItemText>
-                        </SelectItem>
-
-                        <SelectItem
-                          v-for="(item, _) in regionData"
-                          :key="item.id"
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          :value="String(item.id)"
-                        >
-                          <SelectItemText>
-                            <!-- {{ capitalizeFirstLetter(item) }} -->
-                            {{ item.name }}
-                          </SelectItemText>
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectViewport>
-
-                    <SelectScrollDownButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-down" />
-                    </SelectScrollDownButton>
-                  </SelectContent>
-                </SelectPortal>
-              </SelectRoot>
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-bold text-[#464661]">
-                Quản lý trực tiếp
-              </span>
-
-              <SelectRoot v-model="leaderType.id">
-                <SelectTrigger
-                  class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
-                  aria-label="Customise options"
-                >
-                  <SelectValue
-                    class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
-                    placeholder="Chọn quản lý"
-                  />
-                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-                </SelectTrigger>
-
-                <SelectPortal>
-                  <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
-                    position="popper"
-                    :side-offset="5"
-                  >
-                    <SelectScrollUpButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-up" />
-                    </SelectScrollUpButton>
-
-                    <SelectViewport>
-                      <SelectGroup>
-                        <SelectItem
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          value="all"
-                        >
-                          <SelectItemText> Chọn quản lý </SelectItemText>
-                        </SelectItem>
-
-                        <template v-for="(items, key) in leaderData">
-                          <SelectItem
-                            v-for="(item, _) in items"
-                            :key="item.id"
-                            class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                            :value="String(item.id)"
-                          >
-                            <SelectItemText>
-                              <!-- {{ capitalizeFirstLetter(item) }} -->
-                              {{ item.name }}
-                            </SelectItemText>
-                          </SelectItem>
-                        </template>
-                      </SelectGroup>
-                    </SelectViewport>
-
-                    <SelectScrollDownButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-down" />
-                    </SelectScrollDownButton>
-                  </SelectContent>
-                </SelectPortal>
-              </SelectRoot>
-            </div>
-          </div>
-
-          <div class="col-span-12 xl:col-span-6">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Địa chỉ thường trú
-              </span>
-
-              <input
-                id=""
-                v-model="paramsUser.permanent_address"
-                type="text"
-                name=""
-                placeholder="Nhập địa chỉ"
-                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-12 xl:col-span-6">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-                Địa chỉ tạm trú
-              </span>
-
-              <input
-                id=""
-                v-model="paramsUser.residence_address"
-                type="text"
-                name=""
-                placeholder="Nhập địa chỉ tạm trú"
-                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-bold text-[#464661]">
-                Hợp đồng làm việc
-              </span>
-
-              <input
-                id=""
-                v-model="paramsUser.work_contract"
-                type="text"
-                name=""
-                placeholder="Nhập hợp đồng làm việc"
-                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-6">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-bold text-[#464661]">
-                Ngày tháng vào làm việc
-              </span>
-
-              <VueDatePicker
-                v-model="pickerWorkingDay"
-                :enable-time-picker="false"
-                locale="vi"
-                :format-locale="vi"
-                cancel-text="Huỷ"
-                select-text="Chọn"
-                format="dd-MM-yyyy"
-                @update:model-value="updateDates"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-4">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-bold text-[#464661]">
-                Số ngày nghỉ phép năm
-              </span>
-              <input
-                id=""
-                v-model="paramsUser.total_days_off"
-                type="text"
-                name=""
-                placeholder="Nhập số ngày nghỉ phép năm"
-                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
-              />
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-4">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-bold text-[#464661]">
-                ID máy chấm công
-              </span>
-
-              <SelectRoot v-model="paramsUser.mcc_user_id">
-                <SelectTrigger
-                  class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
-                  aria-label="Customise options"
-                >
-                  <SelectValue
-                    class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
-                    placeholder="Chọn ID máy chấm công"
-                  />
-                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-                </SelectTrigger>
-
-                <SelectPortal>
-                  <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
-                    position="popper"
-                    :side-offset="5"
-                  >
-                    <SelectScrollUpButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-up" />
-                    </SelectScrollUpButton>
-
-                    <SelectViewport>
-                      <SelectGroup>
-                        <SelectItem
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          value="all"
-                        >
-                          <SelectItemText> Chọn ID máy chấm công </SelectItemText>
-                        </SelectItem>
-
-                        <SelectItem
-                          v-for="(itemValue, index) in mccData.value"
-                          :key="mccData.id[index]"
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          :value="String(mccData.id[index])"
-                        >
-                          <SelectItemText> {{ mccData.id[index] }} - {{ itemValue }} </SelectItemText>
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectViewport>
-
-                    <SelectScrollDownButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-down" />
-                    </SelectScrollDownButton>
-                  </SelectContent>
-                </SelectPortal>
-              </SelectRoot>
-            </div>
-          </div>
-
-          <div class="col-span-12 md:col-span-4">
-            <div class="block">
-              <span class="font-inter mb-3 block text-[16px] leading-normal font-bold text-[#464661]">
-                Trạng thái
-              </span>
-
-              <SelectRoot v-model="paramsUser.status">
-                <SelectTrigger
-                  class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
-                  aria-label="Customise options"
-                >
-                  <SelectValue
-                    class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
-                    placeholder="Chọn trạng thái"
-                  />
-                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-                </SelectTrigger>
-
-                <SelectPortal>
-                  <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
-                    position="popper"
-                    :side-offset="5"
-                  >
-                    <SelectViewport>
-                      <SelectGroup>
-                        <SelectItem
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          :value="String(1)"
-                        >
-                          <SelectItemText>
-                            <!-- {{ capitalizeFirstLetter(item) }} -->
-                            Đang hoạt động
-                          </SelectItemText>
-                        </SelectItem>
-
-                        <SelectItem
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          :value="String(2)"
-                        >
-                          <SelectItemText>
-                            <!-- {{ capitalizeFirstLetter(item) }} -->
-                            Dừng hoạt động
-                          </SelectItemText>
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectViewport>
-                  </SelectContent>
-                </SelectPortal>
-              </SelectRoot>
-            </div>
-          </div>
         </div>
+      </div>
 
-        <div class="mt-10 flex flex-wrap items-stretch justify-center gap-4 text-center xl:gap-6">
-          <button
-            type="button"
-            class="hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2 text-center text-[16px] leading-normal font-bold text-[#464661] uppercase transition hover:transition max-md:grow md:min-w-[175px]"
-            @click="() => emit('toggle-modal')"
-          >
-            Hủy
-          </button>
-          <button
-            type="submit"
-            class="border-main bg-main hover:shadow-hoverinset inset-sha relative inline-block cursor-pointer rounded-[8px] border border-solid p-2 text-center text-[16px] leading-normal font-bold text-white uppercase transition hover:transition max-md:grow md:min-w-[175px]"
-            :class="{ 'pointer-events-none opacity-75': onSubmitting }"
-          >
-            <div v-if="onSubmitting" class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
-              <Icon icon="eos-icons:three-dots-loading" class="aspect-square h-full w-12" />
-            </div>
-            <div v-else>Lưu</div>
-          </button>
-        </div>
-      </form>
-    </div>
+      <!-- Footer -->
+      <div class="mt-6 flex items-center justify-center gap-6">
+        <button
+          type="button"
+          class="hover:shadow-hoverinset h-[38px] w-[174px] cursor-pointer rounded-lg border border-[#ededf6] text-[16px] font-bold text-[#464661] uppercase transition"
+          @click="emit('toggle-modal')"
+        >
+          HỦY
+        </button>
+        <button
+          type="button"
+          class="hover:shadow-hoverinset relative h-[38px] w-[174px] cursor-pointer rounded-lg bg-[#013878] text-[16px] font-bold text-white uppercase transition"
+          :disabled="onSubmitting"
+          :class="{ 'pointer-events-none opacity-75': onSubmitting }"
+          @click="onSubmitRegister"
+        >
+          <div v-if="onSubmitting" class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
+            <Icon icon="eos-icons:three-dots-loading" class="aspect-square h-full w-12" />
+          </div>
+          <div v-else>Lưu</div>
+        </button>
+      </div>
+    </form>
   </Modal>
 </template>
 
@@ -744,7 +780,6 @@
   import VueDatePicker from '@vuepic/vue-datepicker'
   import axios from 'axios'
   import { format } from 'date-fns'
-  import { vi } from 'date-fns/locale/vi'
   import {
     SelectContent,
     SelectGroup,
@@ -759,12 +794,13 @@
     SelectViewport,
   } from 'radix-vue'
   import { useForm } from 'vee-validate'
-  import { onMounted, reactive, ref, watch } from 'vue'
+  import { computed, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
   import * as yup from 'yup'
 
   import Modal from '@/components/Modals.vue'
   import { apiUri } from '@/constants/apiUri'
+  import { ItemUser } from '@/views/SystemAdmin/types'
 
   const auth = useAuth()
 
@@ -777,11 +813,13 @@
   const pickerDOB = ref<any | null>(null)
   const pickerDateissue = ref<any | null>(null)
   const pickerWorkingDay = ref<any | null>(null)
+  const pickerOfficialDay = ref<any | null>(null)
 
   const initDates = () => {
     pickerDOB.value = new Date(new Date().setDate(new Date().getDate() + 1))
     pickerDateissue.value = new Date(new Date().setDate(new Date().getDate() + 1))
     pickerWorkingDay.value = new Date(new Date().setDate(new Date().getDate() + 1))
+    pickerOfficialDay.value = new Date(new Date().setDate(new Date().getDate() + 1))
   }
   const updateDates = () => {
     if (pickerDOB.value) {
@@ -794,37 +832,86 @@
     if (pickerWorkingDay.value) {
       paramsUser.working_day = format(pickerWorkingDay.value, 'yyyy-MM-dd')
     }
+    if (pickerOfficialDay.value) {
+      paramsUser.official_day = format(pickerOfficialDay.value, 'yyyy-MM-dd')
+    }
   }
 
   // Theo dõi thay đổi của các date picker để cập nhật dữ liệu
-  watch([pickerDOB, pickerDateissue, pickerWorkingDay], () => {
+  watch([pickerDOB, pickerDateissue, pickerWorkingDay, pickerOfficialDay], () => {
     if (auth.check()) {
       updateDates()
     }
   })
 
-  const paramsUser = reactive<any>({
-    code: '',
-    phone: '',
-    name: '',
+  const paramsUser = reactive<Partial<ItemUser>>({
+    id: '',
+    username: '',
     email: '',
+    name: '',
+    status: '',
+    code: '',
+    pincode: '' as string,
+    phone: '',
     dob: '',
-    per_group_name: '',
-    identification: '',
-    date_of_issue: '',
-    place_of_issue: '',
-    original_place: '',
+    gender: '' as string,
+    staff_id: '',
+    room_id: '',
     part_id: '',
-    position_id: '',
-    region_id: '',
+    slogan: '',
+    type: '',
+    refer_name: '',
+    refer_phone: '',
+    refer_relationship: '',
+    enable_notification: '',
+    identification: '',
+    place_of_issue: '',
+    date_of_issue: '',
+    original_place: '',
     parent_id: '',
+    position_id: '',
+    title: '',
+    office_id: '',
     permanent_address: '',
     residence_address: '',
     work_contract: '',
     working_day: '',
-    total_days_off: '',
-    status: '',
+    official_day: '',
     mcc_user_id: '',
+    bank_ncb_nunber: '',
+    marital_status: '' as string,
+    created_at: '',
+    updated_at: '',
+    per_group_name: '',
+    status_text: '',
+    type_text: '',
+    status_married_text: '',
+    staff_text: '',
+    room_text: '',
+    part_text: '',
+    position_text: '',
+    office_text: '',
+    per_text: '',
+  })
+
+  // Model bridges to satisfy strict typing for selects
+  const genderModel = computed<string>({
+    get: () => (paramsUser.gender ?? '') as string,
+    set: (v: string) => {
+      paramsUser.gender = v as any
+    },
+  })
+  const maritalStatusModel = computed<string>({
+    get: () => (paramsUser.marital_status ?? '') as string,
+    set: (v: string) => {
+      paramsUser.marital_status = v as any
+    },
+  })
+  const employeeTypeModel = computed<string>({
+    get: () => (paramsUser.type ?? '') as string,
+    set: (v: string) => {
+      paramsUser.type = v as any
+    },
   })
 
   // Định nghĩa schema validate với yup
@@ -844,6 +931,12 @@
         .required('Bạn hãy nhập số điện thoại')
         .matches(/^[0-9]{10}$/, 'Bạn cần nhập đúng 10 số'),
       group_user: yup.string().required('Bạn hãy chọn nhóm người dùng'),
+      // Thêm validation cho các trường bắt buộc khác
+      staff_id: yup.string().required('Bạn hãy chọn khối'),
+      room_id: yup.string().required('Bạn hãy chọn phòng ban'),
+      permanent_address: yup.string().required('Bạn hãy nhập địa chỉ thường trú'),
+      residence_address: yup.string().required('Bạn hãy nhập địa chỉ tạm trú'),
+      identification: yup.string().required('Bạn hãy nhập số CCCD'),
     })
   )
 
@@ -857,6 +950,11 @@
   const [name, nameAttrs] = defineField('name')
   const [code, codeAttrs] = defineField('code')
   const [group_user, guAttrs] = defineField('group_user')
+  const [staff_id, staff_idAttrs] = defineField('staff_id')
+  const [room_id, room_idAttrs] = defineField('room_id')
+  const [permanent_address, permanent_addressAttrs] = defineField('permanent_address')
+  const [residence_address, residence_addressAttrs] = defineField('residence_address')
+  const [identification, identificationAttrs] = defineField('identification')
 
   const listGrPermiss = ref<any | null>(null)
   const fetchListPermission = async () => {
@@ -898,6 +996,63 @@
     value: '',
     id: '',
   })
+
+  // Department tree for phòng ban
+  const departmentTree = ref<any | null>(null)
+  // Children (phòng ban) of the selected Khối (staffType.id)
+  const departmentChildrenOptions = computed<any[]>(() => {
+    const root = departmentTree.value
+    if (!root) return []
+
+    // Normalize roots into array
+    let roots: any[] = []
+    if (Array.isArray(root)) {
+      roots = root as any[]
+    } else if (root && Array.isArray((root as any).items)) {
+      roots = (root as any).items as any[]
+    } else if (root && typeof root === 'object') {
+      try {
+        roots = Object.values(root as Record<string, any[]>).flat()
+      } catch (e) {
+        roots = []
+      }
+    }
+
+    const targetId = String(paramsUser.staff_id ?? '')
+
+    // If a khối is selected, find its children
+    if (targetId) {
+      const node = roots.find((n: any) => String(n.id) === targetId)
+      if (node && Array.isArray(node.children)) {
+        return node.children.map((c: any) => ({ id: c.id, name: c.name }))
+      }
+    }
+
+    // Fallback: aggregate all children across all khối
+    const aggregated: any[] = []
+    for (const n of roots) {
+      if (n && Array.isArray(n.children)) {
+        for (const c of n.children) {
+          aggregated.push({ id: c.id, name: c.name })
+        }
+      }
+    }
+    return aggregated
+  })
+
+  const fetchDepartmentTree = async () => {
+    try {
+      const { data } = await axios.get(`${apiUri}/categories/staff`, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      departmentTree.value = data.data
+    } catch (error) {
+      console.error('Error fetching department tree:', error)
+    }
+  }
 
   const fetchMccData = async () => {
     try {
@@ -983,34 +1138,64 @@
   const onSubmitRegister = handleSubmit(async () => {
     onSubmitting.value = true
     try {
+      console.log('🚀 ~ Starting form submission...')
+      console.log('🚀 ~ Form values:', {
+        email: email.value,
+        phone: phone.value,
+        name: name.value,
+        code: code.value,
+        group_user: group_user.value,
+      })
+      console.log('🚀 ~ Params user:', paramsUser)
+
       const formDataUser = new FormData()
 
-      if (paramsUser.code) formDataUser.append('code', paramsUser.code)
-      if (paramsUser.phone) formDataUser.append('phone', paramsUser.phone)
-      if (paramsUser.name) formDataUser.append('name', paramsUser.name)
-      if (paramsUser.email) formDataUser.append('email', paramsUser.email)
-      if (paramsUser.dob) formDataUser.append('dob', paramsUser.dob)
-      if (paramsUser.per_group_name) formDataUser.append('per_group_name', paramsUser.per_group_name)
-      if (paramsUser.identification) formDataUser.append('identification', paramsUser.identification)
-      if (paramsUser.date_of_issue) formDataUser.append('date_of_issue', paramsUser.date_of_issue)
-      if (paramsUser.place_of_issue) formDataUser.append('place_of_issue', paramsUser.place_of_issue)
-      if (paramsUser.original_place) formDataUser.append('original_place', paramsUser.original_place)
+      if (paramsUser.code) formDataUser.append('code', String(paramsUser.code))
+      if (paramsUser.phone) formDataUser.append('phone', String(paramsUser.phone))
+      if (paramsUser.name) formDataUser.append('name', String(paramsUser.name))
+      if (paramsUser.email) formDataUser.append('email', String(paramsUser.email))
+      if (paramsUser.dob) formDataUser.append('dob', String(paramsUser.dob))
+      if (paramsUser.gender) formDataUser.append('gender', String(paramsUser.gender))
+      if (paramsUser.marital_status) formDataUser.append('marital_status', String(paramsUser.marital_status))
+      if (paramsUser.bank_ncb_nunber) formDataUser.append('bank_ncb_nunber', String(paramsUser.bank_ncb_nunber))
+      if (paramsUser.per_group_name) formDataUser.append('per_group_name', String(paramsUser.per_group_name))
+      if (paramsUser.identification) formDataUser.append('identification', String(paramsUser.identification))
+      if (paramsUser.date_of_issue) formDataUser.append('date_of_issue', String(paramsUser.date_of_issue))
+      if (paramsUser.place_of_issue) formDataUser.append('place_of_issue', String(paramsUser.place_of_issue))
+      if (paramsUser.original_place) formDataUser.append('original_place', String(paramsUser.original_place))
       if (staffType.id) formDataUser.append('part_id', staffType.id)
       if (positionType.id) formDataUser.append('position_id', positionType.id)
-      if (regionType.id) formDataUser.append('region_id', regionType.id)
+      if (regionType.id) formDataUser.append('office_id', regionType.id)
       if (leaderType.id) formDataUser.append('parent_id', leaderType.id)
-      if (paramsUser.permanent_address) formDataUser.append('permanent_address', paramsUser.permanent_address)
-      if (paramsUser.residence_address) formDataUser.append('residence_address', paramsUser.residence_address)
-      if (paramsUser.work_contract) formDataUser.append('work_contract', paramsUser.work_contract)
-      if (paramsUser.working_day) formDataUser.append('working_day', paramsUser.working_day)
-      if (paramsUser.total_days_off) formDataUser.append('total_days_off', paramsUser.total_days_off)
+      if (paramsUser.permanent_address) formDataUser.append('permanent_address', String(paramsUser.permanent_address))
+      if (paramsUser.residence_address) formDataUser.append('residence_address', String(paramsUser.residence_address))
+      if (paramsUser.work_contract) formDataUser.append('work_contract', String(paramsUser.work_contract))
+      if (paramsUser.working_day) formDataUser.append('working_day', String(paramsUser.working_day))
+      if (paramsUser.official_day) formDataUser.append('official_day', String(paramsUser.official_day))
       if (paramsUser.status) {
-        formDataUser.append('status', paramsUser.status)
+        formDataUser.append('status', String(paramsUser.status))
       } else {
         formDataUser.append('status', '1')
       }
       if (paramsUser.mcc_user_id) {
-        formDataUser.append('mcc_user_id', paramsUser.mcc_user_id)
+        formDataUser.append('mcc_user_id', String(paramsUser.mcc_user_id))
+      }
+
+      // Thêm các trường còn thiếu
+      if (paramsUser.staff_id) formDataUser.append('staff_id', String(paramsUser.staff_id))
+      if (paramsUser.room_id) formDataUser.append('room_id', String(paramsUser.room_id))
+      if (paramsUser.title) formDataUser.append('title', String(paramsUser.title))
+      if (paramsUser.pincode) formDataUser.append('pincode', String(paramsUser.pincode))
+      if (paramsUser.refer_name) formDataUser.append('refer_name', String(paramsUser.refer_name))
+      if (paramsUser.refer_phone) formDataUser.append('refer_phone', String(paramsUser.refer_phone))
+      if (paramsUser.refer_relationship)
+        formDataUser.append('refer_relationship', String(paramsUser.refer_relationship))
+      if (paramsUser.type) formDataUser.append('type', String(paramsUser.type))
+
+      // Log FormData contents
+      console.log('🚀 ~ FormData contents:')
+      for (let [key, value] of formDataUser.entries()) {
+        console.log(`${key}: ${value}`)
       }
 
       const response = await axios.post(`${apiUri}/user/create`, formDataUser, {
@@ -1021,25 +1206,37 @@
       })
       postRequest.value = response.data
       emit('post-request', postRequest.value)
-      Object.keys(paramsUser).map((key) => {
-        paramsUser[key] = ''
-      })
+      for (const key in paramsUser) {
+        ;(paramsUser as Record<string, any>)[key] = ''
+      }
       props.propFunction()
-      console.log('🚀 ~ handleSubmit ~ response:', response)
-    } catch (error) {
-      console.error('Error fetching position list:', error)
+      console.log('🚀 ~ Form submitted successfully:', response)
+    } catch (error: any) {
+      console.error('❌ ~ Error submitting form:', error)
+      if (error.response) {
+        console.error('❌ ~ Response data:', error.response.data)
+        console.error('❌ ~ Response status:', error.response.status)
+      }
     } finally {
       onSubmitting.value = false
     }
   })
 
-  watch([email, phone, name, group_user, code], (newVal) => {
-    paramsUser.email = newVal[0]
-    paramsUser.phone = newVal[1]
-    paramsUser.name = newVal[2]
-    paramsUser.per_group_name = newVal[3]
-    paramsUser.code = newVal[4]
-  })
+  watch(
+    [email, phone, name, group_user, code, staff_id, room_id, permanent_address, residence_address, identification],
+    (newVal) => {
+      paramsUser.email = newVal[0]
+      paramsUser.phone = newVal[1]
+      paramsUser.name = newVal[2]
+      paramsUser.per_group_name = newVal[3]
+      paramsUser.code = newVal[4]
+      paramsUser.staff_id = newVal[5]
+      paramsUser.room_id = newVal[6]
+      paramsUser.permanent_address = newVal[7]
+      paramsUser.residence_address = newVal[8]
+      paramsUser.identification = newVal[9]
+    }
+  )
 
   watch([staffType, positionType, regionType, leaderType, mccData], () => {
     if (staffType.id === 'all') {
@@ -1065,6 +1262,7 @@
     fetchListPosition()
     fetchListRegion()
     fetchListLeader()
+    fetchDepartmentTree()
     initDates()
     updateDates()
     fetchMccData()

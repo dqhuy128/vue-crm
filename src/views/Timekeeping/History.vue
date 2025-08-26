@@ -160,7 +160,7 @@
                 </div>
               </div>
 
-              <div class="cell pinned !py-4.5 !pe-2.5">Giải trình</div>
+              <div class="cell pinned !px-2 !py-4.5">Giải trình</div>
             </div>
 
             <template v-if="dataWorkHistoryList">

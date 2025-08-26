@@ -57,7 +57,6 @@
 
   // Department Management State
   const editingDepartment = ref(null)
-  const departmentTree = ref([])
   const parentOptions = ref([
     { value: null, label: 'Danh mục gốc', level: 0 },
     { value: '12-1', label: 'Khối điều hành', level: 1 },
@@ -66,7 +65,7 @@
     { value: '12-4', label: 'Khối BO', level: 1 },
     { value: '12-5', label: 'Khối Kinh doanh', level: 1 },
   ])
-
+  const departmentTree = ref([])
   const fetchDepartmentTree = async () => {
     try {
       const { data } = await axios.get(`${apiUri}/categories/staff`, {

@@ -36,10 +36,10 @@
         class="last-border-t flex flex-wrap items-center gap-3 border-b border-solid border-[#EDEDF6] pb-3 not-last:mb-3.5"
       >
         <div class="h-2.5 w-2.5 rounded-[50%] bg-[#464661]" :class="item.status"></div>
-        <div class="font-inter grow text-[16px] leading-normal font-normal text-[#464661]">
+        <div class="font-inter grow text-[16px] leading-normal !font-bold text-[#909090]">
           {{ item.title }}
         </div>
-        <div class="font-inter ms-auto text-[20px] leading-normal font-bold text-[#464661]">
+        <div class="font-inter ms-auto text-[20px] leading-normal font-bold text-[#E61B1B]">
           {{ item?.count }}
         </div>
       </div>

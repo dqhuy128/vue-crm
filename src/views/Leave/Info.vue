@@ -117,6 +117,16 @@
               Xin nghỉ phép
             </span>
           </button>
+
+          <button
+            type="button"
+            class="hover:shadow-hoverinset inline-flex cursor-pointer items-end justify-center gap-2 rounded-[24px] bg-[#1b4dea] p-[7px_12px] transition max-md:flex-auto max-md:items-center max-md:gap-1 md:min-w-[168px]"
+            @click="toggleModal('modalProposalLicensing')"
+          >
+            <span class="font-inter text-[16px] leading-normal font-bold text-white max-md:text-[14px]">
+              Đề nghị cấp phép
+            </span>
+          </button>
         </div>
       </template>
     </div>
@@ -443,6 +453,32 @@
     </Modal>
 
     <Modal
+      :modal-active="modalActive.modalProposalLicensing"
+      max-width="max-w-[670px]"
+      @close="toggleModal('modalProposalLicensing')"
+    >
+      <div class="rounded-[24px] bg-white p-[52px_24px_36px]">
+        <div class="mb-12 text-center max-xl:mb-6">
+          <h3 class="m-0 text-[16px] font-bold text-[#464661] uppercase">Đề nghị cấp phép</h3>
+        </div>
+
+        <ModalProposalLicensing
+          :datatype="dataEditLeave"
+          :prop-function="fetchDataLeave"
+          @post-request-proposal-licensing="getPostRequestProposalLicensing"
+        >
+          <button
+            type="button"
+            class="hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2 text-center text-[16px] leading-normal font-bold text-[#464661] uppercase transition hover:transition max-md:grow md:min-w-[175px]"
+            @click="toggleModal('modalProposalLicensing')"
+          >
+            Hủy
+          </button>
+        </ModalProposalLicensing>
+      </div>
+    </Modal>
+
+    <Modal
       :modal-active="modalActive.modalStatusConfirm"
       max-width="max-w-[512px]"
       @close="toggleModal('modalStatusConfirm')"
@@ -526,6 +562,29 @@
 
     <ToastProvider>
       <ToastRoot
+        v-model:open="toast.toastProposalLicensing"
+        :duration="5000"
+        class="flex flex-col gap-1.5 rounded-md p-3 shadow-2xl"
+        :class="{
+          'bg-[#ffd0d0]':
+            dataPostRequestProposalLicensing?.errors[Object.keys(dataPostRequestProposalLicensing?.errors)[0]],
+          'bg-[#c4ffd0]': dataPostRequestProposalLicensing?.status === 1,
+        }"
+      >
+        <ToastTitle class="text-[13px] font-medium">
+          {{ dataPostRequestProposalLicensing?.message }}
+        </ToastTitle>
+        <ToastDescription v-if="dataPostRequestProposalLicensing?.errors" class="text-[11px] font-normal">
+          {{ dataPostRequestProposalLicensing?.errors[Object.keys(dataPostRequestProposalLicensing?.errors)[0]] }}
+        </ToastDescription>
+      </ToastRoot>
+      <ToastViewport
+        class="fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]"
+      />
+    </ToastProvider>
+
+    <ToastProvider>
+      <ToastRoot
         v-model:open="toast.toastDelete"
         :duration="5000"
         class="flex flex-col gap-1.5 rounded-md p-3 shadow-2xl"
@@ -573,6 +632,7 @@
   import Breadcrums from '@/components/BreadcrumsNew.vue'
   import ModalAddingLeave from '@/components/Modal/ModalAddingLeave.vue'
   import ModalEditLeave from '@/components/Modal/ModalEditLeave.vue'
+  import ModalProposalLicensing from '@/components/Modal/ModalProposalLicensing.vue'
   import Modal from '@/components/Modals.vue'
   import { useLeaveInfo } from '@/composables/leave-info'
   import { apiUri } from '@/constants/apiUri'
@@ -587,6 +647,7 @@
     toastCreate: false,
     toastUpdate: false,
     toastDelete: false,
+    toastProposalLicensing: false,
   })
 
   const auth = useAuth()
@@ -644,6 +705,7 @@
     modalAddLeave: false,
     modalStatusConfirm: false,
     modalEditLeave: false,
+    modalProposalLicensing: false,
   })
 
   const toggleModal = (modalStateName: any) => {
@@ -949,6 +1011,15 @@
       toast.toastUpdate = true
     }
     // if (dataPostRequestEdit.value.status === 1) toggleModal('modalEditLeave')
+  }
+
+  const dataPostRequestProposalLicensing = ref<any | null>(null)
+  const getPostRequestProposalLicensing = (data: any) => {
+    dataPostRequestProposalLicensing.value = data
+    if (dataPostRequestProposalLicensing.value) {
+      toggleModal('modalProposalLicensing')
+      toast.toastProposalLicensing = true
+    }
   }
 
   const permissionStore = usePermissionStore()

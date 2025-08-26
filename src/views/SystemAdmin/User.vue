@@ -274,9 +274,10 @@
                   </button>
                 </div>
               </div>
+              <div class="cell">Trạng thái</div>
+
               <div class="cell pinned">
-                <div v-if="screenWidth > 768" class="cell status !ps-0">Trạng thái</div>
-                <div class="cell edit">Edit</div>
+                <div class="cell edit !justify-center">Thao tác</div>
               </div>
             </div>
 
@@ -300,10 +301,6 @@
                   </div>
 
                   <div class="cell">
-                    {{ item?.dob }}
-                  </div>
-
-                  <div class="cell">
                     {{ item?.phone }}
                   </div>
 
@@ -312,48 +309,40 @@
                   </div>
 
                   <div class="cell">
-                    {{ item?.per_text }}
-                  </div>
-
-                  <div class="cell">
                     {{ item?.position_text }}
                   </div>
 
                   <div class="cell">
-                    {{ item?.part_text }}
+                    {{ item?.staff_text }}
                   </div>
 
                   <div class="cell">
-                    {{ item?.work_contract }}
+                    {{ item?.permanent_address }}
                   </div>
 
                   <div class="cell">
-                    {{ item?.working_day }}
-                  </div>
-
-                  <div class="cell">
-                    {{ item?.region_text }}
-                  </div>
-
-                  <div class="cell pinned pinned-body">
                     <template v-if="Number(item?.status) === 1">
-                      <div class="cell status status-green status-body max-md:h-5 max-md:w-5 max-md:!p-0">
-                        <span v-if="screenWidth > 768">Đang hoạt động</span>
-                        <span v-else>
-                          <Icon icon="radix-icons:check" class="h-2 w-2" />
-                        </span>
+                      <div class="cell justify-center">
+                        <div
+                          class="status status-green status-body flex aspect-square h-[24px] w-auto flex-col items-center justify-center !p-0"
+                        >
+                          <Icon icon="radix-icons:check" class="h-2 w-2 lg:h-3 lg:w-3" />
+                        </div>
                       </div>
                     </template>
 
                     <template v-if="Number(item?.status) === 2">
-                      <div class="cell status status-red status-body max:md:!p-0 max-md:h-5 max-md:w-5">
-                        <span v-if="screenWidth > 768">Dừng hoạt động</span>
-                        <span v-else>
-                          <Icon icon="radix-icons:cross-1" class="h-2 w-2" />
-                        </span>
+                      <div class="cell justify-center">
+                        <div
+                          class="status status-red status-body flex aspect-square h-[24px] w-auto flex-col items-center justify-center !p-0"
+                        >
+                          <Icon icon="radix-icons:cross-1" class="h-2 w-2 lg:h-3 lg:w-3" />
+                        </div>
                       </div>
                     </template>
+                  </div>
 
+                  <div class="cell pinned pinned-body !justify-center">
                     <div class="cell edit edit-body">
                       <template v-if="checkPermission('User', 'Update')">
                         <button
@@ -625,6 +614,10 @@
 
   import MainLayout from '../MainLayout.vue'
 
+  const permissionData = usePermissionStore()
+  const { userData } = storeToRefs(permissionData)
+  console.log('🚀 ~ userData:', userData)
+
   const toast = reactive({
     toastCreate: false,
     toastUpdate: false,
@@ -704,10 +697,6 @@
       hasSort: true,
     },
     {
-      title: 'Ngày sinh',
-      hasSort: false,
-    },
-    {
       title: 'Số điện thoại',
       hasSort: false,
     },
@@ -716,23 +705,11 @@
       hasSort: false,
     },
     {
-      title: 'Nhóm người dùng',
-      hasSort: false,
-    },
-    {
       title: 'Chức vụ',
       hasSort: false,
     },
     {
       title: 'Bộ phận',
-      hasSort: false,
-    },
-    {
-      title: 'Hợp đồng',
-      hasSort: false,
-    },
-    {
-      title: 'Ngày vào làm việc',
       hasSort: false,
     },
     {
