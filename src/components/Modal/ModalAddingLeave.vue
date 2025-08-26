@@ -58,7 +58,7 @@
         </div>
       </div>
 
-      <div class="col-span-12">
+      <!-- <div class="col-span-12">
         <div class="block">
           <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
             Chế độ
@@ -117,7 +117,7 @@
             </SelectContent>
           </SelectPortal>
         </SelectRoot>
-      </div>
+      </div> -->
 
       <div class="col-span-12">
         <div class="block">

@@ -22,11 +22,12 @@ interface UserInfoProps {
   avatar?: string
   phone: string
   per_group_name: string
+  slogan: string
 }
 export const usePermissionStore = defineStore('permission', () => {
   const permision = ref<PermissionType | null>(null)
   const permissionList = ref<string[]>([])
-  const userData = ref<UserInfoProps | null>(null)
+  const userData = ref<any>(null)
   const permissionListData = ref<string[]>([])
 
   async function fetchPermission(token: string) {

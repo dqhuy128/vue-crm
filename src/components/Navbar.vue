@@ -4,11 +4,11 @@
   import axios from 'axios'
   import { storeToRefs } from 'pinia'
   import { ErrorMessage, Field, Form, useForm } from 'vee-validate'
-  import { onMounted, reactive, ref } from 'vue'
+  import { onMounted, reactive, ref, watch } from 'vue'
   import { Cropper } from 'vue-advanced-cropper'
   import { useAuth } from 'vue-auth3'
   import { RouterLink } from 'vue-router'
-
+  import { Icon } from '@iconify/vue'
   import Modal from '@/components/Modals.vue'
   import { apiUri } from '@/constants/apiUri'
   import { change, destroyCropper, image, loadImage, postServer } from '@/lib/cropper'
@@ -18,9 +18,6 @@
   }
 
   const auth = useAuth()
-  const token = ref<string | null>(null)
-  const user = ref<any>(null)
-  const isAuthenticated = ref(false)
   const updateUrlAva = ref<string>('')
   const isPasswordVisible = ref(false)
   const { resetForm } = useForm()
@@ -33,11 +30,22 @@
   })
 
   const changePass = reactive({
+    slogan: '',
     old_pass: '',
     new_pass: '',
     new_repass: '',
     error: '',
   })
+
+  // Toggle edit mode for slogan (Bio/ Quote)
+  const isEditingSlogan = ref(false)
+
+  const sloganBeforeEdit = ref<string>('')
+
+  const startEditingSlogan = () => {
+    sloganBeforeEdit.value = changePass.slogan
+    isEditingSlogan.value = true
+  }
 
   const toggleModal = (modalStateName: any) => {
     modalActive.value[modalStateName] = !modalActive.value[modalStateName]
@@ -47,42 +55,6 @@
   const togglePasswordVisibility = () => {
     isPasswordVisible.value = !isPasswordVisible.value
   }
-
-  // const fetchUser = async () => {
-  //   isAuthenticated.value = auth.check()
-
-  //   if (isAuthenticated.value) {
-  //     token.value = auth.token() // Gets the default token
-  //     // Fetch user data from the API
-  //     try {
-  //       const response = await auth.fetch({
-  //         method: 'get',
-  //         url: `${apiUri}/user/info`,
-  //         credentials: 'include',
-  //         headers: {
-  //           Authorization: `Bearer ${token.value}`
-  //         }
-  //       })
-
-  //       const { data } = response.data
-  //       user.value = data
-  //     } catch (error: any) {
-  //       console.error('NavBar.vue ~ Failed to fetch user data:', error)
-
-  //       if (error.response?.status === 401) {
-  //         // Logout user
-  //         await auth.logout({
-  //           makeRequest: false,
-  //           redirect: '/login'
-  //         }).then(() =>{
-  //           permissionStore.$reset();
-  //         })
-
-  //         // console.clear()
-  //       }
-  //     }
-  //   }
-  // }
 
   // Logout handler
   const handleLogout = async () => {
@@ -157,6 +129,34 @@
     }
   }
 
+  const handleChangeSlogan = async () => {
+    try {
+      if (!userData.value?.id) return
+
+      const { status } = await axios.post(
+        `${apiUri}/user/update`,
+        {
+          id: userData.value?.id,
+          slogan: changePass.slogan,
+        },
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${auth.token()}`,
+          },
+        }
+      )
+    } catch (error) {
+      console.error('Failed to change password:', error)
+    }
+  }
+
+  const submitSlogan = async () => {
+    if (changePass.slogan) {
+      await handleChangeSlogan()
+    }
+  }
+
   const onSubmit = async (values: any, { resetForm }: any) => {
     console.log(values)
     await handleChangePass()
@@ -166,6 +166,14 @@
   const isRequired = (text: string) => {
     return (value: any) => (value && value.trim() ? true : text)
   }
+
+  watch(isEditingSlogan, async (newValue, oldValue) => {
+    if (oldValue && !newValue) {
+      if (changePass.slogan !== sloganBeforeEdit.value) {
+        await submitSlogan()
+      }
+    }
+  })
 
   // onBeforeMount(() => {
   //   fetchUser()
@@ -322,6 +330,45 @@
         </div>
 
         <Form class="mx-auto block w-full max-w-[552px] p-4 xl:p-9" @submit="onSubmit">
+          <div class="mb-3 text-start">
+            <h3 class="m-0 text-base leading-normal font-bold text-[#464661]">Bio/ Quote</h3>
+          </div>
+
+          <div class="relative mb-9 flex items-center gap-3">
+            <template v-if="!isEditingSlogan">
+              <div class="flex w-full items-stretch gap-2">
+                <div class="relative flex-1">
+                  <div
+                    class="font-inter w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 !pe-10 text-[16px] leading-normal font-normal text-[#1B4DEA] italic"
+                  >
+                    {{ userData?.slogan || changePass.slogan || 'Nhập slogan' }}
+                  </div>
+
+                  <button
+                    type="button"
+                    class="absolute top-1/2 right-2.5 shrink-0 -translate-y-1/2 cursor-pointer"
+                    @click="startEditingSlogan"
+                  >
+                    <Icon icon="mage:edit-fill" class="h-5 w-5 text-[#464661]" />
+                  </button>
+                </div>
+              </div>
+            </template>
+
+            <template v-else>
+              <Field
+                v-model="changePass.slogan"
+                :value="userData?.slogan"
+                :rules="isRequired('Vui lòng nhập slogan !')"
+                :type="'text'"
+                name="slogan"
+                placeholder="Nhập slogan"
+                class="font-inter focus:border-main w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[16px] leading-normal font-normal text-[#000] placeholder:text-[#909090] placeholder:italic placeholder:opacity-75"
+                @blur="isEditingSlogan = false"
+              />
+            </template>
+          </div>
+
           <div class="mb-3 text-center">
             <h3 class="m-0 text-[20px] leading-normal font-bold text-[#464661]">Đổi mật khẩu</h3>
           </div>

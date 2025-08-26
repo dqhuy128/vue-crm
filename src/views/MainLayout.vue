@@ -17,7 +17,8 @@
     <Sidebar />
 
     <div id="MainLayout" class="main-layout block px-6 py-7">
-      <div class="flex flex-col lg:h-[calc(100vh-75px)]">
+      <!-- lg:h-[calc(100vh-75px)] -->
+      <div class="flex flex-col">
         <Navbar />
         <slot />
       </div>
