@@ -613,7 +613,6 @@
   import { tableMagic } from '@/utils/main'
 
   import MainLayout from '../MainLayout.vue'
-  import { ItemUser } from './types'
 
   const permissionData = usePermissionStore()
   const { userData } = storeToRefs(permissionData)

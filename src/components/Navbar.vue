@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import 'vue-advanced-cropper/dist/style.css'
 
+  import { Icon } from '@iconify/vue'
   import axios from 'axios'
   import { storeToRefs } from 'pinia'
   import { ErrorMessage, Field, Form, useForm } from 'vee-validate'
@@ -8,7 +9,7 @@
   import { Cropper } from 'vue-advanced-cropper'
   import { useAuth } from 'vue-auth3'
   import { RouterLink } from 'vue-router'
-  import { Icon } from '@iconify/vue'
+
   import Modal from '@/components/Modals.vue'
   import { apiUri } from '@/constants/apiUri'
   import { change, destroyCropper, image, loadImage, postServer } from '@/lib/cropper'

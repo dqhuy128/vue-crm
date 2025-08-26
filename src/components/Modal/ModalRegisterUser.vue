@@ -1,6 +1,6 @@
 <template>
   <Modal :modal-active="props.modal" max-width="max-w-[865px]" @close="() => emit('toggle-modal')">
-    <form @submit.prevent="onSubmitRegister" class="mx-auto w-full max-w-[864px] rounded-3xl bg-white py-11">
+    <form class="mx-auto w-full max-w-[864px] rounded-3xl bg-white py-11" @submit.prevent="onSubmitRegister">
       <div class="mb-6 text-center text-[16px] font-bold text-[#464661] uppercase">thêm mới người dùng</div>
 
       <!-- Thông tin cá nhân -->
@@ -758,8 +758,8 @@
           type="button"
           class="hover:shadow-hoverinset relative h-[38px] w-[174px] cursor-pointer rounded-lg bg-[#013878] text-[16px] font-bold text-white uppercase transition"
           :disabled="onSubmitting"
-          @click="onSubmitRegister"
           :class="{ 'pointer-events-none opacity-75': onSubmitting }"
+          @click="onSubmitRegister"
         >
           <div v-if="onSubmitting" class="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
             <Icon icon="eos-icons:three-dots-loading" class="aspect-square h-full w-12" />
@@ -780,7 +780,6 @@
   import VueDatePicker from '@vuepic/vue-datepicker'
   import axios from 'axios'
   import { format } from 'date-fns'
-
   import {
     SelectContent,
     SelectGroup,

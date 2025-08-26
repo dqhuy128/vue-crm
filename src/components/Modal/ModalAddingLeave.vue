@@ -191,24 +191,11 @@
   import axios from 'axios'
   import { format } from 'date-fns'
   import { vi } from 'date-fns/locale/vi'
-  import {
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectItemText,
-    SelectPortal,
-    SelectRoot,
-    SelectScrollDownButton,
-    SelectScrollUpButton,
-    SelectTrigger,
-    SelectValue,
-    SelectViewport,
-  } from 'radix-vue'
   import { computed, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
 
   import { apiUri } from '@/constants/apiUri'
-  import { LeaveTypeOptions, LeaveTypeOptionsKeys, RegimeOptions } from '@/views/Leave/types'
+  import { LeaveTypeOptions, LeaveTypeOptionsKeys } from '@/views/Leave/types'
 
   const auth = useAuth()
 

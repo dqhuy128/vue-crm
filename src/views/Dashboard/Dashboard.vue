@@ -166,16 +166,16 @@
   import { computed, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
 
+  import placeholderImg from '@/assets/images/bg-placeholder.png'
   import iconTicket3 from '@/assets/images/ticket-icon-3.png'
   import iconTicket5 from '@/assets/images/ticket-icon-5.png'
   import Breadcrums from '@/components/BreadcrumsNew.vue'
   import Ticket from '@/components/Ticket.vue'
+  import { useWork } from '@/composables/work'
   import { apiUri } from '@/constants/apiUri'
   import { usePermissionStore } from '@/store/permission'
-  import MainLayout from '@/views/MainLayout.vue'
-  import placeholderImg from '@/assets/images/bg-placeholder.png'
-  import { useWork } from '@/composables/work'
   import { tableMagic } from '@/utils/main'
+  import MainLayout from '@/views/MainLayout.vue'
 
   const auth = useAuth()
   const permissionData = usePermissionStore()
