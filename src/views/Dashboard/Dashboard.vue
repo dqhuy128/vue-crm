@@ -4,10 +4,10 @@
 
     <div class="flex flex-col gap-4">
       <template v-if="userData">
-        <div class="max-w-[745px] rounded-3xl bg-white p-2">
+        <div class="max-w-[745px] rounded-3xl bg-white p-6 md:p-2">
           <div class="flex flex-wrap items-center gap-6">
             <div
-              class="h-[244px] w-full max-w-[184px] shrink-0 rounded-[14px] bg-contain bg-center bg-no-repeat"
+              class="h-[150px] w-full max-w-full shrink-0 rounded-[14px] bg-contain bg-center bg-no-repeat md:h-[244px] md:max-w-[184px]"
               :style="{ backgroundImage: `url(${profilePhoto})` }"
             ></div>
 
