@@ -182,9 +182,10 @@
   const { userData } = storeToRefs(permissionData)
   const { checkPermission } = permissionData
 
-  const dataTicket = ref<any>()
-  const dataLeave = ref<any>()
+  const dataProcessing = ref<any>()
+  const dataApproved = ref<any>()
   const dataWork = ref<any>()
+  const dataLeave = ref<any>()
   const fetchTicket = async () => {
     try {
       const res = await axios.get(`${apiUri}/dashboard/individual`, {
@@ -193,7 +194,9 @@
         },
       })
       const { data } = res.data
-      dataTicket.value = data.ticket
+      console.log('🚀 ~ fetchTicket ~ data:', data)
+      dataProcessing.value = data.proccesing
+      dataApproved.value = data.approved
       dataLeave.value = data.leave
       dataWork.value = data.work
     } catch (error) {
@@ -211,17 +214,17 @@
         {
           title: 'Giải trình công',
           status: 'reject',
-          count: computed(() => dataTicket.value?.deny || null),
+          count: computed(() => dataProcessing.value?.work || null),
         },
         {
           title: 'Nghỉ phép',
           status: 'done',
-          count: computed(() => dataTicket.value?.done || null),
+          count: computed(() => dataProcessing.value?.leave || null),
         },
         {
           title: 'Kế hoạch tăng ca',
           status: 'waiting',
-          count: computed(() => dataTicket.value?.processing || null),
+          count: computed(() => dataProcessing.value?.overtime || null),
         },
       ],
     },
@@ -233,17 +236,17 @@
         {
           title: 'Giải trình công',
           status: 'reject',
-          count: computed(() => dataTicket.value?.deny || null),
+          count: computed(() => dataApproved.value?.work || null),
         },
         {
           title: 'Nghỉ phép',
           status: 'done',
-          count: computed(() => dataTicket.value?.done || null),
+          count: computed(() => dataApproved.value?.leave || null),
         },
         {
           title: 'Kế hoạch tăng ca',
           status: 'waiting',
-          count: computed(() => dataTicket.value?.processing || null),
+          count: computed(() => dataApproved.value?.orvertime || null),
         },
       ],
     },
@@ -255,12 +258,12 @@
         {
           title: 'Thâm niên',
           status: 'normal',
-          count: computed(() => dataTicket.value?.deny || null),
+          count: computed(() => dataWork.value?.seniority || null),
         },
         {
           title: 'Nghỉ phép còn lại',
           status: 'done',
-          count: computed(() => dataTicket.value?.done || null),
+          count: computed(() => dataLeave.value?.remain || null),
         },
       ],
     },

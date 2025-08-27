@@ -457,21 +457,13 @@
       @post-request="getPostRequest"
     />
 
-    <Modal :modal-active="modalActive.modalEditUser" max-width="max-w-[865px]" @close="toggleModal('modalEditUser')">
-      <ModalEditUser
-        :userdata="paramsDetailUser"
-        :prop-function="fetchDataDocument"
-        @post-request-edit="getPostRequestEdit"
-      >
-        <button
-          type="button"
-          class="hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2 text-center text-[16px] leading-normal font-bold text-[#464661] uppercase transition hover:transition max-md:grow md:min-w-[175px]"
-          @click="toggleModal('modalEditUser')"
-        >
-          Hủy
-        </button>
-      </ModalEditUser>
-    </Modal>
+    <ModalEditUser
+      :userdata="paramsDetailUser"
+      :prop-function="fetchDataDocument"
+      :modal="modalActive.modalEditUser"
+      @toggle-modal="toggleModal('modalEditUser')"
+      @post-request-edit="getPostRequestEdit"
+    />
 
     <Modal :modal-active="modalActive.modalExport" max-width="max-w-[512px]" @close="toggleModal('modalExport')">
       <div class="overflow-hidden rounded-[24px] bg-white p-[45px_54px]">
