@@ -43,7 +43,7 @@
     {
       icon: MageDashboard,
       title: 'Dashboard',
-      route: 'Personal',
+      route: 'Dashboard',
       permissionName: 'all',
       nav: false,
     },
@@ -265,7 +265,7 @@
     </button>
 
     <div class="mb-10 h-auto w-full max-w-full px-2.5">
-      <router-link :to="{ name: 'Personal' }">
+      <router-link :to="{ name: 'Dashboard' }">
         <img src="@/assets/images/logo-sidebar.png" alt="" class="h-auto w-auto max-w-full object-scale-down" />
       </router-link>
     </div>

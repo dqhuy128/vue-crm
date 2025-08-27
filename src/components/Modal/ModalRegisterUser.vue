@@ -249,6 +249,7 @@
       <!-- Thông tin công việc -->
       <div class="bg-white p-5 xl:px-12">
         <div class="mb-3 text-[16px] font-semibold text-[#013878] uppercase">Thông tin công việc</div>
+
         <div class="grid grid-cols-12 gap-4">
           <div class="col-span-12 md:col-span-6 xl:col-span-4">
             <label class="text-[14px] font-semibold text-[#464661]">Ngày tháng vào làm việc</label>
@@ -492,11 +493,11 @@
             <span v-if="errors.room_id" class="mt-1 text-xs text-red-500">{{ errors.room_id }}</span>
           </div>
 
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
             <label class="text-[14px] font-semibold text-[#464661]"
               >Bộ phận <span class="text-[#e61b1b]">*</span></label
             >
-            <SelectRoot v-model="paramsUser.room_id">
+            <SelectRoot v-model="paramsUser.part_id">
               <SelectTrigger
                 class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
                 aria-label="Customise options"
@@ -528,16 +529,14 @@
                         <SelectItemText> Chọn bộ phận </SelectItemText>
                       </SelectItem>
 
-                      <template v-for="(items, key) in staffData" :key="String(key)">
+                      <template v-for="(items, key) in departmentPartOptions" :key="String(key)">
                         <SelectItem
-                          v-for="(item, _) in items"
-                          :key="item.id"
+                          v-if="items && items.id"
+                          :key="items.id"
                           class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          :value="String(item.id)"
+                          :value="String(items.id)"
                         >
-                          <SelectItemText>
-                            {{ item.name }}
-                          </SelectItemText>
+                          <SelectItemText>{{ items.name }}</SelectItemText>
                         </SelectItem>
                       </template>
                     </SelectGroup>
@@ -553,7 +552,7 @@
             </SelectRoot>
           </div>
 
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
             <label class="text-[14px] font-semibold text-[#464661]">Quản lý trực tiếp</label>
             <SelectRoot v-model="leaderType.id">
               <SelectTrigger
@@ -612,7 +611,7 @@
             </SelectRoot>
           </div>
 
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
             <label class="text-[14px] font-semibold text-[#464661]"
               >Văn phòng làm việc <span class="text-[#e61b1b]">*</span></label
             >
@@ -648,16 +647,17 @@
                         <SelectItemText> Chọn địa điểm </SelectItemText>
                       </SelectItem>
 
-                      <SelectItem
-                        v-for="(item, _) in regionData"
-                        :key="item.id"
-                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                        :value="String(item.id)"
-                      >
-                        <SelectItemText>
-                          {{ item.name }}
-                        </SelectItemText>
-                      </SelectItem>
+                      <template v-for="(items, index) in regionData" :key="index">
+                        <SelectItem
+                          v-for="item in items"
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          :value="String(item.id)"
+                        >
+                          <SelectItemText>
+                            {{ item.name }}
+                          </SelectItemText>
+                        </SelectItem>
+                      </template>
                     </SelectGroup>
                   </SelectViewport>
 
@@ -669,12 +669,6 @@
                 </SelectContent>
               </SelectPortal>
             </SelectRoot>
-          </div>
-
-          <div class="col-span-12 md:col-span-6 xl:col-span-3">
-            <div class="flex h-full flex-col justify-end">
-              <button type="button" class="h-[38px] rounded-lg bg-[#1b4dea] px-4 text-white">RESET MẬT KHẨU</button>
-            </div>
           </div>
         </div>
       </div>
@@ -739,6 +733,19 @@
 
               <div class="mt-1 text-sm text-red-500">
                 {{ errors.group_user }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-span-12 md:col-span-6">
+            <div class="h-full text-end">
+              <div class="inline-flex h-full flex-col justify-end">
+                <button
+                  type="button"
+                  class="hover:shadow-hoverinset h-[38px] cursor-pointer rounded-lg bg-[#1b4dea] px-4 text-white"
+                >
+                  RESET MẬT KHẨU
+                </button>
               </div>
             </div>
           </div>
@@ -1040,6 +1047,63 @@
     return aggregated
   })
 
+  // Parts (bộ phận) = children of selected Room within selected Khối
+  const departmentPartOptions = computed<any[]>(() => {
+    const root = departmentTree.value
+    if (!root) return []
+
+    // Normalize roots into array
+    let roots: any[] = []
+    if (Array.isArray(root)) {
+      roots = root as any[]
+    } else if (root && Array.isArray((root as any).items)) {
+      roots = (root as any).items as any[]
+    } else if (root && typeof root === 'object') {
+      try {
+        roots = Object.values(root as Record<string, any[]>).flat()
+      } catch (e) {
+        roots = []
+      }
+    }
+
+    const selectedStaffId = String(paramsUser.staff_id ?? '')
+    const selectedRoomId = String(paramsUser.room_id ?? '')
+
+    // If both staff and room are selected, drill down to parts
+    if (selectedStaffId && selectedRoomId) {
+      const staffNode = roots.find((n: any) => String(n.id) === selectedStaffId)
+      if (staffNode && Array.isArray(staffNode.children)) {
+        const roomNode = staffNode.children.find((c: any) => String(c.id) === selectedRoomId)
+        if (roomNode && Array.isArray(roomNode.children)) {
+          return roomNode.children.map((p: any) => ({ id: p.id, name: p.name }))
+        }
+      }
+    }
+
+    // Fallback: aggregate all parts under selected staff; or under all roots
+    const aggregateFrom = (() => {
+      if (selectedStaffId) {
+        const staffNode = roots.find((n: any) => String(n.id) === selectedStaffId)
+        if (staffNode) return [staffNode]
+      }
+      return roots
+    })()
+
+    const aggregated: any[] = []
+    for (const staffNode of aggregateFrom) {
+      if (staffNode && Array.isArray(staffNode.children)) {
+        for (const room of staffNode.children) {
+          if (room && Array.isArray(room.children)) {
+            for (const part of room.children) {
+              aggregated.push({ id: part.id, name: part.name })
+            }
+          }
+        }
+      }
+    }
+    return aggregated
+  })
+
   const fetchDepartmentTree = async () => {
     try {
       const { data } = await axios.get(`${apiUri}/categories/staff`, {
@@ -1103,7 +1167,7 @@
 
   const fetchListRegion = async () => {
     try {
-      const response = await axios.get(`${apiUri}/location/region`, {
+      const response = await axios.get(`${apiUri}/categories/list?type=office`, {
         headers: {
           Authorization: `Bearer ${auth.token()}`,
         },
@@ -1191,6 +1255,7 @@
       if (paramsUser.refer_relationship)
         formDataUser.append('refer_relationship', String(paramsUser.refer_relationship))
       if (paramsUser.type) formDataUser.append('type', String(paramsUser.type))
+      if (paramsUser.part_id) formDataUser.append('part_id', String(paramsUser.part_id))
 
       // Log FormData contents
       console.log('🚀 ~ FormData contents:')
