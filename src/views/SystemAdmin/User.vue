@@ -317,7 +317,7 @@
                   </div>
 
                   <div class="cell">
-                    {{ item?.permanent_address }}
+                    {{ item?.office_text }}
                   </div>
 
                   <div class="cell">
