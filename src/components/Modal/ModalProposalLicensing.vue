@@ -78,13 +78,11 @@
             v-model="datepicker"
             :class="['work-history-datepicker', { 'is-error': errors.begin_date }]"
             :enable-time-picker="false"
-            :range="leaveMode === LeaveTypeOptions.FULL || leaveMode === LeaveTypeOptions.REGIME"
             locale="vi"
             :format-locale="vi"
             cancel-text="Huỷ"
             select-text="Chọn"
             format="dd/MM/yyyy"
-            :max-range="leaveMode === LeaveTypeOptions.FULL || leaveMode === LeaveTypeOptions.REGIME ? 1 : undefined"
             @update:model-value="updateDates"
           />
           <p v-if="errors.begin_date" class="mt-1 text-[13px] leading-normal text-[#E61B1B]">
@@ -238,20 +236,12 @@
 
   const initDates = () => {
     const baseDate = new Date(new Date().setDate(new Date().getDate() + 1))
-    if (leaveMode.value === LeaveTypeOptions.FULL || leaveMode.value === LeaveTypeOptions.REGIME) {
-      const endDate = new Date(new Date(baseDate).setDate(baseDate.getDate() + 1))
-      datepicker.value = [baseDate, endDate]
-    } else {
-      datepicker.value = baseDate
-    }
+    datepicker.value = baseDate
   }
   const updateDates = () => {
     const value = datepicker.value
     if (!value) return
-    if (Array.isArray(value)) {
-      if (value.length >= 1 && value[0]) params.begin_date = format(value[0], 'yyyy/MM/dd')
-      if (value.length >= 2 && value[1]) params.finish_date = format(value[1], 'yyyy/MM/dd')
-    } else if (value instanceof Date) {
+    if (value instanceof Date) {
       const dateStr = format(value, 'yyyy/MM/dd')
       params.begin_date = dateStr
       params.finish_date = dateStr

@@ -20,7 +20,7 @@
                 <div class="space-y-3 text-[#464661]">
                   <p class="text-[16px]"><span class="font-bold">Họ và tên:</span> {{ profile.name }}</p>
                   <p class="text-[16px]"><span class="font-bold">Chức danh:</span> {{ profile.position }}</p>
-                  <p class="text-[16px]"><span class="font-bold">Phòng/ Khối:</span> {{ profile.department }}</p>
+                  <p class="text-[16px]"><span class="font-bold">Phòng/ Khối:</span> {{ profile.staff }}</p>
                 </div>
                 <div class="space-y-3 text-[#464661]">
                   <p class="text-[16px]"><span class="font-bold">Ngày sinh:</span> {{ profile.birthday }}</p>
@@ -292,6 +292,7 @@
     phone: userData.value?.phone || '—',
     joinDate: userData.value?.date_of_issue || '—',
     endDate: userData.value?.end_date || '—',
+    staff: userData.value?.staff || '—',
   }))
 
   const profilePhoto = computed(() => userData.value?.avatar || placeholderImg)
