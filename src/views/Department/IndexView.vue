@@ -187,7 +187,7 @@
       <div class="management-container">
         <!-- Left Panel - Tree Structure -->
         <div class="left-panel">
-          <template v-if="!departmentTree.length">
+          <template v-if="departmentTree.length > 0">
             <TreeDepartment
               :data="departmentTree"
               @add-department="handleAddDepartment"
