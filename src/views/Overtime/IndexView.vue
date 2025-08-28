@@ -409,7 +409,7 @@
     </div>
 
     <template v-if="checkPermission('Orvertime', 'List')">
-      <div class="flex h-full flex-col overflow-hidden">
+      <div class="flex h-full flex-col">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="table-container relative">
             <!-- Example column -->
