@@ -13,7 +13,7 @@
 
             <div class="flex-1 pe-6">
               <p class="text-[16px] leading-6 text-[#1b4dea] italic">
-                {{ userData?.slogan || 'Yêu tổ quốc, yêu đồng bào, học tập tốt, lao động tốt, giữ vệ sinh thật tốt' }}
+                {{ userData?.slogan || '' }}
               </p>
 
               <div class="mt-4 grid gap-y-3 border-t border-[#EDEDF6] pt-4 md:grid-cols-2">
