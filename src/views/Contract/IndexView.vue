@@ -121,7 +121,7 @@
     </div>
 
     <template v-if="checkPermission('Contract', 'List')">
-      <div class="flex h-full flex-col overflow-hidden">
+      <div class="flex h-full flex-col">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="table-container relative">
             <!-- Example column -->
@@ -160,8 +160,8 @@
                     </div>
 
                     <div class="cell">
-                      <template v-if="it.user_id">
-                        {{ it.user_id }}
+                      <template v-if="it.code">
+                        {{ it.code }}
                       </template>
                     </div>
 

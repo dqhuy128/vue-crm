@@ -1,7 +1,4 @@
 .styleTableMagic {
-  // height: 100%;
-  overflow: hidden;
-
   @media (min-width: 768px) {
     // height: 100%;
     margin-bottom: 1.5rem;
@@ -11,7 +8,7 @@
     position: relative;
     height: 100%;
     border-radius: 24px 24px 0px 0px;
-    overflow: auto;
+    // overflow: auto;
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
 

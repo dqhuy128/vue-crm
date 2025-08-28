@@ -147,7 +147,7 @@
     </div>
 
     <template v-if="checkPermission('Categories', 'List')">
-      <div class="flex h-full flex-col overflow-hidden">
+      <div class="flex h-full flex-col">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="table-container relative">
             <!-- Example column -->
@@ -178,10 +178,7 @@
                     </div>
 
                     <div class="cell">
-                      <template v-if="it.type === 'document'"> Tài liệu </template>
-                      <template v-if="it.type === 'ticket'"> Ticket </template>
-                      <template v-if="it.type === 'position'"> Chức vụ </template>
-                      <template v-if="it.type === 'staff'"> Bộ phận </template>
+                      {{ it.type_text }}
                     </div>
 
                     <div class="cell">
@@ -193,7 +190,7 @@
                     </div>
 
                     <template v-if="Number(it.status) === 1">
-                      <div class="cell status status-green status-body">Đang hoạt động</div>
+                      <div class="cell status status-green status-body !px-4 !text-xs">Đang hoạt động</div>
                     </template>
 
                     <template v-if="Number(it.status) === 0 || it.status === null">
