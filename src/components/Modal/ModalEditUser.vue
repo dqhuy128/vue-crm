@@ -185,32 +185,28 @@
             />
           </div>
           <div class="col-span-12 md:col-span-6">
-            <label class="text-[14px] font-semibold text-[#464661]"
-              >Địa chỉ thường trú <span class="text-[#e61b1b]">*</span></label
-            >
+            <label class="text-[14px] font-semibold text-[#464661]">Địa chỉ thường trú </label>
             <input
               v-model="permanent_address"
               v-bind="permanent_addressAttrs"
               placeholder="Nhập địa chỉ thường trú"
               class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
             />
-            <span v-if="errors.permanent_address" class="mt-1 text-xs text-red-500">{{
+            <!-- <span v-if="errors.permanent_address" class="mt-1 text-xs text-red-500">{{
               errors.permanent_address
-            }}</span>
+            }}</span> -->
           </div>
           <div class="col-span-12 md:col-span-6">
-            <label class="text-[14px] font-semibold text-[#464661]"
-              >Địa chỉ tạm trú <span class="text-[#e61b1b]">*</span></label
-            >
+            <label class="text-[14px] font-semibold text-[#464661]">Địa chỉ tạm trú </label>
             <input
               v-model="residence_address"
               v-bind="residence_addressAttrs"
               placeholder="Nhập địa chỉ tạm trú"
               class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
             />
-            <span v-if="errors.residence_address" class="mt-1 text-xs text-red-500">{{
+            <!-- <span v-if="errors.residence_address" class="mt-1 text-xs text-red-500">{{
               errors.residence_address
-            }}</span>
+            }}</span> -->
           </div>
         </div>
       </div>
@@ -494,9 +490,7 @@
           </div>
 
           <div class="col-span-12 md:col-span-6 xl:col-span-4">
-            <label class="text-[14px] font-semibold text-[#464661]"
-              >Bộ phận <span class="text-[#e61b1b]">*</span></label
-            >
+            <label class="text-[14px] font-semibold text-[#464661]">Bộ phận </label>
             <SelectRoot v-model="paramsUser.part_id">
               <SelectTrigger
                 class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
@@ -942,8 +936,8 @@
       // Thêm validation cho các trường bắt buộc khác
       staff_id: yup.string().required('Bạn hãy chọn khối'),
       room_id: yup.string().required('Bạn hãy chọn phòng ban'),
-      permanent_address: yup.string().required('Bạn hãy nhập địa chỉ thường trú'),
-      residence_address: yup.string().required('Bạn hãy nhập địa chỉ tạm trú'),
+      // permanent_address: yup.string().required('Bạn hãy nhập địa chỉ thường trú'),
+      // residence_address: yup.string().required('Bạn hãy nhập địa chỉ tạm trú'),
       identification: yup.string().required('Bạn hãy nhập số CCCD'),
     })
   )

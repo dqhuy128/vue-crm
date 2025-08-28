@@ -3,7 +3,7 @@
     <Breadcrums name="Dashboard" />
 
     <div class="flex flex-col gap-4">
-      <template v-if="userData">
+      <template v-if="dataInformation">
         <div class="max-w-[745px] rounded-3xl bg-white p-6 md:p-2">
           <div class="flex flex-wrap items-center gap-6">
             <div
@@ -13,20 +13,24 @@
 
             <div class="flex-1 pe-6">
               <p class="text-[16px] leading-6 text-[#1b4dea] italic">
-                {{ userData?.slogan || '' }}
+                {{ dataInformation?.slogan || '' }}
               </p>
 
               <div class="mt-4 grid gap-y-3 border-t border-[#EDEDF6] pt-4 md:grid-cols-2">
                 <div class="space-y-3 text-[#464661]">
-                  <p class="text-[16px]"><span class="font-bold">Họ và tên:</span> {{ profile.name }}</p>
-                  <p class="text-[16px]"><span class="font-bold">Chức danh:</span> {{ profile.position }}</p>
-                  <p class="text-[16px]"><span class="font-bold">Phòng/ Khối:</span> {{ profile.staff }}</p>
+                  <p class="text-[16px]"><span class="font-bold">Họ và tên:</span> {{ dataInformation.name }}</p>
+                  <p class="text-[16px]"><span class="font-bold">Chức danh:</span> {{ dataInformation.title }}</p>
+                  <p class="text-[16px]"><span class="font-bold">Phòng/ Khối:</span> {{ dataInformation.staff }}</p>
                 </div>
                 <div class="space-y-3 text-[#464661]">
-                  <p class="text-[16px]"><span class="font-bold">Ngày sinh:</span> {{ profile.birthday }}</p>
-                  <p class="text-[16px]"><span class="font-bold">SĐT:</span> {{ profile.phone }}</p>
-                  <p class="text-[16px]"><span class="font-bold">Ngày gia nhập Cty:</span> {{ profile.joinDate }}</p>
-                  <p class="text-[16px]"><span class="font-bold">Ngày kết thúc:</span> {{ profile.endDate }}</p>
+                  <p class="text-[16px]"><span class="font-bold">Ngày sinh:</span> {{ dataInformation.dob }}</p>
+                  <p class="text-[16px]"><span class="font-bold">SĐT:</span> {{ dataInformation.phone }}</p>
+                  <p class="text-[16px]">
+                    <span class="font-bold">Ngày gia nhập Cty:</span> {{ dataInformation.join_date }}
+                  </p>
+                  <p class="text-[16px]">
+                    <span class="font-bold">Ngày kết thúc:</span> {{ dataInformation.finish_date }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -186,6 +190,7 @@
   const dataApproved = ref<any>()
   const dataWork = ref<any>()
   const dataLeave = ref<any>()
+  const dataInformation = ref<any>()
   const fetchTicket = async () => {
     try {
       const res = await axios.get(`${apiUri}/dashboard/individual`, {
@@ -199,6 +204,7 @@
       dataApproved.value = data.approved
       dataLeave.value = data.leave
       dataWork.value = data.work
+      dataInformation.value = data.infor
     } catch (error) {
       console.log('🚀 ~ fetchTicket ~ error:', error)
     }
