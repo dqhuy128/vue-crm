@@ -187,17 +187,24 @@
       <div class="management-container">
         <!-- Left Panel - Tree Structure -->
         <div class="left-panel">
-          <TreeDepartment
-            :data="departmentTree"
-            @add-department="handleAddDepartment"
-            @edit-department="getDetailDepartment"
-            @node-toggle="handleNodeToggle"
-            @delete-department="handleDeleteDepartment"
-          />
+          <template v-if="!departmentTree.length">
+            <TreeDepartment
+              :data="departmentTree"
+              @add-department="handleAddDepartment"
+              @edit-department="getDetailDepartment"
+              @node-toggle="handleNodeToggle"
+              @delete-department="handleDeleteDepartment"
+            />
+          </template>
+          <template v-else>
+            <div class="flex h-full items-center justify-center">
+              <p class="text-[16px] leading-6 text-[#464661]">Chưa có dữ liệu ...</p>
+            </div>
+          </template>
         </div>
 
         <!-- Right Panel - Form -->
-        <div class="right-panel">
+        <div :class="['right-panel']">
           <DepartmentForm
             :edit-data="paramsDetailDepartment"
             :department-tree="departmentTree"
