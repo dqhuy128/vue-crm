@@ -13,7 +13,11 @@
 
             <div class="flex-1 pe-6">
               <p class="text-[16px] leading-6 text-[#1b4dea] italic">
-                {{ dataInformation?.slogan || '' }}
+                {{
+                  bio ||
+                  dataInformation?.slogan ||
+                  'Yêu tổ quốc, yêu đồng bào, học tập tốt, lao động tốt, giữ vệ sinh thật tốt'
+                }}
               </p>
 
               <div class="mt-4 grid gap-y-3 border-t border-[#EDEDF6] pt-4 md:grid-cols-2">
@@ -88,7 +92,10 @@
       </div>
 
       <!-- PAGINATION -->
-      <div class="tb-pagination flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4">
+      <div
+        v-if="dataWorkHistoryList.length > 0"
+        class="tb-pagination flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4"
+      >
         <div class="relative">
           <select
             id="selectPerPage"
@@ -191,6 +198,7 @@
   const dataWork = ref<any>()
   const dataLeave = ref<any>()
   const dataInformation = ref<any>()
+  const bio = ref<any>()
   const fetchTicket = async () => {
     try {
       const res = await axios.get(`${apiUri}/dashboard/individual`, {
@@ -199,14 +207,30 @@
         },
       })
       const { data } = res.data
-      console.log('🚀 ~ fetchTicket ~ data:', data)
       dataProcessing.value = data.proccesing
       dataApproved.value = data.approved
       dataLeave.value = data.leave
       dataWork.value = data.work
       dataInformation.value = data.infor
+      bio.value = data.infor.slogan
     } catch (error) {
       console.log('🚀 ~ fetchTicket ~ error:', error)
+    }
+  }
+
+  // Function riêng để fetch chỉ slogan
+  const fetchSlogan = async () => {
+    try {
+      const res = await axios.get(`${apiUri}/dashboard/individual`, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      const { data } = res.data
+      // Chỉ update slogan, không update dataInformation
+      bio.value = data.infor.slogan
+    } catch (error) {
+      console.log('🚀 ~ fetchSlogan ~ error:', error)
     }
   }
 
@@ -284,7 +308,6 @@
         },
       })
       dataPosition.value = response.data.data.items
-      console.log('🚀 ~ fetchPosition ~ dataPosition:', dataPosition.value)
     } catch (error) {
       console.log('🚀 ~ fetchPosition ~ error:', error)
     }
@@ -323,17 +346,6 @@
     },
   ])
 
-  interface typeParamsWorkHistory {
-    begin_date: string
-    finish_date: string
-    name: string
-  }
-  const paramsWorkHistory = reactive<typeParamsWorkHistory>({
-    begin_date: '',
-    finish_date: '',
-    name: 'all',
-  })
-
   const paginate = reactive({
     page: 1,
     per_page: 20,
@@ -364,18 +376,16 @@
     }))
   })
 
-  const handleUserExplain = (_id: string, _date: string) => {}
-
   const fetchDataWorkHistory = () => {
-    const startDate = new Date(new Date().setDate(1))
-    const endDate = new Date()
+    // Đảm bảo có id trước khi gọi API
+    const userId = dataInformation.value?.id || userData.value?.id
+
     const res = {
-      ...paramsWorkHistory,
-      begin_date: startDate.toISOString().slice(0, 10),
-      finish_date: endDate.toISOString().slice(0, 10),
+      id: userId,
       page: paginate.page,
       per_page: paginate.per_page,
     }
+
     doFetch(
       `${apiUri}/work/list?${new URLSearchParams(
         Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))
@@ -396,13 +406,36 @@
   }
 
   watch(
+    () => bio.value,
+    async (newValue, oldValue) => {
+      if (newValue && newValue !== oldValue) {
+        await fetchSlogan()
+      }
+    }
+  )
+
+  // Watch dataInformation để gọi fetchDataWorkHistory khi có data
+  watch(
+    () => dataInformation.value,
+    (newValue) => {
+      if (newValue?.id) {
+        // Khi có dataInformation với ID, gọi fetchDataWorkHistory
+        fetchDataWorkHistory()
+      }
+    }
+  )
+
+  watch(
     paginate,
     async () => {
-      fetchDataWorkHistory()
+      // Chỉ gọi khi có user ID
+      if (dataInformation.value?.id || userData.value?.id) {
+        fetchDataWorkHistory()
+      }
     },
     {
       deep: true,
-      immediate: true,
+      immediate: false, // Không chạy ngay lập tức
     }
   )
 

@@ -24,8 +24,8 @@
   const { resetForm } = useForm()
   const cropperRef = ref(null)
   const permissionStore = usePermissionStore()
+  const { modalUserInfo } = storeToRefs(permissionStore)
   const modalActive = ref<recordModal>({
-    modalUserInfo: false,
     modalUserAvatar: false,
     modalUserCroppie: false,
   })
@@ -130,23 +130,38 @@
     }
   }
 
-  const handleChangeSlogan = async () => {
+  const bio = ref<any>()
+  const fetchIndividual = async () => {
     try {
-      if (!userData.value?.id) return
-
-      const { status } = await axios.post(
-        `${apiUri}/user/update`,
-        {
-          id: userData.value?.id,
-          slogan: changePass.slogan,
+      const { data } = await axios.get(`${apiUri}/dashboard/individual`, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
         },
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${auth.token()}`,
-          },
-        }
-      )
+      })
+
+      const {
+        data: {
+          infor: { slogan },
+        },
+      } = data
+
+      bio.value = slogan
+    } catch (error) {
+      console.error('Failed to fetch individual:', error)
+    }
+  }
+
+  const handleUpdateSlogan = async () => {
+    try {
+      const formUpdateSlogan = new FormData()
+      formUpdateSlogan.append('slogan', changePass.slogan)
+
+      await axios.post(`${apiUri}/user/updateSlogan`, formUpdateSlogan, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
     } catch (error) {
       console.error('Failed to change password:', error)
     }
@@ -154,7 +169,8 @@
 
   const submitSlogan = async () => {
     if (changePass.slogan) {
-      await handleChangeSlogan()
+      await handleUpdateSlogan()
+      await fetchIndividual()
     }
   }
 
@@ -167,6 +183,12 @@
   const isRequired = (text: string) => {
     return (value: any) => (value && value.trim() ? true : text)
   }
+
+  watch(bio, async (newValue) => {
+    if (newValue) {
+      await fetchIndividual()
+    }
+  })
 
   watch(isEditingSlogan, async (newValue, oldValue) => {
     if (oldValue && !newValue) {
@@ -282,7 +304,7 @@
       </div>
     </div>
 
-    <Modal :modal-active="modalActive.modalUserInfo" max-width="max-w-[702px]" @close="toggleModal('modalUserInfo')">
+    <Modal :modal-active="modalUserInfo" max-width="max-w-[702px]" @close="permissionStore.toggleModalUserInfo">
       <div class="overflow-hidden rounded-[24px] bg-white p-1.5">
         <div class="rounded-[18px_18px_0_0] bg-[#fafafa] p-5 pt-10">
           <div class="mb-4 text-center">
@@ -342,7 +364,7 @@
                   <div
                     class="font-inter w-full rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 !pe-10 text-[16px] leading-normal font-normal text-[#1B4DEA] italic"
                   >
-                    {{ userData?.slogan || changePass.slogan || 'Nhập slogan' }}
+                    {{ bio || userData?.slogan || changePass.slogan || 'Nhập slogan' }}
                   </div>
 
                   <button
