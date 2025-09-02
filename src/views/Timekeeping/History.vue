@@ -61,7 +61,7 @@
                           <SelectItemText> Tất cả nhân viên </SelectItemText>
                         </SelectItem>
 
-                        <template v-for="(item, index) in dataUserMCC.items" :key="item.user_id">
+                        <template v-for="(item, _index) in dataUserMCC.items" :key="item.user_id">
                           <SelectItem
                             class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
                             :value="String(item)"
@@ -144,13 +144,101 @@
       </div>
     </div>
 
+    <div class="mb-6 flex flex-wrap items-center gap-4">
+      <!-- Bộ lọc cột -->
+      <div class="column-filter-container relative">
+        <button
+          type="button"
+          class="inline-flex items-center gap-2 rounded-[24px] border border-[#EDEDF6] bg-white px-4 py-1.5 text-[#464661] shadow-sm transition-colors hover:bg-gray-50"
+          @click="showColumnFilter = !showColumnFilter"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M3 7H21M7 12H17M10 17H14"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span class="font-inter text-[15px] font-medium">Bộ lọc</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M6 9L12 15L18 9"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+
+        <!-- Dropdown bộ lọc -->
+        <div
+          v-if="showColumnFilter"
+          class="absolute top-full left-0 z-[99] mt-2 w-80 rounded-[12px] border border-[#EDEDF6] bg-white shadow-lg"
+          @click.stop
+        >
+          <div class="p-4">
+            <h3 class="mb-3 text-base font-semibold text-[#464661]">Cài đặt hiển thị</h3>
+
+            <!-- Search input -->
+            <div class="relative mb-4">
+              <input
+                v-model="columnSearchText"
+                type="text"
+                placeholder="Tìm kiếm"
+                class="w-full rounded-[8px] border border-[#EDEDF6] px-3 py-2 pr-8 text-[14px] focus:border-transparent focus:ring-2 focus:ring-[#1b4dea] focus:outline-none"
+              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                class="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400"
+              >
+                <path
+                  d="M21 21L16.7 16.7M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+
+            <!-- Danh sách cột với checkbox -->
+            <div class="max-h-60 space-y-2 overflow-y-auto">
+              <div
+                v-for="(column, index) in filteredColumns"
+                :key="index"
+                class="mb-0 flex items-center gap-3 rounded-[6px] p-2 transition-colors hover:bg-gray-50"
+              >
+                <input
+                  :id="`column-${index}`"
+                  type="checkbox"
+                  :checked="column.visible"
+                  class="h-4 w-4 rounded border-[#EDEDF6] bg-white text-[#1b4dea] focus:ring-2 focus:ring-[#1b4dea]"
+                  @change="toggleColumnVisibility(index)"
+                />
+                <label :for="`column-${index}`" class="font-inter flex-1 cursor-pointer text-[14px] text-[#464661]">
+                  {{ column.title }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <template v-if="checkPermission('Work', 'List')">
       <div class="flex h-full flex-col">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
           <div class="table-container relative">
             <!-- Example column -->
             <div id="tableRowHeader" class="header table-row justify-between !ps-5">
-              <div v-for="(column, index) in tbhead" :key="index" class="cell">
+              <div v-for="(column, index) in tbhead" v-show="column.visible" :key="index" class="cell">
                 {{ column.title }}
 
                 <div v-if="column.hasSort" class="tb-sort">
@@ -167,38 +255,36 @@
               <div id="tableRowBody" class="body table-row">
                 <template v-for="(item, index) in dataWorkHistoryList" :key="index">
                   <div v-for="(it, itIndex) in item.values" :key="itIndex" class="table-item justify-between !ps-5">
-                    <div class="cell">
+                    <div v-show="tbhead[0].visible" class="cell">
                       <template v-if="index < 9"> 0{{ index + 1 }} </template>
                       <template v-else>{{ index + 1 }}</template>
                     </div>
 
-                    <!-- <div class="cell">{{ index + 1 }}</div> -->
-
-                    <div class="cell">
+                    <div v-show="tbhead[1].visible" class="cell">
                       {{ it?.user_code }}
                     </div>
 
-                    <div class="cell">
+                    <div v-show="tbhead[2].visible" class="cell">
                       {{ it?.name }}
                     </div>
 
-                    <div class="cell">
+                    <div v-show="tbhead[3].visible" class="cell">
                       {{ it?.work_date }}
                     </div>
 
-                    <div class="cell">
+                    <div v-show="tbhead[4].visible" class="cell">
                       {{ it?.check_in }}
                     </div>
 
-                    <div class="cell">
+                    <div v-show="tbhead[5].visible" class="cell">
                       {{ it?.check_out }}
                     </div>
 
-                    <div class="cell">
+                    <div v-show="tbhead[6].visible" class="cell">
                       {{ it?.status }}
                     </div>
 
-                    <div class="cell">
+                    <div v-show="tbhead[7].visible" class="cell">
                       {{ it?.total }}
                     </div>
 
@@ -386,11 +472,13 @@
   import { tableMagic } from '@/utils/main'
   import MainLayout from '@/views/MainLayout.vue'
 
+  const auth = useAuth()
+  const permissionData = usePermissionStore()
+  const { userData } = storeToRefs(permissionData)
+
   const toast = reactive({
     toastA: false,
   })
-
-  const auth = useAuth()
 
   const toggleBoxFilters = ref(false)
   const screenWidth = ref(window.innerWidth)
@@ -424,6 +512,14 @@
     // Sử dụng event capturing để theo dõi tất cả input
     document.addEventListener('focus', trackInputState, true)
     document.addEventListener('blur', trackInputState, true)
+
+    // Đóng dropdown khi click bên ngoài
+    document.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement
+      if (!target.closest('.column-filter-container')) {
+        showColumnFilter.value = false
+      }
+    })
   })
 
   onBeforeUnmount(() => {
@@ -455,36 +551,63 @@
     {
       title: 'STT',
       hasSort: false,
+      visible: true,
     },
     {
       title: 'Mã NV',
       hasSort: false,
+      visible: true,
     },
     {
       title: 'Họ và tên',
       hasSort: false,
+      visible: true,
     },
     {
       title: 'Ngày làm việc',
       hasSort: false,
+      visible: true,
     },
     {
       title: 'Giờ vào',
       hasSort: false,
+      visible: true,
     },
     {
       title: 'Giờ ra',
       hasSort: false,
+      visible: true,
     },
     {
       title: 'Trạng thái',
       hasSort: false,
+      visible: true,
     },
     {
       title: 'Công ngày',
       hasSort: false,
+      visible: true,
     },
   ])
+
+  // State cho bộ lọc dropdown
+  const showColumnFilter = ref(false)
+  const columnSearchText = ref('')
+
+  // Computed để lọc các cột dựa trên search text
+  const filteredColumns = computed(() => {
+    if (!columnSearchText.value) return tbhead
+    return tbhead.filter((column) => column.title.toLowerCase().includes(columnSearchText.value.toLowerCase()))
+  })
+
+  // Function để toggle hiển thị cột
+  const toggleColumnVisibility = (columnIndex: number) => {
+    // Tìm index thực tế trong tbhead dựa trên filteredColumns
+    const originalIndex = tbhead.findIndex((col) => col.title === filteredColumns.value[columnIndex].title)
+    if (originalIndex !== -1) {
+      tbhead[originalIndex].visible = !tbhead[originalIndex].visible
+    }
+  }
 
   interface typeParamsWorkHistory {
     begin_date: string
@@ -534,8 +657,11 @@
     }
 
     debounceTime.value.timeOut = setTimeout(() => {
+      const id = userData.value?.id
+
       const res = {
         ...paramsWorkHistory,
+        id: id,
         page: paginate.page,
         per_page: paginate.per_page,
       }

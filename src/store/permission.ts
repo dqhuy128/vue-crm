@@ -29,6 +29,7 @@ export const usePermissionStore = defineStore('permission', () => {
   const permissionList = ref<string[]>([])
   const userData = ref<any>(null)
   const permissionListData = ref<string[]>([])
+  const modalUserInfo = ref<boolean>(false)
 
   async function fetchPermission(token: string) {
     if (permision.value) return
@@ -128,10 +129,15 @@ export const usePermissionStore = defineStore('permission', () => {
     return userData
   })
 
+  const toggleModalUserInfo = () => {
+    modalUserInfo.value = !modalUserInfo.value
+  }
+
   function $reset() {
     permision.value = null
     permissionList.value = []
     userData.value = null
+    modalUserInfo.value = false
   }
 
   return {
@@ -148,5 +154,7 @@ export const usePermissionStore = defineStore('permission', () => {
     fetchUserData,
     permissionList,
     userData,
+    modalUserInfo,
+    toggleModalUserInfo,
   }
 })

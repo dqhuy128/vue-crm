@@ -455,6 +455,7 @@
       :modal="modalActive.modalNewUser"
       @toggle-modal="toggleModal('modalNewUser')"
       @post-request="getPostRequest"
+      @open-reset-password="handleOpenResetPassword"
     />
 
     <ModalEditUser
@@ -673,6 +674,10 @@
 
   const toggleModal = (modalStateName: any) => {
     modalActive.value[modalStateName] = !modalActive.value[modalStateName]
+  }
+
+  const handleOpenResetPassword = () => {
+    permissionData.toggleModalUserInfo()
   }
 
   const tbhead = reactive([

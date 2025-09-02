@@ -188,7 +188,6 @@
             <label class="text-[14px] font-semibold text-[#464661]">Địa chỉ thường trú</label>
             <input
               v-model="permanent_address"
-              v-bind="permanent_addressAttrs"
               placeholder="Nhập địa chỉ thường trú"
               class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
             />
@@ -200,7 +199,6 @@
             <label class="text-[14px] font-semibold text-[#464661]">Địa chỉ tạm trú </label>
             <input
               v-model="residence_address"
-              v-bind="residence_addressAttrs"
               placeholder="Nhập địa chỉ tạm trú"
               class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
             />
@@ -737,6 +735,7 @@
                 <button
                   type="button"
                   class="hover:shadow-hoverinset h-[38px] cursor-pointer rounded-lg bg-[#1b4dea] px-4 text-white"
+                  @click="handleResetPassword"
                 >
                   RESET MẬT KHẨU
                 </button>
@@ -809,7 +808,7 @@
     modal: any
     propFunction: Function
   }>()
-  const emit = defineEmits(['toggle-modal', 'post-request'])
+  const emit = defineEmits(['toggle-modal', 'post-request', 'open-reset-password'])
 
   const pickerDOB = ref<any | null>(null)
   const pickerDateissue = ref<any | null>(null)
@@ -935,8 +934,6 @@
       // Thêm validation cho các trường bắt buộc khác
       staff_id: yup.string().required('Bạn hãy chọn khối'),
       room_id: yup.string().required('Bạn hãy chọn phòng ban'),
-      // permanent_address: yup.string().required('Bạn hãy nhập địa chỉ thường trú'),
-      // residence_address: yup.string().required('Bạn hãy nhập địa chỉ tạm trú'),
       identification: yup.string().required('Bạn hãy nhập số CCCD'),
     })
   )
@@ -953,9 +950,11 @@
   const [group_user, guAttrs] = defineField('group_user')
   const [staff_id, staff_idAttrs] = defineField('staff_id')
   const [room_id, room_idAttrs] = defineField('room_id')
-  // const [permanent_address, permanent_addressAttrs] = defineField('permanent_address')
-  // const [residence_address, residence_addressAttrs] = defineField('residence_address')
   const [identification, identificationAttrs] = defineField('identification')
+
+  // Non-validated fields
+  const permanent_address = ref('')
+  const residence_address = ref('')
 
   const listGrPermiss = ref<any | null>(null)
   const fetchListPermission = async () => {
@@ -1191,21 +1190,17 @@
     }
   }
 
+  const handleResetPassword = () => {
+    // Đóng modal hiện tại và mở modal reset password
+    emit('toggle-modal')
+    emit('open-reset-password')
+  }
+
   const postRequest = ref<any | null>(null)
   const onSubmitting = ref(false)
   const onSubmitRegister = handleSubmit(async () => {
     onSubmitting.value = true
     try {
-      console.log('🚀 ~ Starting form submission...')
-      console.log('🚀 ~ Form values:', {
-        email: email.value,
-        phone: phone.value,
-        name: name.value,
-        code: code.value,
-        group_user: group_user.value,
-      })
-      console.log('🚀 ~ Params user:', paramsUser)
-
       const formDataUser = new FormData()
 
       if (paramsUser.code) formDataUser.append('code', String(paramsUser.code))
@@ -1269,7 +1264,6 @@
         ;(paramsUser as Record<string, any>)[key] = ''
       }
       props.propFunction()
-      console.log('🚀 ~ Form submitted successfully:', response)
     } catch (error: any) {
       console.error('❌ ~ Error submitting form:', error)
       if (error.response) {
