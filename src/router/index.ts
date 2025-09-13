@@ -5,6 +5,7 @@ import Dashboard from '@/views/Dashboard/Dashboard.vue'
 import DashboardPersonal from '@/views/Dashboard/DashboardPersonal.vue'
 import DashboardReport from '@/views/Dashboard/DashboardReport.vue'
 import Document from '@/views/Document/Document.vue'
+import ExcelIndexView from '@/views/Excel/IndexView.vue'
 import LeaveAccess from '@/views/Leave/Access.vue'
 import LeaveIndex from '@/views/Leave/IndexView.vue'
 import LeaveInfo from '@/views/Leave/Info.vue'
@@ -103,6 +104,11 @@ const router = createRouter({
           path: 'category',
           name: 'SystemCategory',
           component: SystemCategory,
+        },
+        {
+          path: 'excel/import',
+          name: 'ExcelImport',
+          component: ExcelIndexView,
         },
       ],
     },
