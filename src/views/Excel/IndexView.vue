@@ -24,6 +24,31 @@
                 ... và {{ excelHeaders.length - 10 }} cột khác
               </div>
             </div>
+
+            <!-- Column Detection Results -->
+            <div v-if="excelData.length > 0" class="mt-3 rounded-lg border border-green-200 bg-green-50 p-2">
+              <div class="mb-2 text-[13px] font-semibold text-green-800">🎯 Kết quả phát hiện cột:</div>
+              <div class="grid grid-cols-1 gap-1 text-[11px] text-green-700 md:grid-cols-3">
+                <div class="flex items-center gap-1">
+                  <span class="font-medium">Họ và tên:</span>
+                  <span class="rounded bg-white px-1 text-[10px]">{{
+                    getDetectedColumn('name') || 'Không tìm thấy'
+                  }}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="font-medium">Email:</span>
+                  <span class="rounded bg-white px-1 text-[10px]">{{
+                    getDetectedColumn('email') || 'Không tìm thấy'
+                  }}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="font-medium">Mã NV:</span>
+                  <span class="rounded bg-white px-1 text-[10px]">{{
+                    getDetectedColumn('code') || 'Không tìm thấy'
+                  }}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Mapping Status -->
@@ -87,6 +112,42 @@
               </div>
             </div>
           </div>
+
+          <!-- Validation Summary -->
+          <div
+            v-if="validationSummary.totalRows > 0"
+            class="mt-3 rounded-lg border p-3"
+            :class="hasValidationErrors ? 'border-red-200 bg-red-50' : 'border-green-200 bg-green-50'"
+          >
+            <div
+              class="mb-2 text-[14px] font-semibold"
+              :class="hasValidationErrors ? 'text-red-800' : 'text-green-800'"
+            >
+              📊 Tóm tắt kiểm tra dữ liệu:
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[12px] md:grid-cols-5">
+              <div class="flex items-center gap-1">
+                <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                <span>Tổng: {{ validationSummary.totalRows }}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="h-2 w-2 rounded-full bg-green-500"></span>
+                <span>Hợp lệ: {{ validationSummary.validRows }}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="h-2 w-2 rounded-full bg-red-500"></span>
+                <span>Lỗi: {{ validationSummary.errorRows }}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="h-2 w-2 rounded-full bg-orange-500"></span>
+                <span>Lỗi nghiêm trọng: {{ validationSummary.criticalErrors }}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="h-2 w-2 rounded-full bg-yellow-500"></span>
+                <span>Cảnh báo: {{ validationSummary.warnings }}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="flex gap-3">
@@ -99,6 +160,14 @@
           </button>
           <button
             type="button"
+            class="rounded-lg border border-[#FF6B35] px-4 py-2 text-[14px] font-medium text-[#FF6B35] transition-colors hover:bg-orange-50"
+            :disabled="excelData.length === 0"
+            @click="fillDataFromExcel"
+          >
+            📝 Điền dữ liệu
+          </button>
+          <button
+            type="button"
             class="rounded-lg border border-[#28a745] px-4 py-2 text-[14px] font-medium text-[#28a745] transition-colors hover:bg-green-50"
             :disabled="excelData.length === 0"
             @click="compareAllRowsWithExisting"
@@ -107,8 +176,24 @@
           </button>
           <button
             type="button"
+            class="rounded-lg border border-[#ff9500] px-4 py-2 text-[14px] font-medium text-[#ff9500] transition-colors hover:bg-orange-50"
+            :disabled="excelData.length === 0"
+            @click="validateAllData"
+          >
+            🔍 Kiểm tra dữ liệu
+          </button>
+          <button
+            type="button"
+            class="rounded-lg border border-purple-500 px-4 py-2 text-[14px] font-medium text-purple-500 transition-colors hover:bg-purple-50"
+            :disabled="excelData.length === 0"
+            @click="debugColumnMapping"
+          >
+            🐛 Debug Mapping
+          </button>
+          <button
+            type="button"
             class="rounded-lg bg-[#1b4dea] px-4 py-2 text-[14px] font-medium text-white transition-colors hover:bg-[#0f3bb6] disabled:cursor-not-allowed disabled:opacity-50"
-            :disabled="saving || excelData.length === 0"
+            :disabled="saving || excelData.length === 0 || hasValidationErrors"
             @click="handleSaveAll"
           >
             <span v-if="saving">Đang lưu...</span>
@@ -486,7 +571,7 @@
                             :key="`position-cat-${categoryIndex}`"
                           >
                             <SelectItem
-                              v-for="(item, _) in category"
+                              v-for="item in category"
                               :key="`position-item-${item.id}`"
                               class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
                               :value="String(item.id)"
@@ -571,7 +656,7 @@
                             :key="`leader-cat-${categoryIndex}`"
                           >
                             <SelectItem
-                              v-for="(item, _) in category"
+                              v-for="item in category"
                               :key="`leader-item-${item.id}`"
                               class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
                               :value="String(item.id)"
@@ -631,7 +716,7 @@
 
                           <template v-for="(offices, officesIndex) in regionData" :key="`office-cat-${officesIndex}`">
                             <SelectItem
-                              v-for="(item, _) in offices"
+                              v-for="item in offices"
                               :key="`office-item-${item.id}`"
                               class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
                               :value="String(item.id)"
@@ -927,6 +1012,14 @@
   const savedCount = ref(0)
   const currentPage = ref(1)
   const itemsPerPage = ref(10)
+  const hasValidationErrors = ref(false)
+  const validationSummary = ref({
+    totalRows: 0,
+    validRows: 0,
+    errorRows: 0,
+    criticalErrors: 0,
+    warnings: 0,
+  })
 
   // Toast state
   const toast = reactive({
@@ -943,6 +1036,7 @@
   const regionData = ref<any[]>([])
   const leaderData = ref<any[]>([])
   const existingUsers = ref<any[]>([])
+  const originalExcelData = ref<any[]>([]) // Store original Excel data
 
   // Validation will be handled per row instead of global schema
 
@@ -1027,6 +1121,135 @@
     }
   }
 
+  // Comprehensive data validation
+  const validateAllData = () => {
+    if (excelData.value.length === 0) {
+      showToast('Cảnh báo', 'Không có dữ liệu để kiểm tra', 'error')
+      return
+    }
+
+    console.warn('🔍 Starting comprehensive data validation...')
+
+    let totalRows = excelData.value.length
+    let validRows = 0
+    let errorRows = 0
+    let criticalErrors = 0
+    let warnings = 0
+
+    excelData.value.forEach((row, index) => {
+      const errors: any = {}
+      let hasCriticalError = false
+
+      // Critical validations (required fields)
+      if (!row.name || !row.name.trim()) {
+        errors.name = 'Họ và tên là bắt buộc'
+        hasCriticalError = true
+      }
+
+      if (!row.email || !row.email.trim()) {
+        errors.email = 'Email là bắt buộc'
+        hasCriticalError = true
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) {
+        errors.email = 'Email không hợp lệ'
+        hasCriticalError = true
+      }
+
+      if (!row.code || !row.code.trim()) {
+        errors.code = 'Mã nhân viên là bắt buộc'
+        hasCriticalError = true
+      }
+
+      if (!row.phone || !row.phone.trim()) {
+        errors.phone = 'Số điện thoại là bắt buộc'
+        hasCriticalError = true
+      } else if (!/^[0-9]{10,11}$/.test(row.phone.replace(/\s/g, ''))) {
+        errors.phone = 'Số điện thoại phải có 10-11 chữ số'
+        hasCriticalError = true
+      }
+
+      if (!row.staff_id || !row.staff_id.trim()) {
+        errors.staff_id = 'Khối là bắt buộc'
+        hasCriticalError = true
+      }
+
+      if (!row.room_id || !row.room_id.trim()) {
+        errors.room_id = 'Phòng ban là bắt buộc'
+        hasCriticalError = true
+      }
+
+      if (!row.office_id || !row.office_id.trim()) {
+        errors.office_id = 'Văn phòng là bắt buộc'
+        hasCriticalError = true
+      }
+
+      if (!row.per_group_name || !row.per_group_name.trim()) {
+        errors.per_group_name = 'Nhóm người dùng là bắt buộc'
+        hasCriticalError = true
+      }
+
+      if (!row.identification || !row.identification.trim()) {
+        errors.identification = 'CCCD là bắt buộc'
+        hasCriticalError = true
+      }
+
+      if (!row.permanent_address || !row.permanent_address.trim()) {
+        errors.permanent_address = 'Địa chỉ thường trú là bắt buộc'
+        hasCriticalError = true
+      }
+
+      // Warning validations (recommended but not required)
+      if (!row.dob) {
+        warnings++
+        if (!errors.warnings) (errors as any).warnings = []
+        ;(errors as any).warnings.push('Thiếu ngày sinh')
+      }
+
+      if (!row.place_of_issue || !row.place_of_issue.trim()) {
+        warnings++
+        if (!(errors as any).warnings) (errors as any).warnings = []
+        ;(errors as any).warnings.push('Thiếu nơi cấp CCCD')
+      }
+
+      // Update row status
+      row.errors = errors
+      row.hasError = Object.keys(errors).length > 0
+
+      if (hasCriticalError) {
+        errorRows++
+        criticalErrors++
+      } else {
+        validRows++
+      }
+
+      // Log validation result for debugging
+      if (row.hasError) {
+        console.warn(`Row ${index + 1} validation:`, errors)
+      }
+    })
+
+    // Update validation summary
+    validationSummary.value = {
+      totalRows,
+      validRows,
+      errorRows,
+      criticalErrors,
+      warnings,
+    }
+
+    hasValidationErrors.value = errorRows > 0
+
+    // Show validation results
+    const message = `Kết quả kiểm tra dữ liệu:\n• Tổng số: ${totalRows} hàng\n• Hợp lệ: ${validRows} hàng\n• Có lỗi: ${errorRows} hàng\n• Cảnh báo: ${warnings} trường`
+
+    if (errorRows === 0) {
+      showToast('Thành công', `${message}\n✅ Tất cả dữ liệu đều hợp lệ!`, 'success')
+    } else {
+      showToast('Cảnh báo', `${message}\n⚠️ Vui lòng sửa các lỗi trước khi import!`, 'error')
+    }
+
+    console.warn('✅ Validation completed:', validationSummary.value)
+  }
+
   const handleSaveAll = async () => {
     if (excelData.value.length === 0) return
 
@@ -1094,7 +1317,7 @@
           if (comparison.importAction === 'update' && row.id && row.id !== `temp_${i}`) {
             apiUrl = `${apiUri}/user/update`
             formData.append('id', String(row.id))
-            method = 'post'
+            _method = 'post'
           }
 
           const response = await axios.post(apiUrl, formData, {
@@ -1222,11 +1445,42 @@
           console.warn('Raw Excel data:', uploadData.data.slice(0, 3)) // Debug: show first 3 rows
           console.warn('Excel headers:', uploadData.headers) // Debug: show headers
 
+          // Debug column mapping
+          if (uploadData.data.length > 0) {
+            const firstRow = uploadData.data[0]
+            console.warn('🔍 Column Mapping Debug:')
+            console.warn('Available columns:', Object.keys(firstRow))
+            console.warn(
+              'Looking for "Họ và tên":',
+              findValueByKeyPattern(
+                firstRow,
+                ['họ và tên', 'hoten', 'name', 'ho ten', 'full name', 'ten nhan vien', 'họ tên', 'ho va ten'],
+                true
+              )
+            )
+            console.warn(
+              'Looking for "Email":',
+              findValueByKeyPattern(firstRow, ['email', 'e-mail', 'mail', 'email công ty', 'email address'], true)
+            )
+            console.warn(
+              'Looking for "Mã NV":',
+              findValueByKeyPattern(
+                firstRow,
+                ['mã nv', 'manv', 'code', 'ma nhan vien', 'employee code', 'mã nhân viên'],
+                true
+              )
+            )
+          }
+
+          // Store original Excel data
+          originalExcelData.value = uploadData.data
+
           excelData.value = uploadData.data.map((row: any, index: number) => {
             // Debug: log the actual row structure for first few rows
             if (index === 0) {
               console.warn('First row keys:', Object.keys(row))
               console.warn('First row values:', row)
+              console.warn('Available Excel headers:', uploadData.headers)
             }
 
             // Map Excel columns to system fields with flexible matching
@@ -1235,9 +1489,25 @@
               hasError: false,
               errors: {},
               // Map Excel data to system fields with multiple possible column names
-              code: findValueByKeyPattern(row, ['mã nv', 'manv', 'code', 'ma nhan vien', 'employee code']),
-              name: findValueByKeyPattern(row, ['họ và tên', 'hoten', 'name', 'ho ten', 'full name', 'ten nhan vien']),
-              email: findValueByKeyPattern(row, ['email', 'e-mail', 'mail']),
+              code: findValueByKeyPattern(row, [
+                'mã nv',
+                'manv',
+                'code',
+                'ma nhan vien',
+                'employee code',
+                'mã nhân viên',
+              ]),
+              name: findValueByKeyPattern(row, [
+                'họ và tên',
+                'hoten',
+                'name',
+                'ho ten',
+                'full name',
+                'ten nhan vien',
+                'họ tên',
+                'ho va ten',
+              ]),
+              email: findValueByKeyPattern(row, ['email', 'e-mail', 'mail', 'email công ty', 'email address']),
               phone: findValueByKeyPattern(row, [
                 'sđt',
                 'sodienthoai',
@@ -1447,6 +1717,212 @@
     })
   }
 
+  // Fill data from Excel to form fields
+  const fillDataFromExcel = () => {
+    if (excelData.value.length === 0 || originalExcelData.value.length === 0) {
+      showToast('Cảnh báo', 'Không có dữ liệu Excel để điền', 'error')
+      return
+    }
+
+    let totalFieldsFilled = 0
+    let nameFieldsFilled = 0
+    let emailFieldsFilled = 0
+    let codeFieldsFilled = 0
+    let phoneFieldsFilled = 0
+
+    // Log Excel headers for debugging
+    console.warn('Excel Headers:', excelHeaders.value)
+    console.warn('First Excel row:', originalExcelData.value[0])
+
+    excelData.value.forEach((row, index) => {
+      const excelRow = originalExcelData.value[index]
+      if (!excelRow) return
+
+      try {
+        // Priority 1: Fill "Họ và tên" (name) field - CỰC KỲ QUAN TRỌNG
+        if (!row.name || !row.name.trim()) {
+          const nameValue = findValueByKeyPattern(
+            excelRow,
+            [
+              'họ và tên',
+              'họ tên',
+              'ho va ten',
+              'ho ten',
+              'hoten',
+              'ten nhan vien',
+              'ten',
+              'name',
+              'full name',
+              'fullname',
+              'tên đầy đủ',
+              'tên nhân viên',
+              'họ và tên đầy đủ',
+              // Thêm các pattern phổ biến khác
+              'họ',
+              'tên đệm',
+              'tên chính',
+            ],
+            true
+          ) // Enable debug logging for name field
+          if (nameValue && nameValue.trim()) {
+            row.name = nameValue.trim()
+            nameFieldsFilled++
+            totalFieldsFilled++
+            console.warn(`Row ${index + 1}: Filled name = "${nameValue}"`)
+          }
+        }
+
+        // Priority 2: Fill "Email công ty" field - CỰC KỲ QUAN TRỌNG
+        if (!row.email || !row.email.trim()) {
+          const emailValue = findValueByKeyPattern(
+            excelRow,
+            [
+              'email công ty',
+              'email',
+              'e-mail',
+              'mail',
+              'email address',
+              'email công ty',
+              'email company',
+              'email doanh nghiệp',
+              'email work',
+              'email lam viec',
+              'email chính',
+              'email chinh',
+              'email công việc',
+              'email cong viec',
+              'email office',
+              'email van phong',
+              // Các pattern email khác
+              'email cá nhân',
+              'email ca nhan',
+              'personal email',
+              'work email',
+            ],
+            true
+          ) // Enable debug logging for email field
+          if (emailValue && emailValue.trim()) {
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            if (emailRegex.test(emailValue.trim())) {
+              row.email = emailValue.trim()
+              emailFieldsFilled++
+              totalFieldsFilled++
+              console.warn(`Row ${index + 1}: Filled email = "${emailValue}"`)
+            } else {
+              console.warn(`Row ${index + 1}: Invalid email format: "${emailValue}"`)
+            }
+          }
+        }
+
+        // Fill "Mã NV" field
+        if (!row.code || !row.code.trim()) {
+          const codeValue = findValueByKeyPattern(excelRow, [
+            'mã nv',
+            'mã nhân viên',
+            'ma nv',
+            'ma nhan vien',
+            'manv',
+            'code',
+            'employee code',
+            'mã số',
+            'mã',
+            'employee id',
+            'emp id',
+            'id',
+            'mã định danh',
+          ])
+          if (codeValue && codeValue.trim()) {
+            row.code = codeValue.trim()
+            codeFieldsFilled++
+            totalFieldsFilled++
+          }
+        }
+
+        // Fill "SĐT" field
+        if (!row.phone || !row.phone.trim()) {
+          const phoneValue = findValueByKeyPattern(excelRow, [
+            'sđt',
+            'số điện thoại',
+            'so dien thoai',
+            'sodienthoai',
+            'phone',
+            'dien thoai',
+            'mobile',
+            'phone number',
+            'mobile phone',
+            'điện thoại',
+            'số liên lạc',
+            'contact number',
+          ])
+          if (phoneValue && phoneValue.trim()) {
+            // Clean phone number (remove spaces, dashes, etc.)
+            const cleanPhone = phoneValue.replace(/[\s\-\(\)]/g, '')
+            if (cleanPhone.length >= 10) {
+              row.phone = cleanPhone
+              phoneFieldsFilled++
+              totalFieldsFilled++
+            }
+          }
+        }
+
+        // Fill other important fields
+        if (!row.identification || !row.identification.trim()) {
+          const idValue = findValueByKeyPattern(excelRow, [
+            'cccd',
+            'cmnd',
+            'số cccd',
+            'số cmnd',
+            'identification',
+            'id number',
+            'citizen id',
+            'số định danh',
+            'mã định danh',
+          ])
+          if (idValue && idValue.trim()) {
+            row.identification = idValue.trim()
+            totalFieldsFilled++
+          }
+        }
+
+        if (!row.permanent_address || !row.permanent_address.trim()) {
+          const addressValue = findValueByKeyPattern(excelRow, [
+            'địa chỉ thường trú',
+            'địa chỉ',
+            'diachi',
+            'diachithuongtru',
+            'permanent address',
+            'address',
+            'địa chỉ nhà',
+            'địa chỉ cư trú',
+          ])
+          if (addressValue && addressValue.trim()) {
+            row.permanent_address = addressValue.trim()
+            totalFieldsFilled++
+          }
+        }
+      } catch (error) {
+        console.error(`Error filling data for row ${index + 1}:`, error)
+      }
+    })
+
+    // Detailed feedback to user
+    const message = `Đã điền dữ liệu từ Excel:\n• Họ và tên: ${nameFieldsFilled}\n• Email công ty: ${emailFieldsFilled}\n• Mã NV: ${codeFieldsFilled}\n• SĐT: ${phoneFieldsFilled}\n• Tổng cộng: ${totalFieldsFilled} trường`
+
+    if (totalFieldsFilled > 0) {
+      showToast('Thành công', message, 'success')
+      console.warn('Fill Excel Data Summary:', {
+        totalFieldsFilled,
+        nameFieldsFilled,
+        emailFieldsFilled,
+        codeFieldsFilled,
+        phoneFieldsFilled,
+      })
+    } else {
+      showToast('Thông báo', 'Không tìm thấy dữ liệu phù hợp trong Excel hoặc tất cả trường đã có dữ liệu', 'error')
+    }
+  }
+
   // Update row data based on comparison and import action
   const updateRowBasedOnComparison = (row: ExcelRow) => {
     const comparison = row.comparisonResult
@@ -1527,39 +2003,263 @@
     }
   )
 
+  // Auto-fill data when Excel data is loaded
+  watch(
+    () => excelData.value,
+    (newData, oldData) => {
+      // Only auto-fill if new data is loaded (not just modified)
+      if (newData && newData.length > 0 && (!oldData || oldData.length === 0)) {
+        console.warn('🔄 Auto-filling Excel data...')
+        // Small delay to ensure DOM is updated
+        setTimeout(() => {
+          autoFillExcelData()
+        }, 500)
+      }
+    },
+    { deep: true }
+  )
+
+  // Auto-fill function optimized for speed
+  const autoFillExcelData = () => {
+    if (excelData.value.length === 0 || originalExcelData.value.length === 0) {
+      return
+    }
+
+    let totalFieldsFilled = 0
+    let nameFieldsFilled = 0
+    let emailFieldsFilled = 0
+    let codeFieldsFilled = 0
+    let phoneFieldsFilled = 0
+
+    console.warn('🚀 Auto-filling Excel data for', excelData.value.length, 'rows')
+
+    excelData.value.forEach((row, index) => {
+      const excelRow = originalExcelData.value[index]
+      if (!excelRow) return
+
+      try {
+        // Priority 1: Fill "Họ và tên" (name) field - MOST IMPORTANT
+        if (!row.name || !row.name.trim()) {
+          const nameValue = findValueByKeyPattern(excelRow, [
+            'họ và tên',
+            'họ tên',
+            'ho va ten',
+            'ho ten',
+            'hoten',
+            'ten nhan vien',
+            'ten',
+            'name',
+            'full name',
+            'fullname',
+          ])
+          if (nameValue && nameValue.trim()) {
+            row.name = nameValue.trim()
+            nameFieldsFilled++
+            totalFieldsFilled++
+          }
+        }
+
+        // Priority 2: Fill "Email công ty" field - MOST IMPORTANT
+        if (!row.email || !row.email.trim()) {
+          const emailValue = findValueByKeyPattern(excelRow, [
+            'email công ty',
+            'email',
+            'e-mail',
+            'mail',
+            'email address',
+          ])
+          if (emailValue && emailValue.trim()) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            if (emailRegex.test(emailValue.trim())) {
+              row.email = emailValue.trim()
+              emailFieldsFilled++
+              totalFieldsFilled++
+            }
+          }
+        }
+
+        // Priority 3: Fill "Mã NV" field
+        if (!row.code || !row.code.trim()) {
+          const codeValue = findValueByKeyPattern(excelRow, [
+            'mã nv',
+            'mã nhân viên',
+            'ma nv',
+            'ma nhan vien',
+            'manv',
+            'code',
+          ])
+          if (codeValue && codeValue.trim()) {
+            row.code = codeValue.trim()
+            codeFieldsFilled++
+            totalFieldsFilled++
+          }
+        }
+
+        // Priority 4: Fill "SĐT" field
+        if (!row.phone || !row.phone.trim()) {
+          const phoneValue = findValueByKeyPattern(excelRow, [
+            'sđt',
+            'số điện thoại',
+            'so dien thoai',
+            'sodienthoai',
+            'phone',
+            'dien thoai',
+            'mobile',
+          ])
+          if (phoneValue && phoneValue.trim()) {
+            const cleanPhone = phoneValue.replace(/[\s\-\(\)]/g, '')
+            if (cleanPhone.length >= 10) {
+              row.phone = cleanPhone
+              phoneFieldsFilled++
+              totalFieldsFilled++
+            }
+          }
+        }
+      } catch (error) {
+        console.error(`Error auto-filling data for row ${index + 1}:`, error)
+      }
+    })
+
+    // Log results
+    const results = {
+      totalFieldsFilled,
+      nameFieldsFilled,
+      emailFieldsFilled,
+      codeFieldsFilled,
+      phoneFieldsFilled,
+    }
+
+    console.warn('✅ Auto-fill completed:', results)
+
+    // Show toast if significant data was filled
+    if (totalFieldsFilled > 0) {
+      const message = `Tự động điền dữ liệu:\n• Họ và tên: ${nameFieldsFilled}\n• Email: ${emailFieldsFilled}\n• Mã NV: ${codeFieldsFilled}\n• SĐT: ${phoneFieldsFilled}`
+      showToast('Thành công', message, 'success')
+    }
+  }
+
   // Helper function to find value by flexible key pattern matching
-  const findValueByKeyPattern = (row: any, patterns: string[]): string => {
+  const findValueByKeyPattern = (row: any, patterns: string[], debugLog: boolean = false): string => {
     if (!row || typeof row !== 'object') return ''
 
-    // First try exact match (case insensitive)
+    const debugInfo = debugLog
+      ? {
+          patterns,
+          availableKeys: Object.keys(row),
+          searchResults: [] as string[],
+        }
+      : null
+
+    // Priority 1: Exact match (case insensitive) - MOST IMPORTANT
     for (const pattern of patterns) {
       for (const [key, value] of Object.entries(row)) {
-        if (key && typeof key === 'string' && key.toLowerCase() === pattern.toLowerCase()) {
+        if (key && typeof key === 'string' && key.toLowerCase().trim() === pattern.toLowerCase().trim()) {
+          if (debugLog) debugInfo!.searchResults.push(`EXACT: "${key}" -> "${value}"`)
           return String(value || '')
         }
       }
     }
 
-    // Then try partial match
+    // Priority 1.5: Exact match with normalized spaces
+    for (const pattern of patterns) {
+      const normalizedPattern = pattern.toLowerCase().replace(/\s+/g, ' ').trim()
+      for (const [key, value] of Object.entries(row)) {
+        if (key && typeof key === 'string') {
+          const normalizedKey = key.toLowerCase().replace(/\s+/g, ' ').trim()
+          if (normalizedKey === normalizedPattern) {
+            if (debugLog) debugInfo!.searchResults.push(`EXACT_NORMALIZED: "${key}" -> "${value}"`)
+            return String(value || '')
+          }
+        }
+      }
+    }
+
+    // Priority 2: Partial match with word boundaries
+    for (const pattern of patterns) {
+      const regex = new RegExp(`\\b${pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i')
+      for (const [key, value] of Object.entries(row)) {
+        if (key && typeof key === 'string' && regex.test(key)) {
+          if (debugLog) debugInfo!.searchResults.push(`WORD_BOUNDARY: "${key}" -> "${value}"`)
+          return String(value || '')
+        }
+      }
+    }
+
+    // Priority 3: Contains match (more flexible)
     for (const pattern of patterns) {
       for (const [key, value] of Object.entries(row)) {
         if (key && typeof key === 'string' && key.toLowerCase().includes(pattern.toLowerCase())) {
+          if (debugLog) debugInfo!.searchResults.push(`CONTAINS: "${key}" -> "${value}"`)
           return String(value || '')
         }
       }
     }
 
-    // Finally try fuzzy match by removing spaces and special chars
+    // Priority 4: Fuzzy match by removing spaces and special chars
     for (const pattern of patterns) {
       const normalizedPattern = pattern.toLowerCase().replace(/[^a-z0-9]/g, '')
       for (const [key, value] of Object.entries(row)) {
         if (key && typeof key === 'string') {
           const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '')
           if (normalizedKey.includes(normalizedPattern)) {
+            if (debugLog) debugInfo!.searchResults.push(`FUZZY: "${key}" -> "${value}"`)
             return String(value || '')
           }
         }
       }
+    }
+
+    // Priority 5: Special patterns for common variations
+    for (const pattern of patterns) {
+      // Handle "email công ty" -> "email", "email work" patterns
+      if (pattern.includes('email')) {
+        const emailPatterns = ['email', 'e-mail', 'mail']
+        for (const emailPattern of emailPatterns) {
+          for (const [key, value] of Object.entries(row)) {
+            if (key && typeof key === 'string' && key.toLowerCase().includes(emailPattern)) {
+              if (debugLog) debugInfo!.searchResults.push(`EMAIL_SPECIAL: "${key}" -> "${value}"`)
+              return String(value || '')
+            }
+          }
+        }
+      }
+
+      // Handle "họ và tên" -> "name", "fullname" patterns
+      if (pattern.includes('họ') || pattern.includes('tên')) {
+        const namePatterns = ['name', 'fullname', 'full name', 'ho ten', 'hoten']
+        for (const namePattern of namePatterns) {
+          for (const [key, value] of Object.entries(row)) {
+            if (key && typeof key === 'string' && key.toLowerCase().includes(namePattern)) {
+              if (debugLog) debugInfo!.searchResults.push(`NAME_SPECIAL: "${key}" -> "${value}"`)
+              return String(value || '')
+            }
+          }
+        }
+      }
+    }
+
+    // Priority 6: Similarity matching for typos
+    for (const pattern of patterns) {
+      const patternWords = pattern.toLowerCase().split(/\s+/)
+      for (const [key, value] of Object.entries(row)) {
+        if (key && typeof key === 'string') {
+          const keyWords = key.toLowerCase().split(/\s+/)
+          // Check if most words match (Levenshtein distance could be better but this is simpler)
+          const matches = patternWords.filter((pWord) =>
+            keyWords.some((kWord) => kWord.includes(pWord) || pWord.includes(kWord))
+          ).length
+          if (matches >= Math.max(1, patternWords.length * 0.6)) {
+            // 60% similarity
+            if (debugLog)
+              debugInfo!.searchResults.push(`SIMILARITY: "${key}" -> "${value}" (${matches}/${patternWords.length})`)
+            return String(value || '')
+          }
+        }
+      }
+    }
+
+    if (debugLog && debugInfo) {
+      console.warn('Pattern Search Debug:', debugInfo)
     }
 
     return ''
@@ -1587,6 +2287,90 @@
     const value = (sampleRow as any)[fieldName]
 
     return value && value.toString().trim() ? 'green' : 'red'
+  }
+
+  // Get detected column name for a field type
+  const getDetectedColumn = (fieldType: string): string => {
+    if (excelData.value.length === 0 || originalExcelData.value.length === 0) return ''
+
+    const firstRow = originalExcelData.value[0]
+    if (!firstRow) return ''
+
+    const patterns = {
+      name: ['họ và tên', 'hoten', 'name', 'ho ten', 'full name', 'ten nhan vien', 'họ tên', 'ho va ten'],
+      email: ['email', 'e-mail', 'mail', 'email công ty', 'email address'],
+      code: ['mã nv', 'manv', 'code', 'ma nhan vien', 'employee code', 'mã nhân viên'],
+    }
+
+    const fieldPatterns = patterns[fieldType as keyof typeof patterns] || []
+
+    // Find the actual column name that matched
+    for (const pattern of fieldPatterns) {
+      for (const [key, _value] of Object.entries(firstRow)) {
+        if (key && typeof key === 'string' && key.toLowerCase().trim() === pattern.toLowerCase().trim()) {
+          return key
+        }
+      }
+    }
+
+    // Try normalized match
+    for (const pattern of fieldPatterns) {
+      const normalizedPattern = pattern.toLowerCase().replace(/\s+/g, ' ').trim()
+      for (const [key, _value] of Object.entries(firstRow)) {
+        if (key && typeof key === 'string') {
+          const normalizedKey = key.toLowerCase().replace(/\s+/g, ' ').trim()
+          if (normalizedKey === normalizedPattern) {
+            return key
+          }
+        }
+      }
+    }
+
+    return ''
+  }
+
+  // Debug column mapping function
+  const debugColumnMapping = () => {
+    if (excelData.value.length === 0 || originalExcelData.value.length === 0) {
+      showToast('Cảnh báo', 'Không có dữ liệu để debug', 'error')
+      return
+    }
+
+    console.warn('🐛 DEBUG COLUMN MAPPING')
+    console.warn('='.repeat(50))
+
+    const firstRow = originalExcelData.value[0]
+    console.warn('📋 Available Excel columns:')
+    Object.keys(firstRow).forEach((key, index) => {
+      console.warn(`${index + 1}. "${key}" = "${firstRow[key]}"`)
+    })
+
+    console.warn('\n🔍 Mapping Results:')
+
+    // Test name mapping
+    const namePatterns = ['họ và tên', 'hoten', 'name', 'ho ten', 'full name', 'ten nhan vien', 'họ tên', 'ho va ten']
+    const nameResult = findValueByKeyPattern(firstRow, namePatterns, true)
+    console.warn(`👤 Name mapping: "${nameResult}"`)
+
+    // Test email mapping
+    const emailPatterns = ['email', 'e-mail', 'mail', 'email công ty', 'email address']
+    const emailResult = findValueByKeyPattern(firstRow, emailPatterns, true)
+    console.warn(`📧 Email mapping: "${emailResult}"`)
+
+    // Test code mapping
+    const codePatterns = ['mã nv', 'manv', 'code', 'ma nhan vien', 'employee code', 'mã nhân viên']
+    const codeResult = findValueByKeyPattern(firstRow, codePatterns, true)
+    console.warn(`🆔 Code mapping: "${codeResult}"`)
+
+    console.warn('\n📊 Current mapped data (first row):')
+    const firstMappedRow = excelData.value[0]
+    console.warn(`Name: "${firstMappedRow.name}"`)
+    console.warn(`Email: "${firstMappedRow.email}"`)
+    console.warn(`Code: "${firstMappedRow.code}"`)
+
+    console.warn('='.repeat(50))
+
+    showToast('Debug', 'Đã log thông tin debug ra console. Mở Developer Tools để xem chi tiết.', 'success')
   }
 
   onMounted(async () => {
