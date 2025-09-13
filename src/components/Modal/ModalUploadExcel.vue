@@ -76,43 +76,114 @@
         </div>
 
         <!-- Preview Section -->
-        <!-- <div v-if="previewData.length > 0" class="mb-6">
-          <div class="mb-3 text-[16px] font-semibold text-[#464661]">
-            Xem trước dữ liệu ({{ previewData.length }} hàng)
+        <div v-if="previewData.length > 0" class="mb-6">
+          <div class="mb-3 flex items-center justify-between">
+            <div class="text-[16px] font-semibold text-[#464661]">
+              📊 Xem trước dữ liệu ({{ previewData.length }} hàng)
+            </div>
+            <div class="text-[12px] text-[#909090]">Chỉ hiển thị 10 hàng đầu tiên</div>
+          </div>
+
+          <!-- Column Mapping Info -->
+          <div class="mb-4 rounded-lg bg-blue-50 p-3">
+            <div class="mb-2 text-[14px] font-semibold text-blue-800">🔍 Phát hiện cột:</div>
+            <div class="grid grid-cols-1 gap-1 text-[12px] text-blue-700 md:grid-cols-2">
+              <div v-for="header in previewHeaders.slice(0, 8)" :key="header" class="truncate">
+                <span class="font-medium">{{ header }}</span>
+              </div>
+              <div v-if="previewHeaders.length > 8" class="text-blue-600">
+                ... và {{ previewHeaders.length - 8 }} cột khác
+              </div>
+            </div>
+
+            <!-- Smart Detection -->
+            <div class="mt-3 grid grid-cols-2 gap-2 text-[11px]">
+              <div class="flex items-center gap-1">
+                <span :class="detectColumnIcon('name')" class="text-xs">
+                  {{ detectColumnIcon('name') === '✅' ? '✅' : '❌' }}
+                </span>
+                <span>Họ và tên: {{ detectColumn('name') || 'Không tìm thấy' }}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span :class="detectColumnIcon('email')" class="text-xs">
+                  {{ detectColumnIcon('email') === '✅' ? '✅' : '❌' }}
+                </span>
+                <span>Email: {{ detectColumn('email') || 'Không tìm thấy' }}</span>
+              </div>
+            </div>
           </div>
 
           <div class="max-h-96 overflow-y-auto rounded-[8px] border border-[#EDEDF6]">
             <table class="w-full text-[14px]">
               <thead class="sticky top-0 bg-[#f8fcff]">
                 <tr>
+                  <th class="border-b border-[#EDEDF6] px-3 py-2 text-center font-semibold text-[#464661]">#</th>
                   <th
                     v-for="(header, index) in previewHeaders"
                     :key="index"
                     class="border-b border-[#EDEDF6] px-3 py-2 text-left font-semibold text-[#464661]"
+                    :class="{
+                      'bg-green-100 text-green-800': isImportantColumn(header),
+                      'bg-blue-100 text-blue-800': isEmailColumn(header),
+                    }"
                   >
+                    <span v-if="isImportantColumn(header)">⭐</span>
+                    <span v-else-if="isEmailColumn(header)">📧</span>
                     {{ header }}
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(row, rowIndex) in previewData.slice(0, 10)" :key="rowIndex" class="hover:bg-gray-50">
+                  <td class="border-b border-[#EDEDF6] px-3 py-2 text-center font-medium text-[#909090]">
+                    {{ rowIndex + 1 }}
+                  </td>
                   <td
                     v-for="(cell, cellIndex) in row"
                     :key="cellIndex"
                     class="border-b border-[#EDEDF6] px-3 py-2 text-[#464661]"
+                    :class="{
+                      'bg-green-50 font-medium':
+                        previewHeaders && typeof cellIndex === 'number' && previewHeaders[cellIndex]
+                          ? isImportantColumn(previewHeaders[cellIndex]) && cell
+                          : false,
+                      'bg-blue-50':
+                        previewHeaders && typeof cellIndex === 'number' && previewHeaders[cellIndex]
+                          ? isEmailColumn(previewHeaders[cellIndex]) && cell
+                          : false,
+                    }"
                   >
-                    {{ cell || '-' }}
+                    <span v-if="!cell || cell.toString().trim() === ''" class="text-gray-400 italic">-</span>
+                    <span v-else-if="cell.toString().length > 30" :title="cell" class="block max-w-[200px] truncate">
+                      {{ cell }}
+                    </span>
+                    <span v-else>{{ cell }}</span>
                   </td>
                 </tr>
                 <tr v-if="previewData.length > 10" class="bg-gray-50">
-                  <td :colspan="previewHeaders.length" class="px-3 py-4 text-center text-[#909090] italic">
+                  <td :colspan="previewHeaders.length + 1" class="px-3 py-4 text-center text-[#909090] italic">
                     ... và {{ previewData.length - 10 }} hàng khác
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-        </div> -->
+
+          <!-- Summary Info -->
+          <div class="mt-3 rounded-lg bg-gray-50 p-3">
+            <div class="text-[13px] text-gray-700">
+              <div class="mb-1 font-medium">📈 Tổng kết:</div>
+              <div class="grid grid-cols-2 gap-4 text-[12px]">
+                <div>
+                  Tổng số hàng: <strong>{{ previewData.length }}</strong>
+                </div>
+                <div>
+                  Tổng số cột: <strong>{{ previewHeaders.length }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Upload Progress -->
         <div v-if="uploading" class="mb-6">
@@ -344,6 +415,90 @@
     uploadError.value = ''
     selectedFile.value = file
     readExcelFile(file)
+  }
+
+  // Column detection methods
+  const detectColumn = (fieldType: string): string => {
+    if (!previewHeaders.value || previewHeaders.value.length === 0) return ''
+
+    const patterns = {
+      name: [
+        'họ và tên',
+        'họ tên',
+        'ho va ten',
+        'ho ten',
+        'hoten',
+        'ten nhan vien',
+        'ten',
+        'name',
+        'full name',
+        'fullname',
+        'tên đầy đủ',
+        'tên nhân viên',
+        'họ và tên đầy đủ',
+      ],
+      email: [
+        'email công ty',
+        'email',
+        'e-mail',
+        'mail',
+        'email address',
+        'email công ty',
+        'email company',
+        'email doanh nghiệp',
+        'email work',
+        'email lam viec',
+        'email chính',
+        'email chinh',
+        'email công việc',
+        'email cong viec',
+        'email office',
+        'email van phong',
+      ],
+    }
+
+    const fieldPatterns = patterns[fieldType as keyof typeof patterns] || []
+
+    for (const header of previewHeaders.value) {
+      const headerLower = header.toLowerCase().trim()
+      for (const pattern of fieldPatterns) {
+        if (
+          headerLower === pattern.toLowerCase() ||
+          headerLower.includes(pattern.toLowerCase()) ||
+          pattern.toLowerCase().includes(headerLower)
+        ) {
+          return header
+        }
+      }
+    }
+
+    return ''
+  }
+
+  const detectColumnIcon = (fieldType: string): string => {
+    return detectColumn(fieldType) ? '✅' : '❌'
+  }
+
+  const isImportantColumn = (header: string): boolean => {
+    const importantPatterns = [
+      'họ và tên',
+      'họ tên',
+      'name',
+      'fullname',
+      'full name',
+      'mã nv',
+      'mã nhân viên',
+      'code',
+      'employee code',
+    ]
+    const headerLower = header.toLowerCase()
+    return importantPatterns.some((pattern) => headerLower.includes(pattern))
+  }
+
+  const isEmailColumn = (header: string): boolean => {
+    const emailPatterns = ['email', 'e-mail', 'mail', 'email address']
+    const headerLower = header.toLowerCase()
+    return emailPatterns.some((pattern) => headerLower.includes(pattern))
   }
 </script>
 
