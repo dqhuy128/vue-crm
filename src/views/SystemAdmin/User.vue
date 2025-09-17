@@ -77,7 +77,7 @@
             <div
               class="flex-[0_0_calc(25%-12px)] max-lg:w-[calc(50%-4px)] max-lg:flex-[0_0_calc(50%-4px)] max-md:w-[calc(100%)] max-md:flex-[0_0_calc(100%)]"
             >
-              <SelectRoot v-model="params.part_id">
+              <SelectRoot v-model="params.staff_id">
                 <SelectTrigger
                   class="font-inter flex w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] data-[placeholder]:text-[#909090] max-md:text-[14px]"
                   aria-label="Customise options"
@@ -103,10 +103,8 @@
                         >
                           <SelectItemText> Tất cả bộ phận </SelectItemText>
                         </SelectItem>
-                        <template v-for="(items, index) in dataStaff">
+                        <template v-for="item in departmentTree" :key="item.id">
                           <SelectItem
-                            v-for="(item, _) in items"
-                            :key="index"
                             class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
                             :value="String(item.id)"
                           >
@@ -301,7 +299,7 @@
       </div>
 
       <div class="ms-auto inline-flex flex-wrap items-center gap-4">
-        <!-- <button
+        <button
           id="tableImport"
           type="button"
           class="hover:shadow-hoverinset inline-flex cursor-pointer items-end justify-center gap-2 rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[7px_24px] transition max-md:flex-auto max-md:items-center max-md:gap-1 max-md:p-[7px_12px]"
@@ -309,7 +307,7 @@
         >
           <img src="@/assets/images/bx_import.svg" alt="" />
           <span class="text-[16px] leading-normal font-bold text-[#464661] max-md:text-[14px]"> Import </span>
-        </button> -->
+        </button>
 
         <!-- <template v-if="checkPermission('User', 'Import')">
          
@@ -404,7 +402,35 @@
                   </div>
 
                   <div v-show="tbhead[7].visible" class="cell">
+                    {{ item?.title }}
+                  </div>
+
+                  <div v-show="tbhead[8].visible" class="cell">
+                    {{ item?.status_text }}
+                  </div>
+
+                  <div v-show="tbhead[9].visible" class="cell">
+                    {{ item?.username }}
+                  </div>
+
+                  <div v-show="tbhead[10].visible" class="cell">
                     {{ item?.office_text }}
+                  </div>
+
+                  <div v-show="tbhead[11].visible" class="cell">
+                    {{ item?.status_married_text }}
+                  </div>
+
+                  <div v-show="tbhead[12].visible" class="cell">
+                    {{ item?.refer_name }}
+                  </div>
+
+                  <div v-show="tbhead[13].visible" class="cell">
+                    {{ item?.refer_relationship }}
+                  </div>
+
+                  <div v-show="tbhead[14].visible" class="cell">
+                    {{ item?.refer_phone }}
                   </div>
 
                   <div class="cell">
@@ -814,7 +840,43 @@
       visible: true,
     },
     {
+      title: 'Chức danh',
+      hasSort: false,
+      visible: true,
+    },
+    {
+      title: 'Kiểu nhân viên',
+      hasSort: false,
+      visible: true,
+    },
+    {
+      title: 'Mã nhân viên',
+      hasSort: false,
+      visible: true,
+    },
+    {
       title: 'Địa điểm',
+      hasSort: false,
+      visible: true,
+    },
+    {
+      title: 'Tình trạng hôn nhân',
+      hasSort: false,
+      visible: true,
+    },
+    {
+      title: 'Họ và tên người thân',
+      hasSort: false,
+      visible: true,
+    },
+
+    {
+      title: 'SĐT người thân',
+      hasSort: false,
+      visible: true,
+    },
+    {
+      title: 'Mối quan hệ',
       hasSort: false,
       visible: true,
     },
@@ -842,7 +904,7 @@
   const auth = useAuth()
 
   const params = reactive({
-    part_id: '',
+    staff_id: '',
     position_id: '',
     per_group_name: '',
     phone: '',
@@ -897,18 +959,18 @@
     }
   }
 
-  const dataStaff = ref<any | null>(null)
-  const fetchStaffList = async () => {
+  const departmentTree = ref<any | null>(null)
+  const fetchDepartmentTree = async () => {
     try {
-      const response = await axios.get(`${apiUri}/categories/list?type=staff`, {
+      const response = await axios.get(`${apiUri}/categories/staff`, {
         headers: {
           Authorization: `Bearer ${auth.token()}`,
         },
       })
-      dataStaff.value = response.data.data.items
-      console.log('🚀 ~ fetchStaff ~ dataStaff:', dataStaff.value)
+      departmentTree.value = response.data.data
+      console.log('🚀 ~ fetchDepartmentTree ~ departmentTree:', departmentTree.value)
     } catch (error) {
-      console.log('🚀 ~ fetchStaff ~ error:', error)
+      console.log('🚀 ~ fetchDepartmentTree ~ error:', error)
     }
   }
 
@@ -1052,14 +1114,14 @@
   )
 
   watch(
-    () => [params.per_group_name, params.position_id, params.part_id],
+    () => [params.per_group_name, params.position_id, params.staff_id],
     () => {
       if (params.per_group_name === 'all') {
         params.per_group_name = ''
       }
 
-      if (params.part_id === 'all') {
-        params.part_id = ''
+      if (params.staff_id === 'all') {
+        params.staff_id = ''
       }
 
       if (params.position_id === 'all') {
@@ -1128,21 +1190,13 @@
     }, 100)
   }
 
-  const handleNavigateToEdit = (uploadData: any) => {
-    // Store upload data in sessionStorage for the Excel editing page
-    sessionStorage.setItem('excelUploadData', JSON.stringify(uploadData))
-
-    // Navigate to Excel editing page
-    router.push({
-      name: 'ExcelImport',
-    })
-  }
+  const handleNavigateToEdit = (uploadData: any) => {}
 
   onMounted(() => {
     if (auth.check()) {
       fetchDataDocument()
       fetchPerGroupName()
-      fetchStaffList()
+      fetchDepartmentTree()
       fetchPositionList()
     }
 
