@@ -75,116 +75,6 @@
           </div>
         </div>
 
-        <!-- Preview Section -->
-        <div v-if="previewData.length > 0" class="mb-6">
-          <div class="mb-3 flex items-center justify-between">
-            <div class="text-[16px] font-semibold text-[#464661]">
-              📊 Xem trước dữ liệu ({{ previewData.length }} hàng)
-            </div>
-            <div class="text-[12px] text-[#909090]">Chỉ hiển thị 10 hàng đầu tiên</div>
-          </div>
-
-          <!-- Column Mapping Info -->
-          <div class="mb-4 rounded-lg bg-blue-50 p-3">
-            <div class="mb-2 text-[14px] font-semibold text-blue-800">🔍 Phát hiện cột:</div>
-            <div class="grid grid-cols-1 gap-1 text-[12px] text-blue-700 md:grid-cols-2">
-              <div v-for="header in previewHeaders.slice(0, 8)" :key="header" class="truncate">
-                <span class="font-medium">{{ header }}</span>
-              </div>
-              <div v-if="previewHeaders.length > 8" class="text-blue-600">
-                ... và {{ previewHeaders.length - 8 }} cột khác
-              </div>
-            </div>
-
-            <!-- Smart Detection -->
-            <div class="mt-3 grid grid-cols-2 gap-2 text-[11px]">
-              <div class="flex items-center gap-1">
-                <span :class="detectColumnIcon('name')" class="text-xs">
-                  {{ detectColumnIcon('name') === '✅' ? '✅' : '❌' }}
-                </span>
-                <span>Họ và tên: {{ detectColumn('name') || 'Không tìm thấy' }}</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <span :class="detectColumnIcon('email')" class="text-xs">
-                  {{ detectColumnIcon('email') === '✅' ? '✅' : '❌' }}
-                </span>
-                <span>Email: {{ detectColumn('email') || 'Không tìm thấy' }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="max-h-96 overflow-y-auto rounded-[8px] border border-[#EDEDF6]">
-            <table class="w-full text-[14px]">
-              <thead class="sticky top-0 bg-[#f8fcff]">
-                <tr>
-                  <th class="border-b border-[#EDEDF6] px-3 py-2 text-center font-semibold text-[#464661]">#</th>
-                  <th
-                    v-for="(header, index) in previewHeaders"
-                    :key="index"
-                    class="border-b border-[#EDEDF6] px-3 py-2 text-left font-semibold text-[#464661]"
-                    :class="{
-                      'bg-green-100 text-green-800': isImportantColumn(header),
-                      'bg-blue-100 text-blue-800': isEmailColumn(header),
-                    }"
-                  >
-                    <span v-if="isImportantColumn(header)">⭐</span>
-                    <span v-else-if="isEmailColumn(header)">📧</span>
-                    {{ header }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(row, rowIndex) in previewData.slice(0, 10)" :key="rowIndex" class="hover:bg-gray-50">
-                  <td class="border-b border-[#EDEDF6] px-3 py-2 text-center font-medium text-[#909090]">
-                    {{ rowIndex + 1 }}
-                  </td>
-                  <td
-                    v-for="(cell, cellIndex) in row"
-                    :key="cellIndex"
-                    class="border-b border-[#EDEDF6] px-3 py-2 text-[#464661]"
-                    :class="{
-                      'bg-green-50 font-medium':
-                        previewHeaders && typeof cellIndex === 'number' && previewHeaders[cellIndex]
-                          ? isImportantColumn(previewHeaders[cellIndex]) && cell
-                          : false,
-                      'bg-blue-50':
-                        previewHeaders && typeof cellIndex === 'number' && previewHeaders[cellIndex]
-                          ? isEmailColumn(previewHeaders[cellIndex]) && cell
-                          : false,
-                    }"
-                  >
-                    <span v-if="!cell || cell.toString().trim() === ''" class="text-gray-400 italic">-</span>
-                    <span v-else-if="cell.toString().length > 30" :title="cell" class="block max-w-[200px] truncate">
-                      {{ cell }}
-                    </span>
-                    <span v-else>{{ cell }}</span>
-                  </td>
-                </tr>
-                <tr v-if="previewData.length > 10" class="bg-gray-50">
-                  <td :colspan="previewHeaders.length + 1" class="px-3 py-4 text-center text-[#909090] italic">
-                    ... và {{ previewData.length - 10 }} hàng khác
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Summary Info -->
-          <div class="mt-3 rounded-lg bg-gray-50 p-3">
-            <div class="text-[13px] text-gray-700">
-              <div class="mb-1 font-medium">📈 Tổng kết:</div>
-              <div class="grid grid-cols-2 gap-4 text-[12px]">
-                <div>
-                  Tổng số hàng: <strong>{{ previewData.length }}</strong>
-                </div>
-                <div>
-                  Tổng số cột: <strong>{{ previewHeaders.length }}</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Upload Progress -->
         <div v-if="uploading" class="mb-6">
           <div class="mb-3 text-[16px] font-semibold text-[#464661]">Đang tải lên...</div>
@@ -223,10 +113,13 @@
 </template>
 
 <script setup lang="ts">
+  import axios from 'axios'
   import { ref } from 'vue'
+  import { useAuth } from 'vue-auth3'
   import * as XLSX from 'xlsx'
 
   import Modal from '@/components/Modals.vue'
+  import { apiUri } from '@/constants/apiUri'
 
   interface Props {
     modal: boolean
@@ -238,6 +131,8 @@
 
   const props = defineProps<Props>()
   const emit = defineEmits(['toggle-modal', 'upload-success', 'upload-error', 'navigate-to-edit'])
+
+  const auth = useAuth()
 
   const fileInput = ref<HTMLInputElement>()
   const selectedFile = ref<File | null>(null)
@@ -350,8 +245,13 @@
 
     uploading.value = true
     uploadProgress.value = 0
+    uploadError.value = ''
 
     try {
+      // Create FormData to send file
+      const formData = new FormData()
+      formData.append('file', selectedFile.value)
+
       // Simulate upload progress
       const progressInterval = setInterval(() => {
         if (uploadProgress.value < 90) {
@@ -359,34 +259,65 @@
         }
       }, 200)
 
-      // Here you would normally send the file to your API
-      // For now, we'll simulate an upload delay
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      // Upload file to API
+      const response = await axios.post(`${apiUri}/user/import`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${auth.token()}`,
+        },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            if (percentCompleted >= 90) {
+              clearInterval(progressInterval)
+            }
+            uploadProgress.value = percentCompleted
+          }
+        },
+      })
 
       clearInterval(progressInterval)
       uploadProgress.value = 100
 
-      // Emit success event with the data
+      // Emit success event with the data and API response
       emit('upload-success', {
         file: selectedFile.value,
         data: previewData.value,
         headers: previewHeaders.value,
+        response: response.data,
       })
 
-      // Close modal and navigate to Excel editing page
+      // Close modal after successful upload
       setTimeout(() => {
         emit('toggle-modal')
-        emit('navigate-to-edit', {
-          file: selectedFile.value,
-          data: previewData.value,
-          headers: previewHeaders.value,
-        })
         clearFile()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error)
-      emit('upload-error', error)
-      uploadError.value = 'Có lỗi xảy ra khi tải lên file'
+
+      // Handle different error types
+      if (error.response) {
+        // Server responded with error status
+        const errorMessage = error.response.data?.message || error.response.data?.error || 'Lỗi từ server'
+        uploadError.value = `Upload thất bại: ${errorMessage}`
+        emit('upload-error', {
+          status: error.response.status,
+          message: errorMessage,
+          data: error.response.data,
+        })
+      } else if (error.request) {
+        // Network error
+        uploadError.value = 'Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.'
+        emit('upload-error', {
+          type: 'network',
+          message: 'Network error',
+          error: error,
+        })
+      } else {
+        // Other error
+        uploadError.value = 'Có lỗi xảy ra khi tải lên file'
+        emit('upload-error', error)
+      }
     } finally {
       uploading.value = false
       uploadProgress.value = 0

@@ -28,6 +28,7 @@
               :enable-time="false"
               :format="'dd/MM/yyyy'"
               locale="vi"
+              :text-input="true"
               input-class-name="h-[38px] w-full rounded-lg border border-[#ededf6] px-3 focus:outline-none bg-white"
             />
           </div>
@@ -173,6 +174,7 @@
               :enable-time="false"
               :format="'dd/MM/yyyy'"
               locale="vi"
+              :text-input="true"
               input-class-name="h-[38px] w-full rounded-lg border border-[#ededf6] px-3 focus:outline-none bg-white"
             />
           </div>
@@ -252,6 +254,7 @@
               :enable-time="false"
               :format="'dd/MM/yyyy'"
               locale="vi"
+              :text-input="true"
               input-class-name="h-[38px] w-full rounded-lg border border-[#ededf6] px-3 focus:outline-none bg-white"
             />
           </div>
@@ -262,6 +265,7 @@
               :enable-time="false"
               :format="'dd/MM/yyyy'"
               locale="vi"
+              :text-input="true"
               input-class-name="h-[38px] w-full rounded-lg border border-[#ededf6] px-3 focus:outline-none bg-white"
             />
           </div>
@@ -569,7 +573,18 @@
                     <Icon icon="radix-icons:chevron-up" />
                   </SelectScrollUpButton>
 
-                  <SelectViewport>
+                  <SelectViewport class="max-h-[300px]">
+                    <!-- Search Input -->
+                    <div class="sticky top-0 z-10 border-b border-gray-200 bg-[#FAFAFA] p-2">
+                      <input
+                        v-model="leaderSearchQuery"
+                        type="text"
+                        placeholder="Tìm kiếm quản lý..."
+                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[#D5E3E8] focus:outline-none"
+                        @click.stop
+                      />
+                    </div>
+
                     <SelectGroup>
                       <SelectItem
                         class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
@@ -578,7 +593,7 @@
                         <SelectItemText> Chọn quản lý </SelectItemText>
                       </SelectItem>
 
-                      <template v-for="(items, key) in leaderData" :key="String(key)">
+                      <template v-for="(items, key) in filteredLeaderData" :key="String(key)">
                         <SelectItem
                           v-for="(item, _) in items"
                           :key="item.id"
@@ -590,6 +605,16 @@
                           </SelectItemText>
                         </SelectItem>
                       </template>
+
+                      <!-- No results message -->
+                      <div
+                        v-if="
+                          leaderSearchQuery.trim() && filteredLeaderData && Object.keys(filteredLeaderData).length === 0
+                        "
+                        class="p-[6px_12px] text-center text-[14px] text-gray-500"
+                      >
+                        Không tìm thấy kết quả
+                      </div>
                     </SelectGroup>
                   </SelectViewport>
 
@@ -992,6 +1017,27 @@
     id: '',
   })
   const leaderData = ref<any | null>(null)
+  const leaderSearchQuery = ref('')
+
+  // Computed property to filter leader data based on search query
+  const filteredLeaderData = computed(() => {
+    if (!leaderData.value || !leaderSearchQuery.value.trim()) {
+      return leaderData.value
+    }
+
+    const query = leaderSearchQuery.value.toLowerCase().trim()
+    const filtered: any = {}
+
+    for (const [key, items] of Object.entries(leaderData.value)) {
+      const filteredItems = (items as any[]).filter((item: any) => item.name && item.name.toLowerCase().includes(query))
+
+      if (filteredItems.length > 0) {
+        filtered[key] = filteredItems
+      }
+    }
+
+    return filtered
+  })
   const mccData = reactive<any>({
     value: '',
     id: '',
