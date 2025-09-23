@@ -569,6 +569,21 @@
                   position="popper"
                   :side-offset="5"
                 >
+                  <div class="sticky top-0 z-10 border-b border-gray-200 bg-[#FAFAFA] p-2">
+                    <input
+                      v-model="leaderSearchQuery"
+                      type="text"
+                      placeholder="Tìm kiếm quản lý..."
+                      class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[#D5E3E8] focus:outline-none"
+                      @keydown.stop
+                      @keyup.stop
+                      @keypress.stop
+                      @input.stop
+                      @focus.stop
+                      @blur.stop
+                      @click.stop
+                    />
+                  </div>
                   <SelectScrollUpButton
                     class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
                   >
@@ -576,16 +591,6 @@
                   </SelectScrollUpButton>
 
                   <SelectViewport class="max-h-[300px]">
-                    <!-- Search Input -->
-                    <div class="sticky top-0 z-10 border-b border-gray-200 bg-[#FAFAFA] p-2">
-                      <input
-                        v-model="leaderSearchQuery"
-                        type="text"
-                        placeholder="Tìm kiếm quản lý..."
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[#D5E3E8] focus:outline-none"
-                      />
-                    </div>
-
                     <SelectGroup>
                       <SelectItem
                         class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
@@ -756,6 +761,67 @@
           </div>
 
           <div class="col-span-12 md:col-span-6">
+            <div class="block">
+              <span class="font-inter mb-3 block text-[16px] leading-normal font-bold text-[#464661]">
+                ID máy chấm công
+              </span>
+
+              <SelectRoot v-model="paramsUser.mcc_user_id">
+                <SelectTrigger
+                  class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                    placeholder="Chọn ID máy chấm công"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <SelectItem
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          value="all"
+                        >
+                          <SelectItemText> Chọn ID máy chấm công </SelectItemText>
+                        </SelectItem>
+
+                        <SelectItem
+                          v-for="(itemValue, index) in mccData.value"
+                          :key="mccData.id[index]"
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          :value="String(mccData.id[index])"
+                        >
+                          <SelectItemText> {{ mccData.id[index] }} - {{ itemValue }} </SelectItemText>
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
+            </div>
+          </div>
+
+          <!-- <div class="col-span-12 md:col-span-2">
             <div class="h-full text-end">
               <div class="inline-flex h-full flex-col justify-end">
                 <button
@@ -766,7 +832,7 @@
                 </button>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -819,7 +885,7 @@
     SelectViewport,
   } from 'radix-vue'
   import { useForm } from 'vee-validate'
-  import { computed, onMounted, reactive, ref, watch } from 'vue'
+  import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
   import * as yup from 'yup'
 
@@ -1019,14 +1085,31 @@
   })
   const leaderData = ref<any | null>(null)
   const leaderSearchQuery = ref('')
+  const debouncedSearchQuery = ref('')
 
-  // Computed property to filter leader data based on search query
+  // Debounce search query updates
+  let searchTimeout: number | null = null
+  const debounceSearch = (value: string) => {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout)
+    }
+    searchTimeout = setTimeout(() => {
+      debouncedSearchQuery.value = value
+    }, 1000) // 300ms debounce
+  }
+
+  // Watch for search query changes and debounce them
+  watch(leaderSearchQuery, (newValue) => {
+    debounceSearch(newValue)
+  })
+
+  // Computed property to filter leader data based on debounced search query
   const filteredLeaderData = computed(() => {
-    if (!leaderData.value || !leaderSearchQuery.value.trim()) {
+    if (!leaderData.value || !debouncedSearchQuery.value.trim()) {
       return leaderData.value
     }
 
-    const query = leaderSearchQuery.value.toLowerCase().trim()
+    const query = debouncedSearchQuery.value.toLowerCase().trim()
     const filtered: any = {}
 
     for (const [key, items] of Object.entries(leaderData.value)) {
@@ -1465,6 +1548,13 @@
     initDates()
     updateDates()
     fetchMccData()
+  })
+
+  // Cleanup timeout on component unmount
+  onUnmounted(() => {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout)
+    }
   })
 </script>
 

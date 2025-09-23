@@ -581,6 +581,12 @@
                         type="text"
                         placeholder="Tìm kiếm quản lý..."
                         class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[#D5E3E8] focus:outline-none"
+                        @keydown.stop
+                        @keyup.stop
+                        @keypress.stop
+                        @input.stop
+                        @focus.stop
+                        @blur.stop
                         @click.stop
                       />
                     </div>
