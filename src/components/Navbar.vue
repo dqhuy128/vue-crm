@@ -287,7 +287,7 @@
               <button
                 type="button"
                 class="font-inter hover:text-main block w-full cursor-pointer border-b border-solid border-[#E9F0F4] p-2.5 !text-start text-[16px] leading-normal font-normal text-[#464661] transition"
-                @click="toggleModal('modalUserInfo')"
+                @click="permissionStore.toggleModalUserInfo()"
               >
                 Thông tin cá nhân
               </button>
@@ -304,7 +304,7 @@
       </div>
     </div>
 
-    <Modal :modal-active="modalUserInfo" max-width="max-w-[702px]" @close="permissionStore.toggleModalUserInfo">
+    <Modal :modal-active="modalActive.modalUserInfo" max-width="max-w-[702px]" @close="toggleModal('modalUserInfo')">
       <div class="overflow-hidden rounded-[24px] bg-white p-1.5">
         <div class="rounded-[18px_18px_0_0] bg-[#fafafa] p-5 pt-10">
           <div class="mb-4 text-center">
