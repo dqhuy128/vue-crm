@@ -1510,14 +1510,8 @@
       regionType.id = userData.office_id || ''
       leaderType.id = userData.parent_id || ''
 
-      // Handle MCC data mapping
-      if (userData.mcc_user_id) {
-        // Find the index of mcc_user_id in mccData.id array
-        const mccIndex = mccData.id?.indexOf(userData.mcc_user_id)
-        if (mccIndex !== -1) {
-          mccData.value = mccData.value?.[mccIndex] || ''
-        }
-      }
+      // Set MCC user ID
+      paramsUser.mcc_user_id = userData.mcc_user_id || 'all'
 
       // Update date pickers if dates exist
       if (userData.dob) {
