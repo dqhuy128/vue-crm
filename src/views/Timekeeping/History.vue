@@ -556,11 +556,13 @@
     begin_date: string
     finish_date: string
     name: string
+    id: string
   }
   const paramsWorkHistory = reactive<typeParamsWorkHistory>({
     begin_date: '',
     finish_date: '',
     name: '',
+    id: '',
   })
 
   const datepicker = ref<any | null>(null)
@@ -662,6 +664,9 @@
 
   const handleSearchWorkHistory = async () => {
     try {
+      // Reset về trang 1 khi filter
+      paginate.page = 1
+
       const formData = new FormData()
       formData.append('begin_date', paramsWorkHistory.begin_date)
       formData.append('finish_date', paramsWorkHistory.finish_date)

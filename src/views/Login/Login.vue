@@ -17,8 +17,8 @@
   const auth = useAuth()
 
   const form = reactive({
-    username: '0328910709',
-    password: '123456',
+    username: '',
+    password: '',
   })
 
   const error = ref<string | null>(null)
