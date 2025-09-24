@@ -287,7 +287,7 @@
               <button
                 type="button"
                 class="font-inter hover:text-main block w-full cursor-pointer border-b border-solid border-[#E9F0F4] p-2.5 !text-start text-[16px] leading-normal font-normal text-[#464661] transition"
-                @click="permissionStore.toggleModalUserInfo()"
+                @click="toggleModal('modalUserInfo')"
               >
                 Thông tin cá nhân
               </button>

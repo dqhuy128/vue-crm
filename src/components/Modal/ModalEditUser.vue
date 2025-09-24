@@ -552,86 +552,12 @@
 
           <div class="col-span-12 md:col-span-6 xl:col-span-4">
             <label class="text-[14px] font-semibold text-[#464661]">Quản lý trực tiếp</label>
-            <SelectRoot v-model="leaderType.id">
-              <SelectTrigger
-                class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
-                aria-label="Customise options"
-              >
-                <SelectValue
-                  class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
-                  placeholder="Chọn quản lý"
-                />
-                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-              </SelectTrigger>
-              <SelectPortal>
-                <SelectContent
-                  class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
-                  position="popper"
-                  :side-offset="5"
-                >
-                  <div class="sticky top-0 z-10 border-b border-gray-200 bg-[#FAFAFA] p-2">
-                    <input
-                      v-model="leaderSearchQuery"
-                      type="text"
-                      placeholder="Tìm kiếm quản lý..."
-                      class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[#D5E3E8] focus:outline-none"
-                      @keydown.stop
-                      @keyup.stop
-                      @keypress.stop
-                      @input.stop
-                      @focus.stop
-                      @blur.stop
-                      @click.stop
-                    />
-                  </div>
-                  <SelectScrollUpButton
-                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                  >
-                    <Icon icon="radix-icons:chevron-up" />
-                  </SelectScrollUpButton>
-
-                  <SelectViewport class="max-h-[300px]">
-                    <SelectGroup>
-                      <SelectItem
-                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                        value="all"
-                      >
-                        <SelectItemText> Chọn quản lý </SelectItemText>
-                      </SelectItem>
-
-                      <template v-for="(items, key) in filteredLeaderData" :key="String(key)">
-                        <SelectItem
-                          v-for="(item, _) in items"
-                          :key="item.id"
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          :value="String(item.id)"
-                        >
-                          <SelectItemText>
-                            {{ item.name }}
-                          </SelectItemText>
-                        </SelectItem>
-                      </template>
-
-                      <!-- No results message -->
-                      <div
-                        v-if="
-                          leaderSearchQuery.trim() && filteredLeaderData && Object.keys(filteredLeaderData).length === 0
-                        "
-                        class="p-[6px_12px] text-center text-[14px] text-gray-500"
-                      >
-                        Không tìm thấy kết quả
-                      </div>
-                    </SelectGroup>
-                  </SelectViewport>
-
-                  <SelectScrollDownButton
-                    class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                  >
-                    <Icon icon="radix-icons:chevron-down" />
-                  </SelectScrollDownButton>
-                </SelectContent>
-              </SelectPortal>
-            </SelectRoot>
+            <SearchableSelect
+              v-model="leaderType.id"
+              :options="leaderData"
+              placeholder="Chọn quản lý"
+              search-placeholder="Tìm kiếm quản lý..."
+            />
           </div>
 
           <div class="col-span-12 md:col-span-6 xl:col-span-4">
@@ -766,58 +692,14 @@
                 ID máy chấm công
               </span>
 
-              <SelectRoot v-model="paramsUser.mcc_user_id">
-                <SelectTrigger
-                  class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
-                  aria-label="Customise options"
-                >
-                  <SelectValue
-                    class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
-                    placeholder="Chọn ID máy chấm công"
-                  />
-                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-                </SelectTrigger>
-
-                <SelectPortal>
-                  <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
-                    position="popper"
-                    :side-offset="5"
-                  >
-                    <SelectScrollUpButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-up" />
-                    </SelectScrollUpButton>
-
-                    <SelectViewport>
-                      <SelectGroup>
-                        <SelectItem
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          value="all"
-                        >
-                          <SelectItemText> Chọn ID máy chấm công </SelectItemText>
-                        </SelectItem>
-
-                        <SelectItem
-                          v-for="(itemValue, index) in mccData.value"
-                          :key="mccData.id[index]"
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          :value="String(mccData.id[index])"
-                        >
-                          <SelectItemText> {{ mccData.id[index] }} - {{ itemValue }} </SelectItemText>
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectViewport>
-
-                    <SelectScrollDownButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-down" />
-                    </SelectScrollDownButton>
-                  </SelectContent>
-                </SelectPortal>
-              </SelectRoot>
+              <SimpleSelect
+                v-model="mccUserIdModel"
+                :options="mccOptions"
+                :placeholder="'Chọn ID máy chấm công'"
+                :show-default-option="false"
+                :show-search="true"
+                search-placeholder="Tìm kiếm ID máy chấm công..."
+              />
             </div>
           </div>
 
@@ -885,11 +767,13 @@
     SelectViewport,
   } from 'radix-vue'
   import { useForm } from 'vee-validate'
-  import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+  import { computed, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
   import * as yup from 'yup'
 
   import Modal from '@/components/Modals.vue'
+  import SearchableSelect from '@/components/SearchableSelect.vue'
+  import SimpleSelect from '@/components/SimpleSelect.vue'
   import { apiUri } from '@/constants/apiUri'
   import { ItemUser } from '@/views/SystemAdmin/types'
 
@@ -1084,48 +968,30 @@
     id: '',
   })
   const leaderData = ref<any | null>(null)
-  const leaderSearchQuery = ref('')
-  const debouncedSearchQuery = ref('')
-
-  // Debounce search query updates
-  let searchTimeout: number | null = null
-  const debounceSearch = (value: string) => {
-    if (searchTimeout) {
-      clearTimeout(searchTimeout)
-    }
-    searchTimeout = setTimeout(() => {
-      debouncedSearchQuery.value = value
-    }, 1000) // 300ms debounce
-  }
-
-  // Watch for search query changes and debounce them
-  watch(leaderSearchQuery, (newValue) => {
-    debounceSearch(newValue)
-  })
-
-  // Computed property to filter leader data based on debounced search query
-  const filteredLeaderData = computed(() => {
-    if (!leaderData.value || !debouncedSearchQuery.value.trim()) {
-      return leaderData.value
-    }
-
-    const query = debouncedSearchQuery.value.toLowerCase().trim()
-    const filtered: any = {}
-
-    for (const [key, items] of Object.entries(leaderData.value)) {
-      const filteredItems = (items as any[]).filter((item: any) => item.name && item.name.toLowerCase().includes(query))
-
-      if (filteredItems.length > 0) {
-        filtered[key] = filteredItems
-      }
-    }
-
-    return filtered
-  })
 
   const mccData = reactive<any>({
     value: '',
     id: '',
+  })
+
+  // Transform mccData for SearchableSelect
+  const mccOptions = computed((): any[] => {
+    if (!mccData.value || !mccData.id || !Array.isArray(mccData.value) || !Array.isArray(mccData.id)) {
+      return []
+    }
+
+    return mccData.value.map((itemValue: any, index: number) => ({
+      id: String(mccData.id[index]),
+      name: itemValue,
+    }))
+  })
+
+  // MCC user ID model bridge for type safety
+  const mccUserIdModel = computed({
+    get: () => paramsUser.mcc_user_id || '',
+    set: (value: string) => {
+      paramsUser.mcc_user_id = value
+    },
   })
 
   // Department tree for phòng ban
@@ -1244,7 +1110,7 @@
 
   const fetchMccData = async () => {
     try {
-      const response = await axios.get(`${apiUri}/work/usermcc`, {
+      const response = await axios.get(`${apiUri}/user/usermcc`, {
         headers: {
           Authorization: `Bearer ${auth.token()}`,
         },
@@ -1542,13 +1408,6 @@
     initDates()
     updateDates()
     fetchMccData()
-  })
-
-  // Cleanup timeout on component unmount
-  onUnmounted(() => {
-    if (searchTimeout) {
-      clearTimeout(searchTimeout)
-    }
   })
 </script>
 
