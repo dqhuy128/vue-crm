@@ -3,54 +3,13 @@
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 md:col-span-6 xl:col-span-4">
         <div class="form-title required">Mã nhân viên</div>
-        <SelectRoot v-model="params.user_id">
-          <SelectTrigger
-            class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-[8px_12px] text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
-            aria-label="Customise options"
-            :class="{ 'is-error': errors.user_id }"
-          >
-            <SelectValue
-              class="font-inter grow text-start text-[15px] leading-normal font-normal max-md:text-[14px]"
-              placeholder="Chọn mã nhân viên"
-            />
-            <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-          </SelectTrigger>
-
-          <SelectPortal>
-            <SelectContent
-              class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
-              position="popper"
-              :side-offset="5"
-            >
-              <SelectScrollUpButton
-                class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-              >
-                <Icon icon="radix-icons:chevron-up" />
-              </SelectScrollUpButton>
-
-              <SelectViewport>
-                <SelectGroup>
-                  <template v-for="(item, index) in dataUserID?.items" :key="index">
-                    <template v-for="it in item" :key="it.id">
-                      <SelectItem
-                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                        :value="it.id"
-                      >
-                        <SelectItemText> {{ it.name }} </SelectItemText>
-                      </SelectItem>
-                    </template>
-                  </template>
-                </SelectGroup>
-              </SelectViewport>
-
-              <SelectScrollDownButton
-                class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-              >
-                <Icon icon="radix-icons:chevron-down" />
-              </SelectScrollDownButton>
-            </SelectContent>
-          </SelectPortal>
-        </SelectRoot>
+        <SearchableSelect
+          v-model="params.user_id"
+          :options="userOptions"
+          placeholder="Chọn mã nhân viên"
+          search-placeholder="Tìm kiếm nhân viên..."
+          :class="{ 'is-error': errors.user_id }"
+        />
         <p v-if="errors.user_id" class="mt-1 text-[13px] leading-normal text-[#E61B1B]">{{ errors.user_id }}</p>
       </div>
 
@@ -379,16 +338,17 @@
     SelectValue,
     SelectViewport,
   } from 'radix-vue'
-  import { reactive, ref, watch } from 'vue'
+  import { computed, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
 
+  import SearchableSelect from '@/components/SearchableSelect.vue'
   import { apiUri } from '@/constants/apiUri'
   import { ContractName, ContractTerm, ContractType } from '@/types/type'
   import { formatNumber, tableMagic, unformatNumber } from '@/utils/main'
 
   interface ParamContractPayload {
     id?: string
-    user_id?: string
+    user_id: string
     salary?: string
     probationary_salary?: string
     probationary_rate?: string
@@ -429,7 +389,7 @@
   const isSubmitting = ref(false)
 
   interface FormErrors {
-    user_id?: string
+    user_id: string
     name?: string
     birthday?: string
     salary?: string
@@ -443,7 +403,9 @@
     join_date?: string
   }
 
-  const errors: FormErrors = reactive({})
+  const errors: FormErrors = reactive({
+    user_id: '',
+  })
 
   // Datepickers for begin and finish dates
   const beginDatepicker = ref<Date | null>(null)
@@ -489,6 +451,18 @@
 
   // Fetch user list for user_id select
   const dataUserID = ref<any>({})
+
+  // Convert dataUserID.items to format expected by SearchableSelect
+  const userOptions = computed(() => {
+    if (!dataUserID.value?.items) return null
+
+    // Flatten the nested arrays and create a single group
+    const allUsers = dataUserID.value.items.flat()
+    return {
+      users: allUsers,
+    }
+  })
+
   const fetchUserID = async () => {
     try {
       const { data } = await axios.post(
@@ -549,9 +523,21 @@
   }
 
   const validate = (): boolean => {
-    Object.keys(errors).forEach((k) => delete (errors as any)[k])
+    // Clear previous errors
+    errors.user_id = ''
+    errors.name = ''
+    errors.birthday = ''
+    errors.salary = ''
+    errors.probationary_salary = ''
+    errors.probationary_rate = ''
+    errors.contract_name = ''
+    errors.contract_type = ''
+    errors.contract_term = ''
+    errors.begin_date = ''
+    errors.finish_date = ''
+    errors.join_date = ''
 
-    if (!params.user_id?.trim()) errors.user_id = 'Vui lòng nhập mã nhân viên'
+    if (!params.user_id.trim()) errors.user_id = 'Vui lòng nhập mã nhân viên'
     if (!params.contract_name) errors.contract_name = 'Vui lòng chọn tên hợp đồng'
     if (!params.contract_type) errors.contract_type = 'Vui lòng chọn loại hợp đồng'
     if (!params.contract_term) errors.contract_term = 'Vui lòng chọn thời hạn hợp đồng'
@@ -569,23 +555,23 @@
       }
     }
 
-    return Object.keys(errors).length === 0
+    return !Object.values(errors).some((error) => error !== '')
   }
 
   // Clear a field's error when it becomes valid
   watch(
     () => ({ ...params }),
     (val) => {
-      if (val.user_id && errors.user_id) delete errors.user_id
-      if (val.contract_name && errors.contract_name) delete errors.contract_name
-      if (val.contract_type && errors.contract_type) delete errors.contract_type
-      if (val.contract_term && errors.contract_term) delete errors.contract_term
-      if (val.begin_date && errors.begin_date) delete errors.begin_date
-      if (val.finish_date && errors.finish_date) delete errors.finish_date
-      if (val.join_date && errors.join_date) delete errors.join_date
-      if (val.salary && errors.salary && isPositiveNumberString(val.salary)) delete errors.salary
+      if (val.user_id && errors.user_id) errors.user_id = ''
+      if (val.contract_name && errors.contract_name) errors.contract_name = ''
+      if (val.contract_type && errors.contract_type) errors.contract_type = ''
+      if (val.contract_term && errors.contract_term) errors.contract_term = ''
+      if (val.begin_date && errors.begin_date) errors.begin_date = ''
+      if (val.finish_date && errors.finish_date) errors.finish_date = ''
+      if (val.join_date && errors.join_date) errors.join_date = ''
+      if (val.salary && errors.salary && isPositiveNumberString(val.salary)) errors.salary = ''
       if (val.probationary_salary && errors.probationary_salary && isPositiveNumberString(val.probationary_salary))
-        delete errors.probationary_salary
+        errors.probationary_salary = ''
       if (
         val.probationary_rate &&
         errors.probationary_rate &&
@@ -593,7 +579,7 @@
         Number(val.probationary_rate) >= 0 &&
         Number(val.probationary_rate) <= 100
       )
-        delete errors.probationary_rate
+        errors.probationary_rate = ''
     },
     { deep: true }
   )

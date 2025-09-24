@@ -29,59 +29,13 @@
                 </button>
               </div> -->
 
-              <SelectRoot v-model="paramsWorkHistory.name">
-                <SelectTrigger
-                  class="flex h-full w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
-                >
-                  <SelectValue
-                    class="font-inter w-[90%] grow overflow-hidden text-start text-[15px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
-                    placeholder="Tên nhân viên"
-                  />
-                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-                </SelectTrigger>
-
-                <SelectPortal>
-                  <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
-                    position="popper"
-                    :side-offset="5"
-                  >
-                    <SelectScrollUpButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-up" />
-                    </SelectScrollUpButton>
-
-                    <SelectViewport>
-                      <SelectGroup>
-                        <SelectItem
-                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                          value="all"
-                        >
-                          <SelectItemText> Tất cả nhân viên </SelectItemText>
-                        </SelectItem>
-
-                        <template v-for="(item, _index) in dataUserMCC.items" :key="item.user_id">
-                          <SelectItem
-                            class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                            :value="String(item)"
-                          >
-                            <SelectItemText>
-                              {{ item }}
-                            </SelectItemText>
-                          </SelectItem>
-                        </template>
-                      </SelectGroup>
-                    </SelectViewport>
-
-                    <SelectScrollDownButton
-                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-                    >
-                      <Icon icon="radix-icons:chevron-down" />
-                    </SelectScrollDownButton>
-                  </SelectContent>
-                </SelectPortal>
-              </SelectRoot>
+              <SearchableSelect
+                v-model="paramsWorkHistory.id"
+                :options="userOptions"
+                placeholder="Tất cả nhân viên"
+                search-placeholder="Tìm kiếm nhân viên..."
+                :show-default-option="true"
+              />
             </div>
 
             <div
@@ -98,6 +52,7 @@
                 range
                 format="dd/MM/yyyy"
                 :max-date="new Date()"
+                placeholder="Chọn khoảng thời gian"
                 @update:model-value="updateDates"
               />
             </div>
@@ -445,19 +400,6 @@
   import { format } from 'date-fns'
   import { vi } from 'date-fns/locale/vi'
   import { storeToRefs } from 'pinia'
-  import {
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectItemText,
-    SelectPortal,
-    SelectRoot,
-    SelectScrollDownButton,
-    SelectScrollUpButton,
-    SelectTrigger,
-    SelectValue,
-    SelectViewport,
-  } from 'radix-vue'
   import { ToastDescription, ToastProvider, ToastRoot, ToastTitle, ToastViewport } from 'radix-vue'
   import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
@@ -465,6 +407,7 @@
   import Breadcrums from '@/components/BreadcrumsNew.vue'
   import ModalAddWorkHistory from '@/components/Modal/ModalAddWorkHistory.vue'
   import Modal from '@/components/Modals.vue'
+  import SearchableSelect from '@/components/SearchableSelect.vue'
   import { useWork } from '@/composables/work'
   import { apiUri } from '@/constants/apiUri'
   import router from '@/router'
@@ -621,15 +564,13 @@
   })
 
   const datepicker = ref<any | null>(null)
-  const startDate = new Date(new Date().setDate(1))
-  const endDate = new Date()
-  datepicker.value = [startDate, endDate]
-  paramsWorkHistory.begin_date = format(startDate, 'yyyy-MM-dd')
-  paramsWorkHistory.finish_date = format(endDate, 'yyyy-MM-dd')
   const updateDates = () => {
-    if (datepicker.value) {
+    if (datepicker.value && datepicker.value[0] && datepicker.value[1]) {
       paramsWorkHistory.begin_date = format(datepicker.value[0], 'yyyy-MM-dd')
       paramsWorkHistory.finish_date = format(datepicker.value[1], 'yyyy-MM-dd')
+    } else {
+      paramsWorkHistory.begin_date = ''
+      paramsWorkHistory.finish_date = ''
     }
   }
   watch(datepicker, () => {
@@ -657,11 +598,8 @@
     }
 
     debounceTime.value.timeOut = setTimeout(() => {
-      const id = userData.value?.id
-
       const res = {
         ...paramsWorkHistory,
-        id: id,
         page: paginate.page,
         per_page: paginate.per_page,
       }
@@ -680,6 +618,25 @@
     Math.ceil(Number(dataWorkHistory.doc?.pagination?.total) / Number(paginate.per_page))
   )
 
+  // Computed property to transform user data for SearchableSelect
+  const userOptions = computed(() => {
+    if (!dataUserMCC.originalItems) return null
+
+    const options: Record<string, any[]> = {
+      employees: [],
+    }
+
+    // Transform the originalItems object into array of objects with id and name
+    for (const [id, name] of Object.entries(dataUserMCC.originalItems)) {
+      options.employees.push({
+        id: id,
+        name: name as string,
+      })
+    }
+
+    return options
+  })
+
   const handlePageChange = (pageNum: number) => {
     // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
     paginate.page = pageNum
@@ -688,6 +645,7 @@
 
   const dataUserMCC = reactive({
     items: [],
+    originalItems: {} as Record<string, string>,
   })
   const fetchDataUserMCC = async () => {
     const res = await axios.get(`${apiUri}/work/usermcc`, {
@@ -697,7 +655,9 @@
       },
     })
     const { items } = res.data.data
+    // Store both the original items object and the names array
     dataUserMCC.items = Object.values(items)
+    dataUserMCC.originalItems = items // Keep the original object with key-value pairs
   }
 
   const handleSearchWorkHistory = async () => {
@@ -706,6 +666,7 @@
       formData.append('begin_date', paramsWorkHistory.begin_date)
       formData.append('finish_date', paramsWorkHistory.finish_date)
       formData.append('name', paramsWorkHistory.name)
+      formData.append('id', paramsWorkHistory.id)
 
       const res = await axios.post(`${apiUri}/work/list`, formData, {
         headers: {

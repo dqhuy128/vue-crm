@@ -206,7 +206,7 @@
 
   onMounted(() => {
     if (auth.check()) {
-      if (!userData) {
+      if (!userData.value) {
         const token = auth.token()
         if (token) {
           permissionData.fetchUserData(token)

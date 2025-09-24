@@ -218,7 +218,7 @@
                 {{ column.title }}
 
                 <div v-if="column.hasSort" class="tb-sort">
-                  <button type="button">
+                  <button type="button" class="cursor-pointer" @click="handleSort(column, index)">
                     <img src="@/assets/images/tb-sort.svg" alt="" />
                   </button>
                 </div>
@@ -675,8 +675,8 @@
 
   const tbhead = reactive([
     { title: 'STT', hasSort: false, visible: true },
-    { title: 'Mã NV', hasSort: false, visible: true },
-    { title: 'Họ và tên', hasSort: false, visible: true },
+    { title: 'Mã NV', hasSort: true, visible: true },
+    { title: 'Họ và tên', hasSort: true, visible: true },
     { title: 'Tên HĐ', hasSort: false, visible: true },
     { title: 'Loại HĐ', hasSort: false, visible: true },
     { title: 'Thời hạn HĐ', hasSort: false, visible: true },
@@ -704,10 +704,34 @@
     }
   }
 
+  const handleSort = (column: any, index: any) => {
+    // Determine which field to sort by based on index or column property
+    let field = 'code'
+
+    // Map column index to appropriate field names
+    if (index === 1) {
+      field = 'code' // Mã NV
+    } else if (index === 2) {
+      field = 'name' // Họ và tên
+    }
+
+    // Toggle sort direction
+    const currentSort = params.sort.split('|')
+    const currentField = currentSort[0]
+    const currentDirection = currentSort[1]
+
+    if (currentField === field) params.sort = `${field}|${currentDirection === 'asc' ? 'desc' : 'asc'}`
+    else params.sort = `${field}|asc`
+
+    // Fetch data with new sort parameters
+    fetchDataContract()
+  }
+
   const params = reactive<any | null>({
     status: null,
     name: null,
     type: null,
+    sort: 'code|asc', // Default sorting by employee code
   })
 
   const paginate = reactive({

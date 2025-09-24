@@ -56,6 +56,7 @@
         auth.token(null, access_token)
         // permissionStore.setUserPermission(per_group_name)
         permissionStore.fetchPermission(access_token)
+        permissionStore.fetchUserData(access_token)
         router.push({ name: 'Personal' })
       }
     } catch (err: any) {

@@ -273,25 +273,31 @@
             <label class="text-[14px] font-semibold text-[#464661]">Kiểu nhân viên</label>
             <SelectRoot v-model="employeeTypeModel">
               <SelectTrigger
-                class="inline-flex h-[38px] w-full items-center justify-between rounded-lg border border-[#ededf6] px-3"
+                class="font-inter flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] data-[placeholder]:text-[#909090] max-md:text-[14px]"
+                aria-label="Customise options"
               >
-                <SelectValue placeholder="Chọn kiểu nhân viên" />
+                <SelectValue
+                  class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                  placeholder="Chọn kiểu nhân viên"
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
               </SelectTrigger>
               <SelectPortal>
                 <SelectContent
-                  class="z-[1000] mt-1 max-h-60 w-[--radix-select-trigger-width] overflow-auto rounded-md border border-[#ededf6] bg-white shadow"
+                  class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                  position="popper"
+                  :side-offset="5"
                 >
                   <SelectViewport>
                     <SelectGroup>
-                      <SelectItem value="probation" class="cursor-pointer px-3 py-2 hover:bg-gray-100"
-                        ><SelectItemText>Thử việc</SelectItemText></SelectItem
+                      <SelectItem
+                        v-for="(typeText, typeKey) in workingType"
+                        :key="typeKey"
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        :value="String(typeKey)"
                       >
-                      <SelectItem value="official" class="cursor-pointer px-3 py-2 hover:bg-gray-100"
-                        ><SelectItemText>Chính thức</SelectItemText></SelectItem
-                      >
-                      <SelectItem value="part_time" class="cursor-pointer px-3 py-2 hover:bg-gray-100"
-                        ><SelectItemText>Part-time</SelectItemText></SelectItem
-                      >
+                        <SelectItemText>{{ typeText }}</SelectItemText>
+                      </SelectItem>
                     </SelectGroup>
                   </SelectViewport>
                 </SelectContent>
@@ -312,12 +318,39 @@
             <span v-if="errors.code" class="mt-1 text-xs text-red-500">{{ errors.code }}</span>
           </div>
           <div class="col-span-12 md:col-span-6 xl:col-span-4">
-            <label class="text-[14px] font-semibold text-[#464661]">Mã Pincode</label>
-            <input
-              v-model="paramsUser.pincode"
-              placeholder="Nhập mã Pincode"
-              class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 outline-none"
-            />
+            <label class="text-[14px] font-semibold text-[#464661]">Tình trạng nhân viên</label>
+            <SelectRoot v-model="paramsUser.status">
+              <SelectTrigger
+                class="font-inter flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] data-[placeholder]:text-[#909090] max-md:text-[14px]"
+                aria-label="Customise options"
+              >
+                <SelectValue
+                  class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                  placeholder="Chọn tình trạng nhân viên"
+                />
+                <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              </SelectTrigger>
+              <SelectPortal>
+                <SelectContent
+                  class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                  position="popper"
+                  :side-offset="5"
+                >
+                  <SelectViewport>
+                    <SelectGroup>
+                      <SelectItem
+                        v-for="(statusText, statusKey) in workingStatus"
+                        :key="statusKey"
+                        class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                        :value="String(statusKey)"
+                      >
+                        <SelectItemText>{{ statusText }}</SelectItemText>
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectViewport>
+                </SelectContent>
+              </SelectPortal>
+            </SelectRoot>
           </div>
           <div class="col-span-12 md:col-span-6 xl:col-span-4">
             <label class="text-[14px] font-semibold text-[#464661]">Chức vụ</label>

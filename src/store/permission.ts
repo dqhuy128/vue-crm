@@ -79,7 +79,7 @@ export const usePermissionStore = defineStore('permission', () => {
   const fetchUserData = async (token: string) => {
     const auth = useAuth()
     if (!auth.check()) return
-    if (permision.value) return
+    if (userData.value) return
     console.log('call trong store')
     try {
       const response = await auth.fetch({
