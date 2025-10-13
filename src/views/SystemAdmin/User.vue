@@ -299,7 +299,7 @@
       </div>
 
       <div class="ms-auto inline-flex flex-wrap items-center gap-4">
-        <button
+        <!-- <button
           id="tableImport"
           type="button"
           class="hover:shadow-hoverinset inline-flex cursor-pointer items-end justify-center gap-2 rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[7px_24px] transition max-md:flex-auto max-md:items-center max-md:gap-1 max-md:p-[7px_12px]"
@@ -307,7 +307,7 @@
         >
           <img src="@/assets/images/bx_import.svg" alt="" />
           <span class="text-[16px] leading-normal font-bold text-[#464661] max-md:text-[14px]"> Import </span>
-        </button>
+        </button> -->
 
         <!-- <template v-if="checkPermission('User', 'Import')">
          
