@@ -24,11 +24,13 @@ export const calculateMainLayout = () => {
   const sidebar: any = document.getElementById('Sidebar')
   const pad = 24
 
-  if (sidebar && screen.width >= 1280) {
+  if (root && sidebar && window.innerWidth >= 1280) {
     const sidebarWidth = sidebar.clientWidth
     const rootTotal = sidebarWidth + pad
 
     root.style.marginLeft = rootTotal + 'px'
+  } else if (root) {
+    root.style.marginLeft = '0px'
   }
 }
 
