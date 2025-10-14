@@ -12,6 +12,7 @@ import driverHttpAxios from 'vue-auth3/drivers/http/axios'
 import VueTippy from 'vue-tippy'
 
 import App from './App.vue'
+import { setupInterceptors } from './plugins/axios'
 import router from './router'
 
 const app = createApp(App)
@@ -28,6 +29,9 @@ const auth = createAuth({
   fetchData: { enabled: true },
   stores: ['storage', 'cookie'],
 })
+
+// Configure the interceptors
+setupInterceptors(auth)
 
 app.use(
   VueTippy,

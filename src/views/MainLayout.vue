@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { onMounted } from 'vue'
+  import { onMounted, onUnmounted } from 'vue'
 
   import { calculateMainLayout, toggleSidebar } from '@/utils/main'
 
@@ -7,8 +7,16 @@
   import Sidebar from '../components/Sidebar.vue'
 
   onMounted(() => {
-    calculateMainLayout()
-    toggleSidebar()
+    // Use requestAnimationFrame to ensure the DOM is painted and dimensions are available
+    requestAnimationFrame(() => {
+      calculateMainLayout()
+      toggleSidebar()
+    })
+    window.addEventListener('resize', calculateMainLayout)
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('resize', calculateMainLayout)
   })
 </script>
 

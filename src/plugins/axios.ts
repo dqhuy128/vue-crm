@@ -1,9 +1,5 @@
 import axios from 'axios'
-import { useAuth } from 'vue-auth3'
-import { useRouter } from 'vue-router'
-
-const auth = useAuth()
-const router = useRouter()
+import type { Auth } from 'vue-auth3'
 
 export const apiClient = axios.create({
   baseURL: 'https://api.skygroupvn.com.vn/api',
@@ -18,33 +14,29 @@ export const apiClient = axios.create({
   },
 })
 
-apiClient.interceptors.request.use(
-  (config) => {
-    if (config.headers) {
-      delete config.headers['access-control-max-age']
+/**
+ * Configures the axios interceptor to handle 401 responses.
+ * This function must be called from a context where the `auth` instance is available, like `main.ts`.
+ * @param {Auth} auth - The vue-auth3 instance.
+ */
+export function setupInterceptors(auth: Auth) {
+  axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      // DEBUG: Log the entire error object to inspect its structure
+      console.log('Interceptor caught an error:', error)
+      // console.log('Error response object:', error.response)
+
+      if (error.response && error.response.status === 401) {
+        // DEBUG: Add alert and log to verify interceptor is triggered
+        // alert('Interceptor caught a 401 Error!')
+        console.log('Full error response:', error.response)
+
+        // The auth plugin will handle the redirection to /login
+        auth.logout()
+        window.location.href = '/login'
+      }
+      return Promise.reject(error)
     }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
-
-// Thêm axios interceptor cho response
-// apiClient.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     console.log('🚀 ~ error:', error)
-
-//     if (error.response && error.response.status === 401) {
-//       // Đăng xuất người dùng
-//       auth.logout({
-//         makeRequest: true, // Disable API request
-//         redirect: '/login' // Redirect to login page
-//       })
-//       // Chuyển hướng tới trang login
-//       router.push('/login')
-//     }
-//     return Promise.reject(error)
-//   }
-// )
+  )
+}
