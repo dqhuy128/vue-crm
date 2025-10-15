@@ -202,6 +202,7 @@
                     :class="{
                       'sort-asc': column.title === 'Mã NV' && paramsWorkHistory.sort === 'code|asc',
                       'sort-desc': column.title === 'Mã NV' && paramsWorkHistory.sort === 'code|desc',
+                      'cursor-pointer'
                     }"
                     @click="handleSort(column.title)"
                   >
