@@ -197,7 +197,14 @@
                 {{ column.title }}
 
                 <div v-if="column.hasSort" class="tb-sort">
-                  <button type="button">
+                  <button
+                    type="button"
+                    :class="{
+                      'sort-asc': column.title === 'Mã NV' && paramsWorkHistory.sort === 'code|asc',
+                      'sort-desc': column.title === 'Mã NV' && paramsWorkHistory.sort === 'code|desc',
+                    }"
+                    @click="handleSort(column.title)"
+                  >
                     <img src="@/assets/images/tb-sort.svg" alt="" />
                   </button>
                 </div>
@@ -498,7 +505,7 @@
     },
     {
       title: 'Mã NV',
-      hasSort: false,
+      hasSort: true,
       visible: true,
     },
     {
@@ -552,17 +559,20 @@
     }
   }
 
+  type SortType = 'code|asc' | 'code|desc'
   interface typeParamsWorkHistory {
     begin_date: string
     finish_date: string
     name: string
     id: string
+    sort: SortType
   }
   const paramsWorkHistory = reactive<typeParamsWorkHistory>({
     begin_date: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
     finish_date: format(endOfDay(new Date()), 'yyyy-MM-dd'),
     name: '',
     id: '',
+    sort: 'code|asc' as SortType,
   })
 
   const datepicker = ref<any | null>([startOfMonth(new Date()), endOfDay(new Date())])
@@ -685,6 +695,17 @@
     }
   }
 
+  const handleSort = (columnTitle: string) => {
+    if (columnTitle === 'Mã NV') {
+      // Toggle giữa 'code|asc' và 'code|desc'
+      paramsWorkHistory.sort = paramsWorkHistory.sort === 'code|asc' ? 'code|desc' : 'code|asc'
+      // Reset về trang 1 khi sort
+      paginate.page = 1
+      // Fetch data với sort mới
+      fetchDataWorkHistory()
+    }
+  }
+
   const dataUserExplain = ref<any | null>(null)
   const handleUserExplain = async (id: string, date: string) => {
     try {
@@ -774,6 +795,24 @@
   .work-history-datepicker {
     .dp__input {
       border-radius: 24px;
+    }
+  }
+
+  .tb-sort {
+    button {
+      transition: transform 0.2s ease;
+
+      &.sort-asc {
+        img {
+          transform: rotate(0deg);
+        }
+      }
+
+      &.sort-desc {
+        img {
+          transform: rotate(180deg);
+        }
+      }
     }
   }
 </style>
