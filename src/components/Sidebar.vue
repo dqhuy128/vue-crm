@@ -79,14 +79,15 @@
       title: 'Khối, phòng ban',
       route: 'Department',
       nav: false,
-      permissionName: 'all',
+      permissionName: 'Categories',
+      permissionRole: 'Staff',
     },
     {
       icon: HugeContact,
       title: 'Hợp đồng',
       route: 'Contract',
       nav: false,
-      permissionName: 'all',
+      permissionName: 'Contract',
     },
     {
       icon: FluentNote,
