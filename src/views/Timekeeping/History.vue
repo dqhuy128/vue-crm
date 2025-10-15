@@ -397,7 +397,7 @@
   import { Icon } from '@iconify/vue'
   import VueDatePicker from '@vuepic/vue-datepicker'
   import axios from 'axios'
-  import { endOfDay, format, startOfDay, subDays } from 'date-fns'
+  import { endOfDay, format, startOfMonth } from 'date-fns'
   import { vi } from 'date-fns/locale/vi'
   import { storeToRefs } from 'pinia'
   import { ToastDescription, ToastProvider, ToastRoot, ToastTitle, ToastViewport } from 'radix-vue'
@@ -559,13 +559,13 @@
     id: string
   }
   const paramsWorkHistory = reactive<typeParamsWorkHistory>({
-    begin_date: format(startOfDay(subDays(new Date(), 3)), 'yyyy-MM-dd'),
+    begin_date: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
     finish_date: format(endOfDay(new Date()), 'yyyy-MM-dd'),
     name: '',
     id: '',
   })
 
-  const datepicker = ref<any | null>([startOfDay(subDays(new Date(), 3)), endOfDay(new Date())])
+  const datepicker = ref<any | null>([startOfMonth(new Date()), endOfDay(new Date())])
   const updateDates = () => {
     if (datepicker.value && datepicker.value[0] && datepicker.value[1]) {
       paramsWorkHistory.begin_date = format(datepicker.value[0], 'yyyy-MM-dd')
