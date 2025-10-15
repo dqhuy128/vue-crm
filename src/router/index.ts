@@ -142,8 +142,8 @@ const router = createRouter({
           component: TimekeepingHistory,
         },
         {
-          path: 'explain',
-          name: 'Explain',
+          path: 'explanation',
+          name: 'Explanation',
           component: TimekeepingExplain,
         },
       ],
