@@ -761,7 +761,7 @@
   watch(permissionList, () => {
     console.log('🚀 ~ //onMounted ~ permissionList:', permissionList)
     if (auth.check()) {
-      if (!permissionList.value.includes('Document')) {
+      if (!permissionList.value.includes('Work')) {
         alert('Bạn không có quyền truy cập vào trang này')
         router.push({ name: 'NotFound404' })
       } else {
@@ -773,14 +773,12 @@
 
   watch(
     paginate,
-    async () => {
+    () => {
       fetchDataWorkHistory()
     },
     {
       // must pass deep option to watch for changes on object properties
       deep: true,
-      // can also pass immediate to handle that first request AND when queries change
-      immediate: true,
     }
   )
 

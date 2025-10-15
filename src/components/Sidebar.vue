@@ -136,7 +136,7 @@
         {
           icon: EditNote,
           title: 'Giải trình chấm công',
-          route: 'Explain',
+          route: 'Explanation',
           permissionName: 'Work',
           permissionRole: 'Explanation',
         },
