@@ -1,11 +1,11 @@
 <template>
   <SelectRoot :model-value="modelValue" @update:model-value="updateModelValue">
     <SelectTrigger
-      class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
+      class="flex w-full flex-wrap items-center rounded-full border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
       aria-label="Customise options"
     >
       <SelectValue
-        class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+        class="font-inter w-[90%] grow overflow-hidden rounded-full text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
         :placeholder="placeholder"
       />
       <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
