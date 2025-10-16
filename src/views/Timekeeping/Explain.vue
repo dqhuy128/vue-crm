@@ -162,7 +162,7 @@
             </div>
           </div>
 
-          <template v-if="normalizedItems.length">
+          <template v-if="!isInitialLoad && normalizedItems.length">
             <div id="tableRowBody" class="body table-row">
               <div v-for="(it, index) in normalizedItems" :key="index" class="table-item justify-between !px-5">
                 <div class="cell">
@@ -657,6 +657,9 @@
     counter: 0,
   })
 
+  const isFetching = ref(false)
+  const isInitialLoad = ref(true)
+
   // Computed property to normalize actions without mutating original data
   const normalizedItems = computed(() => {
     if (!dataWorkExplain.doc?.items) return []
@@ -679,11 +682,16 @@
   })
 
   const fetchDataWorkExplain = () => {
+    if (isFetching.value) return // Prevent concurrent requests
+
     if (debounceTime.value.timeOut !== null) {
       clearTimeout(debounceTime.value.timeOut)
     }
 
     debounceTime.value.timeOut = setTimeout(() => {
+      if (isFetching.value) return
+
+      isFetching.value = true
       const res = {
         ...paramsWorkExplain,
         page: paginate.page,
@@ -693,9 +701,15 @@
       doFetch(
         `${apiUri}/work/explanation?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
         auth.token() as string
-      ).then(() => {
-        tableMagic()
-      })
+      )
+        .then(() => {
+          isInitialLoad.value = false
+          tableMagic()
+        })
+        .finally(() => {
+          isFetching.value = false
+          tableMagic()
+        })
     }, 300)
   }
 
@@ -810,13 +824,17 @@
   const { permissionList } = storeToRefs(permissionStore)
   const { checkPermission } = permissionStore
 
+  const hasInitialFetch = ref(false)
+
   watch(permissionList, () => {
+    console.log('🚀 ~ //onMounted ~ permissionList:', permissionList)
     if (auth.check()) {
       if (!permissionList.value.includes('Work')) {
         alert('Bạn không có quyền truy cập vào trang này')
         router.push({ name: 'NotFound404' })
       } else {
         fetchDataWorkExplain()
+        console.log(dataWorkExplain, 'dataWorkExplain')
       }
     }
   })
@@ -825,7 +843,9 @@
     paginate,
     () => {
       // Only fetch if we've done initial fetch
-      fetchDataWorkExplain()
+      if (hasInitialFetch.value) {
+        fetchDataWorkExplain()
+      }
     },
     {
       // must pass deep option to watch for changes on object properties
