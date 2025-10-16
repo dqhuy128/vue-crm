@@ -169,7 +169,7 @@
   }
   const paramsUserExplain = reactive<typeParamsUserExplain>({
     id: props.datatype?.id || '',
-    timekeeping_id: props.datatype?.user_id || '',
+    timekeeping_id: props.datatype?.id || '',
     user_id: props.datatype?.user_id || '',
     user_code: props.datatype?.user_code || '',
     name: props.datatype?.name || '',
@@ -185,7 +185,7 @@
       console.log('🚀 ~ ModalAddWorkHistory.vue ~ newVal:', newVal)
       if (newVal) {
         paramsUserExplain.id = newVal.id || ''
-        paramsUserExplain.timekeeping_id = newVal.user_id || ''
+        paramsUserExplain.timekeeping_id = newVal.id || ''
         paramsUserExplain.user_id = newVal.user_id || ''
         paramsUserExplain.user_code = newVal.user_code || ''
         paramsUserExplain.name = newVal.name || ''
