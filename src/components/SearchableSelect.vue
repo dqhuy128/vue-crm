@@ -170,7 +170,7 @@
   }
 
   const updateModelValue = (value: string) => {
-    emit('update:modelValue', value)
+    emit('update:modelValue', value === 'all' ? '' : value)
   }
 
   // Handle auto-focus when dropdown opens
@@ -181,6 +181,12 @@
       searchInput.value?.focus()
     })
   }
+
+  watch(props.modelValue, (newValue) => {
+    if (newValue) {
+      searchQuery.value = ''
+    }
+  })
 
   // Cleanup timeout on component unmount
   onUnmounted(() => {
