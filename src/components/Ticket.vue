@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
 
   type ticketProps = [icon: any, title: string, ticketList: Array<any>, sroute?: any]
   // Define props for the component
@@ -7,6 +7,7 @@
   // Destructuring the array (ticketProps is a tuple, so we access it by index)
   const [icon, title, ticketList, sroute] = propsTicketProps.ticketProps
   const route = useRoute().path
+  const router = useRouter()
 </script>
 
 <template>
@@ -36,7 +37,11 @@
         class="last-border-t flex flex-wrap items-center gap-3 border-b border-solid border-[#EDEDF6] pb-3 not-last:mb-3.5"
       >
         <div class="h-2.5 w-2.5 rounded-[50%] bg-[#464661]" :class="item.status"></div>
-        <div class="font-inter grow text-[16px] leading-normal !font-bold text-[#909090]">
+        <div
+          v-if="item.title"
+          class="font-inter hover:text-main grow cursor-pointer text-[16px] leading-normal !font-bold text-[#909090] transition"
+          @click="() => router.push({ name: item.sroute })"
+        >
           {{ item.title }}
         </div>
         <div class="font-inter ms-auto text-[20px] leading-normal font-bold text-[#E61B1B]">

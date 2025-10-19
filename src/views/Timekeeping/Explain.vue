@@ -179,7 +179,7 @@
                 </div>
 
                 <div class="cell">
-                  {{ it.created_at }}
+                  {{ it.work_date }}
                 </div>
 
                 <div class="cell">
