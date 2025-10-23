@@ -134,7 +134,13 @@ export const tableMagic = () => {
             const paddingLeft = parseFloat(computedStyle.paddingLeft || '0')
             const paddingRight = parseFloat(computedStyle.paddingRight || '0')
             const contentWidth = cell.scrollWidth - paddingLeft - paddingRight
-            const width = Math.max(contentWidth, 80)
+            let width = Math.max(contentWidth, 80)
+
+            // Giới hạn độ rộng tối đa của cột reason (index 4) là 300px
+            if (cell.classList.contains('reason-cell')) {
+              width = Math.min(width, 200)
+            }
+
             columnWidths[index] = Math.max(columnWidths[index], width)
           }
         })

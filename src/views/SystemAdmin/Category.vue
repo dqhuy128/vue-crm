@@ -255,7 +255,11 @@
               </div>
             </div>
 
-            <div id="tableRowBody" class="body table-row">
+            <!-- Skeleton Loading -->
+            <SkeletonTable v-if="isLoading" :columns="tbhead.filter((col) => col.visible).length" :rows="10" />
+
+            <!-- Table Data -->
+            <div v-else id="tableRowBody" class="body table-row">
               <template v-if="dataDocument.doc">
                 <div v-for="(item, index) in dataDocument.doc.items" :key="index" class="table-item justify-between">
                   <template v-for="(it, _) in item">
@@ -341,14 +345,10 @@
 
           <div class="flex flex-wrap items-center gap-2 md:ms-auto">
             <div class="text-[14px] font-normal text-[#464661]">
-              <template
-                v-if="
-                  dataDocument.doc?.pagination?.total && Number(dataDocument.doc?.pagination.total) > paginate.per_page
-                "
-              >
-                1 - {{ paginate.per_page }} trong {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
+              <template v-if="paginationRange.total > 0">
+                {{ paginationRange.start }} - {{ paginationRange.end }} trong {{ paginationRange.total }} kết quả
               </template>
-              <template v-else> {{ dataDocument.doc?.pagination?.total || 0 }} kết quả </template>
+              <template v-else> 0 kết quả </template>
             </div>
 
             <div class="tb-navigation flex flex-wrap items-center md:gap-2">
@@ -546,6 +546,7 @@
   import ModalAddCategory from '@/components/Modal/ModalAddCategory.vue'
   import ModalCategoryUpdate from '@/components/Modal/ModalCategoryUpdate.vue'
   import Modal from '@/components/Modals.vue'
+  import SkeletonTable from '@/components/SkeletonTable.vue'
   import { useSystemManager } from '@/composables/system-manager'
   import { apiUri } from '@/constants/apiUri'
   import router from '@/router'
@@ -793,6 +794,9 @@
     categories,
   } = useSystemManager()
 
+  // Get loading state from useSystemManager
+  const { isLoading } = useSystemManager()
+
   const dataDocument = reactive({
     doc: data,
   })
@@ -800,6 +804,18 @@
   const dataTotalPages = computed(() =>
     Math.ceil(Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page))
   )
+
+  // Computed property để tính toán range hiển thị pagination
+  const paginationRange = computed(() => {
+    const currentPage = Number(paginate.page)
+    const perPage = Number(paginate.per_page)
+    const total = Number(dataDocument.doc?.pagination?.total || 0)
+
+    const start = (currentPage - 1) * perPage + 1
+    const end = Math.min(currentPage * perPage, total)
+
+    return { start, end, total }
+  })
 
   onMounted(() => {
     if (auth.check()) {

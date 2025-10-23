@@ -233,8 +233,11 @@
               </template>
             </div>
 
-            <!-- Example row -->
-            <div id="tableRowBody" class="body table-row">
+            <!-- Skeleton Loading -->
+            <SkeletonTable v-if="isTableLoading" :columns="9" :rows="10" />
+
+            <!-- Table Data -->
+            <div v-else id="tableRowBody" class="body table-row">
               <template v-if="dataContractRef?.data?.items">
                 <div
                   v-for="(items, index) in dataContractRef?.data?.items || []"
@@ -366,15 +369,10 @@
 
           <div class="flex flex-wrap items-center gap-2 md:ms-auto">
             <div class="text-[14px] font-normal text-[#464661]">
-              <template
-                v-if="
-                  dataContractRef?.data?.pagination?.total &&
-                  Number(dataContractRef?.data?.pagination?.total || 0) > paginate.per_page
-                "
-              >
-                1 - {{ paginate.per_page }} trong {{ dataContractRef?.data?.pagination?.total || 0 }} kết quả
+              <template v-if="paginationRange.total > 0">
+                {{ paginationRange.start }} - {{ paginationRange.end }} trong {{ paginationRange.total }} kết quả
               </template>
-              <template v-else> {{ dataContractRef?.data?.pagination?.total || 0 }} kết quả </template>
+              <template v-else> 0 kết quả </template>
             </div>
 
             <div class="tb-navigation flex flex-wrap items-center md:gap-2">
@@ -593,6 +591,8 @@
   import ModalEditContract from '@/components/Modal/ModalEditContract.vue'
   import ModalRemoveContract from '@/components/Modal/ModalRemoveContract.vue'
   import Modal from '@/components/Modals.vue'
+  import SkeletonTable from '@/components/SkeletonTable.vue'
+  import { useTableLoading } from '@/composables/useTableLoading'
   import { apiUri } from '@/constants/apiUri'
   import router from '@/router'
   import { usePermissionStore } from '@/store/permission'
@@ -740,14 +740,17 @@
   })
 
   const dataContractRef = ref<any | null>(null)
-  const fetchDataContract = async () => {
-    const res = {
-      ...params,
-      page: paginate.page,
-      per_page: paginate.per_page,
-    }
 
-    try {
+  // Table loading state
+  const { isTableLoading, withLoading } = useTableLoading()
+  const fetchDataContract = async () => {
+    await withLoading(async () => {
+      const res = {
+        ...params,
+        page: paginate.page,
+        per_page: paginate.per_page,
+      }
+
       const { data } = await axios.get(`${apiUri}/contract/list`, {
         headers: {
           Authorization: `Bearer ${auth.token()}`,
@@ -756,9 +759,7 @@
       })
       dataContractRef.value = data
       tableMagic()
-    } catch (error) {
-      console.error('fetchDataContract error:', error)
-    }
+    })
   }
 
   const handlePageChange = (pageNum: number) => {
@@ -834,6 +835,18 @@
   const dataTotalPages = computed(() =>
     Math.ceil(Number(dataContractRef.value?.data?.pagination?.total || 0) / Number(paginate.per_page))
   )
+
+  // Computed property để tính toán range hiển thị pagination
+  const paginationRange = computed(() => {
+    const currentPage = Number(paginate.page)
+    const perPage = Number(paginate.per_page)
+    const total = Number(dataContractRef.value?.data?.pagination?.total || 0)
+
+    const start = (currentPage - 1) * perPage + 1
+    const end = Math.min(currentPage * perPage, total)
+
+    return { start, end, total }
+  })
 
   const dataPostRequest = ref<any | null>(null)
   const getPostRequest = (data: any) => {

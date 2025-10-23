@@ -162,7 +162,11 @@
             </div>
           </div>
 
-          <template v-if="!isInitialLoad && normalizedItems.length">
+          <!-- Skeleton Loading -->
+          <SkeletonTable v-if="isLoading" :columns="9" :rows="10" />
+
+          <!-- Table Data -->
+          <template v-else-if="!isInitialLoad && normalizedItems.length">
             <div id="tableRowBody" class="body table-row">
               <div v-for="(it, index) in normalizedItems" :key="index" class="table-item justify-between !px-5">
                 <div class="cell">
@@ -183,7 +187,21 @@
                 </div>
 
                 <div class="cell">
-                  {{ it.reason }}
+                  <tippy
+                    v-if="it.reason"
+                    :content="it.reason"
+                    placement="right"
+                    theme="light"
+                    interactive
+                    delay="[300, 0]"
+                  >
+                    <div class="reason-cell flex cursor-help items-center gap-1">
+                      <Icon icon="lucide:info" class="h-4.5 w-4.5 flex-shrink-0" />
+                    </div>
+                  </tippy>
+                  <div v-else class="reason-cell">
+                    {{ it.reason }}
+                  </div>
                 </div>
 
                 <div class="cell">
@@ -361,15 +379,10 @@
 
         <div class="flex flex-wrap items-center gap-2 md:ms-auto">
           <div class="text-[14px] font-normal text-[#464661]">
-            <template
-              v-if="
-                dataWorkExplain.doc?.pagination?.total &&
-                Number(dataWorkExplain.doc?.pagination.total) > paginate.per_page
-              "
-            >
-              1 - {{ paginate.per_page }} trong {{ dataWorkExplain.doc?.pagination?.total || 0 }} kết quả
+            <template v-if="paginationRange.total > 0">
+              {{ paginationRange.start }} - {{ paginationRange.end }} trong {{ paginationRange.total }} kết quả
             </template>
-            <template v-else> {{ dataWorkExplain.doc?.pagination?.total || 0 }} kết quả </template>
+            <template v-else> 0 kết quả </template>
           </div>
 
           <div class="tb-navigation flex flex-wrap items-center md:gap-2">
@@ -468,6 +481,7 @@
 
 <script lang="ts" setup>
   import '@vuepic/vue-datepicker/dist/main.css'
+  import '@/styles/table.module.scss'
 
   import { Icon } from '@iconify/vue'
   import VueDatePicker from '@vuepic/vue-datepicker'
@@ -496,6 +510,7 @@
   import Breadcrums from '@/components/BreadcrumsNew.vue'
   import ModalWorkExplain from '@/components/Modal/ModalWorkExplain.vue'
   import Modal from '@/components/Modals.vue'
+  import SkeletonTable from '@/components/SkeletonTable.vue'
   import { useWork } from '@/composables/work'
   import { apiUri } from '@/constants/apiUri'
   import router from '@/router'
@@ -803,7 +818,7 @@
     }
   }
 
-  const { data, doFetch } = useWork()
+  const { data, doFetch, isLoading } = useWork()
 
   const dataWorkExplain = reactive({
     doc: data,
@@ -812,6 +827,18 @@
   const dataTotalPages = computed(() =>
     Math.ceil(Number(dataWorkExplain.doc?.pagination?.total) / Number(paginate.per_page))
   )
+
+  // Computed property để tính toán range hiển thị pagination
+  const paginationRange = computed(() => {
+    const currentPage = Number(paginate.page)
+    const perPage = Number(paginate.per_page)
+    const total = Number(dataWorkExplain.doc?.pagination?.total || 0)
+
+    const start = (currentPage - 1) * perPage + 1
+    const end = Math.min(currentPage * perPage, total)
+
+    return { start, end, total }
+  })
 
   const dataPostRequest = ref<any | null>(null)
   const getPostRequest = (data: any) => {

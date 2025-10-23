@@ -60,7 +60,7 @@
 
       &.body {
         position: relative;
-        z-index: 1;
+        z-index: 99;
         display: flex;
         flex-flow: column;
         gap: 4px;
@@ -398,6 +398,26 @@
   .tb-sort {
     flex-shrink: 0;
   }
+
+  :deep(.tippy-box[data-theme='light']) {
+    .tippy-content {
+      padding: 8px 12px;
+      font-size: 13px;
+      line-height: 1.4;
+      max-width: none;
+      word-wrap: break-word;
+      white-space: nowrap;
+      min-width: 400px;
+    }
+  }
+
+  [data-tippy-root] {
+    min-width: 500px !important;
+  }
+
+  .tippy-box {
+    max-width: max-content !important;
+  }
 }
 
 .tb-navigation {
@@ -432,3 +452,13 @@
 .tooltip {
   z-index: 99;
 }
+
+.reason-cell {
+  display: block !important;
+  width: 100% !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap !important;
+}
+
+// Tooltip styling for reason cell

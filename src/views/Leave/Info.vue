@@ -239,8 +239,11 @@
               </div>
             </div>
 
-            <!-- Example row -->
-            <div id="tableRowBody" class="body table-row">
+            <!-- Skeleton Loading -->
+            <SkeletonTable v-if="isLoading" :columns="9" :rows="10" />
+
+            <!-- Table Data -->
+            <div v-else id="tableRowBody" class="body table-row">
               <template v-if="dataLeave.doc">
                 <div v-for="(it, index) in dataLeave.doc.items" :key="index" class="table-item justify-between">
                   <!-- bg-blue , bg-green , bg-red , bg-purple , :class="{ 'bg-blue': id === 1 }"-->
@@ -266,7 +269,21 @@
                   </div>
 
                   <div v-show="tbhead[5].visible" class="cell">
-                    {{ it.reason }}
+                    <tippy
+                      v-if="it.reason"
+                      :content="it.reason"
+                      placement="right"
+                      theme="light"
+                      interactive
+                      delay="[300, 0]"
+                    >
+                      <div class="reason-cell flex cursor-help items-center gap-1">
+                        <Icon icon="lucide:info" class="h-4.5 w-4.5 flex-shrink-0" />
+                      </div>
+                    </tippy>
+                    <div v-else class="reason-cell">
+                      {{ it.reason }}
+                    </div>
                   </div>
 
                   <div v-show="tbhead[6].visible" class="cell">
@@ -454,12 +471,10 @@
 
           <div class="flex flex-wrap items-center gap-2 md:ms-auto">
             <div class="text-[14px] font-normal text-[#464661]">
-              <template
-                v-if="dataLeave.doc?.pagination?.total && Number(dataLeave.doc?.pagination.total) > paginate.per_page"
-              >
-                1 - {{ paginate.per_page }} trong {{ dataLeave.doc?.pagination?.total || 0 }} kết quả
+              <template v-if="paginationRange.total > 0">
+                {{ paginationRange.start }} - {{ paginationRange.end }} trong {{ paginationRange.total }} kết quả
               </template>
-              <template v-else> {{ dataLeave.doc?.pagination?.total || 0 }} kết quả </template>
+              <template v-else> 0 kết quả </template>
             </div>
 
             <div class="tb-navigation flex flex-wrap items-center md:gap-2">
@@ -722,6 +737,7 @@
   import ModalEditLeave from '@/components/Modal/ModalEditLeave.vue'
   import ModalProposalLicensing from '@/components/Modal/ModalProposalLicensing.vue'
   import Modal from '@/components/Modals.vue'
+  import SkeletonTable from '@/components/SkeletonTable.vue'
   import { useLeaveInfo } from '@/composables/leave-info'
   import { apiUri } from '@/constants/apiUri'
   import router from '@/router'
@@ -1102,13 +1118,25 @@
       })
   }
 
-  const { data, doFetch } = useLeaveInfo()
+  const { data, doFetch, isLoading } = useLeaveInfo()
 
   const dataLeave = reactive({
     doc: data,
   })
 
   const dataTotalPages = computed(() => Math.ceil(Number(dataLeave.doc?.pagination?.total) / Number(paginate.per_page)))
+
+  // Computed property để tính toán range hiển thị pagination
+  const paginationRange = computed(() => {
+    const currentPage = Number(paginate.page)
+    const perPage = Number(paginate.per_page)
+    const total = Number(dataLeave.doc?.pagination?.total || 0)
+
+    const start = (currentPage - 1) * perPage + 1
+    const end = Math.min(currentPage * perPage, total)
+
+    return { start, end, total }
+  })
 
   const dataPostRequest = ref<any | null>(null)
   const getPostRequest = (data: any) => {

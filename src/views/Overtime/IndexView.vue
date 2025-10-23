@@ -11,6 +11,7 @@
   import ModalAddOvertime from '@/components/Modal/ModalAddOvertime.vue'
   import ModalUpdateOvertime from '@/components/Modal/ModalUpdateOvertime.vue'
   import Modal from '@/components/Modals.vue'
+  import SkeletonTable from '@/components/SkeletonTable.vue'
   import { useSystemManager } from '@/composables/system-manager'
   import { apiUri } from '@/constants/apiUri'
   import router from '@/router'
@@ -296,7 +297,7 @@
       })
   }
 
-  const { data, doFetch } = useSystemManager()
+  const { data, doFetch, isLoading } = useSystemManager()
 
   const dataOvertime = reactive({
     doc: data,
@@ -309,6 +310,18 @@
   const dataTotalPages = computed(() =>
     Math.ceil(Number(dataOvertime.doc?.pagination?.total) / Number(paginate.per_page))
   )
+
+  // Computed property để tính toán range hiển thị pagination
+  const paginationRange = computed(() => {
+    const currentPage = Number(paginate.page)
+    const perPage = Number(paginate.per_page)
+    const total = Number(dataOvertime.doc?.pagination?.total || 0)
+
+    const start = (currentPage - 1) * perPage + 1
+    const end = Math.min(currentPage * perPage, total)
+
+    return { start, end, total }
+  })
 
   const activeDropdownManager = ref(null)
   const toggleDropdownManager = (id: any) => {
@@ -554,7 +567,11 @@
               </div>
             </div>
 
-            <div id="tableRowBody" class="body table-row">
+            <!-- Skeleton Loading -->
+            <SkeletonTable v-if="isLoading" :columns="8" :rows="10" />
+
+            <!-- Table Data -->
+            <div v-else id="tableRowBody" class="body table-row">
               <template v-if="dataOvertime.doc">
                 <div v-for="(it, index) in dataOvertime.doc.items" :key="index" class="table-item justify-between">
                   <!-- bg-blue , bg-green , bg-red , bg-purple , :class="{ 'bg-blue': id === 1 }"-->
@@ -571,7 +588,23 @@
 
                   <div v-show="tbhead[4].visible" class="cell">{{ it.begin_time }} - {{ it.finish_time }}</div>
 
-                  <div v-show="tbhead[5].visible" class="cell">{{ it.reason }}</div>
+                  <div v-show="tbhead[5].visible" class="cell">
+                    <tippy
+                      v-if="it.reason"
+                      :content="it.reason"
+                      placement="right"
+                      theme="light"
+                      interactive
+                      delay="[300, 0]"
+                    >
+                      <div class="reason-cell flex cursor-help items-center gap-1">
+                        <Icon icon="lucide:info" class="h-4.5 w-4.5 flex-shrink-0" />
+                      </div>
+                    </tippy>
+                    <div v-else class="reason-cell">
+                      {{ it.reason }}
+                    </div>
+                  </div>
 
                   <div class="cell">
                     <div class="relative w-full" @click.stop="toggleDropdownManager(it.id)">
@@ -753,14 +786,10 @@
 
           <div class="flex flex-wrap items-center gap-2 md:ms-auto">
             <div class="text-[14px] font-normal text-[#464661]">
-              <template
-                v-if="
-                  dataOvertime.doc?.pagination?.total && Number(dataOvertime.doc?.pagination.total) > paginate.per_page
-                "
-              >
-                1 - {{ paginate.per_page }} trong {{ dataOvertime.doc?.pagination?.total || 0 }} kết quả
+              <template v-if="paginationRange.total > 0">
+                {{ paginationRange.start }} - {{ paginationRange.end }} trong {{ paginationRange.total }} kết quả
               </template>
-              <template v-else> {{ dataOvertime.doc?.pagination?.total || 0 }} kết quả </template>
+              <template v-else> 0 kết quả </template>
             </div>
 
             <div class="tb-navigation flex flex-wrap items-center md:gap-2">
