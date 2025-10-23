@@ -214,13 +214,16 @@
               <div class="cell pinned !px-2 !py-4.5">Giải trình</div>
             </div>
 
-            <template v-if="dataWorkHistoryList">
+            <!-- Skeleton Loading -->
+            <SkeletonTable v-if="isLoading" :columns="tbhead.filter((col) => col.visible).length + 1" :rows="10" />
+
+            <!-- Table Data -->
+            <template v-else-if="dataWorkHistoryList">
               <div id="tableRowBody" class="body table-row">
                 <template v-for="(item, index) in dataWorkHistoryList" :key="index">
                   <div v-for="(it, itIndex) in item.values" :key="itIndex" class="table-item justify-between !ps-5">
                     <div v-show="tbhead[0].visible" class="cell">
-                      <template v-if="index < 9"> 0{{ index + 1 }} </template>
-                      <template v-else>{{ index + 1 }}</template>
+                      {{ it?.id }}
                     </div>
 
                     <div v-show="tbhead[1].visible" class="cell">
@@ -296,15 +299,10 @@
 
           <div class="flex flex-wrap items-center gap-2 md:ms-auto">
             <div class="text-[14px] font-normal text-[#464661]">
-              <template
-                v-if="
-                  dataWorkHistory.doc?.pagination?.total &&
-                  Number(dataWorkHistory.doc?.pagination.total) > paginate.per_page
-                "
-              >
-                1 - {{ paginate.per_page }} trong {{ dataWorkHistory.doc?.pagination?.total || 0 }} kết quả
+              <template v-if="paginationRange.total > 0">
+                {{ paginationRange.start }} - {{ paginationRange.end }} trong {{ paginationRange.total }} kết quả
               </template>
-              <template v-else> {{ dataWorkHistory.doc?.pagination?.total || 0 }} kết quả </template>
+              <template v-else> 0 kết quả </template>
             </div>
 
             <div class="tb-navigation flex flex-wrap items-center md:gap-2">
@@ -416,6 +414,7 @@
   import ModalAddWorkHistory from '@/components/Modal/ModalAddWorkHistory.vue'
   import Modal from '@/components/Modals.vue'
   import SearchableSelect from '@/components/SearchableSelect.vue'
+  import SkeletonTable from '@/components/SkeletonTable.vue'
   import { useWork } from '@/composables/work'
   import { apiUri } from '@/constants/apiUri'
   import router from '@/router'
@@ -631,6 +630,18 @@
     Math.ceil(Number(dataWorkHistory.doc?.pagination?.total) / Number(paginate.per_page))
   )
 
+  // Computed property để tính toán range hiển thị pagination
+  const paginationRange = computed(() => {
+    const currentPage = Number(paginate.page)
+    const perPage = Number(paginate.per_page)
+    const total = Number(dataWorkHistory.doc?.pagination?.total || 0)
+
+    const start = (currentPage - 1) * perPage + 1
+    const end = Math.min(currentPage * perPage, total)
+
+    return { start, end, total }
+  })
+
   // Computed property to transform user data for SearchableSelect
   const userOptions = computed(() => {
     if (!dataUserMCC.originalItems) return null
@@ -718,7 +729,7 @@
     }
   }
 
-  const { data, doFetch } = useWork()
+  const { data, doFetch, isLoading } = useWork()
 
   const dataWorkHistory = reactive({
     doc: data,

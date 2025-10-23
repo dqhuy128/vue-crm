@@ -366,8 +366,11 @@
               </div>
             </div>
 
-            <!-- Example row -->
-            <div id="tableRowBody" class="body table-row">
+            <!-- Skeleton Loading -->
+            <SkeletonTable v-if="isLoading" :columns="tbhead.filter((col) => col.visible).length + 1" :rows="10" />
+
+            <!-- Table Data -->
+            <div v-else id="tableRowBody" class="body table-row">
               <template v-for="(items, index) in dataDocument?.doc?.items" :key="index">
                 <div v-for="(item, _) in items" :key="index" class="table-item justify-between">
                   <!-- bg-blue , bg-green , bg-red , bg-purple , :class="{ 'bg-blue': id === 1 }"-->
@@ -510,14 +513,10 @@
 
           <div class="flex flex-wrap items-center gap-2 md:ms-auto">
             <div class="text-[14px] font-normal text-[#464661]">
-              <template
-                v-if="
-                  dataDocument.doc?.pagination?.total && Number(dataDocument.doc?.pagination.total) > paginate.per_page
-                "
-              >
-                1 - {{ paginate.per_page }} trong {{ dataDocument.doc?.pagination?.total || 0 }} kết quả
+              <template v-if="paginationRange.total > 0">
+                {{ paginationRange.start }} - {{ paginationRange.end }} trong {{ paginationRange.total }} kết quả
               </template>
-              <template v-else> {{ dataDocument.doc?.pagination?.total || 0 }} kết quả </template>
+              <template v-else> 0 kết quả </template>
             </div>
 
             <div class="tb-navigation flex flex-wrap items-center md:gap-2">
@@ -721,6 +720,7 @@
   import ModalRegisterUser from '@/components/Modal/ModalRegisterUser.vue'
   import ModalUploadExcel from '@/components/Modal/ModalUploadExcel.vue'
   import Modal from '@/components/Modals.vue'
+  import SkeletonTable from '@/components/SkeletonTable.vue'
   import { useSystemUser } from '@/composables/system-user'
   import { apiUri } from '@/constants/apiUri'
   import router from '@/router'
@@ -1075,6 +1075,9 @@
     categories,
   } = useSystemUser()
 
+  // Get loading state from useSystemUser
+  const { isLoading } = useSystemUser()
+
   const dataDocument = reactive<any>({
     doc: data,
   })
@@ -1082,6 +1085,18 @@
   const dataTotalPages = computed(() =>
     Math.ceil(Number(dataDocument.doc?.pagination?.total) / Number(paginate.per_page))
   )
+
+  // Computed property để tính toán range hiển thị pagination
+  const paginationRange = computed(() => {
+    const currentPage = Number(paginate.page)
+    const perPage = Number(paginate.per_page)
+    const total = Number(dataDocument.doc?.pagination?.total || 0)
+
+    const start = (currentPage - 1) * perPage + 1
+    const end = Math.min(currentPage * perPage, total)
+
+    return { start, end, total }
+  })
 
   const permissionStore = usePermissionStore()
   const { permissionList } = storeToRefs(permissionStore)

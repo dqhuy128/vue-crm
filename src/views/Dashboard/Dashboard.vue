@@ -64,7 +64,11 @@
               </div>
             </div>
 
-            <template v-if="dataWorkHistoryList">
+            <!-- Skeleton Loading -->
+            <SkeletonTable v-if="isLoading" :columns="8" :rows="10" />
+
+            <!-- Table Data -->
+            <template v-else-if="dataWorkHistoryList">
               <div id="tableRowBody" class="body table-row">
                 <template v-for="(item, index) in dataWorkHistoryList" :key="index">
                   <div v-for="(it, itIndex) in item.values" :key="itIndex" class="table-item justify-around !ps-5">
@@ -121,15 +125,10 @@
 
         <div class="flex flex-wrap items-center gap-2 md:ms-auto">
           <div class="text-[14px] font-normal text-[#464661]">
-            <template
-              v-if="
-                dataWorkHistory.doc?.pagination?.total &&
-                Number(dataWorkHistory.doc?.pagination.total) > paginate.per_page
-              "
-            >
-              1 - {{ paginate.per_page }} trong {{ dataWorkHistory.doc?.pagination?.total || 0 }} kết quả
+            <template v-if="paginationRange.total > 0">
+              {{ paginationRange.start }} - {{ paginationRange.end }} trong {{ paginationRange.total }} kết quả
             </template>
-            <template v-else> {{ dataWorkHistory.doc?.pagination?.total || 0 }} kết quả </template>
+            <template v-else> 0 kết quả </template>
           </div>
 
           <div class="tb-navigation flex flex-wrap items-center md:gap-2">
@@ -181,6 +180,7 @@
   import iconTicket3 from '@/assets/images/ticket-icon-3.png'
   import iconTicket5 from '@/assets/images/ticket-icon-5.png'
   import Breadcrums from '@/components/BreadcrumsNew.vue'
+  import SkeletonTable from '@/components/SkeletonTable.vue'
   import Ticket from '@/components/Ticket.vue'
   import { useWork } from '@/composables/work'
   import { apiUri } from '@/constants/apiUri'
@@ -357,7 +357,7 @@
     per_page: 20,
   })
 
-  const { data, doFetch } = useWork()
+  const { data, doFetch, isLoading } = useWork()
   const dataWorkHistory = reactive({
     doc: data,
   })
@@ -405,6 +405,18 @@
   const dataTotalPages = computed(() =>
     Math.ceil(Number(dataWorkHistory.doc?.pagination?.total) / Number(paginate.per_page))
   )
+
+  // Computed property để tính toán range hiển thị pagination
+  const paginationRange = computed(() => {
+    const currentPage = Number(paginate.page)
+    const perPage = Number(paginate.per_page)
+    const total = Number(dataWorkHistory.doc?.pagination?.total || 0)
+
+    const start = (currentPage - 1) * perPage + 1
+    const end = Math.min(currentPage * perPage, total)
+
+    return { start, end, total }
+  })
 
   const handlePageChange = (pageNum: number) => {
     paginate.page = pageNum
