@@ -243,7 +243,7 @@
         <!-- Dropdown bộ lọc -->
         <div
           v-if="showColumnFilter"
-          class="absolute top-full left-0 z-[99] mt-2 w-80 rounded-[12px] border border-[#EDEDF6] bg-white shadow-lg"
+          class="absolute top-full left-0 z-[100] mt-2 w-80 rounded-[12px] border border-[#EDEDF6] bg-white shadow-lg"
           @click.stop
         >
           <div class="p-4">
