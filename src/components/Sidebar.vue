@@ -323,7 +323,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 99;
+    z-index: 101;
     max-width: 240px;
 
     @media (min-width: 1280px) {
