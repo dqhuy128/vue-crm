@@ -185,6 +185,20 @@
           </div>
         </div>
       </div>
+
+      <!-- BUTTON EXPORT -->
+      <template v-if="checkPermission('Work', 'Export')">
+        <button
+          type="button"
+          :disabled="isLoadingExportWorkHistory"
+          class="hover:shadow-hoverinset ms-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-[24px] bg-[#013878] p-[7px_16px] transition disabled:cursor-not-allowed disabled:opacity-50 max-md:flex-[100%]"
+          @click="handleExportWorkHistory"
+        >
+          <span class="font-inter text-[15px] leading-normal font-semibold text-white">
+            {{ isLoadingExportWorkHistory ? 'Đang xuất...' : 'Xuất Excel' }}
+          </span>
+        </button>
+      </template>
     </div>
 
     <template v-if="checkPermission('Work', 'List')">
@@ -729,6 +743,55 @@
     }
   }
 
+  interface typeParamsExportWorkHistory {
+    begin_date: string | null
+    finish_date: string | null
+    id: string | number | null
+  }
+  const paramsExportWorkHistory = reactive<typeParamsExportWorkHistory>({
+    begin_date: null,
+    finish_date: null,
+    id: null,
+  })
+  const isLoadingExportWorkHistory = ref(false)
+  const handleExportWorkHistory = async () => {
+    try {
+      isLoadingExportWorkHistory.value = true
+
+      // Lấy giá trị từ filter hoặc sử dụng giá trị mặc định
+      paramsExportWorkHistory.begin_date =
+        paramsWorkHistory.begin_date || format(startOfMonth(new Date()), 'yyyy-MM-dd')
+      paramsExportWorkHistory.finish_date = paramsWorkHistory.finish_date || format(endOfDay(new Date()), 'yyyy-MM-dd')
+      paramsExportWorkHistory.id = paramsWorkHistory.id || null
+
+      const res = await axios.get(`${apiUri}/work/export`, {
+        params: {
+          begin_date: paramsExportWorkHistory.begin_date,
+          finish_date: paramsExportWorkHistory.finish_date,
+          id: paramsExportWorkHistory.id,
+        },
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+
+      // Tải file trực tiếp từ file_path trong response
+      if (res.data?.data?.file_path) {
+        const link = document.createElement('a')
+        link.href = res.data.data.file_path
+        link.target = '_blank'
+        link.download = res.data.data.file_name || 'export.xlsx'
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+      }
+    } catch (error) {
+      console.error('🚀 ~ handleExportWorkHistory ~ error:', error)
+    } finally {
+      isLoadingExportWorkHistory.value = false
+    }
+  }
+
   const { data, doFetch, isLoading } = useWork()
 
   const dataWorkHistory = reactive({
@@ -755,8 +818,6 @@
       values: Object.values(values) as WorkHistoryItem[],
     }))
   })
-
-  console.log('🚀 ~ dataWorkHistoryList:', dataWorkHistoryList)
 
   const dataPostRequest = ref<any | null>(null)
   const getPostRequest = (data: any) => {

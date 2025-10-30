@@ -209,7 +209,7 @@
                     v-if="it.image"
                     type="button"
                     class="cell-btn-edit shrink-0 cursor-pointer"
-                    @click="openPreview(it.image)"
+                    @click="openPreview(it.image, it.origin_image)"
                   >
                     <img src="@/assets/images/action-edit-1.svg" alt="" />
                   </button>
@@ -424,7 +424,16 @@
 
     <Modal :modal-active="modalPreviewActive" max-width="max-w-[1024px]" @close="modalPreviewActive = false">
       <div class="overflow-hidden rounded-[24px] bg-white p-4">
-        <img v-if="previewUrl" :src="previewUrl" alt="preview" class="mx-auto max-h-[80vh] w-auto object-contain" />
+        <img v-if="previewUrl" :src="previewUrl" alt="preview" class="mx-auto max-h-[100vh] w-auto object-contain" />
+
+        <div class="mt-4 text-center">
+          <a
+            :href="originUrl"
+            target="_blank"
+            class="hover:shadow-hoverinset inline-flex cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#013878] p-[4px_8px] text-sm text-white transition"
+            >Xem hình ảnh gốc</a
+          >
+        </div>
       </div>
     </Modal>
 
@@ -888,9 +897,11 @@
 
   // Image preview modal state and handler
   const previewUrl = ref<string>('')
+  const originUrl = ref<string>('')
   const modalPreviewActive = ref(false)
-  const openPreview = (url?: string) => {
+  const openPreview = (url?: string, originUrlValue?: string) => {
     previewUrl.value = url || ''
+    originUrl.value = originUrlValue || ''
     if (previewUrl.value) modalPreviewActive.value = true
   }
 </script>

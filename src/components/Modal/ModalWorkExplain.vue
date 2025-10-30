@@ -125,7 +125,7 @@
 
   <Modal :modal-active="modalPreviewActive" max-width="max-w-[1024px]" @close="modalPreviewActive = false">
     <div class="overflow-hidden rounded-[24px] bg-white p-4">
-      <img v-if="previewUrl" :src="previewUrl" alt="preview" class="mx-auto max-h-[80vh] w-auto object-contain" />
+      <img v-if="previewUrl" :src="previewUrl" alt="preview" class="mx-auto max-h-[100vh] w-auto object-contain" />
     </div>
   </Modal>
 </template>
