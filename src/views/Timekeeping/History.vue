@@ -187,16 +187,18 @@
       </div>
 
       <!-- BUTTON EXPORT -->
-      <button
-        type="button"
-        :disabled="isLoadingExportWorkHistory"
-        class="hover:shadow-hoverinset ms-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-[24px] bg-[#013878] p-[7px_16px] transition disabled:cursor-not-allowed disabled:opacity-50 max-md:flex-[100%]"
-        @click="handleExportWorkHistory"
-      >
-        <span class="font-inter text-[15px] leading-normal font-semibold text-white">
-          {{ isLoadingExportWorkHistory ? 'Đang xuất...' : 'Xuất Excel' }}
-        </span>
-      </button>
+      <template v-if="checkPermission('Work', 'Export')">
+        <button
+          type="button"
+          :disabled="isLoadingExportWorkHistory"
+          class="hover:shadow-hoverinset ms-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-[24px] bg-[#013878] p-[7px_16px] transition disabled:cursor-not-allowed disabled:opacity-50 max-md:flex-[100%]"
+          @click="handleExportWorkHistory"
+        >
+          <span class="font-inter text-[15px] leading-normal font-semibold text-white">
+            {{ isLoadingExportWorkHistory ? 'Đang xuất...' : 'Xuất Excel' }}
+          </span>
+        </button>
+      </template>
     </div>
 
     <template v-if="checkPermission('Work', 'List')">
