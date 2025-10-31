@@ -457,8 +457,6 @@
   display: block !important;
   width: 100% !important;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap !important;
+  white-space: normal !important;
+  line-height: 1.5 !important;
 }
-
-// Tooltip styling for reason cell

@@ -170,8 +170,7 @@
             <div id="tableRowBody" class="body table-row">
               <div v-for="(it, index) in normalizedItems" :key="index" class="table-item justify-between !px-5">
                 <div class="cell">
-                  <template v-if="index < 9"> 0{{ index + 1 }} </template>
-                  <template v-else>{{ index + 1 }}</template>
+                  {{ it.id }}
                 </div>
 
                 <div class="cell">
@@ -186,22 +185,8 @@
                   {{ it.work_date }}
                 </div>
 
-                <div class="cell">
-                  <tippy
-                    v-if="it.reason"
-                    :content="it.reason"
-                    placement="right"
-                    theme="light"
-                    interactive
-                    delay="[300, 0]"
-                  >
-                    <div class="reason-cell flex cursor-help items-center gap-1">
-                      <Icon icon="lucide:info" class="h-4.5 w-4.5 flex-shrink-0" />
-                    </div>
-                  </tippy>
-                  <div v-else class="reason-cell">
-                    {{ it.reason }}
-                  </div>
+                <div class="cell reason-cell">
+                  {{ it.reason }}
                 </div>
 
                 <div class="cell">
@@ -215,7 +200,7 @@
                   </button>
                 </div>
 
-                <div class="cell">
+                <!-- <div class="cell">
                   <template v-if="it?.action.includes('edit')">
                     <button
                       type="button"
@@ -225,7 +210,7 @@
                       <img src="@/assets/images/action-edit-2.svg" alt="" />
                     </button>
                   </template>
-                </div>
+                </div> -->
 
                 <div class="cell">
                   <div class="relative w-full" @click.stop="toggleDropdownManager(it.id)">
@@ -615,10 +600,6 @@
     },
     {
       title: 'Hình ảnh',
-      hasSort: false,
-    },
-    {
-      title: 'Giải trình',
       hasSort: false,
     },
     {
