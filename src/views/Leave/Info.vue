@@ -268,22 +268,8 @@
                     {{ it.finish_date }}
                   </div>
 
-                  <div v-show="tbhead[5].visible" class="cell">
-                    <tippy
-                      v-if="it.reason"
-                      :content="it.reason"
-                      placement="right"
-                      theme="light"
-                      interactive
-                      delay="[300, 0]"
-                    >
-                      <div class="reason-cell flex cursor-help items-center gap-1">
-                        <Icon icon="lucide:info" class="h-4.5 w-4.5 flex-shrink-0" />
-                      </div>
-                    </tippy>
-                    <div v-else class="reason-cell">
-                      {{ it.reason }}
-                    </div>
+                  <div v-show="tbhead[5].visible" class="cell reason-cell">
+                    {{ it.reason }}
                   </div>
 
                   <div v-show="tbhead[6].visible" class="cell">

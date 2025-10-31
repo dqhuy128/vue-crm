@@ -138,7 +138,7 @@ export const tableMagic = () => {
 
             // Giới hạn độ rộng tối đa của cột reason (index 4) là 300px
             if (cell.classList.contains('reason-cell')) {
-              width = Math.min(width, 200)
+              width = Math.min(width, 500)
             }
 
             columnWidths[index] = Math.max(columnWidths[index], width)

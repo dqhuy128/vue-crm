@@ -542,8 +542,6 @@
       </template>
     </div>
 
-    <template></template>
-
     <template v-if="checkPermission('Orvertime', 'List')">
       <div class="flex h-full flex-col">
         <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
@@ -588,22 +586,8 @@
 
                   <div v-show="tbhead[4].visible" class="cell">{{ it.begin_time }} - {{ it.finish_time }}</div>
 
-                  <div v-show="tbhead[5].visible" class="cell">
-                    <tippy
-                      v-if="it.reason"
-                      :content="it.reason"
-                      placement="right"
-                      theme="light"
-                      interactive
-                      delay="[300, 0]"
-                    >
-                      <div class="reason-cell flex cursor-help items-center gap-1">
-                        <Icon icon="lucide:info" class="h-4.5 w-4.5 flex-shrink-0" />
-                      </div>
-                    </tippy>
-                    <div v-else class="reason-cell">
-                      {{ it.reason }}
-                    </div>
+                  <div v-show="tbhead[5].visible" class="cell reason-cell">
+                    {{ it.reason }}
                   </div>
 
                   <div class="cell">
