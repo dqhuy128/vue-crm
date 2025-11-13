@@ -775,6 +775,31 @@
         </button>
       </div>
     </form>
+
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastResetPass"
+        :duration="5000"
+        class="flex flex-col gap-1.5 rounded-md p-3 shadow-2xl"
+        :class="{
+          'bg-[#ffd0d0]': dataPostRequestResetPass?.errors?.[Object.keys(dataPostRequestResetPass?.errors || {})[0]],
+          'bg-[#c4ffd0]': dataPostRequestResetPass?.status === 1,
+        }"
+      >
+        <ToastTitle class="text-[13px] font-medium">
+          {{ dataPostRequestResetPass?.message }}
+        </ToastTitle>
+        <ToastDescription
+          v-if="dataPostRequestResetPass?.errors?.[Object.keys(dataPostRequestResetPass?.errors || {})[0]]"
+          class="text-[11px] font-normal"
+        >
+          {{ dataPostRequestResetPass?.errors[Object.keys(dataPostRequestResetPass?.errors || {})[0]] }}
+        </ToastDescription>
+      </ToastRoot>
+      <ToastViewport
+        class="fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]"
+      />
+    </ToastProvider>
   </Modal>
 </template>
 
@@ -800,6 +825,7 @@
     SelectValue,
     SelectViewport,
   } from 'radix-vue'
+  import { ToastDescription, ToastProvider, ToastRoot, ToastTitle, ToastViewport } from 'radix-vue'
   import { useForm } from 'vee-validate'
   import { computed, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
@@ -983,21 +1009,27 @@
   }
 
   const rsStateLoading = ref(false)
+  const dataPostRequestResetPass = ref<any | null>(null)
+  const toast = reactive({
+    toastResetPass: false,
+  })
+
   const fetchUserResetPassword = async () => {
+    const formData = new FormData()
+    formData.append('id', String(props.userdata[0][0].id))
+
     try {
       rsStateLoading.value = true
-      const response = await axios.post(
-        `${apiUri}/user/resetPass`,
-        {
-          id: String(props.userdata[0][0].id),
+      const response = await axios.post(`${apiUri}/user/resetPass`, formData, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${auth.token()}`,
-          },
-        }
-      )
-      console.log('🚀 ~ fetchUserResetPassword ~ response:', response.data)
+      })
+
+      if (response.data.status !== 1) return
+
+      dataPostRequestResetPass.value = response.data
+      toast.toastResetPass = true
     } catch (error) {
       console.error('Error fetching user reset password:', error)
     } finally {
