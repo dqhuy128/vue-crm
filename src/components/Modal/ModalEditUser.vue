@@ -736,18 +736,19 @@
             </div>
           </div>
 
-          <!-- <div class="col-span-12 md:col-span-2">
+          <div class="col-span-12">
             <div class="h-full text-end">
               <div class="inline-flex h-full flex-col justify-end">
                 <button
                   type="button"
                   class="hover:shadow-hoverinset h-[38px] cursor-pointer rounded-lg bg-[#1b4dea] px-4 text-white"
+                  @click="handleResetPassword"
                 >
                   RESET MẬT KHẨU
                 </button>
               </div>
             </div>
-          </div> -->
+          </div>
         </div>
       </div>
 
@@ -979,6 +980,33 @@
     } catch (error) {
       console.error('Error fetching permission list:', error)
     }
+  }
+
+  const rsStateLoading = ref(false)
+  const fetchUserResetPassword = async () => {
+    try {
+      rsStateLoading.value = true
+      const response = await axios.post(
+        `${apiUri}/user/resetPass`,
+        {
+          id: String(props.userdata[0][0].id),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token()}`,
+          },
+        }
+      )
+      console.log('🚀 ~ fetchUserResetPassword ~ response:', response.data)
+    } catch (error) {
+      console.error('Error fetching user reset password:', error)
+    } finally {
+      rsStateLoading.value = false
+    }
+  }
+
+  const handleResetPassword = () => {
+    fetchUserResetPassword()
   }
 
   const fetchWorkingStatus = async () => {
