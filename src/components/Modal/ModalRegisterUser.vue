@@ -731,7 +731,7 @@
             />
           </div>
 
-          <!-- <div class="col-span-12 md:col-span-6">
+          <div class="col-span-12">
             <div class="h-full text-end">
               <div class="inline-flex h-full flex-col justify-end">
                 <button
@@ -743,7 +743,7 @@
                 </button>
               </div>
             </div>
-          </div> -->
+          </div>
         </div>
       </div>
 
