@@ -305,7 +305,6 @@
                 auto-apply
                 :action-row="{ showNow: false, showPreview: false }"
                 :config="{ modeHeight: 160, keepActionRow: false }"
-                :min-time="beginTimeObj || undefined"
               />
             </div>
           </div>
