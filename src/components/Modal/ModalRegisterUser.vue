@@ -727,7 +727,7 @@
             </div>
           </div>
 
-          <div class="col-span-12 md:col-span-6">
+          <!-- <div class="col-span-12 md:col-span-6">
             <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
               ID máy chấm công
             </span>
@@ -739,9 +739,9 @@
               :show-search="true"
               search-placeholder="Tìm kiếm ID máy chấm công..."
             />
-          </div>
+          </div> -->
 
-          <div class="col-span-12">
+          <div class="col-span-12 md:col-span-6">
             <div class="h-full text-end">
               <div class="inline-flex h-full flex-col justify-end">
                 <button
@@ -812,7 +812,6 @@
 
   import Modal from '@/components/Modals.vue'
   import SearchableSelect from '@/components/SearchableSelect.vue'
-  import SimpleSelect from '@/components/SimpleSelect.vue'
   import { apiUri } from '@/constants/apiUri'
   import { ItemUser } from '@/views/SystemAdmin/types'
 
