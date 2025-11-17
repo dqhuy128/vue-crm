@@ -249,6 +249,8 @@
               />
             </div>
             <div class="col-span-6">
+              <!-- :min-time="beginTimeObj || undefined" -->
+              <!-- :text-input="true" -->
               <VueDatePicker
                 v-model="paramsOvertime.finish_time"
                 class="work-history-datepicker timepicker-sm"
@@ -261,7 +263,6 @@
                 auto-apply
                 :action-row="{ showNow: false, showPreview: false }"
                 :config="{ modeHeight: 160, keepActionRow: false }"
-                :min-time="beginTimeObj || undefined"
               />
             </div>
           </div>
