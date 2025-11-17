@@ -21,7 +21,7 @@
 
                 <SelectPortal>
                   <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
                     position="popper"
                     :side-offset="5"
                   >
@@ -272,16 +272,20 @@
                     {{ it.reason }}
                   </div>
 
-                  <div v-show="tbhead[6].visible" class="cell">
+                  <div v-show="tbhead[6].visible" class="cell reason-cell">
+                    {{ it.total_date }}
+                  </div>
+
+                  <div v-show="tbhead[7].visible" class="cell">
                     <template v-if="it.type_text === LeaveTypeOptions.REGIME"> Có </template>
                     <template v-else> Không </template>
                   </div>
 
-                  <div v-show="tbhead[7].visible" class="cell">
+                  <div v-show="tbhead[8].visible" class="cell">
                     {{ it.type_text }}
                   </div>
 
-                  <div v-show="tbhead[8].visible" class="cell">
+                  <div v-show="tbhead[9].visible" class="cell">
                     <div class="relative w-full" @click.stop="toggleDropdownManager(it.id)">
                       <!-- <template v-if="checkPermission('Overtime', 'Approval')"> -->
                       <template v-if="it.manager_status_text == 'Đã phê duyệt'">
@@ -341,7 +345,7 @@
                     </div>
                   </div>
 
-                  <div v-show="tbhead[9].visible" class="cell">
+                  <div v-show="tbhead[10].visible" class="cell">
                     <div class="relative w-full" @click.stop="toggleDropdownHuman(it.id)">
                       <!-- <template v-if="checkPermission('Overtime', 'Approval')"> -->
                       <template v-if="it.human_status_text == 'Đã phê duyệt'">
@@ -830,6 +834,11 @@
     },
     {
       title: 'Lý do nghỉ',
+      hasSort: false,
+      visible: true,
+    },
+    {
+      title: 'Số ngày nghỉ',
       hasSort: false,
       visible: true,
     },

@@ -746,7 +746,7 @@
             </div>
           </div> -->
 
-          <div class="col-span-12 md:col-span-6">
+          <div v-if="paramsUser.reset_pass != '1'" class="col-span-12 md:col-span-6">
             <div class="h-full text-end">
               <div class="inline-flex h-full flex-col justify-end">
                 <button
@@ -892,6 +892,7 @@
   const paramsUser = reactive<Partial<ItemUser>>({
     id: '',
     username: '',
+    reset_pass: '',
     email: '',
     name: '',
     status: '',
@@ -1477,6 +1478,7 @@
 
       // Map to paramsUser object
       paramsUser.name = userData.name || ''
+      paramsUser.reset_pass = userData.reset_pass || ''
       paramsUser.email = userData.email || ''
       paramsUser.phone = userData.phone || ''
       paramsUser.per_group_name = userData.per_group_name || ''

@@ -1,6 +1,7 @@
 export interface ItemUser {
   id: string
   username: string
+  reset_pass: string
   email: string
   name: string
   status: string

@@ -79,7 +79,7 @@
 
           <SelectPortal>
             <SelectContent
-              class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[100] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+              class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
               position="popper"
               :side-offset="5"
             >
@@ -139,7 +139,7 @@
             @update:model-value="updateDates"
           />
 
-          <div v-if="leaveMode === LeaveTypeOptions.HALF" class="mt-2 text-[14px] text-[#909090] italic">
+          <!-- <div v-if="leaveMode === LeaveTypeOptions.HALF" class="mt-2 text-[14px] text-[#909090] italic">
             {{ halfDayPreview }}
           </div>
           <div v-else-if="leaveMode === LeaveTypeOptions.FULL" class="mt-2 text-[14px] text-[#909090] italic">
@@ -147,7 +147,7 @@
           </div>
           <div v-else class="mt-2 text-[14px] text-[#909090] italic">
             {{ regimeDayPreview }}
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -221,7 +221,7 @@
   const initDates = () => {
     const baseDate = new Date(new Date().setDate(new Date().getDate() + 1))
     if (leaveMode.value === LeaveTypeOptions.FULL || leaveMode.value === LeaveTypeOptions.REGIME) {
-      const endDate = new Date(new Date(baseDate).setDate(baseDate.getDate() + 1))
+      const endDate = new Date(new Date(baseDate).setDate(baseDate.getDate()))
       datepicker.value = [baseDate, endDate]
     } else {
       datepicker.value = baseDate
