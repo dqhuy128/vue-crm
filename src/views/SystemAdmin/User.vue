@@ -479,6 +479,16 @@
                           <img src="@/assets/images/action-edit-3.svg" alt="" />
                         </button>
                       </template>
+
+                      <template v-if="checkPermission('Work', 'Timekeeping')">
+                        <button
+                          type="button"
+                          class="cell-btn-update-timekeeping shrink-0 cursor-pointer"
+                          @click="confirmUpdateTimekeeping(item?.id)"
+                        >
+                          <img src="@/assets/images/action-edit-1.svg" alt="" />
+                        </button>
+                      </template>
                     </div>
                   </div>
                 </div>
@@ -648,6 +658,41 @@
       </div>
     </Modal>
 
+    <Modal
+      :modal-active="modalActive.modalTimekeepingConfirm"
+      max-width="max-w-[512px]"
+      @close="toggleModal('modalTimekeepingConfirm')"
+    >
+      <div class="overflow-hidden rounded-[24px] bg-white p-[45px_16px]">
+        <div class="mb-3 text-center text-[16px] font-bold text-[#464661] uppercase">Thông báo</div>
+
+        <div class="mb-3 text-center">
+          <img class="mx-auto" src="@/assets/images/icon-park-outline_attention.svg" alt="" />
+        </div>
+
+        <div class="mx-auto mb-6 text-center text-[16px]/[26px] font-semibold text-[#464661] underline">
+          Bạn chắc chắn muốn cập nhật chấm công cho người dùng này ?
+        </div>
+
+        <div class="mt-9 flex flex-wrap items-stretch justify-center gap-3 text-center xl:gap-6">
+          <button
+            type="button"
+            class="hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2 text-center text-[16px] leading-normal font-bold text-[#464661] uppercase transition hover:transition max-md:grow md:min-w-[130px]"
+            @click="toggleModal('modalTimekeepingConfirm')"
+          >
+            Hủy
+          </button>
+          <button
+            type="submit"
+            class="border-main bg-main hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid p-2 text-center text-[16px] leading-normal font-bold text-white uppercase transition hover:transition max-md:grow md:min-w-[130px]"
+            @click="handleUpdateTimekeeping"
+          >
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </Modal>
+
     <ToastProvider>
       <ToastRoot
         v-model:open="toast.toastCreate"
@@ -686,6 +731,32 @@
         </ToastTitle>
         <ToastDescription v-if="dataPostRequestEdit?.errors" class="text-[11px] font-normal">
           {{ dataPostRequestEdit?.errors[Object.keys(dataPostRequestEdit?.errors)[0]] }}
+        </ToastDescription>
+        <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
+      </ToastRoot>
+      <ToastViewport
+        class="fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]"
+      />
+    </ToastProvider>
+
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastTimekeeping"
+        :duration="5000"
+        class="flex flex-col gap-1.5 rounded-md p-3 shadow-2xl"
+        :class="{
+          'bg-[#ffd0d0]': dataTimekeepingRequest?.errors && dataTimekeepingRequest?.errors !== '',
+          'bg-[#c4ffd0]': dataTimekeepingRequest?.status === 1,
+        }"
+      >
+        <ToastTitle class="text-[13px] font-medium">
+          {{ dataTimekeepingRequest?.message }}
+        </ToastTitle>
+        <ToastDescription
+          v-if="dataTimekeepingRequest?.errors && dataTimekeepingRequest?.errors !== ''"
+          class="text-[11px] font-normal"
+        >
+          {{ dataTimekeepingRequest?.errors }}
         </ToastDescription>
         <!-- <ToastClose aria-label="Close"><span aria-hidden>×</span></ToastClose> -->
       </ToastRoot>
@@ -736,6 +807,7 @@
   const toast = reactive({
     toastCreate: false,
     toastUpdate: false,
+    toastTimekeeping: false,
   })
 
   const toggleBoxFilters = ref(false)
@@ -792,6 +864,7 @@
     modalStatusRegister: false,
     modalStatusEdit: false,
     modalStatusConfirm: false,
+    modalTimekeepingConfirm: false,
     modalUploadExcel: false,
   })
 
@@ -1024,9 +1097,42 @@
       })
       toggleModal('modalStatusConfirm')
       fetchDataDocument()
-      console.log('🚀 ~ handleDeleteUser ~ response:', response)
     } catch (error) {
       console.log('🚀 ~ handleDeleteUser ~ error:', error)
+    }
+  }
+
+  const userToUpdateTimekeeping = ref<any | null>(null)
+  const confirmUpdateTimekeeping = (mcc_user_id: number) => {
+    toggleModal('modalTimekeepingConfirm')
+    userToUpdateTimekeeping.value = mcc_user_id.toString()
+  }
+  const dataTimekeepingRequest = ref<any | null>(null)
+  const handleUpdateTimekeeping = async () => {
+    if (!userToUpdateTimekeeping.value) return
+
+    try {
+      const formData = new FormData()
+      formData.append('mcc_user_id', userToUpdateTimekeeping.value)
+
+      const response = await axios.post(`${apiUri}/work/timekeeping`, formData, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      dataTimekeepingRequest.value = response.data
+      toggleModal('modalTimekeepingConfirm')
+      fetchDataDocument()
+      if (dataTimekeepingRequest.value) {
+        toast.toastTimekeeping = true
+      }
+    } catch (error: any) {
+      console.log('🚀 ~ handleUpdateTimekeeping ~ error:', error)
+      // Handle error response
+      if (error.response?.data) {
+        dataTimekeepingRequest.value = error.response.data
+        toast.toastTimekeeping = true
+      }
     }
   }
 
