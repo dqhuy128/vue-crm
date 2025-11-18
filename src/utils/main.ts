@@ -99,7 +99,8 @@ export const tableMagic = () => {
     const header: any = table.querySelector('.header')
     if (!header) return
 
-    const headerCells: any = header.querySelectorAll('.cell')
+    // Chỉ lấy các cell trực tiếp (direct children), không lấy cell con bên trong
+    const headerCells: any = Array.from(header.children).filter((child: any) => child.classList.contains('cell'))
     const bodyRows: any = table.querySelectorAll('.table-item')
     const _pinnedHeaderCell: any = header.querySelector('.cell.pinned')
 
@@ -127,7 +128,8 @@ export const tableMagic = () => {
 
       // So sánh và lấy độ rộng lớn nhất giữa header và tất cả body cells cho từng cột
       Array.from(bodyRows).forEach((row: any) => {
-        const cells: any = row.querySelectorAll('.cell')
+        // Chỉ lấy các cell trực tiếp (direct children), không lấy cell con bên trong
+        const cells: any = Array.from(row.children).filter((child: any) => child.classList.contains('cell'))
         cells.forEach((cell: any, index: number) => {
           if (index < columnWidths.length) {
             const computedStyle = window.getComputedStyle(cell)
@@ -156,7 +158,8 @@ export const tableMagic = () => {
 
       // Áp dụng cho body rows
       Array.from(bodyRows).forEach((row: any) => {
-        const cells: any = row.querySelectorAll('.cell')
+        // Chỉ lấy các cell trực tiếp (direct children), không lấy cell con bên trong
+        const cells: any = Array.from(row.children).filter((child: any) => child.classList.contains('cell'))
         cells.forEach((cell: any, index: number) => {
           if (index < columnWidths.length) {
             const width = columnWidths[index]

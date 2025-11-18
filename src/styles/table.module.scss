@@ -44,7 +44,6 @@
         min-height: 51px;
 
         .cell {
-          justify-content: flex-start;
           color: #464661;
           font-size: 13px;
           font-style: normal;
@@ -135,6 +134,7 @@
     }
 
     &.pinned {
+      justify-content: center;
       position: sticky;
       right: 0;
       z-index: 11;
@@ -157,6 +157,7 @@
       }
 
       &.pinned-body {
+        justify-content: center;
         min-height: 34px;
 
         @media (min-width: 768px) {

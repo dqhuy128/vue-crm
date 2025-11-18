@@ -729,6 +729,32 @@
             </div>
           </div>
 
+          <div class="col-span-12 md:col-span-6">
+            <span class="font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
+              Đặt lại mật khẩu
+            </span>
+            <div class="relative">
+              <input
+                v-model="paramsUser.reset_pass_input"
+                :type="showPassword ? 'text' : 'password'"
+                placeholder="Nhập mật khẩu"
+                class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 pr-10 outline-none"
+              />
+              <button
+                type="button"
+                class="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer"
+                @click="togglePasswordVisibility"
+              >
+                <template v-if="showPassword">
+                  <img src="@/assets/images/clarity_eye-show-solid.svg" alt="" />
+                </template>
+                <template v-else>
+                  <img src="@/assets/images/clarity_eye-hide-solid.svg" alt="" />
+                </template>
+              </button>
+            </div>
+          </div>
+
           <!-- <div class="col-span-12 md:col-span-6">
             <div class="block">
               <span class="font-inter mb-3 block text-[16px] leading-normal font-bold text-[#464661]">
@@ -746,7 +772,7 @@
             </div>
           </div> -->
 
-          <div v-if="paramsUser.reset_pass != '1'" class="col-span-12 md:col-span-6">
+          <!-- <div v-if="paramsUser.reset_pass != '1'" class="col-span-12 md:col-span-6">
             <div class="h-full text-end">
               <div class="inline-flex h-full flex-col justify-end">
                 <button
@@ -758,7 +784,7 @@
                 </button>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -859,6 +885,11 @@
   const pickerDateissue = ref<any | null>(null)
   const pickerWorkingDay = ref<any | null>(null)
   const pickerOfficialDay = ref<any | null>(null)
+  const showPassword = ref(false)
+
+  const togglePasswordVisibility = () => {
+    showPassword.value = !showPassword.value
+  }
 
   const initDates = () => {
     pickerDOB.value = new Date(new Date().setDate(new Date().getDate() + 1))
@@ -893,6 +924,7 @@
     id: '',
     username: '',
     reset_pass: '',
+    reset_pass_input: '',
     email: '',
     name: '',
     status: '',
@@ -1348,6 +1380,7 @@
       const formDataUser = new FormData()
 
       formDataUser.append('id', String(props.userdata[0][0].id))
+      if (paramsUser.reset_pass_input) formDataUser.append('password', String(paramsUser.reset_pass_input))
       if (paramsUser.code) formDataUser.append('code', String(paramsUser.code))
       if (paramsUser.phone) formDataUser.append('phone', String(paramsUser.phone))
       if (paramsUser.name) formDataUser.append('name', String(paramsUser.name))
