@@ -483,10 +483,10 @@
                       <template v-if="checkPermission('Work', 'Timekeeping')">
                         <button
                           type="button"
-                          class="cell-btn-update-timekeeping shrink-0 cursor-pointer"
+                          class="cell-btn-update-timekeeping flex shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#f97e06] p-1"
                           @click="confirmUpdateTimekeeping(item?.id)"
                         >
-                          <img src="@/assets/images/action-edit-1.svg" alt="" />
+                          <Icon icon="mdi:clock-outline" class="h-4.5 w-4.5 text-[#fff]" />
                         </button>
                       </template>
                     </div>

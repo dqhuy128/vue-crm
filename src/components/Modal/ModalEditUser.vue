@@ -738,6 +738,9 @@
                 v-model="paramsUser.reset_pass_input"
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="Nhập mật khẩu"
+                autocomplete="new-password"
+                autocapitalize="off"
+                spellcheck="false"
                 class="h-[38px] w-full rounded-lg border border-[#ededf6] bg-white px-3 pr-10 outline-none"
               />
               <button
