@@ -150,7 +150,7 @@
       <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
         <div class="table-container relative">
           <!-- Example column -->
-          <div id="tableRowHeader" class="header table-row justify-between !px-5">
+          <div id="tableRowHeader" class="header table-row justify-between !ps-5">
             <div v-for="(column, index) in tbhead" :key="index" class="cell">
               {{ column.title }}
 
@@ -160,6 +160,8 @@
                 </button>
               </div>
             </div>
+
+            <div class="cell pinned !px-2 !py-4.5">Giải trình</div>
           </div>
 
           <!-- Skeleton Loading -->
@@ -168,7 +170,7 @@
           <!-- Table Data -->
           <template v-else-if="!isInitialLoad && normalizedItems.length">
             <div id="tableRowBody" class="body table-row">
-              <div v-for="(it, index) in normalizedItems" :key="index" class="table-item justify-between !px-5">
+              <div v-for="(it, index) in normalizedItems" :key="index" class="table-item justify-between !ps-5">
                 <div class="cell">
                   {{ it.id }}
                 </div>
@@ -199,18 +201,6 @@
                     <img src="@/assets/images/action-edit-1.svg" alt="" />
                   </button>
                 </div>
-
-                <!-- <div class="cell">
-                  <template v-if="it?.action.includes('edit')">
-                    <button
-                      type="button"
-                      class="cell-btn-edit shrink-0 cursor-pointer"
-                      @click="handleUserExplain(it.id)"
-                    >
-                      <img src="@/assets/images/action-edit-2.svg" alt="" />
-                    </button>
-                  </template>
-                </div> -->
 
                 <div class="cell">
                   <div class="relative w-full" @click.stop="toggleDropdownManager(it.id)">
@@ -331,6 +321,29 @@
                     </div>
                   </div>
                 </div>
+
+                <div class="cell pinned pinned-body justify-center !px-2.5">
+                  <template v-if="it.action.includes('edit')">
+                    <button
+                      type="button"
+                      class="cell-btn-edit shrink-0 cursor-pointer"
+                      @click="handleUserExplain(it.id)"
+                    >
+                      <img src="@/assets/images/action-edit-2.svg" alt="" />
+                    </button>
+                  </template>
+
+                  <!-- @click="confirmDeleteExplain(it.id)" -->
+                  <template v-if="it.action.includes('delete')">
+                    <button
+                      type="button"
+                      class="cell-btn-edit shrink-0 cursor-pointer"
+                      @click="confirmDeleteExplain(it.id)"
+                    >
+                      <img src="@/assets/images/action-edit-3.svg" alt="" />
+                    </button>
+                  </template>
+                </div>
               </div>
             </div>
           </template>
@@ -338,6 +351,7 @@
       </div>
 
       <!-- PAGINATION -->
+
       <div class="tb-pagination flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4">
         <div class="relative">
           <select
@@ -445,6 +459,41 @@
             Hủy
           </button>
         </ModalWorkExplain>
+      </div>
+    </Modal>
+
+    <Modal
+      :modal-active="modalActive.modalStatusConfirm"
+      max-width="max-w-[512px]"
+      @close="toggleModal('modalStatusConfirm')"
+    >
+      <div class="overflow-hidden rounded-[24px] bg-white p-[45px_16px]">
+        <div class="mb-3 text-center text-[16px] font-bold text-[#464661] uppercase">Thông báo</div>
+
+        <div class="mb-3 text-center">
+          <img class="mx-auto" src="@/assets/images/icon-park-outline_attention.svg" alt="" />
+        </div>
+
+        <div class="mx-auto mb-6 text-center text-[16px]/[26px] font-semibold text-[#464661] underline">
+          Bạn chắc chắn muốn xoá giải trình này ?
+        </div>
+
+        <div class="mt-9 flex flex-wrap items-stretch justify-center gap-3 text-center xl:gap-6">
+          <button
+            type="button"
+            class="hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2 text-center text-[16px] leading-normal font-bold text-[#464661] uppercase transition hover:transition max-md:grow md:min-w-[130px]"
+            @click="toggleModal('modalStatusConfirm')"
+          >
+            Hủy
+          </button>
+          <button
+            type="submit"
+            class="border-main bg-main hover:shadow-hoverinset inset-sha inline-block cursor-pointer rounded-[8px] border border-solid p-2 text-center text-[16px] leading-normal font-bold text-white uppercase transition hover:transition max-md:grow md:min-w-[130px]"
+            @click="handleDeleteExplain"
+          >
+            Xác nhận
+          </button>
+        </div>
       </div>
     </Modal>
 
@@ -844,14 +893,14 @@
   const hasInitialFetch = ref(false)
 
   watch(permissionList, () => {
-    console.log('🚀 ~ //onMounted ~ permissionList:', permissionList)
+    console.error('🚀 ~ //onMounted ~ permissionList:', permissionList)
     if (auth.check()) {
       if (!permissionList.value.includes('Work')) {
         alert('Bạn không có quyền truy cập vào trang này')
         router.push({ name: 'NotFound404' })
       } else {
         fetchDataWorkExplain()
-        console.log(dataWorkExplain, 'dataWorkExplain')
+        console.error(dataWorkExplain, 'dataWorkExplain')
       }
     }
   })
@@ -884,6 +933,33 @@
     previewUrl.value = url || ''
     originUrl.value = originUrlValue || ''
     if (previewUrl.value) modalPreviewActive.value = true
+  }
+
+  const idDeleteExplain = ref<string | null>(null)
+  const confirmDeleteExplain = (id: string) => {
+    idDeleteExplain.value = id
+    toggleModal('modalStatusConfirm')
+  }
+
+  const handleDeleteExplain = async () => {
+    if (!idDeleteExplain.value) return
+    try {
+      const formData = new FormData()
+      formData.append('id', idDeleteExplain.value)
+
+      const res = await axios.post(`${apiUri}/work/delete`, formData, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+
+      getPostRequest(res.data)
+      toggleModal('modalStatusConfirm')
+      toggleModal('modalWorkExplain')
+      fetchDataWorkExplain()
+    } catch (error) {
+      console.error('handleDeleteExplain error:', error)
+    }
   }
 </script>
 

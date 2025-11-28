@@ -257,9 +257,8 @@
       props.propFunction()
       emit('post-request', res.data)
       if (res.data.errors) return
-      console.log('handlePostExplain ~ res', res.data)
     } catch (error) {
-      console.log('handlePostExplain ~ error', error)
+      console.error('handlePostExplain ~ error', error)
     } finally {
       onSubmitting.value = false
     }
