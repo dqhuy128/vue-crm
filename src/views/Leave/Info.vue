@@ -272,7 +272,7 @@
                     {{ it.reason }}
                   </div>
 
-                  <div v-show="tbhead[6].visible" class="cell reason-cell">
+                  <div v-show="tbhead[6].visible" class="cell">
                     {{ it.total_date }}
                   </div>
 

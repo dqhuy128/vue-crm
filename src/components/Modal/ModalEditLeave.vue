@@ -58,67 +58,6 @@
         </div>
       </div>
 
-      <!-- <div class="col-span-12">
-        <div class="block">
-          <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
-            Chế độ
-          </span>
-        </div>
-
-        <SelectRoot v-model="paramsLeaveUpdate.regime_id">
-          <SelectTrigger
-            class="flex w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
-            aria-label="Customise options"
-          >
-            <SelectValue
-              class="font-inter grow text-start text-[15px] leading-normal font-normal max-md:text-[14px]"
-              placeholder="Chọn chế độ"
-            />
-            <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
-          </SelectTrigger>
-
-          <SelectPortal>
-            <SelectContent
-              class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
-              position="popper"
-              :side-offset="5"
-            >
-              <SelectScrollUpButton
-                class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-              >
-                <Icon icon="radix-icons:chevron-up" />
-              </SelectScrollUpButton>
-
-              <SelectViewport>
-                <SelectGroup>
-                  <SelectItem
-                    class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                    value="all"
-                  >
-                    <SelectItemText> Tất cả chế độ </SelectItemText>
-                  </SelectItem>
-
-                  <template v-for="item in Object.keys(RegimeOptions)" :key="item">
-                    <SelectItem
-                      class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                      :value="item"
-                    >
-                      <SelectItemText> {{ RegimeOptions[item] }} </SelectItemText>
-                    </SelectItem>
-                  </template>
-                </SelectGroup>
-              </SelectViewport>
-
-              <SelectScrollDownButton
-                class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
-              >
-                <Icon icon="radix-icons:chevron-down" />
-              </SelectScrollDownButton>
-            </SelectContent>
-          </SelectPortal>
-        </SelectRoot>
-      </div> -->
-
       <div class="col-span-12">
         <div class="block">
           <span class="required font-inter mb-3 block text-[16px] leading-normal font-semibold text-[#464661]">
@@ -210,6 +149,27 @@
   const leaveMode = ref<LeaveTypeOptions>(LeaveTypeOptions.HALF)
   const halfDaySession = ref<LeaveTypeOptions>(LeaveTypeOptions.MORNING)
 
+  const updateType = () => {
+    let nextType: LeaveTypeOptionsKeys
+    switch (leaveMode.value) {
+      case LeaveTypeOptions.HALF:
+        nextType =
+          halfDaySession.value === LeaveTypeOptions.AFTERNOON
+            ? LeaveTypeOptionsKeys.AFTERNOON
+            : LeaveTypeOptionsKeys.MORNING
+        break
+      case LeaveTypeOptions.FULL:
+        nextType = LeaveTypeOptionsKeys.FULL
+        break
+      case LeaveTypeOptions.REGIME:
+        nextType = LeaveTypeOptionsKeys.REGIME
+        break
+      default:
+        nextType = LeaveTypeOptionsKeys.FULL
+    }
+    paramsLeaveUpdate.type = nextType
+  }
+
   const setLeaveMode = (mode: LeaveTypeOptions) => {
     if (leaveMode.value === mode) return
     leaveMode.value = mode
@@ -239,26 +199,7 @@
       paramsLeaveUpdate.finish_date = dateStr
     }
   }
-  const updateType = () => {
-    let nextType: LeaveTypeOptionsKeys
-    switch (leaveMode.value) {
-      case LeaveTypeOptions.HALF:
-        nextType =
-          halfDaySession.value === LeaveTypeOptions.AFTERNOON
-            ? LeaveTypeOptionsKeys.AFTERNOON
-            : LeaveTypeOptionsKeys.MORNING
-        break
-      case LeaveTypeOptions.FULL:
-        nextType = LeaveTypeOptionsKeys.FULL
-        break
-      case LeaveTypeOptions.REGIME:
-        nextType = LeaveTypeOptionsKeys.REGIME
-        break
-      default:
-        nextType = LeaveTypeOptionsKeys.FULL
-    }
-    paramsLeaveUpdate.type = nextType
-  }
+
   watch(datepicker, () => {
     if (auth.check()) {
       updateDates()
@@ -269,7 +210,7 @@
       initDates()
       updateDates()
 
-      if (paramsLeaveUpdate.regime_id) {
+      if (leaveMode.value === LeaveTypeOptions.REGIME) {
         paramsLeaveUpdate.type = LeaveTypeOptionsKeys.REGIME
       } else {
         paramsLeaveUpdate.regime_id = ''
@@ -277,14 +218,11 @@
       }
     }
   })
+
   watch(halfDaySession, () => {
-    if (auth.check()) {
-      if (paramsLeaveUpdate.regime_id) {
-        paramsLeaveUpdate.type = LeaveTypeOptionsKeys.REGIME
-      } else {
-        paramsLeaveUpdate.regime_id = ''
-        updateType()
-      }
+    if (auth.check() && leaveMode.value === LeaveTypeOptions.HALF) {
+      paramsLeaveUpdate.regime_id = ''
+      updateType()
     }
   })
 
@@ -366,7 +304,7 @@
       emit('post-request-edit', postRequestEdit.value)
       // console.log('🚀 ~ postAddLeave ~ res:', postRequest.value)
     } catch (error) {
-      console.log('🚀 ~ postAddLeave ~ error:', error)
+      console.error('🚀 ~ postAddLeave ~ error:', error)
     } finally {
       onSubmitting.value = false
     }
