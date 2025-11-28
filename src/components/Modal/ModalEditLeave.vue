@@ -205,6 +205,7 @@
       updateDates()
     }
   })
+
   watch(leaveMode, () => {
     if (auth.check()) {
       initDates()
@@ -228,7 +229,7 @@
 
   const paramsLeaveUpdate = reactive<any | null>({
     id: '',
-    type: LeaveTypeOptions.MORNING,
+    type: LeaveTypeOptionsKeys.MORNING,
     regime_id: '',
     begin_date: '',
     finish_date: '',
@@ -314,11 +315,13 @@
     () => paramsLeaveUpdate.regime_id,
     () => {
       if (auth.check()) {
-        if (paramsLeaveUpdate.regime_id) {
+        if (paramsLeaveUpdate.regime_id && paramsLeaveUpdate.regime_id !== '0' && paramsLeaveUpdate.regime_id !== 0) {
           paramsLeaveUpdate.type = LeaveTypeOptionsKeys.REGIME
         } else {
           paramsLeaveUpdate.regime_id = ''
-          updateType()
+          if (leaveMode.value !== LeaveTypeOptions.REGIME) {
+            updateType()
+          }
         }
 
         if (paramsLeaveUpdate.regime_id === 'all') {
@@ -333,9 +336,10 @@
     () => props.datatype,
     (val) => {
       if (!val) return
+      // console.log('🚀 ~ ModalEditLeave ~ val:', val.type)
       paramsLeaveUpdate.id = val.id
       paramsLeaveUpdate.regime_id = val.regime_id || ''
-      paramsLeaveUpdate.type = val.type
+      paramsLeaveUpdate.type = val.type as unknown as LeaveTypeOptionsKeys
       paramsLeaveUpdate.begin_date = val.begin_date
       paramsLeaveUpdate.finish_date = val.finish_date
       paramsLeaveUpdate.reason = val.reason || ''
@@ -344,23 +348,28 @@
         case LeaveTypeOptionsKeys.MORNING:
           leaveMode.value = LeaveTypeOptions.HALF
           halfDaySession.value = LeaveTypeOptions.MORNING
+          paramsLeaveUpdate.type = LeaveTypeOptionsKeys.MORNING
           datepicker.value = new Date(val.begin_date)
           break
         case LeaveTypeOptionsKeys.AFTERNOON:
           leaveMode.value = LeaveTypeOptions.HALF
           halfDaySession.value = LeaveTypeOptions.AFTERNOON
+          paramsLeaveUpdate.type = LeaveTypeOptionsKeys.AFTERNOON
           datepicker.value = new Date(val.begin_date)
           break
         case LeaveTypeOptionsKeys.FULL:
           leaveMode.value = LeaveTypeOptions.FULL
+          paramsLeaveUpdate.type = LeaveTypeOptionsKeys.FULL
           datepicker.value = [new Date(val.begin_date), new Date(val.finish_date || val.begin_date)]
           break
         case LeaveTypeOptionsKeys.REGIME:
           leaveMode.value = LeaveTypeOptions.REGIME
+          paramsLeaveUpdate.type = LeaveTypeOptionsKeys.REGIME
           datepicker.value = [new Date(val.begin_date), new Date(val.finish_date || val.begin_date)]
           break
         default:
           leaveMode.value = LeaveTypeOptions.FULL
+          paramsLeaveUpdate.type = LeaveTypeOptionsKeys.FULL
           datepicker.value = [new Date(val.begin_date), new Date(val.finish_date || val.begin_date)]
       }
     },
@@ -372,9 +381,6 @@
       initDates()
       updateDates()
       updateType()
-      if (paramsLeaveUpdate.regime_id) {
-        paramsLeaveUpdate.type = LeaveTypeOptionsKeys.REGIME
-      }
     }
   })
 </script>

@@ -268,7 +268,7 @@
                     {{ it.finish_date }}
                   </div>
 
-                  <div v-show="tbhead[5].visible" class="cell reason-cell">
+                  <div v-show="tbhead[5].visible" class="cell">
                     {{ it.reason }}
                   </div>
 
