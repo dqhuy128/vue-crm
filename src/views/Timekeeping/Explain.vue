@@ -519,6 +519,28 @@
         class="fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]"
       />
     </ToastProvider>
+
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastApproval"
+        :duration="5000"
+        class="flex flex-col gap-1.5 rounded-md p-3 shadow-2xl"
+        :class="{
+          'bg-[#ffd0d0]': dataPostRequestApproval?.errors?.[Object.keys(dataPostRequestApproval?.errors)[0]],
+          'bg-[#c4ffd0]': dataPostRequestApproval?.status === 1,
+        }"
+      >
+        <ToastTitle class="text-[13px] font-medium">
+          {{ dataPostRequestApproval?.message }}
+        </ToastTitle>
+        <ToastDescription v-if="dataPostRequestApproval?.errors" class="text-[11px] font-normal">
+          {{ dataPostRequestApproval?.errors[Object.keys(dataPostRequestApproval?.errors)[0]] }}
+        </ToastDescription>
+      </ToastRoot>
+      <ToastViewport
+        class="fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]"
+      />
+    </ToastProvider>
   </MainLayout>
 </template>
 
@@ -563,6 +585,7 @@
 
   const toast = reactive({
     toastA: false,
+    toastApproval: false,
   })
 
   const auth = useAuth()
@@ -821,18 +844,21 @@
 
   const radioStateSingle = ref('0')
 
+  const dataPostRequestApproval = ref<any | null>(null)
   const handleManagerApprove = async (id: string, status: string) => {
     try {
       const formData = new FormData()
       formData.append('id', id)
       formData.append('status', status)
 
-      await axios.post(`${apiUri}/work/managerStatus`, formData, {
+      const response = await axios.post(`${apiUri}/work/managerStatus`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${auth.token()}`,
         },
       })
+      dataPostRequestApproval.value = response.data
+      toast.toastApproval = true
       fetchDataWorkExplain()
     } catch (error) {
       console.error('handleManagerApprove error:', error)
@@ -845,12 +871,14 @@
       formData.append('id', id)
       formData.append('status', status)
 
-      await axios.post(`${apiUri}/work/humanStatus`, formData, {
+      const response = await axios.post(`${apiUri}/work/humanStatus`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${auth.token()}`,
         },
       })
+      dataPostRequestApproval.value = response.data
+      toast.toastApproval = true
       fetchDataWorkExplain()
     } catch (error) {
       console.error('handleHumanApprove error:', error)

@@ -807,23 +807,24 @@
     toggleModal('modalStatusConfirm')
   }
 
+  const dataPostRequestRemove = ref<any | null>(null)
   const submitDeleteContract = async () => {
     if (idToDeleteContract.value) {
       try {
         const formData = new FormData()
         formData.append('id', idToDeleteContract.value.toString())
 
-        const { status } = await axios.post(`${apiUri}/contract/delete`, formData, {
+        const response = await axios.post(`${apiUri}/contract/delete`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${auth.token()}`,
           },
         })
 
-        if (status === 200) {
-          fetchDataContract()
-          toggleModal('modalStatusConfirm')
-        }
+        dataPostRequestRemove.value = response.data
+        toast.toastRemove = true
+        toggleModal('modalStatusConfirm')
+        fetchDataContract()
       } catch (error) {
         console.error('submitDeleteContract error:', error)
       }
@@ -864,7 +865,6 @@
     // if (dataPostRequestEdit.value.status === 1) toggleModal('modalEditLeave')
   }
 
-  const dataPostRequestRemove = ref<any | null>(null)
   const getPostRequestRemove = (data: any) => {
     dataPostRequestRemove.value = data
     toggleModal('modalRemoveContract')

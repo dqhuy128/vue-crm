@@ -59,7 +59,6 @@ export function useDocument() {
     })
   }
   const deleteDocument = async (id: string) => {
-    ///document/delete
     const formData = new FormData()
     formData.append('id', id)
     const response = await axios.post(`${apiUri}/document/delete`, formData, {
@@ -67,6 +66,7 @@ export function useDocument() {
         Authorization: `Bearer ${auth.token()}`,
       },
     })
+    return response.data
   }
   const fetchDetailDocument = async (id: string) => {
     const response = await axios
@@ -81,6 +81,7 @@ export function useDocument() {
       .then((res) => res.data)
       .catch((err) => (error.value = err))
       .finally(() => (isLoading.value = false))
+    return response
   }
 
   return {
