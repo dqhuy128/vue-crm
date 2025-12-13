@@ -1083,6 +1083,7 @@
     toggleModal('modalStatusConfirm')
     userToDelete.value = id.toString()
   }
+  const dataPostRequestDelete = ref<any | null>(null)
   const handleDeleteUser = async () => {
     if (!userToDelete.value) return
 
@@ -1095,6 +1096,8 @@
           Authorization: `Bearer ${auth.token()}`,
         },
       })
+      dataPostRequestDelete.value = response.data
+      toast.toastDelete = true
       toggleModal('modalStatusConfirm')
       fetchDataDocument()
     } catch (error) {

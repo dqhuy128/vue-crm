@@ -540,6 +540,28 @@
         class="fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]"
       />
     </ToastProvider>
+
+    <ToastProvider>
+      <ToastRoot
+        v-model:open="toast.toastDelete"
+        :duration="5000"
+        class="flex flex-col gap-1.5 rounded-md p-3 shadow-2xl"
+        :class="{
+          'bg-[#ffd0d0]': dataPostRequestDelete?.errors?.[Object.keys(dataPostRequestDelete?.errors)[0]],
+          'bg-[#c4ffd0]': dataPostRequestDelete?.status === 1,
+        }"
+      >
+        <ToastTitle class="text-[13px] font-medium">
+          {{ dataPostRequestDelete?.message }}
+        </ToastTitle>
+        <ToastDescription v-if="dataPostRequestDelete?.errors" class="text-[11px] font-normal">
+          {{ dataPostRequestDelete?.errors[Object.keys(dataPostRequestDelete?.errors)[0]] }}
+        </ToastDescription>
+      </ToastRoot>
+      <ToastViewport
+        class="fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]"
+      />
+    </ToastProvider>
   </MainLayout>
 </template>
 
@@ -580,6 +602,7 @@
   const toast = reactive({
     toastCreate: false,
     toastUpdate: false,
+    toastDelete: false,
   })
 
   const auth = useAuth()
@@ -832,6 +855,7 @@
     return category ? category.name : ''
   }
 
+  const dataPostRequestDelete = ref<any | null>(null)
   const handleDeleteDocument = async () => {
     if (!documentToDelete.value) return
 
@@ -845,9 +869,10 @@
           Authorization: `Bearer ${auth.token()}`,
         },
       })
+      dataPostRequestDelete.value = response.data
+      toast.toastDelete = true
       toggleModal('modalStatusConfirm')
       fetchDataDocument()
-      // console.log('🚀 ~ handleDeleteDocument ~ response:', response)
     } catch (error) {
       console.log('🚀 ~ handleDeleteDocument ~ error:', error)
     }
