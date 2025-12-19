@@ -262,7 +262,7 @@
                   </div>
                 </div>
 
-                <div class="cell">
+                <div class="cell" data-dropdown="human">
                   <div class="relative w-full" @click.stop="toggleDropdownHuman(it.id)">
                     <!-- <template v-if="checkPermission('Overtime', 'Approval')"> -->
                     <template v-if="it.human_status_text == 'Đã phê duyệt'">

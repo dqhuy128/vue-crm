@@ -42,10 +42,40 @@ function onChangeFile(e: Event) {
     | 'application/vnd.ms-excel'
     | 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     | 'text/csv'
+    | 'application/pdf'
+    | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    | 'application/msword'
+    | 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    | 'application/vnd.ms-powerpoint'
+    | 'image/jpeg'
+    | 'image/png'
+    | 'image/gif'
+    | 'image/webp'
+    | 'text/plain'
+    | 'application/zip'
   //   | 'application/vnd.openxmlformats-officedocument.spreadsheetml.template'
   //   | 'application/vnd.ms-excel.sheet.macroEnabled.12'
   //   | 'application/vnd.ms-excel.addin.macroEnabled.12'
   //   | 'application/vnd.ms-excel.template.macroEnabled.12'
+
+  // File extension mapping for fallback validation
+  const extensionToMimeMap: Record<string, MimeTypes[]> = {
+    '.xls': ['application/vnd.ms-excel'],
+    '.xlsx': ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+    '.csv': ['text/csv'],
+    '.pdf': ['application/pdf'],
+    '.docx': ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+    '.doc': ['application/msword'],
+    '.pptx': ['application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+    '.ppt': ['application/vnd.ms-powerpoint'],
+    '.jpg': ['image/jpeg'],
+    '.jpeg': ['image/jpeg'],
+    '.png': ['image/png'],
+    '.gif': ['image/gif'],
+    '.webp': ['image/webp'],
+    '.txt': ['text/plain'],
+    '.zip': ['application/zip'],
+  }
 
   export interface Props {
     accept?: MimeTypes | MimeTypes[]
@@ -109,13 +139,37 @@ function onChangeFile(e: Event) {
 
   function checkIfTypeMimeIsAllowedOnDrop(file: File) {
     const fileType = <MimeTypes>file.type
+    const fileName = file.name.toLowerCase()
+    const fileExtension = fileName.substring(fileName.lastIndexOf('.'))
+
     if (!accept.value.length) {
       return true
     }
+
+    // First check MIME type
+    let isAllowedByMime = false
     if (typeof accept.value === 'string') {
-      return fileType === accept.value
+      isAllowedByMime = fileType === accept.value
+    } else {
+      isAllowedByMime = accept.value.includes(fileType)
     }
-    return accept.value.includes(fileType)
+
+    // If MIME type check passes, allow the file
+    if (isAllowedByMime) {
+      return true
+    }
+
+    // Fallback: check file extension
+    if (extensionToMimeMap[fileExtension]) {
+      const allowedMimeTypes = extensionToMimeMap[fileExtension]
+      if (typeof accept.value === 'string') {
+        return allowedMimeTypes.includes(accept.value)
+      } else {
+        return allowedMimeTypes.some((mime) => accept.value.includes(mime))
+      }
+    }
+
+    return false
   }
 
   function onFileChange(event: Event) {
