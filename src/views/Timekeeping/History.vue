@@ -5,30 +5,9 @@
     <template v-if="toggleBoxFilters">
       <div class="mb-5 rounded-[24px] bg-white p-2.5">
         <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchWorkHistory">
-          <div class="xxl:gap-4 flex grow flex-wrap items-stretch gap-2">
-            <div
-              class="flex-[0_0_calc((100%-16px)/2)] max-lg:w-[calc(50%-4px)] max-lg:flex-[0_0_calc(50%-4px)] max-md:w-[calc(100%)] max-md:flex-[0_0_calc(100%)]"
-            >
-              <!-- <div class="relative">
-                <input
-                  v-model="paramsWorkHistory.name"
-                  type="text"
-                  name=""
-                  id=""
-                  placeholder="Nhập tên"
-                  class="block w-full border border-solid border-[#EDEDF6] bg-white rounded-[24px] p-[6px_12px] text-[#000] font-inter text-[16px] max-md:text-[14px] font-normal leading-normal focus:outline-none"
-                />
-
-                <button
-                  v-if="paramsWorkHistory.name"
-                  type="button"
-                  class="absolute -translate-y-1/2 cursor-pointer right-3 top-1/2"
-                  @click="() => (paramsWorkHistory.name = '')"
-                >
-                  <Icon icon="radix-icons:cross-1" class="w-3.5 h-3.5" />
-                </button>
-              </div> -->
-
+          <div class="flex grow flex-wrap items-stretch gap-2">
+            <!-- Filter: Searchable Select -->
+            <div class="flex-[1]">
               <SearchableSelect
                 v-model="paramsWorkHistory.id"
                 :options="userOptions"
@@ -38,9 +17,65 @@
               />
             </div>
 
-            <div
-              class="flex-[0_0_calc((100%-16px)/2)] max-lg:w-[calc(50%-4px)] max-lg:flex-[0_0_calc(50%-4px)] max-md:w-[calc(100%)] max-md:flex-[0_0_calc(100%)]"
-            >
+            <!-- Filter: Staff/Department SelectRoot -->
+            <div class="flex-[1]">
+              <SelectRoot v-model="paramsWorkHistory.staff_id" @update:model-value="fetchDataWorkHistory">
+                <SelectTrigger
+                  class="flex h-full w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="font-inter w-[90%] grow overflow-hidden text-start text-[15px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                    placeholder="Chọn khối phòng ban"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <SelectItem
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          value="all"
+                        >
+                          <SelectItemText> Tất cả bộ phận </SelectItemText>
+                        </SelectItem>
+                        <template v-for="item in flattenedDepartments" :key="item.id">
+                          <SelectItem
+                            class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item.id)"
+                          >
+                            <SelectItemText>
+                              {{ item.displayName }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
+            </div>
+
+            <!-- Filter: Datepicker -->
+            <div class="flex-[1]">
               <VueDatePicker
                 v-model="datepicker"
                 class="work-history-datepicker"
@@ -420,6 +455,19 @@
   import { endOfDay, format, startOfMonth } from 'date-fns'
   import { vi } from 'date-fns/locale/vi'
   import { storeToRefs } from 'pinia'
+  import {
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectItemText,
+    SelectPortal,
+    SelectRoot,
+    SelectScrollDownButton,
+    SelectScrollUpButton,
+    SelectTrigger,
+    SelectValue,
+    SelectViewport,
+  } from 'radix-vue'
   import { ToastDescription, ToastProvider, ToastRoot, ToastTitle, ToastViewport } from 'radix-vue'
   import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
@@ -464,6 +512,11 @@
   }
   // Add event listener for window resize
   onMounted(() => {
+    if (auth.check()) {
+      fetchDataWorkHistory()
+      fetchDataUserMCC()
+      fetchDepartmentTree()
+    }
     // Khởi tạo giá trị ban đầu
     updateLayout()
 
@@ -579,6 +632,7 @@
     finish_date: string
     name: string
     id: string
+    staff_id: string
     sort: SortType
   }
   const paramsWorkHistory = reactive<typeParamsWorkHistory>({
@@ -586,8 +640,17 @@
     finish_date: format(endOfDay(new Date()), 'yyyy-MM-dd'),
     name: '',
     id: '',
+    staff_id: '',
     sort: 'code|asc' as SortType,
   })
+
+  // Watch for staff_id changes (Cloned logic + trigger requirement)
+  watch(
+    () => paramsWorkHistory.staff_id,
+    () => {
+      if (paramsWorkHistory.staff_id === 'all') paramsWorkHistory.staff_id = ''
+    }
+  )
 
   const datepicker = ref<any | null>([startOfMonth(new Date()), endOfDay(new Date())])
   const updateDates = () => {
@@ -698,27 +761,67 @@
     dataUserMCC.originalItems = items // Keep the original object with key-value pairs
   }
 
-  const handleSearchWorkHistory = async () => {
+  // START: Cloned logic from User.vue/Explain.vue for Staff/Department list
+  const departmentTree = ref<any | null>(null)
+  const fetchDepartmentTree = async () => {
     try {
-      // Reset về trang 1 khi filter
-      paginate.page = 1
-
-      const formData = new FormData()
-      formData.append('begin_date', paramsWorkHistory.begin_date)
-      formData.append('finish_date', paramsWorkHistory.finish_date)
-      formData.append('name', paramsWorkHistory.name)
-      formData.append('id', paramsWorkHistory.id)
-
-      const res = await axios.post(`${apiUri}/work/list`, formData, {
+      const response = await axios.get(`${apiUri}/categories/staff`, {
         headers: {
           Authorization: `Bearer ${auth.token()}`,
         },
       })
-      fetchDataWorkHistory()
-      console.log('🚀 ~ handleSearchWorkHistory ~ res:', res)
+      departmentTree.value = response.data.data
     } catch (error) {
-      console.log('🚀 ~ handleSearchWorkHistory ~ error:', error)
+      console.log('fetchDepartmentTree error:', error)
     }
+  }
+
+  // Function to flatten department tree
+  const flattenDepartmentTree = (treeData: any[], level: number = 0): any[] => {
+    const result: any[] = []
+
+    if (!Array.isArray(treeData)) return result
+
+    const flattenNode = (node: any, currentLevel: number) => {
+      // Create indent string
+      let indentStr = ''
+      if (currentLevel > 0) {
+        indentStr = '  '.repeat(currentLevel - 1) + '└─ '
+      }
+
+      // Push current node
+      result.push({
+        id: node.id,
+        name: node.name,
+        displayName: indentStr + node.name,
+        level: currentLevel,
+      })
+
+      // Recursively process children
+      if (node.children && Array.isArray(node.children)) {
+        node.children.forEach((child: any) => {
+          flattenNode(child, currentLevel + 1)
+        })
+      }
+    }
+
+    treeData.forEach((node: any) => {
+      flattenNode(node, level)
+    })
+
+    return result
+  }
+
+  // Computed property to get flattened departments
+  const flattenedDepartments = computed(() => {
+    return flattenDepartmentTree(departmentTree.value || [])
+  })
+  // END: Cloned logic
+
+  const handleSearchWorkHistory = async () => {
+    // Reset về trang 1 khi filter
+    paginate.page = 1
+    fetchDataWorkHistory()
   }
 
   const handleSort = (columnTitle: string) => {

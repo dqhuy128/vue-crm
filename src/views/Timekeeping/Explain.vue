@@ -6,9 +6,7 @@
       <div class="mb-5 rounded-[24px] bg-white p-2.5">
         <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchWorkExplain">
           <div class="flex grow flex-wrap items-stretch gap-2">
-            <div
-              class="flex-[0_0_calc(100%)] md:flex-[0_0_calc((100%-8px)/2)] lg:w-[calc((100%-16px)/3)] lg:flex-[0_0_calc((100%-16px)/3)]"
-            >
+            <div class="flex-[1]">
               <div class="relative">
                 <input
                   id=""
@@ -30,9 +28,7 @@
               </div>
             </div>
 
-            <div
-              class="flex-[0_0_calc(100%)] md:flex-[0_0_calc((100%-8px)/2)] lg:w-[calc((100%-16px)/3)] lg:flex-[0_0_calc((100%-16px)/3)]"
-            >
+            <div class="flex-[1]">
               <SelectRoot v-model="paramsWorkExplain.status">
                 <SelectTrigger
                   class="flex h-full w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
@@ -88,7 +84,63 @@
               </SelectRoot>
             </div>
 
-            <div class="flex-[0_0_calc(100%)] lg:w-[calc((100%-16px)/3)] lg:flex-[0_0_calc((100%-16px)/3)]">
+            <div class="flex-[1]">
+              <SelectRoot v-model="paramsWorkExplain.staff_id">
+                <SelectTrigger
+                  class="flex h-full w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="font-inter w-[90%] grow overflow-hidden text-start text-[15px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                    placeholder="Chọn khối phòng ban"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <SelectItem
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          value="all"
+                        >
+                          <SelectItemText> Tất cả bộ phận </SelectItemText>
+                        </SelectItem>
+                        <template v-for="item in flattenedDepartments" :key="item.id">
+                          <SelectItem
+                            class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item.id)"
+                          >
+                            <SelectItemText>
+                              {{ item.displayName }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
+            </div>
+
+            <div class="flex-[1]">
               <VueDatePicker
                 v-model="datepicker"
                 class="work-history-datepicker"
@@ -585,8 +637,35 @@
     }
   }
 
+  const activeDropdownManager = ref(null)
+  const toggleDropdownManager = (id: any) => {
+    if (activeDropdownManager.value === id) {
+      activeDropdownManager.value = null
+    } else {
+      activeDropdownManager.value = id
+    }
+  }
+
+  const activeDropdownHuman = ref(null)
+  const toggleDropdownHuman = (id: any) => {
+    if (activeDropdownHuman.value === id) {
+      activeDropdownHuman.value = null
+    } else {
+      activeDropdownHuman.value = id
+    }
+  }
+
+  const handleClickOutside = () => {
+    activeDropdownManager.value = null
+    activeDropdownHuman.value = null
+  }
+
   // Add event listener for window resize
   onMounted(() => {
+    if (auth.check()) {
+      fetchDepartmentTree() // Cloned logic: fetch staff/department list
+      fetchDataWorkExplain()
+    }
     // Khởi tạo giá trị ban đầu
     updateLayout()
 
@@ -599,12 +678,14 @@
     // Sử dụng event capturing để theo dõi tất cả input
     document.addEventListener('focus', trackInputState, true)
     document.addEventListener('blur', trackInputState, true)
+    document.addEventListener('click', handleClickOutside)
   })
 
   onBeforeUnmount(() => {
     document.removeEventListener('focus', trackInputState, true)
     document.removeEventListener('blur', trackInputState, true)
     window.removeEventListener('resize', updateLayout)
+    document.removeEventListener('click', handleClickOutside)
     clearTimeout(resizeTimer)
   })
   // Watch for screenWidth changes
@@ -666,12 +747,14 @@
     finish_date: string
     name: string
     status: string
+    staff_id: string // Add staff_id to params
   }
   const paramsWorkExplain = reactive<typeparamsWorkExplain>({
     begin_date: '',
     finish_date: '',
     name: '',
     status: '',
+    staff_id: '', // Initialize staff_id
   })
 
   const datepicker = ref<any | null>(null)
@@ -696,6 +779,14 @@
     () => paramsWorkExplain.status,
     () => {
       if (paramsWorkExplain.status === 'all') paramsWorkExplain.status = ''
+    }
+  )
+
+  // Watch for staff_id changes (Cloned logic + trigger requirement)
+  watch(
+    () => paramsWorkExplain.staff_id,
+    () => {
+      if (paramsWorkExplain.staff_id === 'all') paramsWorkExplain.staff_id = ''
     }
   )
 
@@ -779,6 +870,7 @@
       formData.append('finish_date', paramsWorkExplain.finish_date)
       formData.append('name', paramsWorkExplain.name)
       formData.append('status', paramsWorkExplain.status)
+      formData.append('staff_id', paramsWorkExplain.staff_id) // Append staff_id
 
       await axios.post(`${apiUri}/work/explanation`, formData, {
         headers: {
@@ -791,6 +883,63 @@
     }
   }
 
+  // START: Cloned logic from User.vue for Staff/Department list
+  const departmentTree = ref<any | null>(null)
+  const fetchDepartmentTree = async () => {
+    try {
+      const response = await axios.get(`${apiUri}/categories/staff`, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      departmentTree.value = response.data.data
+    } catch (error) {
+      console.log('fetchDepartmentTree error:', error)
+    }
+  }
+
+  // Function to flatten department tree
+  const flattenDepartmentTree = (treeData: any[], level: number = 0): any[] => {
+    const result: any[] = []
+
+    if (!Array.isArray(treeData)) return result
+
+    const flattenNode = (node: any, currentLevel: number) => {
+      // Create indent string
+      let indentStr = ''
+      if (currentLevel > 0) {
+        indentStr = '  '.repeat(currentLevel - 1) + '└─ '
+      }
+
+      // Push current node
+      result.push({
+        id: node.id,
+        name: node.name,
+        displayName: indentStr + node.name,
+        level: currentLevel,
+      })
+
+      // Recursively process children
+      if (node.children && Array.isArray(node.children)) {
+        node.children.forEach((child: any) => {
+          flattenNode(child, currentLevel + 1)
+        })
+      }
+    }
+
+    treeData.forEach((node: any) => {
+      flattenNode(node, level)
+    })
+
+    return result
+  }
+
+  // Computed property to get flattened departments
+  const flattenedDepartments = computed(() => {
+    return flattenDepartmentTree(departmentTree.value || [])
+  })
+  // END: Cloned logic
+
   const dataUserExplain = ref<any | null>(null)
   const handleUserExplain = async (id: string) => {
     try {
@@ -798,24 +947,6 @@
       toggleModal('modalWorkExplain')
     } catch (error) {
       console.error('handleUserExplain error:', error)
-    }
-  }
-
-  const activeDropdownManager = ref(null)
-  const toggleDropdownManager = (id: any) => {
-    if (activeDropdownManager.value === id) {
-      activeDropdownManager.value = null
-    } else {
-      activeDropdownManager.value = id
-    }
-  }
-
-  const activeDropdownHuman = ref(null)
-  const toggleDropdownHuman = (id: any) => {
-    if (activeDropdownHuman.value === id) {
-      activeDropdownHuman.value = null
-    } else {
-      activeDropdownHuman.value = id
     }
   }
 
@@ -919,11 +1050,7 @@
     }
   )
 
-  onMounted(() => {
-    if (auth.check()) {
-      fetchDataWorkExplain()
-    }
-  })
+  // NOTE: onMounted was moved up
 
   // Image preview modal state and handler
   const previewUrl = ref<string>('')
