@@ -80,6 +80,17 @@
             'application/vnd.ms-excel',
             'text/csv',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'application/vnd.ms-powerpoint',
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+            'text/plain',
+            'application/zip',
           ]"
           @change="onFileUpdate"
         >
@@ -95,6 +106,7 @@
                 />
               </svg>
               <span class="file-upload-txt">Kéo thả tệp vào đây</span>
+              <p class="mt-1 mb-2 text-xs text-gray-500">Hỗ trợ: Excel, PDF, Word, PowerPoint, hình ảnh, ZIP</p>
               <i>hoặc</i>
               <span class="file-upload-link">Chọn tệp tại đây</span>
             </div>

@@ -5,16 +5,15 @@
     <template v-if="toggleBoxFilters">
       <div class="mb-5 rounded-[24px] bg-white p-2.5">
         <form class="xxl:gap-4 flex flex-wrap items-stretch gap-2" @submit.prevent="handleSearchUser">
-          <div class="xxl:gap-4 flex grow flex-wrap gap-2">
-            <div
-              class="flex-[0_0_calc(25%-12px)] max-lg:w-[calc(50%-4px)] max-lg:flex-[0_0_calc(50%-4px)] max-md:w-full max-md:flex-[0_0_100%]"
-            >
+          <div class="flex grow flex-wrap gap-4">
+            <div class="min-w-0 flex-1">
               <div class="relative">
                 <input
                   v-model="params.phone"
                   type="text"
                   class="font-inter flex w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] focus:outline-none data-[placeholder]:text-[#909090] max-md:text-[14px]"
                   placeholder="Tên, số điện thoại"
+                  @input="handleFilterChange"
                 />
 
                 <button
@@ -28,10 +27,8 @@
               </div>
             </div>
 
-            <div
-              class="flex-[0_0_calc(25%-12px)] max-lg:w-[calc(50%-4px)] max-lg:flex-[0_0_calc(50%-4px)] max-md:w-[calc(100%)] max-md:flex-[0_0_calc(100%)]"
-            >
-              <SelectRoot v-model="params.per_group_name">
+            <div class="min-w-0 flex-1">
+              <SelectRoot v-model="params.per_group_name" @update:model-value="handleFilterChange">
                 <SelectTrigger
                   class="font-inter flex w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] data-[placeholder]:text-[#909090] max-md:text-[14px]"
                   aria-label="Customise options"
@@ -74,17 +71,15 @@
               </SelectRoot>
             </div>
 
-            <div
-              class="flex-[0_0_calc(25%-12px)] max-lg:w-[calc(50%-4px)] max-lg:flex-[0_0_calc(50%-4px)] max-md:w-[calc(100%)] max-md:flex-[0_0_calc(100%)]"
-            >
-              <SelectRoot v-model="params.staff_id">
+            <div class="min-w-0 flex-1">
+              <SelectRoot v-model="params.staff_id" @update:model-value="handleFilterChange">
                 <SelectTrigger
                   class="font-inter flex w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] data-[placeholder]:text-[#909090] max-md:text-[14px]"
                   aria-label="Customise options"
                 >
                   <SelectValue
                     class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
-                    placeholder="Chọn bộ phận"
+                    placeholder="Chọn khối phòng ban"
                   />
                   <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
                 </SelectTrigger>
@@ -103,13 +98,13 @@
                         >
                           <SelectItemText> Tất cả bộ phận </SelectItemText>
                         </SelectItem>
-                        <template v-for="item in departmentTree" :key="item.id">
+                        <template v-for="item in flattenedDepartments" :key="item.id">
                           <SelectItem
                             class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
                             :value="String(item.id)"
                           >
                             <SelectItemText>
-                              {{ item.name }}
+                              {{ item.displayName }}
                             </SelectItemText>
                           </SelectItem>
                         </template>
@@ -120,10 +115,8 @@
               </SelectRoot>
             </div>
 
-            <div
-              class="flex-[0_0_calc(25%-12px)] max-lg:w-[calc(50%-4px)] max-lg:flex-[0_0_calc(50%-4px)] max-md:w-[calc(100%)] max-md:flex-[0_0_calc(100%)]"
-            >
-              <SelectRoot v-model="params.position_id">
+            <div class="min-w-0 flex-1">
+              <SelectRoot v-model="params.position_id" @update:model-value="handleFilterChange">
                 <SelectTrigger
                   class="font-inter flex w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] data-[placeholder]:text-[#909090] max-md:text-[14px]"
                   aria-label="Customise options"
@@ -158,6 +151,50 @@
                           >
                             <SelectItemText>
                               {{ item.name }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <SelectRoot v-model="params.status" @update:model-value="handleFilterChange">
+                <SelectTrigger
+                  class="font-inter flex w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] data-[placeholder]:text-[#909090] max-md:text-[14px]"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="font-inter w-[90%] grow overflow-hidden text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                    placeholder="Chọn trạng thái"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectViewport>
+                      <SelectGroup>
+                        <SelectItem
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          value="all"
+                        >
+                          <SelectItemText> Tất cả trạng thái </SelectItemText>
+                        </SelectItem>
+                        <template v-for="status in statusOptions" :key="status.key">
+                          <SelectItem
+                            class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                            :value="status.key"
+                          >
+                            <SelectItemText>
+                              {{ status.value }}
                             </SelectItemText>
                           </SelectItem>
                         </template>
@@ -359,7 +396,6 @@
                   </button>
                 </div>
               </div>
-              <div class="cell">Trạng thái</div>
 
               <div class="cell pinned">
                 <div class="cell edit !justify-center">Thao tác</div>
@@ -436,7 +472,7 @@
                     {{ item?.refer_phone }}
                   </div>
 
-                  <div class="cell">
+                  <div v-show="tbhead[15].visible" class="cell">
                     <template v-if="Number(item?.status) === 1">
                       <div class="cell justify-center">
                         <div
@@ -455,6 +491,20 @@
                           <Icon icon="radix-icons:cross-1" class="h-2 w-2 lg:h-3 lg:w-3" />
                         </div>
                       </div>
+                    </template>
+                  </div>
+
+                  <div v-show="tbhead[16].visible" class="cell">
+                    {{ item?.working_day }}
+                  </div>
+
+                  <div v-show="tbhead[17].visible" class="cell">
+                    {{ item?.official_day }}
+                  </div>
+
+                  <div v-show="tbhead[18].visible" class="cell">
+                    <template v-if="Number(item?.status) === 2">
+                      {{ item?.updated_at }}
                     </template>
                   </div>
 
@@ -953,6 +1003,26 @@
       hasSort: false,
       visible: true,
     },
+    {
+      title: 'Trạng thái',
+      hasSort: false,
+      visible: true,
+    },
+    {
+      title: 'Ngày bắt đầu',
+      hasSort: false,
+      visible: true,
+    },
+    {
+      title: 'Ngày chính thức',
+      hasSort: false,
+      visible: true,
+    },
+    {
+      title: 'Ngày kết thúc',
+      hasSort: false,
+      visible: true,
+    },
   ])
 
   // State cho bộ lọc dropdown
@@ -979,6 +1049,7 @@
   const params = reactive({
     staff_id: '',
     position_id: '',
+    status: '',
     per_group_name: '',
     phone: '',
     sort: 'name|asc', // Default sorting
@@ -1047,6 +1118,47 @@
     }
   }
 
+  // Function để flatten department tree thành array với indent
+  const flattenDepartmentTree = (treeData: any[], level: number = 0): any[] => {
+    const result: any[] = []
+
+    if (!Array.isArray(treeData)) return result
+
+    const flattenNode = (node: any, currentLevel: number) => {
+      // Tạo indent string cho tree structure
+      let indentStr = ''
+      if (currentLevel > 0) {
+        indentStr = '  '.repeat(currentLevel - 1) + '└─ '
+      }
+
+      // Thêm node hiện tại vào result
+      result.push({
+        id: node.id,
+        name: node.name,
+        displayName: indentStr + node.name,
+        level: currentLevel,
+      })
+
+      // Nếu có children thì đệ quy
+      if (node.children && Array.isArray(node.children)) {
+        node.children.forEach((child: any) => {
+          flattenNode(child, currentLevel + 1)
+        })
+      }
+    }
+
+    treeData.forEach((node: any) => {
+      flattenNode(node, level)
+    })
+
+    return result
+  }
+
+  // Computed property để get flattened departments
+  const flattenedDepartments = computed(() => {
+    return flattenDepartmentTree(departmentTree.value || [])
+  })
+
   const dataPosition = ref<any | null>(null)
   const fetchPositionList = async () => {
     try {
@@ -1062,6 +1174,46 @@
     }
   }
 
+  // Fetch user options API
+  const userOptions = ref<any | null>(null)
+  const fetchUserOptions = async () => {
+    try {
+      const response = await axios.get(`${apiUri}/user/option`, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      userOptions.value = response.data
+      console.log('🚀 ~ fetchUserOptions ~ userOptions:', userOptions.value)
+    } catch (error) {
+      console.log('🚀 ~ fetchUserOptions ~ error:', error)
+    }
+  }
+
+  // Computed properties for user options
+  const statusOptions = computed(() => {
+    const statusOption = userOptions.value?.status_option || {}
+    console.log('🚀 ~ statusOptions ~ statusOption:', statusOption)
+
+    // Transform object {key: value} to array [{key, value}]
+    if (typeof statusOption === 'object' && !Array.isArray(statusOption)) {
+      return Object.entries(statusOption).map(([key, value]) => ({
+        key,
+        value: String(value),
+      }))
+    }
+
+    // If already array, return as is
+    if (Array.isArray(statusOption)) {
+      return statusOption.map((item) => ({
+        key: item.key || item.id || item.code,
+        value: item.value || item.name || item.label,
+      }))
+    }
+
+    return []
+  })
+
   const handlePageChange = (pageNum: number) => {
     // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
     paginate.page = pageNum
@@ -1076,6 +1228,25 @@
     } catch (error) {
       console.log('🚀 ~ handleSearchUser ~ error:', error)
     }
+  }
+
+  // Handle filter changes without debounce for immediate response
+  const handleFilterChange = () => {
+    paginate.page = 1
+    paginate.per_page = 20
+    // Call fetch directly without debounce
+    const res = {
+      ...params,
+      page: paginate.page,
+      per_page: paginate.per_page,
+    }
+
+    doFetch(
+      `${apiUri}/user/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
+      auth.token() as string
+    ).then(() => {
+      tableMagic()
+    })
   }
 
   const userToDelete = ref<any | null>(null)
@@ -1322,6 +1493,7 @@
       fetchPerGroupName()
       fetchDepartmentTree()
       fetchPositionList()
+      fetchUserOptions()
     }
 
     tableMagic()
