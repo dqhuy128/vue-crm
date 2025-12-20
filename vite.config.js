@@ -19,6 +19,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      'vue-auth3/drivers/auth/bearer.js': path.resolve(__dirname, 'node_modules/vue-auth3/drivers/auth/bearer.js'),
     },
   },
 })
