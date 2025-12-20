@@ -237,161 +237,86 @@
     </div>
 
     <template v-if="checkPermission('Work', 'List')">
-      <div class="flex h-full flex-col">
-        <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
-          <div class="table-container relative">
-            <!-- Example column -->
-            <div id="tableRowHeader" class="header table-row justify-between !ps-5">
-              <div v-for="(column, index) in tbhead" v-show="column.visible" :key="index" class="cell">
-                {{ column.title }}
+      <template v-if="isLoading">
+        <SkeletonTable :columns="tbhead.filter((col) => col.visible).length + 1" :rows="10" class="mb-4" />
+      </template>
+      <template v-else-if="dataWorkHistory.doc?.items">
+        <AttendanceAccordionList :items="dataWorkHistory.doc.items" @explain="handleUserExplain" />
+      </template>
+      <template v-else>
+        <div class="mb-4 rounded-[12px] border border-[#EDEDF6] bg-white py-8 text-center text-gray-500 shadow-sm">
+          Không có dữ liệu hiển thị
+        </div>
+      </template>
 
-                <div v-if="column.hasSort" class="tb-sort">
-                  <button
-                    type="button"
-                    class="cursor-pointer"
-                    :class="{
-                      'sort-asc': column.title === 'Mã NV' && paramsWorkHistory.sort === 'code|asc',
-                      'sort-desc': column.title === 'Mã NV' && paramsWorkHistory.sort === 'code|desc',
-                    }"
-                    @click="handleSort(column.title)"
-                  >
-                    <img src="@/assets/images/tb-sort.svg" alt="" />
-                  </button>
-                </div>
-              </div>
+      <!-- PAGINATION -->
+      <div class="tb-pagination mt-4 flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4">
+        <div class="relative">
+          <select
+            id="selectPerPage"
+            v-model="paginate.per_page"
+            name=""
+            class="cursor-pointer appearance-none rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[8px_12px] text-[14px] font-normal text-[#464661] focus:outline-none md:min-w-[264px]"
+          >
+            <option v-for="option in paginationOptions" :key="option" :value="option">
+              {{ option }} bản ghi / trang
+            </option>
+          </select>
 
-              <div class="cell pinned !px-2 !py-4.5">Giải trình</div>
-            </div>
-
-            <!-- Skeleton Loading -->
-            <SkeletonTable v-if="isLoading" :columns="tbhead.filter((col) => col.visible).length + 1" :rows="10" />
-
-            <!-- Table Data -->
-            <template v-else-if="dataWorkHistoryList">
-              <div id="tableRowBody" class="body table-row">
-                <template v-for="(item, index) in dataWorkHistoryList" :key="index">
-                  <div v-for="(it, itIndex) in item.values" :key="itIndex" class="table-item justify-between !ps-5">
-                    <div v-show="tbhead[0].visible" class="cell">
-                      {{ it?.id }}
-                    </div>
-
-                    <div v-show="tbhead[1].visible" class="cell">
-                      {{ it?.user_code }}
-                    </div>
-
-                    <div v-show="tbhead[2].visible" class="cell">
-                      {{ it?.name }}
-                    </div>
-
-                    <div v-show="tbhead[3].visible" class="cell">
-                      {{ it?.work_date }}
-                    </div>
-
-                    <div v-show="tbhead[4].visible" class="cell">
-                      {{ it?.check_in }}
-                    </div>
-
-                    <div v-show="tbhead[5].visible" class="cell">
-                      {{ it?.check_out }}
-                    </div>
-
-                    <div v-show="tbhead[6].visible" class="cell">
-                      {{ it?.status }}
-                    </div>
-
-                    <div v-show="tbhead[7].visible" class="cell">
-                      {{ it?.total }}
-                    </div>
-
-                    <div class="cell pinned pinned-body justify-center !pe-2.5">
-                      <template v-if="it?.explanation">
-                        <button
-                          type="button"
-                          class="cell-btn-edit shrink-0 cursor-pointer"
-                          @click="handleUserExplain(it?.user_id || '', it?.work_date || '')"
-                        >
-                          <img src="@/assets/images/action-edit-2.svg" alt="" />
-                        </button>
-                      </template>
-                    </div>
-                  </div>
-                </template>
-              </div>
-            </template>
+          <div class="pointer-events-none absolute top-[50%] right-3 -translate-y-[50%] max-md:hidden">
+            <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M0.964013 1.1641C1.04759 1.08049 1.14682 1.01417 1.25603 0.968927C1.36524 0.92368 1.4823 0.900391 1.60051 0.900391C1.71873 0.900391 1.83578 0.92368 1.945 0.968927C2.05421 1.01417 2.15344 1.08049 2.23701 1.1641L4.00001 2.9271L5.76401 1.1641C5.9339 1.00121 6.16083 0.911356 6.39617 0.913785C6.63152 0.916214 6.85654 1.01073 7.02303 1.17709C7.18952 1.34345 7.28422 1.5684 7.28683 1.80374C7.28944 2.03908 7.19976 2.26609 7.03701 2.4361L4.63701 4.8361C4.55344 4.9197 4.45421 4.98602 4.345 5.03127C4.23578 5.07652 4.11873 5.09981 4.00051 5.09981C3.8823 5.09981 3.76524 5.07652 3.65603 5.03127C3.54682 4.98602 3.44759 4.9197 3.36401 4.8361L0.964013 2.4361C0.795473 2.26735 0.700806 2.0386 0.700806 1.8001C0.700806 1.5616 0.795473 1.33285 0.964013 1.1641Z"
+                fill="#363636"
+              />
+            </svg>
           </div>
         </div>
 
-        <!-- PAGINATION -->
-        <div class="tb-pagination flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4">
-          <div class="relative">
-            <select
-              id="selectPerPage"
-              v-model="paginate.per_page"
-              name=""
-              class="cursor-pointer appearance-none rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[8px_12px] text-[14px] font-normal text-[#464661] focus:outline-none md:min-w-[264px]"
-            >
-              <option value="10" :selected="paginate.per_page === 10">10 bản ghi / trang</option>
-              <option value="20">20 bản ghi / trang</option>
-              <option value="30">30 bản ghi / trang</option>
-              <option value="40">40 bản ghi / trang</option>
-            </select>
+        <div class="flex flex-wrap items-center gap-2 md:ms-auto">
+          <div class="text-[14px] font-normal text-[#464661]">
+            <template v-if="paginationRange.total > 0">
+              {{ paginationRange.start }} - {{ paginationRange.end }} trong {{ paginationRange.total }} kết quả
+            </template>
+            <template v-else> 0 kết quả </template>
+          </div>
 
-            <div class="pointer-events-none absolute top-[50%] right-3 -translate-y-[50%] max-md:hidden">
-              <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div class="tb-navigation flex flex-wrap items-center md:gap-2">
+            <button :class="{ disabled: paginate.page === 1 }" @click="handlePageChange(paginate.page - 1)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
-                  d="M0.964013 1.1641C1.04759 1.08049 1.14682 1.01417 1.25603 0.968927C1.36524 0.92368 1.4823 0.900391 1.60051 0.900391C1.71873 0.900391 1.83578 0.92368 1.945 0.968927C2.05421 1.01417 2.15344 1.08049 2.23701 1.1641L4.00001 2.9271L5.76401 1.1641C5.9339 1.00121 6.16083 0.911356 6.39617 0.913785C6.63152 0.916214 6.85654 1.01073 7.02303 1.17709C7.18952 1.34345 7.28422 1.5684 7.28683 1.80374C7.28944 2.03908 7.19976 2.26609 7.03701 2.4361L4.63701 4.8361C4.55344 4.9197 4.45421 4.98602 4.345 5.03127C4.23578 5.07652 4.11873 5.09981 4.00051 5.09981C3.8823 5.09981 3.76524 5.07652 3.65603 5.03127C3.54682 4.98602 3.44759 4.9197 3.36401 4.8361L0.964013 2.4361C0.795473 2.26735 0.700806 2.0386 0.700806 1.8001C0.700806 1.5616 0.795473 1.33285 0.964013 1.1641Z"
+                  d="M14.69 17.29C14.7827 17.1975 14.8562 17.0876 14.9064 16.9666C14.9566 16.8456 14.9824 16.7159 14.9824 16.585C14.9824 16.454 14.9566 16.3243 14.9064 16.2034C14.8562 16.0824 14.7827 15.9725 14.69 15.88L10.81 12L14.69 8.11998C14.877 7.933 14.982 7.67941 14.982 7.41498C14.982 7.15055 14.877 6.89695 14.69 6.70998C14.503 6.523 14.2494 6.41796 13.985 6.41796C13.7206 6.41796 13.467 6.523 13.28 6.70998L8.68998 11.3C8.59727 11.3925 8.52373 11.5024 8.47355 11.6234C8.42336 11.7443 8.39753 11.874 8.39753 12.005C8.39753 12.1359 8.42336 12.2656 8.47355 12.3866C8.52373 12.5076 8.59727 12.6175 8.68998 12.71L13.28 17.3C13.66 17.68 14.3 17.68 14.69 17.29Z"
                   fill="#363636"
                 />
               </svg>
-            </div>
-          </div>
+            </button>
 
-          <div class="flex flex-wrap items-center gap-2 md:ms-auto">
-            <div class="text-[14px] font-normal text-[#464661]">
-              <template v-if="paginationRange.total > 0">
-                {{ paginationRange.start }} - {{ paginationRange.end }} trong {{ paginationRange.total }} kết quả
-              </template>
-              <template v-else> 0 kết quả </template>
-            </div>
+            <input
+              id=""
+              type="text"
+              name=""
+              :value="paginate.page"
+              class="inline-flex h-[32px] w-[32px] flex-col items-center justify-center rounded-[8px] border border-solid border-[#909090] bg-white text-center text-[16px] font-bold text-[#464661]"
+              readonly
+            />
 
-            <div class="tb-navigation flex flex-wrap items-center md:gap-2">
-              <button :class="{ disabled: paginate.page === 1 }" @click="handlePageChange(paginate.page - 1)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M14.69 17.29C14.7827 17.1975 14.8562 17.0876 14.9064 16.9666C14.9566 16.8456 14.9824 16.7159 14.9824 16.585C14.9824 16.454 14.9566 16.3243 14.9064 16.2034C14.8562 16.0824 14.7827 15.9725 14.69 15.88L10.81 12L14.69 8.11998C14.877 7.933 14.982 7.67941 14.982 7.41498C14.982 7.15055 14.877 6.89695 14.69 6.70998C14.503 6.523 14.2494 6.41796 13.985 6.41796C13.7206 6.41796 13.467 6.523 13.28 6.70998L8.68998 11.3C8.59727 11.3925 8.52373 11.5024 8.47355 11.6234C8.42336 11.7443 8.39753 11.874 8.39753 12.005C8.39753 12.1359 8.42336 12.2656 8.47355 12.3866C8.52373 12.5076 8.59727 12.6175 8.68998 12.71L13.28 17.3C13.66 17.68 14.3 17.68 14.69 17.29Z"
-                    fill="#363636"
-                  />
-                </svg>
-              </button>
-
-              <input
-                id=""
-                type="text"
-                name=""
-                :value="paginate.page"
-                class="inline-flex h-[32px] w-[32px] flex-col items-center justify-center rounded-[8px] border border-solid border-[#909090] bg-white text-center text-[16px] font-bold text-[#464661]"
-                readonly
-              />
-
-              <button
-                :class="{
-                  disabled: Number(paginate.page) >= dataTotalPages,
-                }"
-                @click="handlePageChange(paginate.page + 1)"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M9.31002 6.71002C9.21732 6.80254 9.14377 6.91242 9.09359 7.0334C9.04341 7.15437 9.01758 7.28405 9.01758 7.41502C9.01758 7.54599 9.04341 7.67567 9.09359 7.79665C9.14377 7.91762 9.21732 8.02751 9.31002 8.12002L13.19 12L9.31002 15.88C9.12304 16.067 9.018 16.3206 9.018 16.585C9.018 16.8494 9.12304 17.103 9.31002 17.29C9.497 17.477 9.7506 17.582 10.015 17.582C10.2794 17.582 10.533 17.477 10.72 17.29L15.31 12.7C15.4027 12.6075 15.4763 12.4976 15.5265 12.3766C15.5766 12.2557 15.6025 12.126 15.6025 11.995C15.6025 11.8641 15.5766 11.7344 15.5265 11.6134C15.4763 11.4924 15.4027 11.3825 15.31 11.29L10.72 6.70002C10.34 6.32002 9.70002 6.32002 9.31002 6.71002Z"
-                    fill="#363636"
-                  />
-                </svg>
-              </button>
-            </div>
+            <button
+              :class="{
+                disabled: Number(paginate.page) >= dataTotalPages,
+              }"
+              @click="handlePageChange(paginate.page + 1)"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M9.31002 6.71002C9.21732 6.80254 9.14377 6.91242 9.09359 7.0334C9.04341 7.15437 9.01758 7.28405 9.01758 7.41502C9.01758 7.54599 9.04341 7.67567 9.09359 7.79665C9.14377 7.91762 9.21732 8.02751 9.31002 8.12002L13.19 12L9.31002 15.88C9.12304 16.067 9.018 16.3206 9.018 16.585C9.018 16.8494 9.12304 17.103 9.31002 17.29C9.497 17.477 9.7506 17.582 10.015 17.582C10.2794 17.582 10.533 17.477 10.72 17.29L15.31 12.7C15.4027 12.6075 15.4763 12.4976 15.5265 12.3766C15.5766 12.2557 15.6025 12.126 15.6025 11.995C15.6025 11.8641 15.5766 11.7344 15.5265 11.6134C15.4763 11.4924 15.4027 11.3825 15.31 11.29L10.72 6.70002C10.34 6.32002 9.70002 6.32002 9.31002 6.71002Z"
+                  fill="#363636"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
     </template>
-
     <Modal
       :modal-active="modalActive.modalAddWorkHistory"
       max-width="max-w-[670px]"
@@ -472,6 +397,7 @@
   import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
 
+  import AttendanceAccordionList from '@/components/AttendanceAccordionList.vue'
   import Breadcrums from '@/components/BreadcrumsNew.vue'
   import ModalAddWorkHistory from '@/components/Modal/ModalAddWorkHistory.vue'
   import Modal from '@/components/Modals.vue'
@@ -486,7 +412,7 @@
 
   const auth = useAuth()
   const permissionData = usePermissionStore()
-  const { userData } = storeToRefs(permissionData)
+  const {} = storeToRefs(permissionData)
 
   const toast = reactive({
     toastA: false,
@@ -673,6 +599,15 @@
     per_page: 20,
   })
 
+  // Generate pagination options from 10 to 200 in steps of 10
+  const paginationOptions = computed(() => {
+    const options = []
+    for (let i = 10; i <= 200; i += 10) {
+      options.push(i)
+    }
+    return options
+  })
+
   const debounceTime = ref<{
     timeOut: number | null
     counter: number
@@ -697,7 +632,6 @@
         `${apiUri}/work/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
         auth.token() as string
       ).then(() => {
-        // console.log('🚀 ~ fetchDataWorkHistory ~ res:', res)
         tableMagic()
       })
     }, 300)
@@ -771,9 +705,7 @@
         },
       })
       departmentTree.value = response.data.data
-    } catch (error) {
-      console.log('fetchDepartmentTree error:', error)
-    }
+    } catch {}
   }
 
   // Function to flatten department tree
@@ -820,29 +752,21 @@
 
   const handleSearchWorkHistory = async () => {
     // Reset về trang 1 khi filter
+
     paginate.page = 1
+
     fetchDataWorkHistory()
   }
 
-  const handleSort = (columnTitle: string) => {
-    if (columnTitle === 'Mã NV') {
-      // Toggle giữa 'code|asc' và 'code|desc'
-      paramsWorkHistory.sort = paramsWorkHistory.sort === 'code|asc' ? 'code|desc' : 'code|asc'
-      // Reset về trang 1 khi sort
-      paginate.page = 1
-      // Fetch data với sort mới
-      fetchDataWorkHistory()
-    }
-  }
-
   const dataUserExplain = ref<any | null>(null)
+
   const handleUserExplain = async (id: string, date: string) => {
     try {
       dataUserExplain.value = await dataWorkHistory.doc?.items?.[Number(id)]?.[date]
-      console.log('🚀 ~ handleUserExplain ~ dataUserExplain.value:', dataUserExplain.value)
+
       toggleModal('modalAddWorkHistory')
     } catch (error) {
-      console.log('🚀 ~ handleUserExplain ~ error:', error)
+      console.error(error)
     }
   }
 
@@ -888,8 +812,6 @@
         link.click()
         link.remove()
       }
-    } catch (error) {
-      console.error('🚀 ~ handleExportWorkHistory ~ error:', error)
     } finally {
       isLoadingExportWorkHistory.value = false
     }
@@ -899,27 +821,6 @@
 
   const dataWorkHistory = reactive({
     doc: data,
-  })
-
-  interface WorkHistoryItem {
-    id?: string
-    user_id?: string
-    name?: string
-    user_code?: string
-    work_date?: string
-    check_in?: string | null
-    check_out?: string | null
-    total?: string
-    status?: null | string
-    explanation?: boolean
-  }
-
-  const dataWorkHistoryList = computed(() => {
-    if (!dataWorkHistory.doc?.items) return []
-
-    return Object.entries(dataWorkHistory.doc.items).map(([key, values]) => ({
-      values: Object.values(values) as WorkHistoryItem[],
-    }))
   })
 
   const dataPostRequest = ref<any | null>(null)
@@ -934,14 +835,12 @@
   const { checkPermission } = permissionStore
 
   watch(permissionList, () => {
-    console.log('🚀 ~ //onMounted ~ permissionList:', permissionList)
     if (auth.check()) {
       if (!permissionList.value.includes('Work')) {
         alert('Bạn không có quyền truy cập vào trang này')
         router.push({ name: 'NotFound404' })
       } else {
         fetchDataWorkHistory()
-        console.log(dataWorkHistory, 'dataWorkHistory')
       }
     }
   })
