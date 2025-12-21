@@ -1,6 +1,6 @@
 <template>
   <Modal :modal-active="props.modal" max-width="max-w-[500px]" @close="() => emit('toggle-modal')">
-    <div class="overflow-hidden rounded-[24px] bg-white">
+    <div class="rounded-[24px] bg-white">
       <!-- Header -->
       <!-- <div class="border-b border-[#EDEDF6] p-6">
         <div class="text-center text-[20px] font-bold text-[#464661] uppercase">Upload File Excel</div>
@@ -446,7 +446,6 @@
 
   .preview-table {
     max-height: 400px;
-    overflow-y: auto;
   }
 
   .progress-bar {

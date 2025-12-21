@@ -16,7 +16,6 @@
     SelectViewport,
   } from 'radix-vue'
   import { ToastDescription, ToastProvider, ToastRoot, ToastTitle, ToastViewport } from 'radix-vue'
-  import { RadioGroupItem, RadioGroupRoot } from 'radix-vue'
   import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
 
@@ -24,6 +23,7 @@
   import ModalAddOvertime from '@/components/Modal/ModalAddOvertime.vue'
   import ModalUpdateOvertime from '@/components/Modal/ModalUpdateOvertime.vue'
   import Modal from '@/components/Modals.vue'
+  import OvertimeAccordionList from '@/components/OvertimeAccordionList.vue'
   import SkeletonTable from '@/components/SkeletonTable.vue'
   import { useSystemManager } from '@/composables/system-manager'
   import { apiUri } from '@/constants/apiUri'
@@ -106,58 +106,6 @@
     modalActive.value[modalStateName] = !modalActive.value[modalStateName]
   }
 
-  const tbhead = reactive([
-    {
-      title: 'STT',
-      hasSort: false,
-      visible: true,
-    },
-    {
-      title: 'Mã NV',
-      hasSort: false,
-      visible: true,
-    },
-    {
-      title: 'Họ và tên',
-      hasSort: false,
-      visible: true,
-    },
-    {
-      title: 'Ngày tăng ca',
-      hasSort: false,
-      visible: true,
-    },
-    {
-      title: 'Thời gian tăng ca',
-      hasSort: false,
-      visible: true,
-    },
-    {
-      title: 'Lý do nghỉ',
-      hasSort: false,
-      visible: true,
-    },
-  ])
-
-  // State cho bộ lọc dropdown
-  const showColumnFilter = ref(false)
-  const columnSearchText = ref('')
-
-  // Computed để lọc các cột dựa trên search text
-  const filteredColumns = computed(() => {
-    if (!columnSearchText.value) return tbhead
-    return tbhead.filter((column) => column.title.toLowerCase().includes(columnSearchText.value.toLowerCase()))
-  })
-
-  // Function để toggle hiển thị cột
-  const toggleColumnVisibility = (columnIndex: number) => {
-    // Tìm index thực tế trong tbhead dựa trên filteredColumns
-    const originalIndex = tbhead.findIndex((col) => col.title === filteredColumns.value[columnIndex].title)
-    if (originalIndex !== -1) {
-      tbhead[originalIndex].visible = !tbhead[originalIndex].visible
-    }
-  }
-
   const auth = useAuth()
 
   interface OvertimeParams {
@@ -198,7 +146,6 @@
         `${apiUri}/orvertime/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
         auth.token() as string
       ).then(() => {
-        console.log('🚀 ~ fetchDataOvertime ~ res:', res)
         tableMagic()
       })
     }, 300)
@@ -234,7 +181,7 @@
       toast.toastDelete = true
       // console.log('🚀 ~ handleDeleteCategory ~ response:', response)
     } catch (error) {
-      console.log('🚀 ~ handleDeleteOvertime ~ error:', error)
+      console.error('🚀 ~ handleDeleteOvertime ~ error:', error)
     }
   }
 
@@ -251,7 +198,7 @@
       dataDetailCategory.value = response.data
 
       // console.log('🚀 ~ getDetailCategory ~ response:', response.data)
-    } catch (error) {}
+    } catch {}
   }
 
   const dataPostRequest = ref<any | null>(null)
@@ -281,18 +228,18 @@
     formData.append('id', id)
     formData.append('status', status)
 
-    const res = await axios
+    await axios
       .post(`${apiUri}/orvertime/managerStatus`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${auth.token()}`,
         },
       })
-      .then((res) => {
+      .then(() => {
         fetchDataOvertime()
       })
       .catch((err) => {
-        console.log('handleManagerApprove ~ err', err)
+        console.error('handleManagerApprove ~ err', err)
       })
   }
 
@@ -301,18 +248,18 @@
     formData.append('id', id)
     formData.append('status', status)
 
-    const res = await axios
+    await axios
       .post(`${apiUri}/orvertime/humanStatus`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${auth.token()}`,
         },
       })
-      .then((res) => {
+      .then(() => {
         fetchDataOvertime()
       })
       .catch((err) => {
-        console.log('handleHumanApprove ~ err', err)
+        console.error('handleHumanApprove ~ err', err)
       })
   }
 
@@ -342,65 +289,6 @@
     return { start, end, total }
   })
 
-  const activeDropdownManager = ref(null)
-  const toggleDropdownManager = (id: any) => {
-    if (activeDropdownManager.value === id) {
-      activeDropdownManager.value = null
-    } else {
-      activeDropdownManager.value = id
-    }
-  }
-
-  const activeDropdownHuman = ref(null)
-  const toggleDropdownHuman = (id: any) => {
-    if (activeDropdownHuman.value === id) {
-      activeDropdownHuman.value = null
-    } else {
-      activeDropdownHuman.value = id
-    }
-  }
-
-  const overtimeItem = ref<any | null>(null)
-  const radioStateSingle = ref('0')
-
-  const handleApproveLeave = async (id: number) => {
-    if (!radioStateSingle.value) return
-
-    try {
-      await radioStateSingle.value
-      const formData = new FormData()
-      formData.append('id', id.toString())
-      formData.append('status', radioStateSingle.value)
-
-      const response = await axios
-        .post(`${apiUri}/leave/status`, formData, {
-          headers: {
-            Authorization: `Bearer ${auth.token()}`,
-          },
-        })
-        .then((res) => {
-          if (dataOvertime.doc && dataOvertime.doc.items) {
-            overtimeItem.value = dataOvertime.doc.items.find((item) => item.id === id)
-            if (!overtimeItem.value) return
-
-            overtimeItem.value.status =
-              radioStateSingle.value === '1'
-                ? 'Đã phê duyệt'
-                : radioStateSingle.value === '2'
-                  ? 'Đã từ chối'
-                  : 'Chờ phê duyệt'
-          }
-
-          console.log('🚀 ~ handleApproveLeave ~ res:', res.data.message)
-        })
-        .then(() => {
-          tableMagic()
-        })
-    } catch (error) {
-      console.log('🚀 ~ handleApproveLeave ~ error:', error)
-    }
-  }
-
   // START: Cloned logic for Staff/Department list
   const departmentTree = ref<any | null>(null)
   const fetchDepartmentTree = async () => {
@@ -411,9 +299,7 @@
         },
       })
       departmentTree.value = response.data.data
-    } catch (error) {
-      console.log('fetchDepartmentTree error:', error)
-    }
+    } catch {}
   }
 
   // Function to flatten department tree
@@ -467,12 +353,6 @@
     }
   )
 
-  // Type options for params.type filter
-  const typeOptions = ref([
-    { value: 'all', text: 'Tất cả loại hình' },
-    // Add more types as needed, or fetch from API if available
-  ])
-
   // Watch for type changes
   watch(
     () => params.type,
@@ -502,14 +382,12 @@
   const { checkPermission } = permissionStore
 
   watch(permissionList, () => {
-    console.log('🚀 ~ //onMounted ~ permissionList:', permissionList)
     if (auth.check()) {
       if (!permissionList.value.includes('Document')) {
         alert('Bạn không có quyền truy cập vào trang này')
         router.push({ name: 'NotFound404' })
       } else {
         fetchDataOvertime()
-        console.log(dataOvertime, 'dataOvertime')
       }
     }
   })
@@ -567,7 +445,7 @@
                   aria-label="Customise options"
                 >
                   <SelectValue
-                    class="font-inter w-[90%] grow overflow-hidden text-start text-[15px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                    class="font-inter w-[90%] grow text-start text-[15px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
                     placeholder="Chọn khối phòng ban"
                   />
                   <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
@@ -575,7 +453,7 @@
 
                 <SelectPortal>
                   <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
                     position="popper"
                     :side-offset="5"
                   >
@@ -777,207 +655,25 @@
 
     <template v-if="checkPermission('Orvertime', 'List')">
       <div class="flex h-full flex-col">
-        <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
-          <div class="table-container relative">
-            <!-- Example column -->
-            <div id="tableRowHeader" class="header table-row justify-between">
-              <div v-for="(column, index) in tbhead" v-show="column.visible" :key="index" class="cell">
-                {{ column.title }}
-
-                <div v-if="column.hasSort" class="tb-sort">
-                  <button type="button">
-                    <img src="@/assets/images/tb-sort.svg" alt="" />
-                  </button>
-                </div>
-              </div>
-              <div class="cell">Quản lý duyệt</div>
-              <div class="cell">HCNS duyệt</div>
-
-              <div class="cell pinned !p-0 !shadow-none">
-                <div class="cell edit !ps-2">Edit</div>
-              </div>
-            </div>
-
-            <!-- Skeleton Loading -->
-            <SkeletonTable v-if="isLoading" :columns="8" :rows="10" />
-
-            <!-- Table Data -->
-            <div v-else id="tableRowBody" class="body table-row">
-              <template v-if="dataOvertime.doc">
-                <div v-for="(it, index) in dataOvertime.doc.items" :key="index" class="table-item justify-between">
-                  <!-- bg-blue , bg-green , bg-red , bg-purple , :class="{ 'bg-blue': id === 1 }"-->
-                  <div v-show="tbhead[0].visible" class="cell">
-                    <template v-if="index < 9"> 0{{ index + 1 }} </template>
-                    <template v-else>{{ index + 1 }}</template>
-                  </div>
-
-                  <div v-show="tbhead[1].visible" class="cell">{{ it.code }}</div>
-
-                  <div v-show="tbhead[2].visible" class="cell">{{ it.name }}</div>
-
-                  <div v-show="tbhead[3].visible" class="cell">{{ it.date }}</div>
-
-                  <div v-show="tbhead[4].visible" class="cell">{{ it.begin_time }} - {{ it.finish_time }}</div>
-
-                  <div v-show="tbhead[5].visible" class="cell reason-cell">
-                    {{ it.reason }}
-                  </div>
-
-                  <div class="cell">
-                    <div class="relative w-full" @click.stop="toggleDropdownManager(it.id)">
-                      <!-- <template v-if="checkPermission('Overtime', 'Approval')"> -->
-                      <template v-if="it.manager_status_text == 'Đã phê duyệt'">
-                        <div class="status status-green status-body block w-full text-[13px]">Đã phê duyệt</div>
-                      </template>
-
-                      <template v-if="it.manager_status_text == 'Chờ phê duyệt'">
-                        <div class="status status-red status-body block w-full text-[13px]">Chờ phê duyệt</div>
-                      </template>
-
-                      <template v-if="it.manager_status_text == 'Đã từ chối'">
-                        <div class="status status-gray status-body block w-full text-[13px]">Không phê duyệt</div>
-                      </template>
-                      <!-- </template> -->
-
-                      <div
-                        class="invisible absolute right-0 left-0 z-[12] w-full opacity-0 transition"
-                        :class="{
-                          'visible opacity-100': activeDropdownManager === it.id,
-                        }"
-                      >
-                        <RadioGroupRoot
-                          v-model="radioStateSingle"
-                          class="flex flex-col overflow-hidden rounded-xl border border-solid border-[#EDEDF6] bg-white shadow-2xl"
-                          default-value="0"
-                        >
-                          <template v-if="it.manager_approved">
-                            <RadioGroupItem
-                              :id="`r1-${it.id}`"
-                              class="block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]"
-                              value="1"
-                              @click="handleManagerApprove(it.id, '1')"
-                            >
-                              <label
-                                class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
-                                :for="`r1-${it.id}`"
-                              >
-                                Duyệt
-                              </label>
-                            </RadioGroupItem>
-                            <RadioGroupItem
-                              :id="`r2-${it.id}`"
-                              class="block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]"
-                              value="2"
-                              @click="handleManagerApprove(it.id, '2')"
-                            >
-                              <label
-                                class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
-                                :for="`r2-${it.id}`"
-                              >
-                                Không duyệt
-                              </label>
-                            </RadioGroupItem>
-                          </template>
-                        </RadioGroupRoot>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="cell">
-                    <div class="relative w-full" @click.stop="toggleDropdownHuman(it.id)">
-                      <!-- <template v-if="checkPermission('Overtime', 'Approval')"> -->
-                      <template v-if="it.human_status_text == 'Đã phê duyệt'">
-                        <div class="status status-green status-body block w-full text-[13px]">Đã phê duyệt</div>
-                      </template>
-
-                      <template v-if="it.human_status_text == 'Chờ phê duyệt'">
-                        <div class="status status-red status-body block w-full text-[13px]">Chờ phê duyệt</div>
-                      </template>
-
-                      <template v-if="it.human_status_text == 'Đã từ chối'">
-                        <div class="status status-gray status-body block w-full text-[13px]">Không phê duyệt</div>
-                      </template>
-                      <!-- </template> -->
-
-                      <div
-                        class="invisible absolute right-0 left-0 z-[12] w-full opacity-0 transition"
-                        :class="{
-                          'visible opacity-100': activeDropdownHuman === it.id,
-                        }"
-                      >
-                        <RadioGroupRoot
-                          v-model="radioStateSingle"
-                          class="flex flex-col overflow-hidden rounded-xl border border-solid border-[#EDEDF6] bg-white shadow-2xl"
-                          default-value="0"
-                        >
-                          <template v-if="it.human_approved">
-                            <RadioGroupItem
-                              :id="`r1-${it.id}`"
-                              class="block cursor-pointer border-b border-solid border-[#EDEDF6] p-1.5 outline-none hover:bg-[#C4FFD0]"
-                              value="1"
-                              @click="handleHumanApprove(it.id, '1')"
-                            >
-                              <label
-                                class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
-                                :for="`r1-${it.id}`"
-                              >
-                                Duyệt
-                              </label>
-                            </RadioGroupItem>
-                            <RadioGroupItem
-                              :id="`r2-${it.id}`"
-                              class="block cursor-pointer p-1.5 outline-none hover:bg-[#FFC4C4]"
-                              value="2"
-                              @click="handleHumanApprove(it.id, '2')"
-                            >
-                              <label
-                                class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
-                                :for="`r2-${it.id}`"
-                              >
-                                Không duyệt
-                              </label>
-                            </RadioGroupItem>
-                          </template>
-                        </RadioGroupRoot>
-                      </div>
-                    </div>
-                  </div>
-
-                  <template v-if="it.action?.length > 0">
-                    <div class="cell">
-                      <div class="cell edit !bg-transparent !shadow-none">
-                        <template v-if="it.action?.[0]?.includes('edit')">
-                          <button
-                            type="button"
-                            class="cell-btn-edit shrink-0 cursor-pointer"
-                            @click="getDetailCategory(it.id)"
-                          >
-                            <img src="@/assets/images/action-edit-2.svg" alt="" />
-                          </button>
-                        </template>
-
-                        <template v-if="it.action?.[0]?.includes('delete')">
-                          <button
-                            type="button"
-                            class="cell-btn-delete shrink-0 cursor-pointer"
-                            @click="confirmDeleteOvertime(it.id)"
-                          >
-                            <img src="@/assets/images/action-edit-3.svg" alt="" />
-                          </button>
-                        </template>
-                      </div>
-                    </div>
-                  </template>
-                  <template v-else>
-                    <div class="cell"></div>
-                  </template>
-                </div>
-              </template>
-            </div>
+        <template v-if="isLoading">
+          <SkeletonTable :columns="8" :rows="10" class="mb-4" />
+        </template>
+        <template v-else-if="selectData.length > 0">
+          <OvertimeAccordionList
+            :items="selectData"
+            @edit="getDetailCategory"
+            @delete="confirmDeleteOvertime"
+            @approve-manager="handleManagerApprove"
+            @approve-human="handleHumanApprove"
+          />
+        </template>
+        <template v-else>
+          <div class="mb-4 rounded-[12px] border border-[#EDEDF6] bg-white py-8 text-center text-gray-500 shadow-sm">
+            Không có dữ liệu hiển thị
           </div>
-        </div>
+        </template>
 
-        <div class="tb-pagination flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4">
+        <div class="tb-pagination mt-4 flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4">
           <div class="relative">
             <select
               id="selectPerPage"
@@ -1052,7 +748,7 @@
       max-width="max-w-[670px]"
       @close="toggleModal('modalAddCateManager')"
     >
-      <div class="overflow-hidden rounded-[24px] bg-white p-[52px_24px_36px]">
+      <div class="rounded-[24px] bg-white p-[52px_24px_36px]">
         <div class="mb-12 text-center max-xl:mb-6">
           <h3 class="m-0 text-[16px] font-bold text-[#464661] uppercase">Thêm mới tăng ca</h3>
         </div>
@@ -1074,7 +770,7 @@
       max-width="max-w-[670px]"
       @close="toggleModal('modalEditCateManager')"
     >
-      <div class="overflow-hidden rounded-[24px] bg-white p-[52px_24px_36px]">
+      <div class="rounded-[24px] bg-white p-[52px_24px_36px]">
         <div class="mb-12 text-center max-xl:mb-6">
           <h3 class="m-0 text-[16px] font-bold text-[#464661] uppercase">Cập nhật tăng ca</h3>
         </div>
@@ -1101,7 +797,7 @@
       max-width="max-w-[512px]"
       @close="toggleModal('modalStatusConfirm')"
     >
-      <div class="overflow-hidden rounded-[24px] bg-white p-[45px_16px]">
+      <div class="rounded-[24px] bg-white p-[45px_16px]">
         <div class="mb-3 text-center text-[16px] font-bold text-[#464661] uppercase">Thông báo</div>
 
         <div class="mb-3 text-center">

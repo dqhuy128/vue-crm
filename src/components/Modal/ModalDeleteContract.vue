@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden rounded-[24px] bg-white p-[45px_16px]">
+  <div class="rounded-[24px] bg-white p-[45px_16px]">
     <div class="mb-3 text-center text-[16px] font-bold text-[#464661] uppercase">Thông báo</div>
 
     <div class="mb-3 text-center">

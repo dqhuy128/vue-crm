@@ -25,7 +25,7 @@
                   aria-label="Customise options"
                 >
                   <SelectValue
-                    class="font-inter w-[90%] grow overflow-hidden text-start text-[15px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                    class="font-inter w-[90%] grow text-start text-[15px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
                     placeholder="Chọn khối phòng ban"
                   />
                   <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
@@ -33,7 +33,7 @@
 
                 <SelectPortal>
                   <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
                     position="popper"
                     :side-offset="5"
                   >
@@ -322,7 +322,7 @@
       max-width="max-w-[670px]"
       @close="toggleModal('modalAddWorkHistory')"
     >
-      <div class="overflow-hidden rounded-[24px] bg-white p-[52px_24px_36px]">
+      <div class="rounded-[24px] bg-white p-[52px_24px_36px]">
         <div class="mb-12 text-center max-xl:mb-6">
           <h3 class="m-0 text-[16px] font-bold text-[#464661] uppercase">Lý do</h3>
         </div>

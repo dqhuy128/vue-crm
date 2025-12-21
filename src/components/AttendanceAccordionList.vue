@@ -124,7 +124,7 @@
       <div
         v-for="emp in employees"
         :key="emp.userId"
-        class="overflow-hidden rounded-[12px] border border-[#EDEDF6] bg-white shadow-sm transition-all duration-200 hover:shadow-md"
+        class="rounded-[12px] border border-[#EDEDF6] bg-white shadow-sm transition-all duration-200 hover:shadow-md"
       >
         <!-- Header (Always Visible) -->
         <div
@@ -169,7 +169,7 @@
         <!-- Body (Collapsible) -->
         <div v-if="openAccordions[emp.userId]" class="border-t border-[#EDEDF6] bg-[#FAFAFA]">
           <div class="p-4">
-            <div class="overflow-x-auto rounded-lg border border-[#EDEDF6] bg-white">
+            <div class="rounded-lg border border-[#EDEDF6] bg-white">
               <table class="w-full text-left text-sm">
                 <thead class="bg-[#F5F5F7] text-xs text-[#464661] uppercase">
                   <tr>

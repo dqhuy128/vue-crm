@@ -25,7 +25,7 @@
 
           <SelectPortal>
             <SelectContent
-              class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+              class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
               position="popper"
               :side-offset="5"
             >
@@ -175,7 +175,7 @@
     </div>
 
     <Modal :modal-active="modalPreviewActive" max-width="max-w-[1024px]" @close="modalPreviewActive = false">
-      <div class="overflow-hidden rounded-[24px] bg-white p-4">
+      <div class="rounded-[24px] bg-white p-4">
         <img v-if="previewUrl" :src="previewUrl" alt="preview" class="mx-auto max-h-[80vh] w-auto object-contain" />
       </div>
     </Modal>
@@ -406,7 +406,6 @@
       padding-block: 10px 10px;
       padding-right: 10px;
       white-space: nowrap;
-      overflow: hidden;
       text-overflow: ellipsis;
     }
 
