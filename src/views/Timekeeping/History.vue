@@ -596,7 +596,7 @@
 
   const paginate = reactive({
     page: 1,
-    per_page: 20,
+    per_page: 200,
   })
 
   // Generate pagination options from 10 to 200 in steps of 10
