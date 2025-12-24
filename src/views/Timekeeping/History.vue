@@ -19,7 +19,7 @@
 
             <!-- Filter: Staff/Department SelectRoot -->
             <div class="flex-[1]">
-              <SelectRoot v-model="paramsWorkHistory.staff_id" @update:model-value="fetchDataWorkHistory">
+              <SelectRoot v-model="paramsWorkHistory.staff_id">
                 <SelectTrigger
                   class="flex h-full w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
                   aria-label="Customise options"

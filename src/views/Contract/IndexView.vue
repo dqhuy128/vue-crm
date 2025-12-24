@@ -3,18 +3,18 @@
     <Breadcrums name="Hợp đồng" path="/leave/info" />
 
     <template v-if="toggleBoxFilters">
-      <div class="mb-5 max-w-[552px] rounded-[24px] bg-white p-2.5">
+      <div class="mb-5 rounded-[24px] bg-white p-2.5">
         <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchContract">
-          <div class="flex grow flex-wrap items-stretch gap-4">
-            <div class="flex-[100%]">
+          <div class="flex grow flex-wrap items-stretch gap-2">
+            <div class="flex-[1]">
               <SelectRoot v-model="params.status">
                 <SelectTrigger
                   class="flex h-full w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
                   aria-label="Customise options"
                 >
                   <SelectValue
-                    class="font-inter grow text-start text-[15px] leading-normal font-normal max-md:text-[14px]"
-                    placeholder="Chọn trạng thái"
+                    class="font-inter w-[90%] grow overflow-hidden text-start text-[15px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                    placeholder="Chọn tình trạng"
                   />
                   <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
                 </SelectTrigger>
@@ -37,7 +37,7 @@
                           class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
                           value="all"
                         >
-                          <SelectItemText> Tất cả trạng thái </SelectItemText>
+                          <SelectItemText> Tất cả tình trạng </SelectItemText>
                         </SelectItem>
 
                         <template v-for="item in Object.keys(StatusContractType)" :key="item">
@@ -46,7 +46,7 @@
                             :value="item"
                           >
                             <SelectItemText v-if="item === StatusContractType.PROCESS"> Còn hiệu lực </SelectItemText>
-                            <SelectItemText v-if="item === StatusContractType.TERMINATE"> Đã thanh lý </SelectItemText>
+                            <SelectItemText v-if="item === StatusContractType.TERMINATE"> Hết hiệu lực </SelectItemText>
                           </SelectItem>
                         </template>
                       </SelectGroup>
@@ -60,6 +60,78 @@
                   </SelectContent>
                 </SelectPortal>
               </SelectRoot>
+            </div>
+
+            <div class="flex-[1]">
+              <SelectRoot v-model="params.staff_id">
+                <SelectTrigger
+                  class="flex h-full w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
+                  aria-label="Customise options"
+                >
+                  <SelectValue
+                    class="font-inter w-[90%] grow overflow-hidden text-start text-[15px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                    placeholder="Chọn khối phòng ban"
+                  />
+                  <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+                </SelectTrigger>
+
+                <SelectPortal>
+                  <SelectContent
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    position="popper"
+                    :side-offset="5"
+                  >
+                    <SelectScrollUpButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
+
+                    <SelectViewport>
+                      <SelectGroup>
+                        <SelectItem
+                          class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                          value="all"
+                        >
+                          <SelectItemText> Tất cả bộ phận </SelectItemText>
+                        </SelectItem>
+                        <template v-for="item in flattenedDepartments" :key="item.id">
+                          <SelectItem
+                            class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
+                            :value="String(item.id)"
+                          >
+                            <SelectItemText>
+                              {{ item.displayName }}
+                            </SelectItemText>
+                          </SelectItem>
+                        </template>
+                      </SelectGroup>
+                    </SelectViewport>
+
+                    <SelectScrollDownButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
+                  </SelectContent>
+                </SelectPortal>
+              </SelectRoot>
+            </div>
+
+            <div class="flex-[1]">
+              <VueDatePicker
+                v-model="datepicker"
+                class="contract-datepicker"
+                :enable-time-picker="false"
+                locale="vi"
+                :format-locale="vi"
+                cancel-text="Huỷ"
+                select-text="Chọn"
+                range
+                format="dd/MM/yyyy"
+                :max-date="new Date()"
+                @update:model-value="updateDates"
+              />
             </div>
           </div>
 
@@ -565,8 +637,13 @@
 </template>
 
 <script lang="ts" setup>
+  import '@vuepic/vue-datepicker/dist/main.css'
+
   import { Icon } from '@iconify/vue'
+  import VueDatePicker from '@vuepic/vue-datepicker'
   import axios from 'axios'
+  import { format } from 'date-fns'
+  import { vi } from 'date-fns/locale'
   import { storeToRefs } from 'pinia'
   import {
     SelectContent,
@@ -731,8 +808,25 @@
     status: null,
     name: null,
     type: null,
-    sort: 'code|asc', // Default sorting by employee code
+    sort: 'code|asc',
+    begin_date: '',
+    finish_date: '',
+    staff_id: '',
   })
+
+  const datepicker = ref<any | null>(null)
+  const startDate = new Date(new Date().setDate(1))
+  const endDate = new Date()
+  datepicker.value = [startDate, endDate]
+  params.begin_date = format(startDate, 'yyyy-MM-dd')
+  params.finish_date = format(endDate, 'yyyy-MM-dd')
+
+  const updateDates = () => {
+    if (datepicker.value) {
+      params.begin_date = format(datepicker.value[0], 'yyyy-MM-dd')
+      params.finish_date = format(datepicker.value[1], 'yyyy-MM-dd')
+    }
+  }
 
   const paginate = reactive({
     page: 1,
@@ -779,6 +873,56 @@
       await fetchDataContract()
     }
   }
+
+  const departmentTree = ref<any | null>(null)
+  const fetchDepartmentTree = async () => {
+    try {
+      const response = await axios.get(`${apiUri}/categories/staff`, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      departmentTree.value = response.data.data
+    } catch (error) {
+      console.error('fetchDepartmentTree error:', error)
+    }
+  }
+
+  const flattenDepartmentTree = (treeData: any[], level: number = 0): any[] => {
+    const result: any[] = []
+
+    if (!Array.isArray(treeData)) return result
+
+    const flattenNode = (node: any, currentLevel: number) => {
+      let indentStr = ''
+      if (currentLevel > 0) {
+        indentStr = '  '.repeat(currentLevel - 1) + '└─ '
+      }
+
+      result.push({
+        id: node.id,
+        name: node.name,
+        displayName: indentStr + node.name,
+        level: currentLevel,
+      })
+
+      if (node.children && Array.isArray(node.children)) {
+        node.children.forEach((child: any) => {
+          flattenNode(child, currentLevel + 1)
+        })
+      }
+    }
+
+    treeData.forEach((node: any) => {
+      flattenNode(node, level)
+    })
+
+    return result
+  }
+
+  const flattenedDepartments = computed(() => {
+    return flattenDepartmentTree(departmentTree.value || [])
+  })
 
   const dataEditContract = ref<any | null>(null)
   const handleEditContract = async (id: number) => {
@@ -897,6 +1041,19 @@
     { deep: true, immediate: true }
   )
 
+  watch(datepicker, () => {
+    if (auth.check()) {
+      updateDates()
+    }
+  })
+
+  watch(
+    () => params.staff_id,
+    () => {
+      if (params.staff_id === 'all') params.staff_id = ''
+    }
+  )
+
   watch(
     paginate,
     async () => {
@@ -912,6 +1069,7 @@
 
   onMounted(() => {
     if (auth.check()) {
+      fetchDepartmentTree()
       fetchDataContract()
     }
 
@@ -985,6 +1143,12 @@
     select {
       appearance: none;
       width: 100%;
+    }
+  }
+
+  .contract-datepicker {
+    :deep(.dp__input) {
+      border-radius: 24px;
     }
   }
 </style>

@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-import { RadioGroupItem, RadioGroupRoot } from 'radix-vue'
-import { computed, onBeforeUnmount,onMounted, ref } from 'vue'
+  import { Icon } from '@iconify/vue'
+  import { RadioGroupItem, RadioGroupRoot } from 'radix-vue'
+  import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
-interface ExplanationItem {
-  id: string
-  code: string
-  name: string
-  work_date: string
-  reason: string
-  image?: string
-  origin_image?: string
-  manager_status_text: string
-  manager_approved: boolean
-  human_status_text: string
-  human_approved: boolean
-  action: string[]
-}
+  interface ExplanationItem {
+    id: string
+    code: string
+    name: string
+    work_date: string
+    reason: string
+    image?: string
+    origin_image?: string
+    manager_status_text: string
+    manager_approved: boolean
+    human_status_text: string
+    human_approved: boolean
+    action: string[]
+  }
 
-interface Props {
-  items: ExplanationItem[]
-}
+  interface Props {
+    items: ExplanationItem[]
+  }
 
   const props = defineProps<Props>()
 
@@ -34,65 +34,65 @@ interface Props {
 
   // --- Data Transformation ---
   const employees = computed(() => {
-  const groups: Record<string, { name: string; code: string; logs: ExplanationItem[] }> = {}
+    const groups: Record<string, { name: string; code: string; logs: ExplanationItem[] }> = {}
 
-  props.items.forEach((item) => {
-    // Group by employee code
-    const key = item.code
-    if (!groups[key]) {
-      groups[key] = {
-        name: item.name,
-        code: item.code,
-        logs: [],
+    props.items.forEach((item) => {
+      // Group by employee code
+      const key = item.code
+      if (!groups[key]) {
+        groups[key] = {
+          name: item.name,
+          code: item.code,
+          logs: [],
+        }
       }
-    }
-    groups[key].logs.push(item)
+      groups[key].logs.push(item)
+    })
+
+    return Object.values(groups)
   })
 
-  return Object.values(groups)
-})
+  // --- Accordion State ---
+  const openAccordions = ref<Record<string, boolean>>({})
 
-// --- Accordion State ---
-const openAccordions = ref<Record<string, boolean>>({})
+  const toggleAccordion = (key: string) => {
+    openAccordions.value[key] = !openAccordions.value[key]
+  }
 
-const toggleAccordion = (key: string) => {
-  openAccordions.value[key] = !openAccordions.value[key]
-}
+  // --- Dropdown State ---
+  const activeDropdownManager = ref<string | null>(null)
+  const activeDropdownHuman = ref<string | null>(null)
+  const radioStateSingle = ref('0') // Dummy ref for v-model, actual logic handles click
 
-// --- Dropdown State ---
-const activeDropdownManager = ref<string | null>(null)
-const activeDropdownHuman = ref<string | null>(null)
-const radioStateSingle = ref('0') // Dummy ref for v-model, actual logic handles click
+  const toggleDropdownManager = (id: string) => {
+    activeDropdownManager.value = activeDropdownManager.value === id ? null : id
+    activeDropdownHuman.value = null
+  }
 
-const toggleDropdownManager = (id: string) => {
-  activeDropdownManager.value = activeDropdownManager.value === id ? null : id
-  activeDropdownHuman.value = null
-}
+  const toggleDropdownHuman = (id: string) => {
+    activeDropdownHuman.value = activeDropdownHuman.value === id ? null : id
+    activeDropdownManager.value = null
+  }
 
-const toggleDropdownHuman = (id: string) => {
-  activeDropdownHuman.value = activeDropdownHuman.value === id ? null : id
-  activeDropdownManager.value = null
-}
+  const closeDropdowns = () => {
+    activeDropdownManager.value = null
+    activeDropdownHuman.value = null
+  }
 
-const closeDropdowns = () => {
-  activeDropdownManager.value = null
-  activeDropdownHuman.value = null
-}
+  onMounted(() => {
+    document.addEventListener('click', closeDropdowns)
+  })
 
-onMounted(() => {
-  document.addEventListener('click', closeDropdowns)
-})
+  onBeforeUnmount(() => {
+    document.removeEventListener('click', closeDropdowns)
+  })
 
-onBeforeUnmount(() => {
-  document.removeEventListener('click', closeDropdowns)
-})
-
-// Close dropdowns when clicking elsewhere (handled by parent or local logic?)
-// For now, simpler to just toggle.
+  // Close dropdowns when clicking elsewhere (handled by parent or local logic?)
+  // For now, simpler to just toggle.
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 font-inter">
+  <div class="font-inter flex flex-col gap-4">
     <template v-if="employees.length > 0">
       <div
         v-for="emp in employees"
@@ -158,7 +158,7 @@ onBeforeUnmount(() => {
                     <td class="px-4 py-3 font-medium text-[#464661]">
                       {{ it.work_date }}
                     </td>
-                    <td class="max-w-[200px] px-4 py-3 text-gray-600 truncate" :title="it.reason">
+                    <td class="max-w-[200px] truncate px-4 py-3 text-gray-600" :title="it.reason">
                       {{ it.reason }}
                     </td>
                     <td class="px-4 py-3">
@@ -171,7 +171,7 @@ onBeforeUnmount(() => {
                         <img src="@/assets/images/action-edit-1.svg" alt="Preview" />
                       </button>
                     </td>
-                    
+
                     <!-- Manager Approval -->
                     <td class="px-4 py-3">
                       <div class="relative w-full cursor-pointer" @click.stop="toggleDropdownManager(it.id)">
@@ -185,11 +185,13 @@ onBeforeUnmount(() => {
                           <div class="status status-gray status-body block w-full text-[13px]">Không phê duyệt</div>
                         </template>
                         <template v-else>
-                           <div class="status status-body block w-full text-[13px]">{{ it.manager_status_text || '---' }}</div>
+                          <div class="status status-body block w-full text-[13px]">
+                            {{ it.manager_status_text || '---' }}
+                          </div>
                         </template>
 
                         <div
-                          class="invisible absolute left-0 right-0 z-[12] w-full opacity-0 transition"
+                          class="invisible absolute right-0 left-0 z-[12] w-full opacity-0 transition"
                           :class="{ 'visible opacity-100': activeDropdownManager === it.id }"
                         >
                           <RadioGroupRoot
@@ -203,7 +205,10 @@ onBeforeUnmount(() => {
                                 value="1"
                                 @click="$emit('approve-manager', it.id, '1')"
                               >
-                                <label class="cursor-pointer text-center text-[10px] font-normal text-[#464661]" :for="`mgr-r1-${it.id}`">
+                                <label
+                                  class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
+                                  :for="`mgr-r1-${it.id}`"
+                                >
                                   Duyệt
                                 </label>
                               </RadioGroupItem>
@@ -213,7 +218,10 @@ onBeforeUnmount(() => {
                                 value="2"
                                 @click="$emit('approve-manager', it.id, '2')"
                               >
-                                <label class="cursor-pointer text-center text-[10px] font-normal text-[#464661]" :for="`mgr-r2-${it.id}`">
+                                <label
+                                  class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
+                                  :for="`mgr-r2-${it.id}`"
+                                >
                                   Không duyệt
                                 </label>
                               </RadioGroupItem>
@@ -236,11 +244,13 @@ onBeforeUnmount(() => {
                           <div class="status status-gray status-body block w-full text-[13px]">Không phê duyệt</div>
                         </template>
                         <template v-else>
-                           <div class="status status-body block w-full text-[13px]">{{ it.human_status_text || '---' }}</div>
+                          <div class="status status-body block w-full text-[13px]">
+                            {{ it.human_status_text || '---' }}
+                          </div>
                         </template>
 
                         <div
-                          class="invisible absolute left-0 right-0 z-[12] w-full opacity-0 transition"
+                          class="invisible absolute right-0 left-0 z-[12] w-full opacity-0 transition"
                           :class="{ 'visible opacity-100': activeDropdownHuman === it.id }"
                         >
                           <RadioGroupRoot
@@ -254,7 +264,10 @@ onBeforeUnmount(() => {
                                 value="1"
                                 @click="$emit('approve-human', it.id, '1')"
                               >
-                                <label class="cursor-pointer text-center text-[10px] font-normal text-[#464661]" :for="`hr-r1-${it.id}`">
+                                <label
+                                  class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
+                                  :for="`hr-r1-${it.id}`"
+                                >
                                   Duyệt
                                 </label>
                               </RadioGroupItem>
@@ -264,7 +277,10 @@ onBeforeUnmount(() => {
                                 value="2"
                                 @click="$emit('approve-human', it.id, '2')"
                               >
-                                <label class="cursor-pointer text-center text-[10px] font-normal text-[#464661]" :for="`hr-r2-${it.id}`">
+                                <label
+                                  class="cursor-pointer text-center text-[10px] font-normal text-[#464661]"
+                                  :for="`hr-r2-${it.id}`"
+                                >
                                   Không duyệt
                                 </label>
                               </RadioGroupItem>
@@ -305,8 +321,6 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </template>
-    <div v-else class="py-8 text-center text-gray-500">
-      Không có dữ liệu hiển thị
-    </div>
+    <div v-else class="py-8 text-center text-gray-500">Không có dữ liệu hiển thị</div>
   </div>
 </template>

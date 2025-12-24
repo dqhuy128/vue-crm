@@ -89,10 +89,11 @@
               class="flex w-full flex-wrap items-center rounded-[8px] border border-solid border-[#EDEDF6] bg-white p-2.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
               aria-label="Customise options"
             >
-                          <SelectValue
-                            class="font-inter w-[90%] grow text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
-                            placeholder="Chọn trạng thái"
-                          />              <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
+              <SelectValue
+                class="font-inter w-[90%] grow text-start text-[16px] leading-normal font-normal text-ellipsis whitespace-nowrap max-md:text-[14px]"
+                placeholder="Chọn trạng thái"
+              />
+              <Icon icon="radix-icons:chevron-down" class="h-3.5 w-3.5" />
             </SelectTrigger>
 
             <SelectPortal>
