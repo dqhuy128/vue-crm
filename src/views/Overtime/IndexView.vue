@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-  import { Icon } from '@iconify/vue'
   import '@vuepic/vue-datepicker/dist/main.css'
+
+  import { Icon } from '@iconify/vue'
   import VueDatePicker from '@vuepic/vue-datepicker'
   import axios from 'axios'
   import { endOfDay, format, startOfMonth } from 'date-fns'

@@ -257,7 +257,7 @@
                 range
                 format="dd/MM/yyyy"
                 :max-date="new Date()"
-                placeholder="Chọn khoảng thời gian"
+                placeholder="Chọn thời gian"
                 @update:model-value="updateDates"
               />
             </div>
@@ -1280,7 +1280,7 @@
     return []
   })
 
-  const datepicker = ref<any | null>([startOfMonth(new Date()), endOfDay(new Date())])
+  const datepicker = ref<any | null>(null)
   const updateDates = () => {
     if (datepicker.value && datepicker.value[0] && datepicker.value[1]) {
       params.begin_date = format(datepicker.value[0], 'yyyy-MM-dd')
