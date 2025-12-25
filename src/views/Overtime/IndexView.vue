@@ -1,6 +1,10 @@
 <script lang="ts" setup>
   import { Icon } from '@iconify/vue'
+  import '@vuepic/vue-datepicker/dist/main.css'
+  import VueDatePicker from '@vuepic/vue-datepicker'
   import axios from 'axios'
+  import { endOfDay, format, startOfMonth } from 'date-fns'
+  import { vi } from 'date-fns/locale/vi'
   import { storeToRefs } from 'pinia'
   import {
     SelectContent,
@@ -163,12 +167,16 @@
   interface OvertimeParams {
     type: string
     name: string
-    staff_id: string // New staff_id filter
+    staff_id: string
+    begin_date: string
+    finish_date: string
   }
   const params: OvertimeParams = reactive({
     type: '',
     name: '',
     staff_id: '', // Initialize staff_id
+    begin_date: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
+    finish_date: format(endOfDay(new Date()), 'yyyy-MM-dd'),
   })
   const paginate = reactive({
     page: 1,
@@ -203,6 +211,24 @@
       })
     }, 300)
   }
+
+  const datepicker = ref<any | null>([startOfMonth(new Date()), endOfDay(new Date())])
+  const updateDates = () => {
+    if (datepicker.value && datepicker.value[0] && datepicker.value[1]) {
+      params.begin_date = format(datepicker.value[0], 'yyyy-MM-dd')
+      params.finish_date = format(datepicker.value[1], 'yyyy-MM-dd')
+    } else {
+      params.begin_date = ''
+      params.finish_date = ''
+    }
+    fetchDataOvertime()
+  }
+
+  watch(datepicker, () => {
+    if (auth.check()) {
+      updateDates()
+    }
+  })
 
   const handlePageChange = (pageNum: number) => {
     // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
@@ -575,7 +601,7 @@
 
                 <SelectPortal>
                   <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
                     position="popper"
                     :side-offset="5"
                   >
@@ -616,19 +642,23 @@
               </SelectRoot>
             </div>
 
-            <!-- Filter: Datepicker (modified layout and handler - using placeholder datepicker for now as it wasn't in original params but requested for consistency) -->
-            <!-- Note: original file didn't use datepicker for params, but UI request implies it. I will keep the div structure for layout 4 items per row. -->
-            <!-- If no datepicker variable exists, I will omit or add a placeholder. The previous file didn't have 'datepicker' ref. -->
-            <!-- Checking previous file content... it did NOT have datepicker. I will add a placeholder empty div or comment to maintain layout or add it if needed. -->
-            <!-- Actually, user said "áp dụng tương tự" which implies adding the date picker if missing or styling it if present. -->
-            <!-- Since `params` doesn't have date fields, I will add a placeholder Select for now or just an empty div to complete the row of 4 if needed, OR just leave it as 3 items. -->
-            <!-- Wait, "áp dụng tất cả những thay đổi trên" implies adding the staff filter. It currently has Type and Name. Adding Staff makes 3. -->
-            <!-- Explain.vue had 4 items (Name, Status, Staff, Date). -->
-            <!-- History.vue had 4 items (Name/Searchable, Date). -->
-            <!-- Overtime.vue has Type, Name. Adding Staff makes 3. -->
-            <!-- I will style for 4 items per row but only render 3 for now, or 3 items per row if that looks better. -->
-            <!-- The request said "style lại để các box flex đều trên 1 hàng". If 3 items, they should likely be 33% or 25%? -->
-            <!-- I'll use the same 25% width logic (lg:w-[calc((100%-24px)/4)]) so they align with other pages, leaving space for a 4th. -->
+            <!-- Filter: Datepicker -->
+            <div class="flex-[1]">
+              <VueDatePicker
+                v-model="datepicker"
+                class="overtime-datepicker"
+                :enable-time-picker="false"
+                locale="vi"
+                :format-locale="vi"
+                cancel-text="Huỷ"
+                select-text="Chọn"
+                range
+                format="dd/MM/yyyy"
+                :max-date="new Date()"
+                placeholder="Chọn khoảng thời gian"
+                @update:model-value="updateDates"
+              />
+            </div>
           </div>
 
           <button
@@ -1207,6 +1237,12 @@
 
 <style lang="scss">
   @import '../../styles/table.module.scss';
+
+  .overtime-datepicker {
+    .dp__input {
+      border-radius: 24px;
+    }
+  }
 
   .status {
     display: inline-flex;

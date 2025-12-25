@@ -42,10 +42,15 @@
 
                 <SelectPortal>
                   <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
                     position="popper"
                     :side-offset="5"
                   >
+                    <SelectScrollUpButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
                     <SelectViewport>
                       <SelectGroup>
                         <SelectItem
@@ -66,6 +71,11 @@
                         </template>
                       </SelectGroup>
                     </SelectViewport>
+                    <SelectScrollDownButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
                   </SelectContent>
                 </SelectPortal>
               </SelectRoot>
@@ -86,10 +96,15 @@
 
                 <SelectPortal>
                   <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
                     position="popper"
                     :side-offset="5"
                   >
+                    <SelectScrollUpButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
                     <SelectViewport>
                       <SelectGroup>
                         <SelectItem
@@ -110,6 +125,11 @@
                         </template>
                       </SelectGroup>
                     </SelectViewport>
+                    <SelectScrollDownButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
                   </SelectContent>
                 </SelectPortal>
               </SelectRoot>
@@ -130,10 +150,15 @@
 
                 <SelectPortal>
                   <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
                     position="popper"
                     :side-offset="5"
                   >
+                    <SelectScrollUpButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
                     <SelectViewport>
                       <SelectGroup>
                         <SelectItem
@@ -156,6 +181,11 @@
                         </template>
                       </SelectGroup>
                     </SelectViewport>
+                    <SelectScrollDownButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
                   </SelectContent>
                 </SelectPortal>
               </SelectRoot>
@@ -176,10 +206,15 @@
 
                 <SelectPortal>
                   <SelectContent
-                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] overflow-hidden rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
+                    class="SelectContent data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-[102] rounded-lg bg-[#FAFAFA] will-change-[opacity,transform]"
                     position="popper"
                     :side-offset="5"
                   >
+                    <SelectScrollUpButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-up" />
+                    </SelectScrollUpButton>
                     <SelectViewport>
                       <SelectGroup>
                         <SelectItem
@@ -200,9 +235,31 @@
                         </template>
                       </SelectGroup>
                     </SelectViewport>
+                    <SelectScrollDownButton
+                      class="text-violet11 flex h-[25px] cursor-default items-center justify-center bg-white"
+                    >
+                      <Icon icon="radix-icons:chevron-down" />
+                    </SelectScrollDownButton>
                   </SelectContent>
                 </SelectPortal>
               </SelectRoot>
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <VueDatePicker
+                v-model="datepicker"
+                class="work-history-datepicker"
+                :enable-time-picker="false"
+                locale="vi"
+                :format-locale="vi"
+                cancel-text="Huỷ"
+                select-text="Chọn"
+                range
+                format="dd/MM/yyyy"
+                :max-date="new Date()"
+                placeholder="Chọn khoảng thời gian"
+                @update:model-value="updateDates"
+              />
             </div>
           </div>
 
@@ -818,8 +875,13 @@
 </template>
 
 <script lang="ts" setup>
+  import '@vuepic/vue-datepicker/dist/main.css'
+
   import { Icon } from '@iconify/vue'
+  import VueDatePicker from '@vuepic/vue-datepicker'
   import axios from 'axios'
+  import { endOfDay, format, startOfMonth } from 'date-fns'
+  import { vi } from 'date-fns/locale/vi'
   import { storeToRefs } from 'pinia'
   import {
     SelectContent,
@@ -828,6 +890,8 @@
     SelectItemText,
     SelectPortal,
     SelectRoot,
+    SelectScrollDownButton,
+    SelectScrollUpButton,
     SelectTrigger,
     SelectValue,
     SelectViewport,
@@ -1053,6 +1117,8 @@
     per_group_name: '',
     phone: '',
     sort: 'name|asc', // Default sorting
+    begin_date: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
+    finish_date: format(endOfDay(new Date()), 'yyyy-MM-dd'),
   })
   const paginate = reactive({
     page: 1,
@@ -1212,6 +1278,24 @@
     }
 
     return []
+  })
+
+  const datepicker = ref<any | null>([startOfMonth(new Date()), endOfDay(new Date())])
+  const updateDates = () => {
+    if (datepicker.value && datepicker.value[0] && datepicker.value[1]) {
+      params.begin_date = format(datepicker.value[0], 'yyyy-MM-dd')
+      params.finish_date = format(datepicker.value[1], 'yyyy-MM-dd')
+    } else {
+      params.begin_date = ''
+      params.finish_date = ''
+    }
+    handleFilterChange()
+  }
+
+  watch(datepicker, () => {
+    if (auth.check()) {
+      updateDates()
+    }
   })
 
   const handlePageChange = (pageNum: number) => {
@@ -1572,4 +1656,10 @@
   }
 </style>
 
-<style lang="scss"></style>
+<style lang="scss">
+  .user-datepicker {
+    .dp__input {
+      border-radius: 24px;
+    }
+  }
+</style>
