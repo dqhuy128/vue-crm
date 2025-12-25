@@ -837,7 +837,7 @@
   // Table loading state
   const { isTableLoading, withLoading } = useTableLoading()
   const fetchDataContract = async () => {
-    await withLoading(async () => {
+    try {
       const res = {
         ...params,
         page: paginate.page,
@@ -852,7 +852,9 @@
       })
       dataContractRef.value = data
       tableMagic()
-    })
+    } catch (error) {
+      console.error('fetchDataContract error:', error)
+    }
   }
 
   const handlePageChange = (pageNum: number) => {

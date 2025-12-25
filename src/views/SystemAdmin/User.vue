@@ -880,7 +880,7 @@
   import { Icon } from '@iconify/vue'
   import VueDatePicker from '@vuepic/vue-datepicker'
   import axios from 'axios'
-  import { endOfDay, format, startOfMonth } from 'date-fns'
+  import { format } from 'date-fns'
   import { vi } from 'date-fns/locale/vi'
   import { storeToRefs } from 'pinia'
   import {
@@ -1117,8 +1117,8 @@
     per_group_name: '',
     phone: '',
     sort: 'name|asc', // Default sorting
-    begin_date: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
-    finish_date: format(endOfDay(new Date()), 'yyyy-MM-dd'),
+    begin_date: '',
+    finish_date: '',
   })
   const paginate = reactive({
     page: 1,
