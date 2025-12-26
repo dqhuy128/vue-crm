@@ -196,6 +196,20 @@
       >
         Giải trình chấm công
       </div>
+
+      <!-- BUTTON EXPORT -->
+      <template v-if="checkPermission('Work', 'Export')">
+        <button
+          type="button"
+          :disabled="isLoadingExportExplanation"
+          class="hover:shadow-hoverinset ms-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-[24px] bg-[#013878] p-[7px_16px] transition disabled:cursor-not-allowed disabled:opacity-50 max-md:flex-[100%]"
+          @click="handleExportExplanation"
+        >
+          <span class="font-inter text-[15px] leading-normal font-semibold text-white">
+            {{ isLoadingExportExplanation ? 'Đang xuất...' : 'Xuất Excel' }}
+          </span>
+        </button>
+      </template>
     </div>
 
     <div v-show="!permissionList.length || checkPermission('Work', 'Explanation')" class="flex h-full flex-col">
@@ -827,6 +841,7 @@
 
   const isFetching = ref(false)
   const isInitialLoad = ref(true)
+  const isLoadingExportExplanation = ref(false)
 
   // Computed property to normalize actions without mutating original data
   const normalizedItems = computed(() => {
@@ -1114,6 +1129,38 @@
       fetchDataWorkExplain()
     } catch (error) {
       console.error('handleDeleteExplain error:', error)
+    }
+  }
+
+  const handleExportExplanation = async () => {
+    try {
+      isLoadingExportExplanation.value = true
+
+      const res = await axios.get(`${apiUri}/work/ExportExplanation`, {
+        params: {
+          begin_date: paramsWorkExplain.begin_date,
+          finish_date: paramsWorkExplain.finish_date,
+          name: paramsWorkExplain.name,
+          status: paramsWorkExplain.status,
+          staff_id: paramsWorkExplain.staff_id,
+        },
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+
+      // Tải file trực tiếp từ file_path trong response
+      if (res.data?.data?.file_path) {
+        const link = document.createElement('a')
+        link.href = res.data.data.file_path
+        link.target = '_blank'
+        link.download = res.data.data.file_name || 'export.xlsx'
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+      }
+    } finally {
+      isLoadingExportExplanation.value = false
     }
   }
 </script>

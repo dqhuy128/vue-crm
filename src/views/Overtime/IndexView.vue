@@ -303,6 +303,38 @@
 
   const dataPostRequestDelete = ref<any | null>(null)
 
+  const handleExportOvertime = async () => {
+    try {
+      isLoadingExportOvertime.value = true
+
+      const res = await axios.get(`${apiUri}/orvertime/export`, {
+        params: {
+          begin_date: params.begin_date,
+          finish_date: params.finish_date,
+          name: params.name,
+          staff_id: params.staff_id,
+          type: params.type,
+        },
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+
+      // Tải file trực tiếp từ file_path trong response
+      if (res.data?.data?.file_path) {
+        const link = document.createElement('a')
+        link.href = res.data.data.file_path
+        link.target = '_blank'
+        link.download = res.data.data.file_name || 'export.xlsx'
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+      }
+    } finally {
+      isLoadingExportOvertime.value = false
+    }
+  }
+
   const handleManagerApprove = async (id: string, status: string) => {
     const formData = new FormData()
     formData.append('id', id)
@@ -386,6 +418,8 @@
       activeDropdownHuman.value = id
     }
   }
+
+  const isLoadingExportOvertime = ref(false)
 
   const overtimeItem = ref<any | null>(null)
   const radioStateSingle = ref('0')
@@ -791,8 +825,22 @@
         </div>
       </div>
 
-      <template v-if="checkPermission('Orvertime', 'Create')">
-        <div class="ms-auto inline-flex flex-wrap items-center gap-4">
+      <div class="ms-auto inline-flex flex-wrap items-center gap-4">
+        <!-- BUTTON EXPORT -->
+        <template v-if="checkPermission('Orvertime', 'Export')">
+          <button
+            type="button"
+            :disabled="isLoadingExportOvertime"
+            class="hover:shadow-hoverinset ms-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-[24px] bg-[#013878] p-[7px_16px] transition disabled:cursor-not-allowed disabled:opacity-50 max-md:flex-[100%]"
+            @click="handleExportOvertime"
+          >
+            <span class="font-inter text-[15px] leading-normal font-semibold text-white">
+              {{ isLoadingExportOvertime ? 'Đang xuất...' : 'Xuất Excel' }}
+            </span>
+          </button>
+        </template>
+
+        <template v-if="checkPermission('Orvertime', 'Create')">
           <button
             id="tableAdding"
             type="button"
@@ -802,8 +850,8 @@
             <img src="@/assets/images/si_add-fill.svg" alt="" />
             <span class="font-inter text-[16px] leading-normal font-bold text-white max-md:text-[14px]"> Tăng ca </span>
           </button>
-        </div>
-      </template>
+        </template>
+      </div>
     </div>
 
     <template v-if="checkPermission('Orvertime', 'List')">
