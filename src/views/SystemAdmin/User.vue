@@ -469,8 +469,8 @@
                   <!-- bg-blue , bg-green , bg-red , bg-purple , :class="{ 'bg-blue': id === 1 }"-->
 
                   <div v-show="tbhead[0].visible" class="cell">
-                    <template v-if="index < 9"> 0{{ index + 1 }} </template>
-                    <template v-else>{{ index + 1 }}</template>
+                    <template v-if="Number(index) < 9"> 0{{ Number(index) + 1 }} </template>
+                    <template v-else>{{ Number(index) + 1 }}</template>
                   </div>
 
                   <div v-show="tbhead[1].visible" class="cell">
@@ -530,6 +530,20 @@
                   </div>
 
                   <div v-show="tbhead[15].visible" class="cell">
+                    {{ item?.working_day }}
+                  </div>
+
+                  <div v-show="tbhead[16].visible" class="cell">
+                    {{ item?.official_day }}
+                  </div>
+
+                  <div v-show="tbhead[17].visible" class="cell">
+                    <template v-if="Number(item?.status) === 2">
+                      {{ item?.day_off }}
+                    </template>
+                  </div>
+
+                  <div v-show="tbhead[18].visible" class="cell">
                     <template v-if="Number(item?.status) === 1">
                       <div class="cell justify-center">
                         <div
@@ -548,20 +562,6 @@
                           <Icon icon="radix-icons:cross-1" class="h-2 w-2 lg:h-3 lg:w-3" />
                         </div>
                       </div>
-                    </template>
-                  </div>
-
-                  <div v-show="tbhead[16].visible" class="cell">
-                    {{ item?.working_day }}
-                  </div>
-
-                  <div v-show="tbhead[17].visible" class="cell">
-                    {{ item?.official_day }}
-                  </div>
-
-                  <div v-show="tbhead[18].visible" class="cell">
-                    <template v-if="Number(item?.status) === 2">
-                      {{ item?.updated_at }}
                     </template>
                   </div>
 
@@ -1068,11 +1068,6 @@
       visible: true,
     },
     {
-      title: 'Trạng thái',
-      hasSort: false,
-      visible: true,
-    },
-    {
       title: 'Ngày bắt đầu',
       hasSort: false,
       visible: true,
@@ -1083,7 +1078,12 @@
       visible: true,
     },
     {
-      title: 'Ngày kết thúc',
+      title: 'Ngày nghỉ việc',
+      hasSort: false,
+      visible: true,
+    },
+    {
+      title: 'Trạng thái',
       hasSort: false,
       visible: true,
     },
