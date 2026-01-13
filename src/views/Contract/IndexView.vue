@@ -541,7 +541,7 @@
       max-width="max-w-[670px]"
       @close="toggleModal('modalEditContract')"
     >
-      <div class="overflow-hidden rounded-[24px] bg-white p-[52px_24px_36px]">
+      <div class="rounded-[24px] bg-white p-[52px_24px_36px]">
         <div class="mb-12 text-center max-xl:mb-6">
           <h3 class="m-0 text-[16px] font-bold text-[#464661] uppercase">Sửa hợp đồng</h3>
         </div>
