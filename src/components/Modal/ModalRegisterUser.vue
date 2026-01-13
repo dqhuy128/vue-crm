@@ -865,7 +865,7 @@
     pickerDateissue.value = new Date(new Date().setDate(new Date().getDate() + 1))
     pickerWorkingDay.value = new Date(new Date().setDate(new Date().getDate() + 1))
     pickerOfficialDay.value = new Date(new Date().setDate(new Date().getDate() + 1))
-    pickerDayOff.value = new Date(new Date().setDate(new Date().getDate() + 1))
+    // pickerDayOff.value starts as null (no default date)
   }
   const updateDates = () => {
     if (pickerDOB.value) {
