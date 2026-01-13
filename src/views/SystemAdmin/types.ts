@@ -33,6 +33,7 @@ export interface ItemUser {
   work_contract: string | null
   working_day: string
   official_day: string | null
+  day_off: string | null
   mcc_user_id: string
   bank_ncb_nunber: string | null
   marital_status: string | null

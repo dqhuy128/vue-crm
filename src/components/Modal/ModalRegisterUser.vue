@@ -261,6 +261,17 @@
             />
           </div>
           <div class="col-span-12 md:col-span-6 xl:col-span-4">
+            <label class="text-[14px] font-semibold text-[#464661]">Ngày tháng nghỉ việc</label>
+            <VueDatePicker
+              v-model="pickerDayOff"
+              :enable-time="false"
+              :format="'dd/MM/yyyy'"
+              locale="vi"
+              :text-input="true"
+              input-class-name="h-[38px] w-full rounded-lg border border-[#ededf6] px-3 focus:outline-none bg-white"
+            />
+          </div>
+          <div class="col-span-12 md:col-span-6 xl:col-span-4">
             <label class="text-[14px] font-semibold text-[#464661]">Ngày lên chính thức</label>
             <VueDatePicker
               v-model="pickerOfficialDay"
@@ -842,6 +853,7 @@
   const pickerDateissue = ref<any | null>(null)
   const pickerWorkingDay = ref<any | null>(null)
   const pickerOfficialDay = ref<any | null>(null)
+  const pickerDayOff = ref<any | null>(null)
   const showPassword = ref(false)
 
   const togglePasswordVisibility = () => {
@@ -853,6 +865,7 @@
     pickerDateissue.value = new Date(new Date().setDate(new Date().getDate() + 1))
     pickerWorkingDay.value = new Date(new Date().setDate(new Date().getDate() + 1))
     pickerOfficialDay.value = new Date(new Date().setDate(new Date().getDate() + 1))
+    pickerDayOff.value = new Date(new Date().setDate(new Date().getDate() + 1))
   }
   const updateDates = () => {
     if (pickerDOB.value) {
@@ -868,10 +881,13 @@
     if (pickerOfficialDay.value) {
       paramsUser.official_day = format(pickerOfficialDay.value, 'yyyy-MM-dd')
     }
+    if (pickerDayOff.value) {
+      ;(paramsUser as Record<string, any>).day_off = format(pickerDayOff.value, 'yyyy-MM-dd')
+    }
   }
 
   // Theo dõi thay đổi của các date picker để cập nhật dữ liệu
-  watch([pickerDOB, pickerDateissue, pickerWorkingDay, pickerOfficialDay], () => {
+  watch([pickerDOB, pickerDateissue, pickerWorkingDay, pickerOfficialDay, pickerDayOff], () => {
     if (auth.check()) {
       updateDates()
     }
@@ -1315,6 +1331,8 @@
       if (paramsUser.work_contract) formDataUser.append('work_contract', String(paramsUser.work_contract))
       if (paramsUser.working_day) formDataUser.append('working_day', String(paramsUser.working_day))
       if (paramsUser.official_day) formDataUser.append('official_day', String(paramsUser.official_day))
+      if ((paramsUser as Record<string, any>).day_off)
+        formDataUser.append('day_off', String((paramsUser as Record<string, any>).day_off))
       if (paramsUser.status) {
         formDataUser.append('status', String(paramsUser.status))
       } else {
