@@ -40,13 +40,12 @@
                           <SelectItemText> Tất cả tình trạng </SelectItemText>
                         </SelectItem>
 
-                        <template v-for="item in Object.keys(StatusContractType)" :key="item">
+                        <template v-for="[value, label] in Object.entries(dataContractOptions?.status_option || {})" :key="value">
                           <SelectItem
                             class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
-                            :value="item"
+                            :value="value"
                           >
-                            <SelectItemText v-if="item === StatusContractType.PROCESS"> Còn hiệu lực </SelectItemText>
-                            <SelectItemText v-if="item === StatusContractType.TERMINATE"> Hết hiệu lực </SelectItemText>
+                            <SelectItemText>{{ label }}</SelectItemText>
                           </SelectItem>
                         </template>
                       </SelectGroup>
@@ -372,8 +371,8 @@
                     </div>
 
                     <template v-if="checkPermission('Contract', 'Update') || checkPermission('Contract', 'Delete')">
-                      <div class="cell pinned pinned-body">
-                        <div class="cell edit edit-body !pe-6">
+                      <div class="cell pinned pinned-body !justify-start">
+                        <div class="cell edit edit-body  !pe-6">
                           <template v-if="checkPermission('Contract', 'Update')">
                             <button
                               type="button"
@@ -400,6 +399,18 @@
                             >
                               <span class="rounded-xl bg-[#e61b1b] px-2 py-1.5 text-[10px] font-bold text-white">
                                 Thanh lý
+                              </span>
+                            </button>
+                          </template>
+
+                          <template v-if="it.can_renew">
+                            <button
+                              type="button"
+                              class="cell-btn-delete shrink-0 cursor-pointer"
+                              @click="handleEditContract(it.id, true)"
+                            >
+                              <span class="rounded-xl bg-green-600 px-2 py-1.5 text-[10px] font-bold text-white">
+                               Gia hạn
                               </span>
                             </button>
                           </template>
@@ -543,12 +554,15 @@
     >
       <div class="rounded-[24px] bg-white p-[52px_24px_36px]">
         <div class="mb-12 text-center max-xl:mb-6">
-          <h3 class="m-0 text-[16px] font-bold text-[#464661] uppercase">Sửa hợp đồng</h3>
+          <h3 class="m-0 text-[16px] font-bold text-[#464661] uppercase">
+            {{ isRenewMode ? 'Gia hạn hợp đồng' : 'Sửa hợp đồng' }}
+          </h3>
         </div>
 
         <ModalEditContract
           :datatype="dataEditContract"
           :prop-function="fetchDataContract"
+          :is-renew="isRenewMode"
           @post-request-edit="getPostRequestEdit"
         >
           <button
@@ -678,10 +692,6 @@
 
   import MainLayout from '../MainLayout.vue'
 
-  enum StatusContractType {
-    PROCESS = 'PROCESS',
-    TERMINATE = 'TERMINATE',
-  }
 
   const toast = reactive({
     toastCreate: false,
@@ -833,9 +843,27 @@
   })
 
   const dataContractRef = ref<any | null>(null)
+  const dataContractOptions = ref<any | null>(null)
+  
+
 
   // Table loading state
   const { isTableLoading, withLoading } = useTableLoading()
+
+
+const fetchContractOptions = async () => {
+  try {
+    const {data} = await axios.get(`${apiUri}/contract/option`, {
+      headers: {
+        Authorization: `Bearer ${auth.token()}`,
+      },
+    })
+    dataContractOptions.value = data
+  } catch (error) {
+    console.error('fetchContractOptions error:', error)
+  }
+}
+
   const fetchDataContract = async () => {
     try {
       const res = {
@@ -925,8 +953,11 @@
     return flattenDepartmentTree(departmentTree.value || [])
   })
 
+  const isRenewMode = ref(false)
+
   const dataEditContract = ref<any | null>(null)
-  const handleEditContract = async (id: number) => {
+  const handleEditContract = async (id: number, isRenew: boolean = false) => {
+    isRenewMode.value = isRenew
     try {
       const res = await axios.get(`${apiUri}/contract/detail?id=${id}`, {
         headers: {
@@ -1072,6 +1103,7 @@
     if (auth.check()) {
       fetchDepartmentTree()
       fetchDataContract()
+      fetchContractOptions()
     }
 
     // Đóng dropdown khi click bên ngoài

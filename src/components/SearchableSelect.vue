@@ -1,7 +1,7 @@
 <template>
-  <SelectRoot :model-value="modelValue" @update:model-value="updateModelValue">
+  <SelectRoot :model-value="modelValue" :disabled="disabled" @update:model-value="updateModelValue">
     <SelectTrigger
-      class="flex w-full flex-wrap items-center rounded-full border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
+      class="flex w-full flex-wrap items-center rounded-full border border-solid border-[#EDEDF6] bg-white px-2.5 py-1.5 text-[#000] focus:outline-none data-[placeholder]:text-[#909090] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
       aria-label="Customise options"
     >
       <SelectValue
@@ -104,6 +104,7 @@
     optionLabel?: string
     maxHeight?: string
     showDefaultOption?: boolean
+    disabled?: boolean
   }
 
   const props = withDefaults(defineProps<Props>(), {
@@ -113,6 +114,7 @@
     optionLabel: 'name',
     maxHeight: '300px',
     showDefaultOption: true,
+    disabled: false,
   })
 
   const emit = defineEmits<{

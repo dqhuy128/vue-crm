@@ -9,6 +9,7 @@
           placeholder="Chọn mã nhân viên"
           search-placeholder="Tìm kiếm nhân viên..."
           :class="{ 'is-error': errors.user_id }"
+          :disabled="props.isRenew"
         />
         <p v-if="errors.user_id" class="mt-1 text-[13px] leading-normal text-[#E61B1B]">{{ errors.user_id }}</p>
       </div>
@@ -263,6 +264,7 @@
           select-text="Chọn"
           format="dd/MM/yyyy"
           placeholder="Chọn ngày gia nhập"
+          :disabled="props.isRenew"
         />
         <p v-if="errors.join_date" class="mt-1 text-[13px] leading-normal text-[#E61B1B]">{{ errors.join_date }}</p>
       </div>
@@ -314,6 +316,14 @@
         <div v-else>Lưu</div>
       </button>
     </div>
+
+    <Modal
+      :modal-active="showConfirmRenew"
+      max-width="max-w-[512px]"
+      @close="showConfirmRenew = false"
+    >
+      <ModalConfirmRenew @cancel="showConfirmRenew = false" @confirm="handleConfirmRenew" />
+    </Modal>
   </form>
 </template>
 
@@ -341,6 +351,8 @@
   import { computed, reactive, ref, watch } from 'vue'
   import { useAuth } from 'vue-auth3'
 
+  import ModalConfirmRenew from '@/components/Modal/ModalConfirmRenew.vue'
+  import Modal from '@/components/Modals.vue'
   import SearchableSelect from '@/components/SearchableSelect.vue'
   import { apiUri } from '@/constants/apiUri'
   import { ContractName, ContractTerm, ContractType } from '@/types/type'
@@ -366,10 +378,16 @@
 
   const emit = defineEmits(['post-request-edit'])
 
-  const props = defineProps<{
-    datatype: any
-    propFunction: Function
-  }>()
+  const props = withDefaults(
+    defineProps<{
+      datatype: any
+      propFunction: Function
+      isRenew?: boolean
+    }>(),
+    {
+      isRenew: false,
+    }
+  )
 
   const params: ParamContractPayload = reactive({
     id: '',
@@ -387,6 +405,7 @@
   })
 
   const isSubmitting = ref(false)
+  const showConfirmRenew = ref(false)
 
   interface FormErrors {
     user_id: string
@@ -599,11 +618,25 @@
     el.value = formatNumber(raw)
   }
 
+  const handleConfirmRenew = () => {
+    showConfirmRenew.value = false
+    submitForm()
+  }
+
   const handleSubmit = async () => {
     if (isSubmitting.value) return
     const ok = validate()
     if (!ok) return
 
+    if (props.isRenew) {
+      showConfirmRenew.value = true
+      return
+    }
+
+    await submitForm()
+  }
+
+  const submitForm = async () => {
     try {
       isSubmitting.value = true
       const formData = new FormData()
