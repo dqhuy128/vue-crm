@@ -591,7 +591,7 @@
                         <button
                           type="button"
                           class="cell-btn-update-timekeeping flex shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#f97e06] p-1"
-                          @click="confirmUpdateTimekeeping(item?.id)"
+                          @click="confirmUpdateTimekeeping(item?.mcc_user_id)"
                         >
                           <Icon icon="mdi:clock-outline" class="h-4.5 w-4.5 text-[#fff]" />
                         </button>
