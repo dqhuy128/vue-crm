@@ -40,7 +40,10 @@
                           <SelectItemText> Tất cả tình trạng </SelectItemText>
                         </SelectItem>
 
-                        <template v-for="[value, label] in Object.entries(dataContractOptions?.status_option || {})" :key="value">
+                        <template
+                          v-for="[value, label] in Object.entries(dataContractOptions?.status_option || {})"
+                          :key="value"
+                        >
                           <SelectItem
                             class="p-[6px_12px] text-[16px] leading-normal font-normal text-[#464661] data-[disabled]:pointer-events-none data-[highlighted]:bg-[#D5E3E8] data-[highlighted]:outline-none data-[highlighted]:hover:cursor-pointer"
                             :value="value"
@@ -372,7 +375,7 @@
 
                     <template v-if="checkPermission('Contract', 'Update') || checkPermission('Contract', 'Delete')">
                       <div class="cell pinned pinned-body !justify-start">
-                        <div class="cell edit edit-body  !pe-6">
+                        <div class="cell edit edit-body !pe-6">
                           <template v-if="checkPermission('Contract', 'Update')">
                             <button
                               type="button"
@@ -407,10 +410,10 @@
                             <button
                               type="button"
                               class="cell-btn-delete shrink-0 cursor-pointer"
-                              @click="handleEditContract(it.id, true)"
+                              @click="handleRenewContract(it.id)"
                             >
                               <span class="rounded-xl bg-green-600 px-2 py-1.5 text-[10px] font-bold text-white">
-                               Gia hạn
+                                Gia hạn
                               </span>
                             </button>
                           </template>
@@ -563,6 +566,7 @@
           :datatype="dataEditContract"
           :prop-function="fetchDataContract"
           :is-renew="isRenewMode"
+          :api-path="contractApiPath"
           @post-request-edit="getPostRequestEdit"
         >
           <button
@@ -691,7 +695,6 @@
   import { tableMagic } from '@/utils/main'
 
   import MainLayout from '../MainLayout.vue'
-
 
   const toast = reactive({
     toastCreate: false,
@@ -844,25 +847,22 @@
 
   const dataContractRef = ref<any | null>(null)
   const dataContractOptions = ref<any | null>(null)
-  
-
 
   // Table loading state
   const { isTableLoading, withLoading } = useTableLoading()
 
-
-const fetchContractOptions = async () => {
-  try {
-    const {data} = await axios.get(`${apiUri}/contract/option`, {
-      headers: {
-        Authorization: `Bearer ${auth.token()}`,
-      },
-    })
-    dataContractOptions.value = data
-  } catch (error) {
-    console.error('fetchContractOptions error:', error)
+  const fetchContractOptions = async () => {
+    try {
+      const { data } = await axios.get(`${apiUri}/contract/option`, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      dataContractOptions.value = data
+    } catch (error) {
+      console.error('fetchContractOptions error:', error)
+    }
   }
-}
 
   const fetchDataContract = async () => {
     try {
@@ -954,10 +954,12 @@ const fetchContractOptions = async () => {
   })
 
   const isRenewMode = ref(false)
+  const contractApiPath = ref('/contract/update')
 
   const dataEditContract = ref<any | null>(null)
-  const handleEditContract = async (id: number, isRenew: boolean = false) => {
-    isRenewMode.value = isRenew
+  const handleEditContract = async (id: number) => {
+    isRenewMode.value = false
+    contractApiPath.value = '/contract/update'
     try {
       const res = await axios.get(`${apiUri}/contract/detail?id=${id}`, {
         headers: {
@@ -968,6 +970,22 @@ const fetchContractOptions = async () => {
       toggleModal('modalEditContract')
     } catch (error) {
       console.error('handleEditContract error:', error)
+    }
+  }
+
+  const handleRenewContract = async (id: number) => {
+    isRenewMode.value = true
+    contractApiPath.value = '/contract/renew'
+    try {
+      const res = await axios.get(`${apiUri}/contract/detail?id=${id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token()}`,
+        },
+      })
+      dataEditContract.value = res.data
+      toggleModal('modalEditContract')
+    } catch (error) {
+      console.error('handleRenewContract error:', error)
     }
   }
 

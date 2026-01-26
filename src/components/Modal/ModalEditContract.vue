@@ -317,11 +317,7 @@
       </button>
     </div>
 
-    <Modal
-      :modal-active="showConfirmRenew"
-      max-width="max-w-[512px]"
-      @close="showConfirmRenew = false"
-    >
+    <Modal :modal-active="showConfirmRenew" max-width="max-w-[512px]" @close="showConfirmRenew = false">
       <ModalConfirmRenew @cancel="showConfirmRenew = false" @confirm="handleConfirmRenew" />
     </Modal>
   </form>
@@ -383,9 +379,11 @@
       datatype: any
       propFunction: Function
       isRenew?: boolean
+      apiPath?: string
     }>(),
     {
       isRenew: false,
+      apiPath: '/contract/update',
     }
   )
 
@@ -647,7 +645,7 @@
         }
       }
 
-      const { data } = await axios.post(`${apiUri}/contract/update`, formData, {
+      const { data } = await axios.post(`${apiUri}${props.apiPath}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${auth.token()}`,
