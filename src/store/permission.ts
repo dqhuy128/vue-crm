@@ -43,9 +43,9 @@ export const usePermissionStore = defineStore('permission', () => {
 
       const dataPermit = response.data.data
       permision.value = dataPermit
-      console.log('🚀 ~ fetchPermission ~ permision.value:', permision.value)
+      // console.log('🚀 ~ fetchPermission ~ permision.value:', permision.value)
       permissionList.value = Object.keys(dataPermit)
-      console.log('🚀 ~ fetchPermission ~ permissionList.value:', permissionList.value)
+      // console.log('🚀 ~ fetchPermission ~ permissionList.value:', permissionList.value)
     } catch (error) {
       console.error('Error fetching permision:', error)
     }
@@ -60,7 +60,7 @@ export const usePermissionStore = defineStore('permission', () => {
       })
 
       const { data } = response.data
-      console.log('🚀 ~ fetchPermissionList ~ data:', data)
+      // console.log('🚀 ~ fetchPermissionList ~ data:', data)
       permissionListData.value = data
     } catch (error) {
       console.error('Error fetching permision:', error)
@@ -80,7 +80,7 @@ export const usePermissionStore = defineStore('permission', () => {
     const auth = useAuth()
     if (!auth.check()) return
     if (userData.value) return
-    console.log('call trong store')
+    // console.log('call trong store')
     try {
       const response = await auth.fetch({
         method: 'get',

@@ -153,7 +153,7 @@
 
   const auth = useAuth()
   const route = useRoute()
-  console.log('🚀 ~ route:', route)
+  // console.log('🚀 ~ route:', route)
 
   // Mảng lưu trạng thái dropdown của từng item
   interface DropdownState {

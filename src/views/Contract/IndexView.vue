@@ -285,152 +285,25 @@
 
     <template v-if="checkPermission('Contract', 'List')">
       <div class="flex h-full flex-col">
-        <div id="tableMagic" class="table-magic styleTableMagic max-md:mb-4">
-          <div class="table-container relative">
-            <!-- Example column -->
-            <div id="tableRowHeader" class="header table-row justify-between">
-              <div v-for="(column, index) in tbhead" v-show="column.visible" :key="index" class="cell">
-                {{ column.title }}
-
-                <div v-if="column.hasSort" class="tb-sort">
-                  <button type="button" class="cursor-pointer" @click="handleSort(column, index)">
-                    <img src="@/assets/images/tb-sort.svg" alt="" />
-                  </button>
-                </div>
-              </div>
-              <template v-if="checkPermission('Contract', 'Update') || checkPermission('Contract', 'Delete')">
-                <div class="cell pinned">
-                  <div class="cell edit">Thao tác</div>
-                </div>
-              </template>
-              <template v-else>
-                <div class="cell"></div>
-              </template>
-            </div>
-
-            <!-- Skeleton Loading -->
-            <SkeletonTable v-if="isTableLoading" :columns="9" :rows="10" />
-
-            <!-- Table Data -->
-            <div v-else id="tableRowBody" class="body table-row">
-              <template v-if="dataContractRef?.data?.items">
-                <div
-                  v-for="(items, index) in dataContractRef?.data?.items || []"
-                  :key="index"
-                  class="table-item justify-between"
-                >
-                  <template v-for="it in items" :key="it.id">
-                    <div v-show="tbhead[0].visible" class="cell">
-                      <template v-if="index < 9"> 0{{ index + 1 }} </template>
-                      <template v-else>{{ index + 1 }}</template>
-                    </div>
-
-                    <div v-show="tbhead[1].visible" class="cell">
-                      <template v-if="it.code">
-                        {{ it.code }}
-                      </template>
-                    </div>
-
-                    <div v-show="tbhead[2].visible" class="cell">
-                      <template v-if="it.name">
-                        {{ it.name }}
-                      </template>
-                    </div>
-
-                    <div v-show="tbhead[3].visible" class="cell">
-                      <template v-if="it.contract_name_text">
-                        {{ it.contract_name_text }}
-                      </template>
-                    </div>
-
-                    <div v-show="tbhead[4].visible" class="cell">
-                      <template v-if="it.contract_type_text">
-                        {{ it.contract_type_text }}
-                      </template>
-                    </div>
-
-                    <div v-show="tbhead[5].visible" class="cell">
-                      <template v-if="it.contract_term_text">
-                        {{ it.contract_term_text }}
-                      </template>
-                    </div>
-
-                    <div v-show="tbhead[6].visible" class="cell">
-                      <template v-if="it.begin_date">
-                        {{ it.begin_date }}
-                      </template>
-                    </div>
-
-                    <div v-show="tbhead[7].visible" class="cell">
-                      <template v-if="it.finish_date">
-                        {{ it.finish_date }}
-                      </template>
-                    </div>
-
-                    <div v-show="tbhead[8].visible" class="cell">
-                      <template v-if="it.termination_date">
-                        {{ it.termination_date }}
-                      </template>
-                    </div>
-
-                    <template v-if="checkPermission('Contract', 'Update') || checkPermission('Contract', 'Delete')">
-                      <div class="cell pinned pinned-body !justify-start">
-                        <div class="cell edit edit-body !pe-6">
-                          <template v-if="checkPermission('Contract', 'Update')">
-                            <button
-                              type="button"
-                              class="cell-btn-edit shrink-0 cursor-pointer"
-                              @click="handleEditContract(it.id)"
-                            >
-                              <img src="@/assets/images/action-edit-2.svg" alt="" />
-                            </button>
-                          </template>
-
-                          <button
-                            type="button"
-                            class="cell-btn-delete shrink-0 cursor-pointer"
-                            @click="handleDeleteContract(it.id)"
-                          >
-                            <img src="@/assets/images/action-edit-3.svg" alt="" />
-                          </button>
-
-                          <template v-if="it.status !== 'TERMINATE'">
-                            <button
-                              type="button"
-                              class="cell-btn-delete shrink-0 cursor-pointer"
-                              @click="confirmDeleteLeave(it.id)"
-                            >
-                              <span class="rounded-xl bg-[#e61b1b] px-2 py-1.5 text-[10px] font-bold text-white">
-                                Thanh lý
-                              </span>
-                            </button>
-                          </template>
-
-                          <template v-if="it.can_renew">
-                            <button
-                              type="button"
-                              class="cell-btn-delete shrink-0 cursor-pointer"
-                              @click="handleRenewContract(it.id)"
-                            >
-                              <span class="rounded-xl bg-green-600 px-2 py-1.5 text-[10px] font-bold text-white">
-                                Gia hạn
-                              </span>
-                            </button>
-                          </template>
-                        </div>
-                      </div>
-                    </template>
-                    <template v-else>
-                      <div class="cell"></div>
-                    </template>
-                  </template>
-                </div>
-              </template>
-            </div>
+        <template v-if="isTableLoading">
+          <SkeletonTable :columns="9" :rows="10" class="mb-4" />
+        </template>
+        <template v-else-if="dataContractRef?.data?.items">
+          <ContractAccordionList
+            :items="dataContractRef.data.items"
+            @edit="handleEditContract"
+            @delete="handleDeleteContract"
+            @terminate="confirmDeleteLeave"
+            @renew="handleRenewContract"
+          />
+        </template>
+        <template v-else>
+          <div class="mb-4 rounded-[12px] border border-[#EDEDF6] bg-white py-8 text-center text-gray-500 shadow-sm">
+            Không có dữ liệu hiển thị
           </div>
-        </div>
+        </template>
 
-        <div class="tb-pagination flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4">
+        <div class="tb-pagination mt-6 flex flex-wrap items-center gap-2 max-md:justify-center md:gap-4">
           <div class="relative">
             <select
               id="selectPerPage"
@@ -682,6 +555,7 @@
   import { useAuth } from 'vue-auth3'
 
   import Breadcrums from '@/components/BreadcrumsNew.vue'
+  import ContractAccordionList from '@/components/ContractAccordionList.vue'
   import ModalAddContract from '@/components/Modal/ModalAddContract.vue'
   import ModalDeleteContract from '@/components/Modal/ModalDeleteContract.vue'
   import ModalEditContract from '@/components/Modal/ModalEditContract.vue'
@@ -872,13 +746,17 @@
         per_page: paginate.per_page,
       }
 
-      const { data } = await axios.get(`${apiUri}/contract/list`, {
-        headers: {
-          Authorization: `Bearer ${auth.token()}`,
-        },
-        params: res,
-      })
+      const fetchApi = () =>
+        axios.get(`${apiUri}/contract/list1`, {
+          headers: {
+            Authorization: `Bearer ${auth.token()}`,
+          },
+          params: res,
+        })
+
+      const { data } = await withLoading(fetchApi)
       dataContractRef.value = data
+      // console.log('🚀 ~ fetchDataContract ~ dataContractRef.value:', dataContractRef.value)
       tableMagic()
     } catch (error) {
       console.error('fetchDataContract error:', error)
