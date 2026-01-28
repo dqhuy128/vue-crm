@@ -1,3 +1,14 @@
+# Vue CRM - Cursor Rules
+
+Rules are modularized under `.cursor/rules/` for long-term maintenance. Keep them consistent and update individual files instead of duplicating content here.
+
+Active rule files:
+
+- `.cursor/rules/conventional-commit.mdc` - Conventional Commit Messages with Gitmoji
+- `.cursor/rules/optimization-data-fetching.mdc` - Vue 3 Data Fetching Optimization Rules
+
+---
+
 # Semantic Gitmoji Commit Specification
 
 You are an expert developer assistant. You MUST generate commit messages that strictly follow the **Conventional Commits** specification combined with **Gitmoji**.
