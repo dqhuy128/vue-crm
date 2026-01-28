@@ -3,10 +3,10 @@
     <Breadcrums name="Thông tin nghỉ phép" path="/leave/info" />
 
     <template v-if="toggleBoxFilters">
-      <div class="mb-5 max-w-[552px] rounded-[24px] bg-white p-2.5">
+      <div class="mb-5 max-w-6xl rounded-[24px] bg-white p-2.5">
         <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchLeave">
           <div class="flex grow flex-wrap items-stretch gap-4">
-            <div class="flex-[100%]">
+            <div class="flex-1">
               <SelectRoot v-model="params.status">
                 <SelectTrigger
                   class="flex h-full w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
@@ -61,6 +61,24 @@
                   </SelectContent>
                 </SelectPortal>
               </SelectRoot>
+            </div>
+
+            <!-- Filter: Datepicker -->
+            <div class="flex-1">
+              <VueDatePicker
+                v-model="datepicker"
+                class="leave-datepicker"
+                :enable-time-picker="false"
+                locale="vi"
+                :format-locale="vi"
+                cancel-text="Huỷ"
+                select-text="Chọn"
+                range
+                format="dd/MM/yyyy"
+                :max-date="new Date()"
+                placeholder="Chọn khoảng thời gian"
+                @update:model-value="updateDates"
+              />
             </div>
           </div>
 
@@ -701,8 +719,13 @@
 </template>
 
 <script lang="ts" setup>
+  import '@vuepic/vue-datepicker/dist/main.css'
+
   import { Icon } from '@iconify/vue'
+  import VueDatePicker from '@vuepic/vue-datepicker'
   import axios from 'axios'
+  import { format } from 'date-fns'
+  import { vi } from 'date-fns/locale/vi'
   import { storeToRefs } from 'pinia'
   import {
     SelectContent,
@@ -885,6 +908,8 @@
 
   const params = reactive<any | null>({
     status: null,
+    begin_date: '',
+    finish_date: '',
   })
 
   const paginate = reactive({
@@ -897,6 +922,24 @@
   }>({
     timeOut: null,
     counter: 0,
+  })
+
+  const datepicker = ref<any | null>(null)
+  const updateDates = () => {
+    if (datepicker.value && datepicker.value[0] && datepicker.value[1]) {
+      params.begin_date = format(datepicker.value[0], 'yyyy-MM-dd')
+      params.finish_date = format(datepicker.value[1], 'yyyy-MM-dd')
+    } else {
+      params.begin_date = ''
+      params.finish_date = ''
+    }
+    fetchDataLeave()
+  }
+
+  watch(datepicker, () => {
+    if (auth.check()) {
+      updateDates()
+    }
   })
 
   const normalizeActionsOnItems = () => {
@@ -1278,6 +1321,12 @@
     select {
       appearance: none;
       width: 100%;
+    }
+  }
+
+  :deep(.leave-datepicker) {
+    .dp__input {
+      border-radius: 24px;
     }
   }
 </style>

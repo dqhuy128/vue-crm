@@ -7,6 +7,25 @@
         <form class="flex flex-wrap gap-4" @submit.prevent="handleSearchContract">
           <div class="flex grow flex-wrap items-stretch gap-2">
             <div class="flex-[1]">
+              <div class="relative">
+                <input
+                  v-model="params.keyword"
+                  type="text"
+                  placeholder="Tìm kiếm"
+                  class="font-inter block w-full rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] focus:outline-none max-md:text-[14px]"
+                />
+                <button
+                  v-if="params.keyword"
+                  type="button"
+                  class="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer"
+                  @click="params.keyword = ''"
+                >
+                  <Icon icon="radix-icons:cross-1" class="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            <div class="flex-[1]">
               <SelectRoot v-model="params.status">
                 <SelectTrigger
                   class="flex h-full w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[#000] focus:outline-none data-[placeholder]:text-[#909090]"
@@ -693,6 +712,7 @@
   }
 
   const params = reactive<any | null>({
+    keyword: '',
     status: null,
     name: null,
     type: null,
@@ -719,6 +739,14 @@
     per_page: 20,
   })
 
+  const debounceTime = ref<{
+    timeOut: number | null
+    counter: number
+  }>({
+    timeOut: null,
+    counter: 0,
+  })
+
   const dataContractRef = ref<any | null>(null)
   const dataContractOptions = ref<any | null>(null)
 
@@ -738,46 +766,45 @@
     }
   }
 
-  const fetchDataContract = async () => {
-    try {
-      const res = {
-        ...params,
-        page: paginate.page,
-        per_page: paginate.per_page,
-      }
-
-      const fetchApi = () =>
-        axios.get(`${apiUri}/contract/list1`, {
-          headers: {
-            Authorization: `Bearer ${auth.token()}`,
-          },
-          params: res,
-        })
-
-      const { data } = await withLoading(fetchApi)
-      dataContractRef.value = data
-      // console.log('🚀 ~ fetchDataContract ~ dataContractRef.value:', dataContractRef.value)
-      tableMagic()
-    } catch (error) {
-      console.error('fetchDataContract error:', error)
+  const fetchDataContract = () => {
+    if (debounceTime.value.timeOut !== null) {
+      clearTimeout(debounceTime.value.timeOut)
     }
+
+    debounceTime.value.timeOut = setTimeout(async () => {
+      try {
+        const res = {
+          ...params,
+          page: paginate.page,
+          per_page: paginate.per_page,
+        }
+
+        const fetchApi = () =>
+          axios.get(`${apiUri}/contract/list1`, {
+            headers: {
+              Authorization: `Bearer ${auth.token()}`,
+            },
+            params: res,
+          })
+
+        const { data } = await withLoading(fetchApi)
+        dataContractRef.value = data
+        tableMagic()
+      } catch (error) {
+        console.error('fetchDataContract error:', error)
+      }
+    }, 300)
   }
 
   const handlePageChange = (pageNum: number) => {
-    // console.log('🚀 ~ handlePageChange ~ pageNum:', pageNum)
     paginate.page = pageNum
-    fetchDataContract()
   }
 
-  const handleSearchContract = async () => {
-    try {
+  const handleSearchContract = () => {
+    if (paginate.page === 1) {
+      fetchDataContract()
+    } else {
       paginate.page = 1
-      paginate.per_page = 20
-      await fetchDataContract()
-    } catch (error) {
-      console.error('handleSearchLeave error:', error)
-    } finally {
-      await fetchDataContract()
     }
   }
 
@@ -960,18 +987,17 @@
 
   watch(
     () => params.status,
-    async () => {
+    () => {
       if (params.status === 'all') {
         params.status = ''
-        fetchDataContract()
       }
-    },
-    { deep: true, immediate: true }
+    }
   )
 
   watch(datepicker, () => {
     if (auth.check()) {
       updateDates()
+      fetchDataContract()
     }
   })
 
@@ -984,14 +1010,11 @@
 
   watch(
     paginate,
-    async () => {
+    () => {
       fetchDataContract()
     },
     {
-      // must pass deep option to watch for changes on object properties
       deep: true,
-      // can also pass immediate to handle that first request AND when queries change
-      immediate: true,
     }
   )
 

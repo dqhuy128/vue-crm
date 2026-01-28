@@ -230,7 +230,7 @@
                           </template>
 
                           <!-- Terminate Button -->
-                          <template v-if="item.status !== 'TERMINATE'">
+                          <template v-if="item.can_terminate">
                             <button
                               type="button"
                               class="cursor-pointer transition-transform hover:scale-105"
