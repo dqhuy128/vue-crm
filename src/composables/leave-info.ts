@@ -39,25 +39,34 @@ export function useLeaveInfo() {
     }
   }
 
-  const doFetch = async (url: string, token: string) => {
+  const doFetch = async (url: string, token: string, options: any = {}) => {
     isLoading.value = true
-    const response = await auth
-      .fetch({
+    try {
+      const response = await auth.fetch({
         method: 'get',
         url: url,
         credentials: 'include',
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        ...options,
       })
-      .then((res) => res.data)
-      .then((json) => {
-        data.value = json.data
-        // console.log('🚀 ~ .then ~ data.value:', data.value)
-        return data.value
-      })
-      .catch((err) => (error.value = err))
-      .finally(() => (isLoading.value = false))
+      data.value = response.data.data
+      return data.value
+    } catch (err: any) {
+      // Explicitly ignore cancel errors
+      if (err.name !== 'CanceledError' && err.code !== 'ERR_CANCELED') {
+        error.value = err
+      }
+    } finally {
+      // Only set loading to false if not aborted (optional, but good practice)
+      // However, if we don't have access to the controller here easily, we rely on the caller or just set it false.
+      // But if aborted, the catch block runs.
+      // Ideally check signal, but options.signal might be generic.
+      if (!options.signal?.aborted) {
+        isLoading.value = false
+      }
+    }
   }
 
   return {

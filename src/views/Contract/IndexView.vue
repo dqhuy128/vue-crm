@@ -555,6 +555,7 @@
   import axios from 'axios'
   import { format } from 'date-fns'
   import { vi } from 'date-fns/locale'
+  import debounce from 'debounce'
   import { storeToRefs } from 'pinia'
   import {
     SelectContent,
@@ -716,7 +717,6 @@
     status: null,
     name: null,
     type: null,
-    sort: 'code|asc',
     begin_date: '',
     finish_date: '',
     staff_id: '',
@@ -739,14 +739,6 @@
     per_page: 20,
   })
 
-  const debounceTime = ref<{
-    timeOut: number | null
-    counter: number
-  }>({
-    timeOut: null,
-    counter: 0,
-  })
-
   const dataContractRef = ref<any | null>(null)
   const dataContractOptions = ref<any | null>(null)
 
@@ -766,34 +758,36 @@
     }
   }
 
-  const fetchDataContract = () => {
-    if (debounceTime.value.timeOut !== null) {
-      clearTimeout(debounceTime.value.timeOut)
-    }
+  let abortController: AbortController | null = null
 
-    debounceTime.value.timeOut = setTimeout(async () => {
-      try {
-        const res = {
-          ...params,
-          page: paginate.page,
-          per_page: paginate.per_page,
-        }
+  const fetchDataContract = async () => {
+    if (abortController) abortController.abort()
+    abortController = new AbortController()
 
-        const fetchApi = () =>
-          axios.get(`${apiUri}/contract/list1`, {
-            headers: {
-              Authorization: `Bearer ${auth.token()}`,
-            },
-            params: res,
-          })
+    try {
+      const res = {
+        ...params,
+        page: paginate.page,
+        per_page: paginate.per_page,
+      }
 
-        const { data } = await withLoading(fetchApi)
-        dataContractRef.value = data
-        tableMagic()
-      } catch (error) {
+      const fetchApi = () =>
+        axios.get(`${apiUri}/contract/list1`, {
+          headers: {
+            Authorization: `Bearer ${auth.token()}`,
+          },
+          params: res,
+          signal: abortController?.signal,
+        })
+
+      const { data } = await withLoading(fetchApi)
+      dataContractRef.value = data
+      tableMagic()
+    } catch (error: any) {
+      if (error.name !== 'CanceledError' && error.code !== 'ERR_CANCELED') {
         console.error('fetchDataContract error:', error)
       }
-    }, 300)
+    }
   }
 
   const handlePageChange = (pageNum: number) => {
@@ -985,12 +979,20 @@
     }
   })
 
+  const handleSearchChange = debounce(() => {
+    paginate.page = 1
+    fetchDataContract()
+  }, 400)
+
+  watch(() => params.keyword, handleSearchChange)
+
   watch(
     () => params.status,
     () => {
       if (params.status === 'all') {
         params.status = ''
       }
+      fetchDataContract()
     }
   )
 
@@ -1005,6 +1007,7 @@
     () => params.staff_id,
     () => {
       if (params.staff_id === 'all') params.staff_id = ''
+      fetchDataContract()
     }
   )
 

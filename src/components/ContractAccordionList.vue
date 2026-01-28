@@ -60,14 +60,15 @@
     const processGroup = (groupItems: any, idKey: string) => {
       // Normalize to flat array
       const contracts = normalizeToArray(groupItems)
-      const firstRecord = contracts[0] || {}
+      const canRenew = contracts.some((contract: ContractItem) => contract.can_renew)
+      const canTerminate = contracts.some((contract: ContractItem) => contract.can_terminate)
 
       return {
         uniqueId: idKey,
-        name: firstRecord.name || 'Unknown',
-        code: firstRecord.code || 'N/A',
         contracts: contracts,
         totalContracts: contracts.length,
+        canRenew: canRenew,
+        canTerminate: canTerminate,
       }
     }
 
@@ -138,23 +139,26 @@
             <div
               class="flex h-10 w-10 items-center justify-center rounded-full bg-[#E0E7FF] text-sm font-bold text-[#3730A3] shadow-inner"
             >
-              {{ emp.contracts[0]?.name?.charAt(0)?.toUpperCase() || 'U' }}
+              {{ emp.contracts[0]?.name?.charAt(0)?.toUpperCase() }}
             </div>
 
             <div class="flex flex-col">
               <h3 class="text-[16px] font-bold text-[#464661] transition-colors group-hover:text-[#1b4dea]">
-                {{ emp.contracts[0]?.name || 'Unknown' }}
+                {{ emp.contracts[0]?.name }}
               </h3>
               <div class="mt-0.5 flex items-center gap-3 text-[13px] text-gray-500">
                 <span class="flex items-center gap-1">
                   <Icon icon="lucide:user" class="h-3.5 w-3.5" />
-                  {{ emp.contracts[0]?.code || 'N/A' }}
+                  {{ emp.contracts[0]?.code }}
                 </span>
                 <span class="h-1 w-1 rounded-full bg-gray-300"></span>
                 <span class="flex items-center gap-1">
                   <Icon icon="fluent:document-text-24-regular" class="h-3.5 w-3.5" />
                   {{ emp.totalContracts }} hợp đồng
                 </span>
+                <template v-if="emp.canRenew">
+                  <span class="rounded-full bg-red-100 px-2 py-1 text-xs text-red-500"> Hợp đồng sắp hết hạn </span>
+                </template>
               </div>
             </div>
           </div>
@@ -182,6 +186,7 @@
                     <th class="px-4 py-3 font-semibold">Ngày bắt đầu</th>
                     <th class="px-4 py-3 font-semibold">Ngày kết thúc</th>
                     <th class="px-4 py-3 font-semibold">Ngày thanh lý</th>
+                    <th class="px-4 py-3 font-semibold">Trạng thái</th>
                     <template v-if="checkPermission('Contract', 'Update') || checkPermission('Contract', 'Delete')">
                       <th class="px-4 py-3 text-right font-semibold">Thao tác</th>
                     </template>
@@ -209,6 +214,9 @@
                     </td>
                     <td class="px-4 py-3 text-gray-600">
                       {{ item.termination_date || '---' }}
+                    </td>
+                    <td class="px-4 py-3 text-gray-600">
+                      {{ item.status_text || '---' }}
                     </td>
                     <template v-if="checkPermission('Contract', 'Update') || checkPermission('Contract', 'Delete')">
                       <td class="px-4 py-3 text-right">
@@ -246,7 +254,7 @@
                           </template>
 
                           <!-- Edit Button -->
-                          <template v-if="checkPermission('Contract', 'Update')">
+                          <template v-if="checkPermission('Contract', 'Update') && item.can_terminate">
                             <button
                               type="button"
                               class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100"
@@ -258,7 +266,7 @@
                           </template>
 
                           <!-- Delete Button -->
-                          <template v-if="checkPermission('Contract', 'Delete')">
+                          <template v-if="checkPermission('Contract', 'Delete') && item.can_terminate">
                             <button
                               type="button"
                               class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-600 transition-colors hover:bg-red-100"

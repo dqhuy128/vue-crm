@@ -1,0 +1,105 @@
+---
+name: vue-optimization-data-fetching
+description: Standards for optimizing API calls in Vue 3, focusing on AbortController, debouncing, and race condition prevention.
+globs: **/*.vue, **/composables/*.ts, **/composables/*.js
+alwaysApply: true
+---
+
+# Vue Data Fetching Optimization Rules
+
+You are an expert Vue 3 Developer specializing in performance optimization and asynchronous state management. Follow these rules when generating code for API fetching, specifically for Search and Filter features.
+
+## 1. Context & Goal
+
+- **Goal:** Eliminate redundant API calls, race conditions, and UI flickering in Vue components.
+- **Target Issues:**
+  - Duplicate fetching during component initialization (`onMounted` vs `watch`).
+  - Outdated responses overwriting new data during rapid filtering (Race Conditions).
+  - Unoptimized watchers triggering excessive server load.
+
+## 2. Mandatory Patterns
+
+### A. The "AbortController" Pattern (Strict)
+
+Every data fetching function triggered by user input (search, filters, pagination) MUST support cancellation.
+
+- **Action:** Create a standard `AbortController` instance before the fetch call.
+- **Constraint:** Always abort the previous controller before creating a new one.
+- **Constraint:** Pass `signal: controller.signal` to the HTTP client (Axios/Fetch).
+- **Error Handling:** Explicitly ignore errors with code `ERR_CANCELED` or name `CanceledError`.
+
+### B. Lifecycle & Watcher Logic
+
+- **Anti-Pattern:** NEVER use `onMounted(fetch)` IF you are also using `watch(source, fetch, { immediate: true })`. This causes a double fetch on load.
+- **Strategy:** Prefer `watch` with `immediate: false` and an explicit `onMounted` call for better control, OR use `immediate: true` alone without `onMounted`.
+
+### C. Input Debouncing
+
+- **Requirement:** Any watcher attached to a text input (Search Box) MUST use a debounce function (min 300ms).
+- **Requirement:** Select/Dropdown inputs usually do NOT require debounce but MUST still use AbortController.
+
+## 3. Code Implementation Template
+
+When requested to implement search or filtering, generate code following this exact structure:
+
+```typescript
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue';
+import { debounce } from 'lodash-es'; // or your project's debounce util
+
+// --- State ---
+const filter = ref({ query: '', type: 'all' });
+const items = ref([]);
+const isLoading = ref(false);
+let abortController: AbortController | null = null;
+
+// --- Fetch Logic ---
+const fetchData = async () => {
+  // 1. Cancel previous pending requests
+  if (abortController) abortController.abort();
+  abortController = new AbortController();
+
+  isLoading.value = true;
+
+  try {
+    // 2. API Call with Signal
+    const { data } = await api.get('/resources', {
+      params: filter.value,
+      signal: abortController.signal,
+    });
+    items.value = data;
+  } catch (error: any) {
+    // 3. Ignore Cancel Errors
+    if (error.name !== 'CanceledError' && error.code !== 'ERR_CANCELED') {
+      console.error('Fetch error:', error);
+      items.value = [];
+    }
+  } finally {
+    // 4. Reset loading only if not aborted (to prevent UI flickering)
+    if (abortController?.signal.aborted === false) {
+      isLoading.value = false;
+    }
+  }
+};
+
+// --- Watchers ---
+
+// Debounce text search
+const handleSearchChange = debounce(() => {
+  fetchData();
+}, 400);
+
+watch(() => filter.value.query, handleSearchChange);
+
+// Instant fetch for dropdowns
+watch(() => filter.value.type, () => {
+  fetchData();
+});
+
+// --- Lifecycle ---
+// Only calling here because watchers are NOT immediate
+onMounted(() => {
+  fetchData();
+});
+</script>
+```

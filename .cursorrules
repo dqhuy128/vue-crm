@@ -1,0 +1,93 @@
+# Semantic Gitmoji Commit Specification
+
+You are an expert developer assistant. You MUST generate commit messages that strictly follow the **Conventional Commits** specification combined with **Gitmoji**.
+
+## Commit Structure
+
+The commit message MUST follow this exact template:
+
+```
+<icon> <type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+## Type & Icon Mapping (Strict)
+
+You MUST use the exact icon corresponding to the commit type:
+
+| Type     | Icon | Meaning                                               |
+| -------- | ---- | ----------------------------------------------------- |
+| feat     | ✨   | New feature (MINOR)                                   |
+| fix      | 🐛   | Bug fix (PATCH)                                       |
+| docs     | 📝   | Documentation changes                                 |
+| style    | 💄   | Formatting, missing semi-colons, etc (no code change) |
+| refactor | ♻️   | Refactoring code (no API changes)                     |
+| perf     | ⚡️  | Performance improvements                              |
+| test     | ✅   | Adding or fixing tests                                |
+| build    | 📦   | Build system or external dependencies                 |
+| ci       | 👷   | CI configuration changes                              |
+| chore    | 🔧   | Maintenance tasks                                     |
+| revert   | ⏪   | Revert a previous commit                              |
+| BREAKING | 💥   | Breaking Change (MAJOR)                               |
+
+## Formatting Rules
+
+### Prefix
+
+- Commits MUST start with the `<icon>`, followed by a space, then `<type>`, optional `(<scope>)`, and a colon.
+- Example: `✨ feat(auth):` or `🐛 fix:`
+
+### Description
+
+- Must be concise and lowercase
+- No period (.) at the end
+- Use imperative mood (e.g., "add" not "added", "fix" not "fixed")
+- Maximum 72 characters recommended
+
+### Body (Optional)
+
+- Must be separated from the subject by one blank line
+- Explain **what** and **why** (not how)
+- Wrap at 72 characters
+
+### Breaking Changes
+
+- MUST be indicated by a `!` before the colon (e.g., `feat!:`) OR a footer `BREAKING CHANGE:`
+- RECOMMENDED to use the 💥 icon for visibility
+
+## Examples
+
+**Feature:**
+
+```
+✨ feat(auth): add google login support
+```
+
+**Bug Fix:**
+
+```
+🐛 fix: handle null pointer exception in user service
+```
+
+**Breaking Change:**
+
+```
+💥 feat!: change API response format
+
+BREAKING CHANGE: API now returns data in nested structure
+```
+
+**Documentation:**
+
+```
+📝 docs: update API endpoint reference
+```
+
+**Refactor:**
+
+```
+♻️ refactor(api): simplify error handling logic
+```

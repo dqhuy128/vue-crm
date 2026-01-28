@@ -916,15 +916,9 @@
     page: 1,
     per_page: 20,
   })
-  const debounceTime = ref<{
-    timeOut: number | null
-    counter: number
-  }>({
-    timeOut: null,
-    counter: 0,
-  })
-
   const datepicker = ref<any | null>(null)
+  let abortController: AbortController | null = null
+
   const updateDates = () => {
     if (datepicker.value && datepicker.value[0] && datepicker.value[1]) {
       params.begin_date = format(datepicker.value[0], 'yyyy-MM-dd')
@@ -962,27 +956,29 @@
     })
   }
 
-  const fetchDataLeave = () => {
-    if (debounceTime.value.timeOut !== null) {
-      clearTimeout(debounceTime.value.timeOut)
-    }
+  const fetchDataLeave = async () => {
+    if (abortController) abortController.abort()
+    abortController = new AbortController()
 
-    debounceTime.value.timeOut = setTimeout(() => {
+    try {
       const res = {
         ...params,
         page: paginate.page,
         per_page: paginate.per_page,
       }
 
-      doFetch(
+      await doFetch(
         `${apiUri}/leave/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
-        auth.token() as string
-      ).then(() => {
-        // console.log('🚀 ~ fetchDataLeave ~ res:', res)
-        normalizeActionsOnItems()
-        tableMagic()
-      })
-    }, 300)
+        auth.token() as string,
+        { signal: abortController.signal }
+      )
+      normalizeActionsOnItems()
+      tableMagic()
+    } catch (error: any) {
+      if (error.name !== 'CanceledError' && error.code !== 'ERR_CANCELED') {
+        console.log('🚀 ~ fetchDataLeave ~ error:', error)
+      }
+    }
   }
 
   const handlePageChange = (pageNum: number) => {
@@ -998,8 +994,6 @@
       await fetchDataLeave()
     } catch (error) {
       console.log('🚀 ~ handleSearchLeave ~ error:', error)
-    } finally {
-      await fetchDataLeave()
     }
   }
 
@@ -1227,10 +1221,10 @@
     async () => {
       if (params.status === 'all') {
         params.status = ''
-        fetchDataLeave()
       }
+      fetchDataLeave()
     },
-    { deep: true, immediate: true }
+    { deep: true }
   )
 
   watch(
@@ -1239,10 +1233,7 @@
       fetchDataLeave()
     },
     {
-      // must pass deep option to watch for changes on object properties
       deep: true,
-      // can also pass immediate to handle that first request AND when queries change
-      immediate: true,
     }
   )
 

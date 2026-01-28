@@ -13,7 +13,7 @@
                   type="text"
                   class="font-inter flex w-full flex-wrap items-center rounded-[24px] border border-solid border-[#EDEDF6] bg-white p-[6px_12px] text-[16px] leading-normal font-normal text-[#000] focus:outline-none data-[placeholder]:text-[#909090] max-md:text-[14px]"
                   placeholder="Tên, số điện thoại"
-                  @input="handleFilterChange"
+                  @input="handlePhoneSearch"
                 />
 
                 <button
@@ -882,6 +882,7 @@
   import axios from 'axios'
   import { format } from 'date-fns'
   import { vi } from 'date-fns/locale/vi'
+  import debounce from 'debounce'
   import { storeToRefs } from 'pinia'
   import {
     SelectContent,
@@ -1124,34 +1125,31 @@
     page: 1,
     per_page: 20,
   })
-  const debounceTime = ref<{
-    timeOut: number | null
-    counter: number
-  }>({
-    timeOut: null,
-    counter: 0,
-  })
 
-  const fetchDataDocument = () => {
-    if (debounceTime.value.timeOut !== null) {
-      clearTimeout(debounceTime.value.timeOut)
-    }
+  let abortController: AbortController | null = null
 
-    debounceTime.value.timeOut = setTimeout(() => {
+  const fetchDataDocument = async () => {
+    if (abortController) abortController.abort()
+    abortController = new AbortController()
+
+    try {
       const res = {
         ...params,
         page: paginate.page,
         per_page: paginate.per_page,
       }
 
-      doFetch(
+      await doFetch(
         `${apiUri}/user/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
-        auth.token() as string
-      ).then(() => {
-        // console.log('🚀 ~ fetchDataDocument ~ res:', res)
-        tableMagic()
-      })
-    }, 300)
+        auth.token() as string,
+        { signal: abortController.signal }
+      )
+      tableMagic()
+    } catch (error: any) {
+      if (error.name !== 'CanceledError' && error.code !== 'ERR_CANCELED') {
+        console.log('fetchDataDocument error:', error)
+      }
+    }
   }
 
   const dataPerGroupName = ref<any | null>(null)
@@ -1317,21 +1315,13 @@
   // Handle filter changes without debounce for immediate response
   const handleFilterChange = () => {
     paginate.page = 1
-    paginate.per_page = 20
-    // Call fetch directly without debounce
-    const res = {
-      ...params,
-      page: paginate.page,
-      per_page: paginate.per_page,
-    }
-
-    doFetch(
-      `${apiUri}/user/list?${new URLSearchParams(Object.fromEntries(Object.entries(res).map(([key, value]) => [key, String(value)]))).toString()}`,
-      auth.token() as string
-    ).then(() => {
-      tableMagic()
-    })
+    fetchDataDocument()
   }
+
+  const handlePhoneSearch = debounce(() => {
+    paginate.page = 1
+    fetchDataDocument()
+  }, 400)
 
   const userToDelete = ref<any | null>(null)
   const confirmDeleteUser = (id: number) => {
@@ -1485,10 +1475,7 @@
       fetchDataDocument()
     },
     {
-      // must pass deep option to watch for changes on object properties
       deep: true,
-      // can also pass immediate to handle that first request AND when queries change
-      immediate: true,
     }
   )
 
@@ -1507,7 +1494,7 @@
         params.position_id = ''
       }
     },
-    { deep: true, immediate: true }
+    { deep: true }
   )
 
   const handleSort = (column: any, index: any) => {
